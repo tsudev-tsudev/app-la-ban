@@ -14,6 +14,10 @@ export type Env = {
   SU_KIEN?: AnalyticsEngineDataset;
   /** Rate Limiting binding: lớp thô theo IP trước mọi route. */
   RL_IP?: RateLimit;
+  /** Đồng bộ chặn IP lên Cloudflare List (chỉ prod): token chỉ quyền Account Filter Lists Edit (wrangler secret). */
+  CF_LISTS_TOKEN?: string;
+  CF_ACCOUNT_ID?: string;
+  CF_LIST_ID?: string;
 };
 
 export type BienYeuCau = {

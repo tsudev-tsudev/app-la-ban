@@ -55,3 +55,9 @@ export function cauLenhRutGonIp(d: DongIp, ipRutGon: string): CauLenh[] {
     { sql: 'DELETE FROM device_ips WHERE device_id = ? AND ip = ? AND ip_masked = 0', thamSo: [d.device_id, d.ip] },
   ];
 }
+
+/** Cron chạy mỗi 5 phút; việc hằng ngày (dọn hạn lưu) chỉ ở lượt 19:15-19:19 UTC (02:15 giờ VN). */
+export function laLuotHangNgay(lichMs: number): boolean {
+  const d = new Date(lichMs);
+  return d.getUTCHours() === 19 && d.getUTCMinutes() >= 15 && d.getUTCMinutes() < 20;
+}

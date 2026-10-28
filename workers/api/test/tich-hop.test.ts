@@ -26,12 +26,13 @@ describe('tachSql', () => {
   });
 });
 
-describe('migration D1 0001', () => {
-  it('đủ bảng Spec §6.4 + idempotency', async () => {
+describe('migration D1 0001 + 0002', () => {
+  it('đủ bảng Spec §6.4 + idempotency + Threat Engine', async () => {
     const db = await mf.getD1Database('DB');
     const { results } = await db.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE '\\_%' ESCAPE '\\' AND name NOT LIKE 'sqlite%' ORDER BY name").all<{ name: string }>();
     expect(results.map((r) => r.name)).toEqual([
-      'admin_users', 'appeals', 'audit_logs', 'device_ips', 'devices', 'enforcements', 'idempotency_keys', 'rules', 'security_events', 'sessions',
+      'admin_users', 'alerts', 'allow_list', 'appeals', 'audit_logs', 'device_ips', 'device_links', 'devices', 'enforcements', 'idempotency_keys',
+      'rule_hits', 'rules', 'security_events', 'sessions', 'threat_config',
     ]);
   });
   it('ràng buộc: enforcement phải có hạn, người duyệt khác người tạo; vai trò hợp lệ', async () => {

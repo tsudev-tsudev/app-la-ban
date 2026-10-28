@@ -64,6 +64,14 @@ describe('GioiHanToc', () => {
     expect([...g.m.keys()]).toEqual(['k:a']);
     expect(g.hen()).toBe(10_000);
   });
+  it('lanDauVuot chỉ true ở lần bị từ chối đầu tiên mỗi cửa sổ (RATE_ABUSE không lặp)', async () => {
+    let t = 0;
+    const d = new GioiHanToc({ storage: khoGia().kho }, undefined, () => t);
+    const hoi = async () => ((await (await d.fetch(goi({ khoa: 'a', gioiHan: 1, cuaSoMs: 1000 }))).json()) as { lanDauVuot: boolean }).lanDauVuot;
+    expect([await hoi(), await hoi(), await hoi()]).toEqual([false, true, false]);
+    t = 2500;
+    expect([await hoi(), await hoi()]).toEqual([false, true]);
+  });
   it('tham số sai -> 400, GET -> 405', async () => {
     const d = new GioiHanToc({ storage: khoGia().kho });
     for (const b of [{}, { khoa: '', gioiHan: 1, cuaSoMs: 1000 }, { khoa: 'a', gioiHan: 0, cuaSoMs: 1000 }, { khoa: 'a', gioiHan: 1, cuaSoMs: 10 }]) {

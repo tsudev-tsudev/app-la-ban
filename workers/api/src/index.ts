@@ -3,11 +3,15 @@ import { cors } from 'hono/cors';
 import { z } from 'zod';
 import { donDep } from './d1/don-dep';
 import type { Env, MoiTruongHono } from './moi-truong';
+import { chanTheoThucThi } from './mw/chan';
 import { coBan, traVanDe, xuLyLoi } from './mw/co-ban';
 import { ghiLog } from './mw/ghi-log';
 import { gioiHanThoIp } from './mw/gioi-han';
 import { nguonChoPhep } from './thuan/cors';
+import { laLuotHangNgay } from './thuan/don-dep';
 import { sucKhoe } from './thuan/suc-khoe';
+import { capNhatNguyCo } from './threat/dinh-ky';
+import { dongBoLists } from './threat/dong-bo-lists';
 import { BoTuyen } from './tuyen';
 
 export { KhoNonce } from './do/kho-nonce';
@@ -17,6 +21,7 @@ export type { Env } from './moi-truong';
 
 export const app = new Hono<MoiTruongHono>();
 app.use('*', coBan);
+app.use('*', chanTheoThucThi);
 app.use('*', gioiHanThoIp);
 
 // Trang compass-status đọc health từ trình duyệt.
@@ -42,13 +47,20 @@ app.notFound((c) => traVanDe(c, 404));
 
 export default {
   fetch: app.fetch,
-  async scheduled(_su: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
+  async scheduled(su: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
     if (!env.DB) return;
-    ctx.waitUntil(
-      donDep(env.DB).then(
-        (kq) => ghiLog('info', 'don-dep', kq),
-        (e: unknown) => ghiLog('error', 'don-dep-loi', { loi: String(e) }),
-      ),
-    );
+    const viec: [string, () => Promise<unknown>][] = [
+      ['nguy-co', () => capNhatNguyCo(env)],
+      ['dong-bo-lists', () => dongBoLists(env)],
+    ];
+    if (laLuotHangNgay(su.scheduledTime)) viec.push(['don-dep', () => donDep(env.DB as D1Database)]);
+    for (const [ten, chay] of viec) {
+      ctx.waitUntil(
+        chay().then(
+          (kq) => ghiLog('info', ten, { kq }),
+          (e: unknown) => ghiLog('error', `${ten}-loi`, { loi: String(e) }),
+        ),
+      );
+    }
   },
 } satisfies ExportedHandler<Env>;
