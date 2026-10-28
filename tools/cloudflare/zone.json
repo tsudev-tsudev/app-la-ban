@@ -9,33 +9,133 @@
   },
   "dnssec": "active",
   "dns": [
-    { "type": "CNAME", "name": "compass.tsudev.com", "content": "la-ban-landing.pages.dev", "proxied": true },
-    { "type": "CNAME", "name": "compass-admin.tsudev.com", "content": "la-ban-admin.pages.dev", "proxied": true },
-    { "type": "CNAME", "name": "compass-status.tsudev.com", "content": "la-ban-status.pages.dev", "proxied": true },
-    { "type": "CAA", "name": "tsudev.com", "data": { "flags": 0, "tag": "issue", "value": "letsencrypt.org" } },
-    { "type": "CAA", "name": "tsudev.com", "data": { "flags": 0, "tag": "issue", "value": "pki.goog" } },
-    { "type": "CAA", "name": "tsudev.com", "data": { "flags": 0, "tag": "issue", "value": "ssl.com" } },
-    { "type": "CAA", "name": "tsudev.com", "data": { "flags": 0, "tag": "issuewild", "value": "letsencrypt.org" } },
-    { "type": "CAA", "name": "tsudev.com", "data": { "flags": 0, "tag": "issuewild", "value": "pki.goog" } },
-    { "type": "CAA", "name": "tsudev.com", "data": { "flags": 0, "tag": "issuewild", "value": "ssl.com" } },
-    { "type": "CAA", "name": "tsudev.com", "data": { "flags": 0, "tag": "iodef", "value": "mailto:security@tsudev.com" } }
+    {
+      "type": "CNAME",
+      "name": "compass.tsudev.com",
+      "content": "la-ban-landing.pages.dev",
+      "proxied": true
+    },
+    {
+      "type": "CNAME",
+      "name": "compass-admin.tsudev.com",
+      "content": "la-ban-admin.pages.dev",
+      "proxied": true
+    },
+    {
+      "type": "CNAME",
+      "name": "compass-status.tsudev.com",
+      "content": "la-ban-status.pages.dev",
+      "proxied": true
+    },
+    {
+      "type": "CAA",
+      "name": "tsudev.com",
+      "data": {
+        "flags": 0,
+        "tag": "issue",
+        "value": "letsencrypt.org"
+      }
+    },
+    {
+      "type": "CAA",
+      "name": "tsudev.com",
+      "data": {
+        "flags": 0,
+        "tag": "issue",
+        "value": "pki.goog"
+      }
+    },
+    {
+      "type": "CAA",
+      "name": "tsudev.com",
+      "data": {
+        "flags": 0,
+        "tag": "issue",
+        "value": "ssl.com"
+      }
+    },
+    {
+      "type": "CAA",
+      "name": "tsudev.com",
+      "data": {
+        "flags": 0,
+        "tag": "issuewild",
+        "value": "letsencrypt.org"
+      }
+    },
+    {
+      "type": "CAA",
+      "name": "tsudev.com",
+      "data": {
+        "flags": 0,
+        "tag": "issuewild",
+        "value": "pki.goog"
+      }
+    },
+    {
+      "type": "CAA",
+      "name": "tsudev.com",
+      "data": {
+        "flags": 0,
+        "tag": "issuewild",
+        "value": "ssl.com"
+      }
+    },
+    {
+      "type": "CAA",
+      "name": "tsudev.com",
+      "data": {
+        "flags": 0,
+        "tag": "iodef",
+        "value": "mailto:security@tsudev.com"
+      }
+    }
   ],
   "pagesDomain": [
-    { "project": "la-ban-landing", "domain": "compass.tsudev.com" },
-    { "project": "la-ban-admin", "domain": "compass-admin.tsudev.com" },
-    { "project": "la-ban-status", "domain": "compass-status.tsudev.com" }
+    {
+      "project": "la-ban-landing",
+      "domain": "compass.tsudev.com"
+    },
+    {
+      "project": "la-ban-admin",
+      "domain": "compass-admin.tsudev.com"
+    },
+    {
+      "project": "la-ban-status",
+      "domain": "compass-status.tsudev.com"
+    }
   ],
-  "r2Domain": [{ "bucket": "la-ban-cdn", "domain": "compass-cdn.tsudev.com", "minTLS": "1.2" }],
-  "workerDomain": ["compass-api.tsudev.com", "compass-api-stg.tsudev.com"],
+  "r2Domain": [
+    {
+      "bucket": "la-ban-cdn",
+      "domain": "compass-cdn.tsudev.com",
+      "minTLS": "1.2"
+    }
+  ],
+  "workerDomain": [
+    "compass-api.tsudev.com",
+    "compass-api-stg.tsudev.com"
+  ],
   "headerRule": [
     {
       "description": "la-ban: header bảo mật compass-cdn",
-      "expression": "(http.host eq \"compass-cdn.tsudev.com\")",
+      "expression": "(http.host eq \"compass-cdn.tsudev.com\" and not starts_with(http.request.uri.path, \"/android/\"))",
       "headers": {
         "strict-transport-security": "max-age=31536000; includeSubDomains",
         "x-content-type-options": "nosniff",
         "x-frame-options": "DENY",
         "content-security-policy": "default-src 'none'; frame-ancestors 'none'; sandbox",
+        "referrer-policy": "no-referrer",
+        "cross-origin-resource-policy": "cross-origin"
+      }
+    },
+    {
+      "description": "la-ban: header tải APK compass-cdn/android (không CSP sandbox - trình duyệt di động chặn tải)",
+      "expression": "(http.host eq \"compass-cdn.tsudev.com\" and starts_with(http.request.uri.path, \"/android/\"))",
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY",
         "referrer-policy": "no-referrer",
         "cross-origin-resource-policy": "cross-origin"
       }

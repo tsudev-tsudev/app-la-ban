@@ -18,6 +18,8 @@ const qr = (await QRCode.toString(urlTrang, { type: 'svg', margin: 1, errorCorre
   '<svg ',
   '<svg aria-hidden="true" focusable="false" ',
 );
+// Trình duyệt nội bộ của Zalo / Facebook... không tải được APK: intent mở Chrome (Android) cùng trang.
+const intentChrome = `intent://${urlTrang.replace(/^https:\/\//, '')}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(urlTrang)};end`;
 const ngay = ban ? new Intl.DateTimeFormat(lang === 'vi' ? 'vi-VN' : 'en-GB', { dateStyle: 'long' }).format(new Date(ban.ngay)) : '';
 const tep = ban
   ? (['arm64', 'universal'] as const).flatMap((loai) => {
@@ -35,6 +37,11 @@ const tep = ban
 
   <section class="khung vung-tai">
     <div class="cot-chinh">
+      <div id="trong-app" class="trong-app" role="alert" hidden>
+        <strong>{d.trongAppTieuDe}</strong>
+        <p>{d.trongAppMoTa}</p>
+        <a class="nut nut-chinh" href={intentChrome}>{d.moChrome}</a>
+      </div>
       {
         ban ? (
           <>
@@ -59,7 +66,7 @@ const tep = ban
                     <h2>{f.tieuDe}</h2>
                     <p class="mo">{f.moTa}</p>
                   </div>
-                  <a class={i === 0 ? 'nut nut-chinh' : 'nut nut-phu'} href={f.url} download={f.ten}>
+                  <a class={i === 0 ? 'nut nut-chinh' : 'nut nut-phu'} href={f.url}>
                     {d.nutTai} · {dinhDangCo(f.co, lang)}
                   </a>
                 </div>
@@ -138,7 +145,24 @@ const tep = ban
   </section>
 </Trang>
 
+<script is:inline src="/js/trinh-duyet.js" defer></script>
+
 <style>
+  .trong-app {
+    display: grid;
+    gap: var(--lb-space-sm);
+    justify-items: start;
+    padding: var(--lb-space-lg);
+    border-radius: var(--lb-radius-lg);
+    border: 2px solid var(--lb-color-danger-strong);
+    background: color-mix(in srgb, var(--lb-color-danger) 10%, var(--lb-color-surface-raised));
+  }
+  .trong-app[hidden] {
+    display: none;
+  }
+  .trong-app strong {
+    font: var(--lb-type-title);
+  }
   .vung-tai {
     display: grid;
     gap: var(--lb-space-lg);

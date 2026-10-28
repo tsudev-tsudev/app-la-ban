@@ -69,6 +69,9 @@ export type NoiDung = {
     chungChi: string;
     quetQr: string;
     chuaCo: string;
+    trongAppTieuDe: string;
+    trongAppMoTa: string;
+    moChrome: string;
     github: string;
     githubGhiChu: string;
     caiTieuDe: string;
@@ -179,11 +182,14 @@ const vi: NoiDung = {
     chungChi: 'Chứng chỉ ký (SHA-256)',
     quetQr: 'Quét mã bằng điện thoại để mở trang này',
     chuaCo: 'Bản thử nghiệm đầu tiên đang được chuẩn bị. Vui lòng quay lại sau ít phút.',
+    trongAppTieuDe: 'Hãy mở trang này bằng Chrome',
+    trongAppMoTa: 'Bạn đang xem trong trình duyệt của Zalo / Facebook / Messenger - trình duyệt này không tải được tệp APK (báo "định dạng không được hỗ trợ"). Bấm nút bên dưới, hoặc bấm ⋮ ở góc trên rồi chọn "Mở bằng trình duyệt".',
+    moChrome: 'Mở bằng Chrome',
     github: 'Trang phát hành GitHub',
     githubGhiChu: 'Kho mã đang để riêng tư - chỉ thành viên dự án mở được trang GitHub.',
     caiTieuDe: 'Cài đặt trong 4 bước',
     buocCai: [
-      { tieuDe: 'Tải tệp APK', noiDung: 'Bấm "Tải xuống" ở bản khuyên dùng. Trình duyệt có thể hỏi xác nhận vì đây là tệp cài đặt - chọn Tải xuống.' },
+      { tieuDe: 'Tải tệp APK', noiDung: 'Mở trang này bằng Chrome (không mở trong Zalo / Facebook), bấm "Tải xuống" ở bản khuyên dùng. Trình duyệt có thể hỏi xác nhận vì đây là tệp cài đặt - chọn Tải xuống.' },
       { tieuDe: 'Cho phép cài từ nguồn này', noiDung: 'Mở tệp vừa tải. Android sẽ yêu cầu cho phép trình duyệt cài ứng dụng không rõ nguồn: Cài đặt -> bật "Cho phép từ nguồn này", rồi quay lại.' },
       { tieuDe: 'Cài đặt', noiDung: 'Bấm Cài đặt. Nếu Google Play Protect hỏi, chọn "Vẫn cài đặt" (ứng dụng chưa có trên Play nên Play Protect chưa nhận diện).' },
       { tieuDe: 'Mở và hiệu chuẩn', noiDung: 'Mở La bàn, làm theo màn giới thiệu. Lần đầu nên hiệu chuẩn hình số 8 để kim chính xác nhất.' },
@@ -355,11 +361,14 @@ const en: NoiDung = {
     chungChi: 'Signing certificate (SHA-256)',
     quetQr: 'Scan with your phone to open this page',
     chuaCo: 'The first beta build is being prepared. Please check back in a few minutes.',
+    trongAppTieuDe: 'Open this page in Chrome',
+    trongAppMoTa: 'You are viewing this inside the Zalo / Facebook / Messenger browser, which cannot download APK files ("unsupported file format"). Tap the button below, or tap ⋮ at the top and choose "Open in browser".',
+    moChrome: 'Open in Chrome',
     github: 'GitHub release page',
     githubGhiChu: 'The repository is private - only project members can open the GitHub page.',
     caiTieuDe: 'Install in 4 steps',
     buocCai: [
-      { tieuDe: 'Download the APK', noiDung: 'Tap "Download" on the recommended build. Your browser may ask for confirmation because it is an installer - choose Download.' },
+      { tieuDe: 'Download the APK', noiDung: 'Open this page in Chrome (not inside Zalo / Facebook), then tap "Download" on the recommended build. Your browser may ask for confirmation because it is an installer - choose Download.' },
       { tieuDe: 'Allow this source', noiDung: 'Open the downloaded file. Android asks to allow your browser to install unknown apps: Settings -> enable "Allow from this source", then go back.' },
       { tieuDe: 'Install', noiDung: 'Tap Install. If Google Play Protect asks, choose "Install anyway" (the app is not on Play yet, so Play Protect does not know it).' },
       { tieuDe: 'Open and calibrate', noiDung: 'Open La bàn and follow the intro. Calibrate with a figure 8 the first time for the best accuracy.' },
