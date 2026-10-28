@@ -1,6 +1,6 @@
 name: network
-description: API client: ký request, pinning, Remote Config ký số.
+description: "API client: ký request, pinning, Remote Config ký số."
 publish_to: none
 resolution: workspace
 environment:
-  sdk: ^3.12.0
+  sdk: ^3.13.0

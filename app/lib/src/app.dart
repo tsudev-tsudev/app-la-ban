@@ -4,7 +4,7 @@ import 'package:la_ban/src/flavor.dart';
 /// Gốc ứng dụng. Theme, router, i18n thật thêm ở phase A1.
 class LaBanApp extends StatelessWidget {
   /// Tạo app cho [flavor].
-  const LaBanApp({required this.flavor, super.key});
+  const new({required this.flavor, super.key});
 
   /// Môi trường đang chạy.
   final Flavor flavor;

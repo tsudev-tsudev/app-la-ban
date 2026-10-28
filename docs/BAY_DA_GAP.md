@@ -25,3 +25,9 @@ Kế thừa từ repo anh em (ban-do-3d / ubnd) - áp dụng vì cùng hạ tầ
   `tools/flutter` có khoá tải, đừng chạy hai lệnh flutter song song lần đầu. (N0)
 - TAI BINARY BI CHAN: tải binary gitleaks / osv-scanner từ GitHub Releases bị chặn quyền -> cổng dùng secretlint + npm audit,
   gitleaks / osv-scanner là tùy chọn nếu người dùng tự cài vào `~/tools/bin`. (N0)
+- DART 3.13: very_good_analysis 11 bật `unnecessary_type_name_in_constructor` -> constructor viết `const new(...)`. Sửa nhanh:
+  `cd <package> && dart fix --apply` (chạy ở gốc workspace KHÔNG áp). `description:` trong pubspec có dấu `:` phải trong ngoặc kép. (N0)
+- PUB WORKSPACE: `flutter pub get` ở gốc; package con không có `pubspec.lock` riêng (xóa nếu `flutter create` sinh ra). (N0)
+- AGP 9 RESVALUE: `resValue(...)` trong productFlavors bị tắt mặc định ("custom resource values... disabled") -> tên app theo
+  flavor dùng `manifestPlaceholders["appName"]` + `android:label="${appName}"`. Build debug đầu tiên ~5 phút (tải Gradle,
+  cài SDK Platform 36 vào `~/tools/android-sdk` dùng chung). (N0)
