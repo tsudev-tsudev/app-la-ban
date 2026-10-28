@@ -3,7 +3,8 @@
 import { ghiNhan, type TrangThaiCuaSo } from '../thuan/gioi-han';
 
 type KhoLuu = Pick<DurableObjectStorage, 'get' | 'put' | 'delete' | 'list' | 'getAlarm' | 'setAlarm'>;
-type DaLuu = TrangThaiCuaSo & { cuaSoMs: number };
+/** baoVuot = batDau của cửa sổ đã báo vượt lần đầu (chỉ báo RATE_ABUSE một lần mỗi cửa sổ). */
+type DaLuu = TrangThaiCuaSo & { cuaSoMs: number; baoVuot?: number };
 
 function json(status: number, du: unknown): Response {
   return new Response(JSON.stringify(du), { status, headers: { 'content-type': 'application/json' } });
@@ -18,7 +19,7 @@ export class GioiHanToc {
     this.bayGio = bayGio;
   }
 
-  /** POST {khoa, gioiHan, cuaSoMs} -> {choPhep, conLai, thuLaiSau}. */
+  /** POST {khoa, gioiHan, cuaSoMs} -> {choPhep, conLai, thuLaiSau, lanDauVuot}. */
   async fetch(req: Request): Promise<Response> {
     if (req.method !== 'POST') return json(405, {});
     const du = (await req.json().catch(() => null)) as { khoa?: unknown; gioiHan?: unknown; cuaSoMs?: unknown } | null;
@@ -36,10 +37,13 @@ export class GioiHanToc {
     }
     const bayGio = this.bayGio();
     const cu = await this.kho.get<DaLuu>(`k:${khoa}`);
-    const kq = ghiNhan(cu && cu.cuaSoMs === cuaSoMs ? cu : null, bayGio, gioiHan as number, cuaSoMs as number);
-    await this.kho.put(`k:${khoa}`, { ...kq.trangThai, cuaSoMs });
+    const cuHopLe = cu && cu.cuaSoMs === cuaSoMs ? cu : null;
+    const kq = ghiNhan(cuHopLe, bayGio, gioiHan as number, cuaSoMs as number);
+    const lanDauVuot = !kq.choPhep && cuHopLe?.baoVuot !== kq.trangThai.batDau;
+    const baoVuot = lanDauVuot ? kq.trangThai.batDau : cuHopLe?.baoVuot;
+    await this.kho.put(`k:${khoa}`, { ...kq.trangThai, cuaSoMs, ...(baoVuot === undefined ? {} : { baoVuot }) });
     if ((await this.kho.getAlarm()) === null) await this.kho.setAlarm(bayGio + 2 * (cuaSoMs as number));
-    return json(200, { choPhep: kq.choPhep, conLai: kq.conLai, thuLaiSau: kq.thuLaiSau });
+    return json(200, { choPhep: kq.choPhep, conLai: kq.conLai, thuLaiSau: kq.thuLaiSau, lanDauVuot });
   }
 
   /** Xoá khoá đã yên quá 2 cửa sổ; còn khoá thì hẹn lần dọn sau. */

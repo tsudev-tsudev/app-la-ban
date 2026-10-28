@@ -59,7 +59,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 10 | S2 | Định danh thiết bị + attestation + phiên | S1, A5 | ⬜ |
 | 11 | S3 | Ký request, pinning, Remote Config ký số | S2 | ⬜ |
 | 12 | S4 | Làm cứng app | S3 | ⬜ |
-| 13 | S5 | Threat Engine + enforcement | S1 | ⬜ |
+| 13 | S5 | Threat Engine + enforcement | S1 | ✅ 28/10 |
 | 14 | S6 | Admin SOC 1 | S5 | ⬜ |
 | 15 | S7 | Admin SOC 2 | S6 | ⬜ |
 | 16 | A6 | Waypoint, chia sẻ, deep link | A5, S3 | ⬜ |
@@ -238,6 +238,23 @@ Developer, Codemagic, duyệt Privacy Policy · trước R4 chốt đơn vị pe
   enforcement TTL leo thang; allow-list (gồm IP review của store); liên kết thiết bị bằng tín hiệu mềm; đồng bộ chặn IP lên
   Cloudflare Lists (có TTL); cron hạ điểm theo thời gian; ghi Analytics Engine.
 - Cổng: test thuần cho chấm điểm/rule; mô phỏng lô sự kiện -> đúng trạng thái; đồng bộ chặn <= 30 s.
+- Kết quả (28/10): migration 0002 (expand: `allow_list`, `threat_config` có phiên bản, `alerts` gộp theo rule + nhóm,
+  `rule_hits`, `device_links`, cột hồi phục / `ip_prefix` / `pending_approval` / `level`; 5 rule khởi điểm R-001..R-005 ở
+  shadow). Thuần: `thuan/nguy-co.ts` (bảng điểm §7.6c cấu hình được, ngưỡng, -5/tuần tới sàn, TTL 24h -> 7d -> 30d -> 365d
+  - "vĩnh viễn" của spec đổi thành 365 ngày để mọi chặn có hạn theo Q12), `thuan/luat.ts` (rule JSON: event + group_by
+  device/ip/cidr24 + đếm events/devices/types, shadow >= 7 ngày, không kích hoạt lặp trong cửa sổ), `thuan/ip.ts`,
+  `thuan/thuc-thi.ts` (allow-list, chặn dải chỉ đề xuất trừ Under Attack, chênh lệch Cloudflare List, liên kết thiết bị
+  tín hiệu mềm). `threat/dong-co.ts` `xuLySuKien`: chèn chống trùng event_id -> điểm -> rule -> enforcement + audit ->
+  trạng thái; bị cấm -> thu hồi phiên + `DEVICE_BANNED` (cho R-002) + liên kết. Middleware `chanTheoThucThi` chặn IP / dải
+  / ASN ở Worker (403 `bi-chan`, allow-list thắng); DO `GioiHanToc` báo `lanDauVuot` -> sự kiện `RATE_ABUSE`. Cron đổi sang
+  `*/5` (hồi phục, hạ trạng thái khi chặn hết hạn, đồng bộ List; dọn hạn lưu ở lượt 19:15 UTC). Cloudflare List
+  `la_ban_chan_ip` (gói Free chỉ cho 1 List -> chỉ prod; staging chặn ở Worker). 33 test mới (thuần + mô phỏng lô trên
+  Miniflare D1).
+- Phát sinh (từ S5) -> S3: route `POST /v1/events` (schema `schemaLoSuKien` ở `thuan/su-kien.ts`, chữ ký lô) gọi
+  `xuLySuKien` + `dongBoLists` qua waitUntil; `SIGNATURE_MISMATCH` / `ATTEST_FAIL` do server sinh cũng qua `xuLySuKien`.
+  -> S2: middleware xác thực từ chối thiết bị `status = banned` + gọi `lienKetThietBi` khi đăng ký. -> S7: UI rule (bật
+  active chỉ khi `coTheBatThucThi`), duyệt đề xuất chặn dải (`pending_approval`), bật Under Attack, sửa `threat_config`
+  (tạo phiên bản mới + audit). -> S8: WAF custom rule `ip.src in $la_ban_chan_ip` cho compass-api.
 
 ### S6 - Admin SOC 1
 - Đọc thêm: SEC-ADM.

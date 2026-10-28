@@ -16,6 +16,9 @@ enabled = true
 
 [vars]
 MOI_TRUONG = "prod"
+# Cloudflare List "la_ban_chan_ip" (tài khoản Free chỉ 1 List -> chỉ prod). Token: `wrangler secret put CF_LISTS_TOKEN`.
+CF_ACCOUNT_ID = "9541f44e84433a32b013ec31bae14848"
+CF_LIST_ID = "18b0a1e4506942969aad36e04ce95f46"
 
 [[d1_databases]]
 binding = "DB"
@@ -45,9 +48,10 @@ name = "RL_IP"
 namespace_id = "1001"
 simple = { limit = 600, period = 60 }
 
-# Dọn dữ liệu theo hạn lưu (Spec §6.4, SEC-DATA DAT-01) - 02:17 giờ VN.
+# Cron 5 phút: Threat Engine (hồi phục điểm, hạ trạng thái khi chặn hết hạn, đồng bộ Cloudflare List); lượt 19:15 UTC
+# thêm dọn hạn lưu (Spec §6.4, DAT-01). Một lịch duy nhất / môi trường vì gói Free giới hạn số cron trigger toàn tài khoản.
 [triggers]
-crons = ["17 19 * * *"]
+crons = ["*/5 * * * *"]
 
 [[durable_objects.bindings]]
 name = "KHO_NONCE"
@@ -106,7 +110,7 @@ namespace_id = "1002"
 simple = { limit = 600, period = 60 }
 
 [env.staging.triggers]
-crons = ["17 19 * * *"]
+crons = ["*/5 * * * *"]
 
 [[env.staging.durable_objects.bindings]]
 name = "KHO_NONCE"

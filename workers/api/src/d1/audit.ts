@@ -1,8 +1,8 @@
 // Ghi audit log chuỗi băm (DAT-02). hash_prev UNIQUE trong D1: hai lệnh ghi đồng thời cùng nối vào một mắt xích ->
-// lệnh sau lỗi UNIQUE -> đọc lại mắt xích cuối và thử lại.
+// lệnh sau lỗi UNIQUE -> đọc lại mắt xích cuối và thử lại (n lệnh đồng thời cần tới n lần thử).
 import { HASH_GOC, taoDongAudit, type DongAudit, type NoiDungAudit } from '../thuan/audit';
 
-export async function ghiAudit(db: D1Database, noiDung: NoiDungAudit, soLanThu = 3): Promise<DongAudit> {
+export async function ghiAudit(db: D1Database, noiDung: NoiDungAudit, soLanThu = 8): Promise<DongAudit> {
   for (let lan = 1; ; lan++) {
     const cuoi = await db.prepare('SELECT hash_self FROM audit_logs ORDER BY rowid DESC LIMIT 1').first<{ hash_self: string }>();
     const dong = await taoDongAudit(noiDung, cuoi?.hash_self ?? HASH_GOC);

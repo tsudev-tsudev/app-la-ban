@@ -3,6 +3,10 @@ import { z } from 'zod';
 import { docChuoiAudit, ghiAudit } from '../../src/d1/audit';
 import { donDep } from '../../src/d1/don-dep';
 import handler, { app, boTuyen } from '../../src/index';
+import { capNhatNguyCo } from '../../src/threat/dinh-ky';
+import { dongBoLists } from '../../src/threat/dong-bo-lists';
+import { xuLySuKien, type NguCanhSuKien, type SuKienVao } from '../../src/threat/dong-co';
+import { xoaDem } from '../../src/threat/nap';
 import { kiemChuoiAudit } from '../../src/thuan/audit';
 import { taoUlid } from '../../src/thuan/dinh-danh';
 
@@ -49,6 +53,27 @@ app.post('/thu/nonce', async (c) => {
   if (!ns) throw new Error('thiếu KHO_NONCE');
   const res = await ns.get(ns.idFromName('thiet-bi:thu')).fetch('https://do/nonce', { method: 'POST', body: await c.req.text() });
   return c.newResponse(res.body, res.status as 200);
+});
+
+app.post('/thu/su-kien', async (c) => {
+  const b = (await c.req.json()) as { n: NguCanhSuKien; ds: SuKienVao[]; bayGio: number };
+  return c.json(await xuLySuKien(c.env, b.n, b.ds, b.bayGio));
+});
+app.post('/thu/dinh-ky', async (c) => c.json(await capNhatNguyCo(c.env, Number(c.req.query('bayGio') ?? Date.now()))));
+app.post('/thu/xoa-dem', (c) => {
+  xoaDem();
+  return c.json({});
+});
+// Cloudflare API giả: ghi lại lệnh gọi, trả item theo trạng thái trong bộ nhớ.
+app.post('/thu/dong-bo', async (c) => {
+  const b = (await c.req.json()) as { bayGio: number; hienCo: { id: string; ip: string; comment?: string }[] };
+  const goi: { method: string; body: unknown }[] = [];
+  const gia = (async (_u: string, init?: RequestInit) => {
+    goi.push({ method: init?.method ?? 'GET', body: init?.body ? JSON.parse(String(init.body)) : null });
+    return Response.json({ success: true, result: init?.method === 'GET' ? b.hienCo : { operation_id: 'x' } });
+  }) as typeof fetch;
+  const env = { ...c.env, MOI_TRUONG: 'prod', CF_LISTS_TOKEN: 't', CF_ACCOUNT_ID: 'a', CF_LIST_ID: 'l' };
+  return c.json({ kq: await dongBoLists(env, b.bayGio, gia), goi });
 });
 
 export default handler;

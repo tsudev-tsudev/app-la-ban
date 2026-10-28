@@ -1,5 +1,8 @@
 import type { MiddlewareHandler } from 'hono';
+import { xuLySuKien } from '../threat/dong-co';
+import { dongBoLists } from '../threat/dong-bo-lists';
 import { rutGonIp } from '../thuan/che-pii';
+import { taoUlid } from '../thuan/dinh-danh';
 import { khoaGioiHan, type LuatGioiHan } from '../thuan/gioi-han';
 import { LoiApi } from '../thuan/loi';
 import type { MoiTruongHono, Ngu } from '../moi-truong';
@@ -53,7 +56,7 @@ export function gioiHanRoute(dsLuat: LuatGioiHan[]): MiddlewareHandler<MoiTruong
               method: 'POST',
               body: JSON.stringify({ khoa, gioiHan: l.gioiHan, cuaSoMs: l.cuaSoMs }),
             });
-            return res.ok ? ((await res.json()) as { choPhep: boolean; thuLaiSau: number }) : null;
+            return res.ok ? ((await res.json()) as { choPhep: boolean; thuLaiSau: number; lanDauVuot?: boolean }) : null;
           } catch (e) {
             ghiLog('error', 'gioi-han-do-loi', { chieu: l.chieu, loi: String(e) });
             return null;
@@ -62,10 +65,31 @@ export function gioiHanRoute(dsLuat: LuatGioiHan[]): MiddlewareHandler<MoiTruong
       );
       const bi = kq.filter((k) => k && !k.choPhep);
       if (bi.length) {
+        if (bi.some((k) => k?.lanDauVuot)) baoLamDung(c);
         const cho = Math.max(...bi.map((k) => k?.thuLaiSau ?? 1));
         throw new LoiApi(429, 'qua-nhieu-yeu-cau', { ip: rutGonIp(c.get('ip')) }, { 'retry-after': String(cho) });
       }
     }
     await next();
   };
+}
+
+/** Lần đầu vượt giới hạn trong cửa sổ -> sự kiện RATE_ABUSE cho Threat Engine (rule R-001), chạy nền sau phản hồi. */
+function baoLamDung(c: Ngu): void {
+  if (!c.env.DB) return;
+  const p = c.get('phamViIdem');
+  const thietBi = p?.startsWith('thiet-bi:') ? p.slice(9) : null;
+  const viec = xuLySuKien(c.env, { thietBi, ip: c.get('ip') || null, country: c.req.header('cf-ipcountry') ?? null }, [
+    { id: taoUlid(), type: 'RATE_ABUSE', severity: 'medium', signals: { route: c.get('tuyen') ?? '' } },
+  ]).then(
+    async (kq) => {
+      if (kq.canDongBo) await dongBoLists(c.env);
+    },
+    (e: unknown) => ghiLog('error', 'rate-abuse-loi', { loi: String(e) }),
+  );
+  try {
+    c.executionCtx.waitUntil(viec);
+  } catch {
+    // Ngoài workerd (test đơn vị) không có executionCtx: để promise tự chạy.
+  }
 }
