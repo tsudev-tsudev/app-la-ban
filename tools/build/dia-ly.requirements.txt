@@ -1,0 +1,4 @@
+# Chỉ dùng lúc sinh asset địa giới (tools/build/dia-gioi.py, tools/build/geoid.py) và sinh dữ liệu mẫu test, không vào app.
+osmium==4.3.2
+shapely==2.2.0
+pyproj==3.8.0
