@@ -66,7 +66,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 15 | S7 | Admin SOC 2 | S6 | ⬜ |
 | 16 | A6 | Waypoint, chia sẻ, deep link | A5, S3 | ⬜ |
 | 17 | A7 | Bản đồ offline + Camera AR | A6 | ⬜ |
-| 18 | R1 | Landing hoàn chỉnh (kéo lên làm cùng R0 theo yêu cầu người dùng) | N2 | ⬜ |
+| 18 | R1 | Landing hoàn chỉnh (kéo lên làm cùng R0 theo yêu cầu người dùng) | N2 | ✅ 28/10 |
 | 19 | S8 | Bảo vệ edge web (CSP, header, WAF as code) | R1 | ⬜ |
 | 20 | S9 | Lớp bảo vệ nội dung web + build sạch | S8 | ⬜ |
 | 21 | A8 | Cài đặt, quyền riêng tư, trợ năng, hiệu năng | A7, S4 | ⬜ |
@@ -75,7 +75,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 24 | R3 | QA tổng + kiểm thử bảo mật | R2, S9, S10 | ⬜ |
 | 25 | R4 | Phát hành v1.0.0 + OTA | R3 | ⬜ |
 | 26 | M1 | Quảng cáo + IAP (v1.1.0) sau Release Gate | R4 | ⬜ |
-| 27 | R0 | Bản APK thử: khoá ký, script phát hành GitHub Release + R2, trang tải | A5 | ⬜ |
+| 27 | R0 | Bản APK thử: khoá ký, script phát hành GitHub Release + R2, trang tải | A5 | ✅ 28/10 |
 | 28 | I1 | iOS (đầu 2027): build, App Attest, Privacy Manifest, TestFlight, App Store | R4, máy Mac | ⬜ |
 
 Có thể giao agent thứ hai song song: S1 với A2-A3 · A5 với A4 · S5 với S4 · A6 với S6-S7 · R1 với A7 · A8 với S8-S9.
@@ -361,6 +361,13 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   universal) -> `apksigner verify` -> SHA-256 -> R2 `la-ban-cdn/android/` (tên có phiên bản + `latest.json`) -> GitHub
   Release pre-release (APK + `SHA256SUMS`) -> ghi `web/landing/src/data/apk.json` cho trang tải; symbol giữ ngoài repo.
 - Cổng: `apksigner verify` đạt; tải từ `compass-cdn` đúng SHA-256; cài được trên máy Android thật (người dùng thử).
+- Kết quả (28/10, main fac899e, PR #8): khoá upload RSA 4096 (chứng chỉ SHA-256 `CF:09:E7:24:...:F6:BD`, hạn 2056);
+  nén thư viện native (`useLegacyPackaging`) -> arm64 10,3 MB / universal 28,7 MB. Phát hành `v0.1.0-beta.1`: GitHub
+  pre-release (2 APK + `SHA256SUMS`), R2 `compass-cdn.tsudev.com/android/` (đúng `content-type` + `attachment`, SHA-256
+  khớp), `latest.json`; landing `/tai-ve` đã deploy hiện phiên bản + SHA-256 + QR. Chưa cài thử trên máy thật (chờ người
+  dùng). Phát hành bản sau: tăng `version` ở `app/pubspec.yaml` + `phienBanApp` -> PR -> `./tools/build/phat-hanh-apk.sh`
+  trên main sạch -> `./tools/build/deploy-web.sh landing`.
+- Phát sinh -> S3: `/v1/status` đọc `latest.json` để app báo có bản mới (bản tải ngoài Play chưa có cơ chế tự cập nhật).
 
 ### I1 - iOS (đầu năm 2027, QUYET_DINH Q33)
 - Làm: build iOS trên Mac / Codemagic (Q6); scheme flavor dev/staging/prod; plugin `storage` Keychain + `sensors` CoreMotion
