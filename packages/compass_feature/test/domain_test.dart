@@ -139,6 +139,66 @@ void main() {
     });
   });
 
+  group('BoNoiSuyGoc', () {
+    test('đích đầu hiện ngay, đã xong', () {
+      final b = BoNoiSuyGoc()..dat(42, 1000);
+      expect(b.giaTri(1000), 42);
+      expect(b.xong(1000), isTrue);
+    });
+
+    test('đi thẳng tới đích trong một khoảng mặc định 16 ms', () {
+      final b = BoNoiSuyGoc(heSoKeo: 1)
+        ..dat(10, 0)
+        ..dat(20, 200000); // sau khoảng ngắt: khoảng về mặc định
+      expect(b.khoangUs, 16000);
+      expect(b.giaTri(200000), closeTo(10, 1e-9));
+      expect(b.giaTri(208000), closeTo(15, 1e-9));
+      expect(b.xong(208000), isFalse);
+      expect(b.giaTri(216000), closeTo(20, 1e-9));
+      expect(b.xong(216000), isTrue);
+      expect(b.giaTri(300000), closeTo(20, 1e-9));
+    });
+
+    test('qua 0° theo đường ngắn nhất (350° -> 10°)', () {
+      final b = BoNoiSuyGoc(heSoKeo: 1)
+        ..dat(350, 0)
+        ..dat(10, 200000);
+      expect(b.giaTri(208000), closeTo(0, 1e-9));
+      expect(b.giaTri(204000), closeTo(355, 1e-9));
+    });
+
+    test('đích mới giữa chừng: đi tiếp từ góc đang hiện, không giật', () {
+      final b = BoNoiSuyGoc(heSoKeo: 1)
+        ..dat(0, 0)
+        ..dat(40, 200000);
+      final dangHien = b.giaTri(208000); // 20°
+      b.dat(60, 208000);
+      expect(b.giaTri(208000), closeTo(dangHien, 1e-9));
+    });
+
+    test('hệ số kéo mặc định: tới đích sau 1,25 khoảng', () {
+      final b = BoNoiSuyGoc()
+        ..dat(0, 0)
+        ..dat(10, 200000);
+      expect(b.xong(216000), isFalse);
+      expect(b.giaTri(216000), closeTo(8, 1e-9));
+      expect(b.xong(220000), isTrue);
+    });
+
+    test('khoảng bám nhịp lô thật, kẹp trong [8, 50] ms', () {
+      final b = BoNoiSuyGoc()..dat(0, 0);
+      for (var i = 1; i <= 40; i++) {
+        b.dat(i.toDouble(), i * 22000);
+      }
+      expect(b.khoangUs, closeTo(22000, 100));
+      final nhanh = BoNoiSuyGoc()..dat(0, 0);
+      for (var i = 1; i <= 40; i++) {
+        nhanh.dat(0, i * 2000);
+      }
+      expect(nhanh.khoangUs, 8000);
+    });
+  });
+
   group('TienDoHieuChuan', () {
     test('quét đủ 8 cung + 4 tư thế -> xong', () {
       final t = TienDoHieuChuan();

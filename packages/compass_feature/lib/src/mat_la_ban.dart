@@ -1,8 +1,10 @@
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
+import 'package:compass_feature/src/domain/noi_suy_goc.dart';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 /// Màu của mặt la bàn (lấy từ token theo sáng / tối).
 @immutable
@@ -70,6 +72,9 @@ final class MauMatLaBan {
 /// không có raster cache nên [RepaintBoundary] không đủ: đo trên Galaxy M32
 /// (Impeller GLES) vẽ lại 180 vạch + chữ mỗi khung tốn ~12,8 ms raster, quá
 /// ngân sách 11,1 ms của màn 90 Hz.
+///
+/// Góc xoay nội suy theo từng vsync ([BoNoiSuyGoc]) và chỉ dựng lại phép
+/// xoay, không dựng lại cả màn hình mỗi khung.
 class MatLaBan extends StatefulWidget {
   const new({
     required this.phuongVi,
@@ -90,7 +95,11 @@ class MatLaBan extends StatefulWidget {
   State<MatLaBan> createState() => _MatLaBanState();
 }
 
-class _MatLaBanState extends State<MatLaBan> {
+class _MatLaBanState extends State<MatLaBan>
+    with SingleTickerProviderStateMixin {
+  final _noiSuy = BoNoiSuyGoc();
+  late final ValueNotifier<double> _goc;
+  late final Ticker _nhip = createTicker(_moiKhung);
   ui.Image? _anh;
   MatSoPainter? _veAnh;
   double _canhAnh = 0;
@@ -126,8 +135,34 @@ class _MatLaBanState extends State<MatLaBan> {
     return anh;
   }
 
+  static int get _bayGioUs =>
+      SchedulerBinding.instance.currentFrameTimeStamp.inMicroseconds;
+
+  @override
+  void initState() {
+    super.initState();
+    _noiSuy.dat(widget.phuongVi, 0);
+    _goc = ValueNotifier(_noiSuy.giaTri(0));
+  }
+
+  @override
+  void didUpdateWidget(MatLaBan old) {
+    super.didUpdateWidget(old);
+    if (widget.phuongVi == old.phuongVi) return;
+    _noiSuy.dat(widget.phuongVi, _bayGioUs);
+    if (!_nhip.isActive) _nhip.start();
+  }
+
+  void _moiKhung(Duration _) {
+    final t = _bayGioUs;
+    _goc.value = _noiSuy.giaTri(t);
+    if (_noiSuy.xong(t)) _nhip.stop();
+  }
+
   @override
   void dispose() {
+    _nhip.dispose();
+    _goc.dispose();
     _anh?.dispose();
     super.dispose();
   }
@@ -143,8 +178,10 @@ class _MatLaBanState extends State<MatLaBan> {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          Transform.rotate(
-            angle: -widget.phuongVi * math.pi / 180,
+          ValueListenableBuilder(
+            valueListenable: _goc,
+            builder: (context, goc, child) =>
+                Transform.rotate(angle: -goc * math.pi / 180, child: child),
             child: RawImage(
               image: anh,
               width: widget.canh,
