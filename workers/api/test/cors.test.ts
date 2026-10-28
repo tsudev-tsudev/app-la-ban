@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import app from '../src/index';
+import { app } from '../src/index';
 import { nguonChoPhep } from '../src/thuan/cors';
 
 describe('nguonChoPhep', () => {

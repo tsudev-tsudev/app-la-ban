@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import app, { KhoNonce, GioiHanToc, PhongSoc } from '../src/index';
+import { app, PhongSoc } from '../src/index';
 import { sucKhoe } from '../src/thuan/suc-khoe';
 
 const env = { MOI_TRUONG: 'test' };
@@ -36,11 +36,9 @@ describe('/v1/health', () => {
   });
 });
 
-describe('Durable Object khung', () => {
-  it('trả 501 tới khi có hành vi thật', async () => {
-    for (const Lop of [KhoNonce, GioiHanToc, PhongSoc]) {
-      const res = await new Lop().fetch();
-      expect(res.status).toBe(501);
-    }
+describe('Durable Object PhongSoc', () => {
+  it('trả 501 tới S6', async () => {
+    const res = await new PhongSoc().fetch();
+    expect(res.status).toBe(501);
   });
 });

@@ -196,6 +196,10 @@ Developer, Codemagic, duyệt Privacy Policy · trước R4 chốt đơn vị pe
   ở server; xác minh App Attest (attestation + assertion) ở server; JWT ES256 15 phút gắn khóa thiết bị; refresh xoay vòng +
   phát hiện dùng lại; trạng thái `UNVERIFIED` khi dịch vụ lỗi.
 - Cổng: test với token mẫu; luồng end-to-end trên máy thật (staging).
+- Phát sinh (từ S1): route mới đăng ký qua `boTuyen.dangKy` (workers/api/src/tuyen.ts - schema zod strict, giới hạn, Idempotency
+  tự gắn) rồi `CAP_NHAT_OPENAPI=1 npx vitest run test/openapi.test.ts`; middleware xác thực đặt `phamViIdem` =
+  `thiet-bi:<id>` / `phien:<id>` để Idempotency + giới hạn chiều `thiet-bi` / `phien` có hiệu lực; nonce dùng DO `KHO_NONCE`
+  (`idFromName('thiet-bi:<id>')`, POST {nonce, ttlMs}); ghi `device_ips` khi đăng ký / làm mới phiên.
 
 ### S3 - Bảo vệ kênh truyền
 - Đọc thêm: SEC-NET.
