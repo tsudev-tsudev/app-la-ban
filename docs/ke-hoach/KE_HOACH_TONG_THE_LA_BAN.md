@@ -55,7 +55,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 6 | A3 | Mặt la bàn, bắc thực WMM, hiệu chuẩn | A2 | ⬜ |
 | 7 | S1 | API lõi + schema D1 | N2 | ✅ 28/10 |
 | 8 | A4 | Vị trí + telemetry | A3 | ⬜ |
-| 9 | A5 | Lưu trữ mã hóa, migration, safe mode | A1 | ⬜ |
+| 9 | A5 | Lưu trữ mã hóa, migration, safe mode | A1 | ✅ 28/10 |
 | 10 | S2 | Định danh thiết bị + attestation + phiên | S1, A5 | ⬜ |
 | 11 | S3 | Ký request, pinning, Remote Config ký số | S2 | ⬜ |
 | 12 | S4 | Làm cứng app | S3 | ⬜ |
@@ -194,6 +194,16 @@ Developer, Codemagic, duyệt Privacy Policy · trước R4 chốt đơn vị pe
 - Cổng: test migration + khôi phục xanh.
 - Phát sinh (từ A1): `CaiDat` (ngôn ngữ, sáng/tối, `daXemGioiThieu`) trong `settings_feature` mới giữ trong bộ nhớ -> lưu
   bền qua storage (đọc trước khung đầu để không nháy theme / không hiện lại màn giới thiệu).
+- Kết quả (28/10, QUYET_DINH Q32): `packages/storage` thành plugin nội bộ - SQLCipher 4.19 qua hook `sqlite3` 3.8
+  (`source: sqlcipher`), Drift 2.35 `CsdlLaBan` schema v1 (`diem`, `lich_su_migration`, ảnh chụp `drift_schemas/`); khoá
+  32 byte bọc Android Keystore AES-GCM (StrongBox nếu có, `noBackupFilesDir`) / iOS Keychain ThisDeviceOnly + Application
+  Support loại khỏi backup; Android `dataExtractionRules` loại cloud-backup + device-transfer. `moCsdl`: kiểm khoá (mất khoá
+  -> `.hong` + CSDL mới) -> `user_version` -> snapshot tệp mã hoá -> migrate 1 transaction + `quick_check` -> lỗi thì khôi
+  phục snapshot; CSDL của bản mới hơn không mở. Canh gác crash 3 lần -> chế độ an toàn ghim theo phiên bản (lên bản mới tự
+  gỡ), ổn định = 5 s sau khung đầu hoặc về nền; cờ tính năng cục bộ `tinhCo` (an toàn > kill-switch > cục bộ > mặc định);
+  băng an toàn vi/en + tab Bản đồ tạm tắt. `CaiDat` lưu bền tệp JSON nguyên tử đọc trước khung đầu. Test: storage 43
+  (migration 10.000 điểm so checksum, khôi phục, sai khoá, ma trận schema drift), độ phủ lib 93%; app thêm 9 (ma trận 216
+  ô không tràn + golden `an_toan`). APK dev debug build OK (`libsqlcipher.so` 3 ABI). Chưa thử trên máy thật / iOS.
 
 ### S2 - Định danh + attestation + phiên
 - Đọc thêm: SEC-ID.
@@ -217,6 +227,9 @@ Developer, Codemagic, duyệt Privacy Policy · trước R4 chốt đơn vị pe
 - Làm: freeRASP + kiểm tra native bổ sung (bộ tín hiệu theo Spec §7.3b, chỉ báo về server); build `--obfuscate
   --split-debug-info` + R8 full + upload symbol; chuỗi cấu hình mã hóa lúc build; FLAG_SECURE / che app switcher ở màn nhạy cảm;
   phản ứng theo Risk Level (Spec §7.3 bảng) + màn khóa có mã REF; không chạy kiểm tra ở bản debug nội bộ.
+- Phát sinh (từ A5, SEC-APP-STORAGE): logger chung (`core`) che token / tọa độ chính xác ở release; báo `LyDoAnToan` +
+  `KetQuaMoCsdl.loi` / `lamMoiDoMatKhoa` về server (đã ẩn PII) khi có kênh ký request; nối kill-switch Remote Config vào
+  `tinhCo(tatTuXa:)` (`coTinhNangProvider` ở `app/lib/src/luu_tru.dart`).
 - Cổng: bản release trên máy thật sạch không báo nhầm; bản debug/giả lập sinh đúng sự kiện.
 
 ### S5 - Threat Engine
@@ -243,6 +256,11 @@ Developer, Codemagic, duyệt Privacy Policy · trước R4 chốt đơn vị pe
 - Làm: CRUD waypoint (ghi chú, ảnh), điều hướng (Vincenty), GPX/KML import/export, link `compass.tsudev.com/w/<token>` hết hạn,
   QR; App Links + Universal Links (assetlinks.json, AASA trên landing).
 - Cổng: round-trip GPX không mất dữ liệu; deep link mở đúng app trên máy thật.
+- Phát sinh (từ A5): bảng `diem` (schema v1) đã có trong `CsdlLaBan` (`packages/storage`); mở rộng cột / bảng = migration v2
+  CHỈ THÊM: tăng `schemaVersion` (số literal), thêm bước vào `buocMigration`, `dart run drift_dev make-migrations` + `schema
+  generate ... test/drift/csdl/generated/`, chạy `build_runner build`; test ma trận `test/drift` tự phủ v1 -> v2. Cần
+  `csdlProvider` (app đã có `khoLuuTruProvider`, `KhoLuuTru.csdl` null ở chế độ an toàn) + màn xuất điểm ở chế độ an toàn
+  (Spec §10.4 "cho phép xuất dữ liệu waypoint") - đọc thô cột v1 bằng `sqlite3` khi Drift không mở được.
 
 ### A7 - Bản đồ + AR
 - Làm: MapLibre + PMTiles VN trên R2 (xác minh hỗ trợ PMTiles trong bản plugin; không được thì MBTiles); tải gói offline có
@@ -271,6 +289,8 @@ Developer, Codemagic, duyệt Privacy Policy · trước R4 chốt đơn vị pe
 - Làm: màn Quyền riêng tư (xem/xuất/xóa, rút đồng ý); onboarding + thông báo xử lý dữ liệu (NĐ 13/2023); VoiceOver/TalkBack;
   Reduce motion; tối ưu cold start (lazy SDK), dung lượng, pin.
 - Cổng: ngân sách mục 2 đạt trên máy tham chiếu; audit trợ năng.
+- Phát sinh (từ A5): màn Giấy phép thêm SQLCipher (BSD, Zetetic) + OpenSSL (Apache 2, bản Android) + drift / sqlite3 (MIT)
+  vào `LicenseRegistry`; đo cold start gồm `KhoLuuTru.mo` (mở CSDL ở isolate nền, khoá Keystore) trên máy thật.
 
 ### S10 - Vận hành an ninh
 - Đọc thêm: SEC-MON.

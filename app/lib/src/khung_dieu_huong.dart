@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:i18n/i18n.dart';
+import 'package:la_ban/src/bang_an_toan.dart';
 import 'package:la_ban/src/tab_app.dart';
 
 // Nhãn điều hướng nằm trong ô cố định: chặn phóng chữ ở mức này để không tràn
@@ -26,7 +27,7 @@ class KhungDieuHuong extends ConsumerWidget {
     final kichCo = LbKichCo.tuRong(MediaQuery.sizeOf(context).width);
     if (kichCo == LbKichCo.compact) {
       return Scaffold(
-        body: shell,
+        body: KhungAnToan(child: shell),
         bottomNavigationBar: MediaQuery.withClampedTextScaling(
           maxScaleFactor: _phongChuToiDa,
           child: NavigationBar(
@@ -82,7 +83,7 @@ class KhungDieuHuong extends ConsumerWidget {
               ),
             ),
             const VerticalDivider(width: 1),
-            Expanded(child: shell),
+            Expanded(child: KhungAnToan(child: shell)),
           ],
         ),
       ),

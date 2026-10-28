@@ -229,6 +229,48 @@ abstract class LbL10n {
   /// In vi, this message translates to:
   /// **'Bắt đầu'**
   String get onboardingStart;
+
+  /// Tiêu đề băng báo chế độ an toàn
+  ///
+  /// In vi, this message translates to:
+  /// **'Chế độ an toàn'**
+  String get safeModeTitle;
+
+  /// Lý do: crash liên tiếp
+  ///
+  /// In vi, this message translates to:
+  /// **'Ứng dụng gặp lỗi nhiều lần nên đã tạm tắt các tính năng mới. La bàn vẫn hoạt động bình thường.'**
+  String get safeModeCrash;
+
+  /// Lý do: lỗi CSDL / migration
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa mở được dữ liệu đã lưu. Dữ liệu cũ vẫn được giữ nguyên, la bàn vẫn hoạt động.'**
+  String get safeModeStorage;
+
+  /// Lý do: CSDL của bản app mới hơn
+  ///
+  /// In vi, this message translates to:
+  /// **'Dữ liệu được tạo bởi phiên bản mới hơn. Hãy cập nhật ứng dụng để dùng lại.'**
+  String get safeModeNewer;
+
+  /// Nút thoát chế độ an toàn
+  ///
+  /// In vi, this message translates to:
+  /// **'Thử chế độ thường'**
+  String get safeModeRetry;
+
+  /// Thông báo sau khi bấm thoát chế độ an toàn
+  ///
+  /// In vi, this message translates to:
+  /// **'Mở lại ứng dụng để áp dụng.'**
+  String get safeModeRetryDone;
+
+  /// Màn hình thay thế khi cờ tính năng tắt
+  ///
+  /// In vi, this message translates to:
+  /// **'Tính năng này đang tạm tắt.'**
+  String get featurePaused;
 }
 
 class _LbL10nDelegate extends LocalizationsDelegate<LbL10n> {

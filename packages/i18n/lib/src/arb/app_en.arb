@@ -21,5 +21,12 @@
   "settingsVersion": "Version {version}",
   "onboardingTitle": "Welcome to Compass",
   "onboardingBody": "An accurate compass that works offline and keeps your data on your device.",
-  "onboardingStart": "Get started"
+  "onboardingStart": "Get started",
+  "safeModeTitle": "Safe mode",
+  "safeModeCrash": "The app hit repeated errors, so newer features are paused. The compass still works normally.",
+  "safeModeStorage": "Your saved data could not be opened. It is kept unchanged and the compass still works.",
+  "safeModeNewer": "Your data was created by a newer version. Update the app to use it again.",
+  "safeModeRetry": "Try normal mode",
+  "safeModeRetryDone": "Restart the app to apply.",
+  "featurePaused": "This feature is temporarily paused."
 }

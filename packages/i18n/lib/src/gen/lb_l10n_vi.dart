@@ -79,4 +79,28 @@ class LbL10nVi extends LbL10n {
 
   @override
   String get onboardingStart => 'Bắt đầu';
+
+  @override
+  String get safeModeTitle => 'Chế độ an toàn';
+
+  @override
+  String get safeModeCrash =>
+      'Ứng dụng gặp lỗi nhiều lần nên đã tạm tắt các tính năng mới. La bàn vẫn hoạt động bình thường.';
+
+  @override
+  String get safeModeStorage =>
+      'Chưa mở được dữ liệu đã lưu. Dữ liệu cũ vẫn được giữ nguyên, la bàn vẫn hoạt động.';
+
+  @override
+  String get safeModeNewer =>
+      'Dữ liệu được tạo bởi phiên bản mới hơn. Hãy cập nhật ứng dụng để dùng lại.';
+
+  @override
+  String get safeModeRetry => 'Thử chế độ thường';
+
+  @override
+  String get safeModeRetryDone => 'Mở lại ứng dụng để áp dụng.';
+
+  @override
+  String get featurePaused => 'Tính năng này đang tạm tắt.';
 }

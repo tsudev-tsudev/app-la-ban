@@ -3,9 +3,12 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:i18n/i18n.dart';
+import 'package:la_ban/src/bang_an_toan.dart';
+import 'package:la_ban/src/luu_tru.dart';
 import 'package:la_ban/src/phien_ban.dart';
 import 'package:map_feature/map_feature.dart';
 import 'package:settings_feature/settings_feature.dart';
+import 'package:storage/storage.dart';
 import 'package:waypoint_feature/waypoint_feature.dart';
 
 /// Một tab của khung điều hướng chính.
@@ -17,8 +20,10 @@ typedef TabApp = ({
 });
 
 /// 4 tab: La bàn · Bản đồ · Điểm · Cài đặt. Test override để thay màn hình.
-final dsTabProvider = Provider<List<TabApp>>(
-  (ref) => [
+/// Tab vẫn hiện khi cờ tắt (giữ bố cục quen) nhưng thay màn bằng [ManTamTat].
+final dsTabProvider = Provider<List<TabApp>>((ref) {
+  final co = ref.watch(coTinhNangProvider);
+  return [
     (
       duongDan: '/la-ban',
       icon: LbIcons.laBanHoaGio,
@@ -29,7 +34,7 @@ final dsTabProvider = Provider<List<TabApp>>(
       duongDan: '/ban-do',
       icon: LbIcons.banDo,
       nhan: (l) => l.tabMap,
-      man: const ManBanDo(),
+      man: co[CoTinhNang.banDo]! ? const ManBanDo() : const ManTamTat(),
     ),
     (
       duongDan: '/diem',
@@ -43,5 +48,5 @@ final dsTabProvider = Provider<List<TabApp>>(
       nhan: (l) => l.tabSettings,
       man: const ManCaiDat(phienBan: phienBanApp),
     ),
-  ],
-);
+  ];
+});

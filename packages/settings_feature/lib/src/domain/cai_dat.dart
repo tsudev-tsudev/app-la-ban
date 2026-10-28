@@ -17,7 +17,8 @@ enum LuaChonNgonNgu {
 /// Chế độ sáng / tối người dùng chọn.
 enum CheDoGiaoDien { heThong, sang, toi }
 
-/// Cài đặt giao diện của app (bất biến). Lưu bền ở A5 (storage mã hoá).
+/// Cài đặt giao diện của app (bất biến). Lưu bền qua `KhoCaiDat` (tệp JSON
+/// đọc trước khung đầu - không nháy theme, không hiện lại màn giới thiệu).
 @immutable
 final class CaiDat {
   const new({
@@ -25,6 +26,26 @@ final class CaiDat {
     this.cheDo = CheDoGiaoDien.heThong,
     this.daXemGioiThieu = false,
   });
+
+  /// Đọc từ JSON đã lưu; khoá thiếu / giá trị lạ (bản cũ, tệp hỏng) -> mặc
+  /// định của riêng trường đó.
+  factory tuJson(Map<String, Object?> j) => CaiDat(
+    ngonNgu:
+        LuaChonNgonNgu.values
+            .where((v) => v.name == j['ngonNgu'])
+            .firstOrNull ??
+        LuaChonNgonNgu.heThong,
+    cheDo:
+        CheDoGiaoDien.values.where((v) => v.name == j['cheDo']).firstOrNull ??
+        CheDoGiaoDien.heThong,
+    daXemGioiThieu: j['daXemGioiThieu'] == true,
+  );
+
+  Map<String, Object?> toJson() => {
+    'ngonNgu': ngonNgu.name,
+    'cheDo': cheDo.name,
+    'daXemGioiThieu': daXemGioiThieu,
+  };
 
   final LuaChonNgonNgu ngonNgu;
   final CheDoGiaoDien cheDo;
