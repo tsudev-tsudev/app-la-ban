@@ -4,3 +4,17 @@ publish_to: none
 resolution: workspace
 environment:
   sdk: ^3.13.0
+  flutter: ">=3.38.0"
+dependencies:
+  flutter:
+    sdk: flutter
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+# Mã nền tảng của plugin nội bộ nằm trong gói (QUYET_DINH Q32). Chỉ Android (Q33) - iOS CoreMotion + CLHeading ở I1.
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.tsudev.laban.sensors
+        pluginClass: CamBienPlugin

@@ -68,3 +68,10 @@ Kế thừa từ repo anh em (ban-do-3d / ubnd) - áp dụng vì cùng hạ tầ
 - TRANG TRONG AM: `LbTrangTrong` trong vùng thấp hơn 48 px (băng an toàn + chữ x2 trên máy nhỏ) ném "negative minimum
   height" -> đã kẹp `max(0, ...)`; widget tự tính chiều cao từ `LayoutBuilder` phải kẹp >= 0. (A5)
 
+- RIVERPOD 3 RETRY: provider lỗi được Riverpod 3 TỰ thử lại (backoff) -> `StreamProvider` báo lỗi "không có cảm biến" cứ
+  quay về loading. Lỗi không thể tự hết thì khai `retry: (_, _) => null`. (A2)
+- KENH NEN TANG TRONG TEST: widget test gọi MethodChannel thật (plugin không có trên máy test) thì kết quả về bằng event loop
+  THẬT, không theo đồng hồ giả -> vòng xoay chờ không dừng, `pumpAndSettle` timed out. Test app override provider dùng nền
+  tảng (`huongThu` trong `app/test/ho_tro.dart`, `dungApp(ghiDeThem: ...)`). (A2)
+- CAM BIEN HUONG MAN HINH: phương vị phải lấy theo mép trên MÀN HÌNH (`Display.getRotation`), không phải đỉnh máy - xoay
+  ngang lệch 90°. Máy dựng đứng thì hình chiếu suy biến -> dùng hướng camera sau (-Z). Xem `tuTheTuQuat`. (A2)

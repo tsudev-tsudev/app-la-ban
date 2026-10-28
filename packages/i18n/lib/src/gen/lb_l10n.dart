@@ -134,12 +134,6 @@ abstract class LbL10n {
   /// **'Cài đặt'**
   String get tabSettings;
 
-  /// Nội dung tạm của tab La bàn
-  ///
-  /// In vi, this message translates to:
-  /// **'Mặt la bàn sẽ hiện ở đây sau khi cảm biến sẵn sàng.'**
-  String get compassPlaceholder;
-
   /// Nội dung tạm của tab Bản đồ
   ///
   /// In vi, this message translates to:
@@ -271,6 +265,180 @@ abstract class LbL10n {
   /// In vi, this message translates to:
   /// **'Tính năng này đang tạm tắt.'**
   String get featurePaused;
+
+  /// Trạng thái chờ luồng cảm biến đầu tiên
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang khởi động cảm biến...'**
+  String get compassStarting;
+
+  /// Máy không có cảm biến từ trường
+  ///
+  /// In vi, this message translates to:
+  /// **'Thiết bị này không có cảm biến la bàn (từ kế).'**
+  String get compassNoSensor;
+
+  /// Lỗi luồng cảm biến khác
+  ///
+  /// In vi, this message translates to:
+  /// **'Không đọc được cảm biến. Hãy mở lại ứng dụng.'**
+  String get compassError;
+
+  /// Số độ của hướng (đã làm tròn)
+  ///
+  /// In vi, this message translates to:
+  /// **'{value}°'**
+  String compassDegrees(int value);
+
+  /// Chú thích: hướng đang tính theo bắc từ
+  ///
+  /// In vi, this message translates to:
+  /// **'Theo bắc từ'**
+  String get compassMagneticNorth;
+
+  /// Nhãn trình đọc màn hình cho hướng
+  ///
+  /// In vi, this message translates to:
+  /// **'Hướng {value} độ, {direction}'**
+  String compassHeadingSemantics(int value, String direction);
+
+  /// Góc ngóc / nghiêng của máy
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngóc {pitch}° · Nghiêng {roll}°'**
+  String compassTilt(int pitch, int roll);
+
+  /// Mức tin cậy hướng
+  ///
+  /// In vi, this message translates to:
+  /// **'Độ tin cậy: {level}'**
+  String compassAccuracy(String level);
+
+  /// Mức tin cậy cao
+  ///
+  /// In vi, this message translates to:
+  /// **'Cao'**
+  String get accuracyHigh;
+
+  /// Mức tin cậy trung bình
+  ///
+  /// In vi, this message translates to:
+  /// **'Trung bình'**
+  String get accuracyMedium;
+
+  /// Mức tin cậy thấp
+  ///
+  /// In vi, this message translates to:
+  /// **'Thấp'**
+  String get accuracyLow;
+
+  /// Cảnh báo nhiễu từ
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhiễu từ: tránh xa nam châm, loa, ốp lưng có nam châm hoặc vật kim loại lớn.'**
+  String get compassInterference;
+
+  /// Hướng dẫn hiệu chuẩn hình số 8
+  ///
+  /// In vi, this message translates to:
+  /// **'Độ chính xác thấp: cầm máy vẽ hình số 8 trong không khí vài lần.'**
+  String get compassCalibrate;
+
+  /// Ký hiệu hướng Bắc
+  ///
+  /// In vi, this message translates to:
+  /// **'B'**
+  String get dirShortN;
+
+  /// Tên đầy đủ hướng Bắc
+  ///
+  /// In vi, this message translates to:
+  /// **'Bắc'**
+  String get dirLongN;
+
+  /// Ký hiệu hướng Đông Bắc
+  ///
+  /// In vi, this message translates to:
+  /// **'ĐB'**
+  String get dirShortNE;
+
+  /// Tên đầy đủ hướng Đông Bắc
+  ///
+  /// In vi, this message translates to:
+  /// **'Đông Bắc'**
+  String get dirLongNE;
+
+  /// Ký hiệu hướng Đông
+  ///
+  /// In vi, this message translates to:
+  /// **'Đ'**
+  String get dirShortE;
+
+  /// Tên đầy đủ hướng Đông
+  ///
+  /// In vi, this message translates to:
+  /// **'Đông'**
+  String get dirLongE;
+
+  /// Ký hiệu hướng Đông Nam
+  ///
+  /// In vi, this message translates to:
+  /// **'ĐN'**
+  String get dirShortSE;
+
+  /// Tên đầy đủ hướng Đông Nam
+  ///
+  /// In vi, this message translates to:
+  /// **'Đông Nam'**
+  String get dirLongSE;
+
+  /// Ký hiệu hướng Nam
+  ///
+  /// In vi, this message translates to:
+  /// **'N'**
+  String get dirShortS;
+
+  /// Tên đầy đủ hướng Nam
+  ///
+  /// In vi, this message translates to:
+  /// **'Nam'**
+  String get dirLongS;
+
+  /// Ký hiệu hướng Tây Nam
+  ///
+  /// In vi, this message translates to:
+  /// **'TN'**
+  String get dirShortSW;
+
+  /// Tên đầy đủ hướng Tây Nam
+  ///
+  /// In vi, this message translates to:
+  /// **'Tây Nam'**
+  String get dirLongSW;
+
+  /// Ký hiệu hướng Tây
+  ///
+  /// In vi, this message translates to:
+  /// **'T'**
+  String get dirShortW;
+
+  /// Tên đầy đủ hướng Tây
+  ///
+  /// In vi, this message translates to:
+  /// **'Tây'**
+  String get dirLongW;
+
+  /// Ký hiệu hướng Tây Bắc
+  ///
+  /// In vi, this message translates to:
+  /// **'TB'**
+  String get dirShortNW;
+
+  /// Tên đầy đủ hướng Tây Bắc
+  ///
+  /// In vi, this message translates to:
+  /// **'Tây Bắc'**
+  String get dirLongNW;
 }
 
 class _LbL10nDelegate extends LocalizationsDelegate<LbL10n> {
