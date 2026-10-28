@@ -31,3 +31,11 @@ Kế thừa từ repo anh em (ban-do-3d / ubnd) - áp dụng vì cùng hạ tầ
 - AGP 9 RESVALUE: `resValue(...)` trong productFlavors bị tắt mặc định ("custom resource values... disabled") -> tên app theo
   flavor dùng `manifestPlaceholders["appName"]` + `android:label="${appName}"`. Build debug đầu tiên ~5 phút (tải Gradle,
   cài SDK Platform 36 vào `~/tools/android-sdk` dùng chung). (N0)
+- WRANGLER AUTOCONFIG: `wrangler pages project create` / `pages deploy` chạy trong `web/*` (hoặc gốc workspace -> lỗi
+  "application detection") tự `npm i @astrojs/cloudflare wrangler`, sửa `web/admin/vite.config.ts` + `package.json`, tạo
+  `wrangler.jsonc` - không hỏi. Dùng `./tools/build/deploy-web.sh` (gọi từ thư mục tạm); tạo Pages project bằng API. (N2)
+- ANALYTICS ENGINE 10089: deploy Worker có `analytics_engine_datasets` lỗi "You need to enable Analytics Engine" cho tới khi
+  người dùng bật trên dashboard -> binding SU_KIEN tạm bỏ khỏi wrangler.toml. (N2)
+- ZONE DUNG CHUNG: `tsudev.com` có Worker / rule / bản ghi của dự án khác (tsudev, PTSAM...). Không PUT đè ruleset
+  entrypoint; thêm rule qua `POST .../rulesets/<id>/rules`, nhận diện rule mình bằng description `la-ban: ...`. HSTS đặt ở
+  header từng site, KHÔNG bật HSTS cấp zone (sẽ ép mọi tên miền con). (N2)

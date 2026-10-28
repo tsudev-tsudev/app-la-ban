@@ -3,10 +3,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "wrangler dev --port 8797 --inspector-port 9239",
+    "dev": "wrangler dev --env dev --port 8797 --inspector-port 9239",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "build": "wrangler deploy --dry-run --outdir dist"
+    "build": "wrangler deploy --env= --dry-run --outdir dist",
+    "deploy:staging": "wrangler deploy --env staging --var BAN_BUILD:$(git rev-parse --short HEAD)",
+    "deploy": "wrangler deploy --env= --var BAN_BUILD:$(git rev-parse --short HEAD)"
   },
   "devDependencies": {
     "wrangler": "^4.154.0",

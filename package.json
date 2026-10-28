@@ -17,7 +17,7 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "build": "npm run build --workspaces --if-present",
-    "ve-sinh": "node tools/kiem-tra/ve-sinh-ban-build.mjs web/landing/dist web/admin/dist"
+    "ve-sinh": "node tools/kiem-tra/ve-sinh-ban-build.mjs web/landing/dist web/admin/dist web/status/dist"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.0",

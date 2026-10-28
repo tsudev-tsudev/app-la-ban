@@ -30,7 +30,7 @@ dash=$(printf '%s\n' "$DOI" | grep -vE '^2026.*\.md$' | grep -E '\.(md|ts|tsx|mj
 [ -z "$dash" ] || loi "Có em/en dash (chỉ dùng '-'):\n$dash"
 
 buoc "Thương hiệu: token sinh khớp nguồn + tương phản AA + quy ước icon"
-node --test 'tools/build/*.test.mjs' >/dev/null || loi "test tools/build đỏ (node --test 'tools/build/*.test.mjs')"
+node --test 'tools/build/*.test.mjs' 'tools/cloudflare/*.test.mjs' >/dev/null || loi "test tools đỏ (node --test 'tools/build/*.test.mjs' 'tools/cloudflare/*.test.mjs')"
 node tools/build/tokens.mjs --check
 node tools/kiem-tra/tuong-phan.mjs
 node tools/build/icon.mjs
@@ -84,8 +84,9 @@ if [ "$CHE_DO" = day-du ]; then
   buoc "Build web + vệ sinh bản build"
   npm run build -w web/landing --silent
   npm run build -w web/admin --silent
+  node web/status/build.mjs >/dev/null
   npm run build -w workers/api --silent >/dev/null
-  node tools/kiem-tra/ve-sinh-ban-build.mjs web/landing/dist web/admin/dist
+  node tools/kiem-tra/ve-sinh-ban-build.mjs web/landing/dist web/admin/dist web/status/dist
 
   buoc "Quét bí mật"
   npx secretlint --secretlintignore .secretlintignore "**/*"
