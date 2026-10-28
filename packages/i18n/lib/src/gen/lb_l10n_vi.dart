@@ -197,4 +197,91 @@ class LbL10nVi extends LbL10n {
 
   @override
   String get dirLongNW => 'Tây Bắc';
+
+  @override
+  String compassHeadingPrecise(double value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPatternDigits(
+          locale: localeName,
+          decimalDigits: 1,
+        );
+    final String valueString = valueNumberFormat.format(value);
+
+    return '$valueString°';
+  }
+
+  @override
+  String get compassTrueNorth => 'Theo bắc thực';
+
+  @override
+  String compassDeclination(double value, String side) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPatternDigits(
+          locale: localeName,
+          decimalDigits: 1,
+        );
+    final String valueString = valueNumberFormat.format(value);
+
+    return 'Độ lệch từ $valueString° $side';
+  }
+
+  @override
+  String get compassNeedLocation =>
+      'Chưa có vị trí nên đang theo bắc từ. Bắc thực cần vị trí để tính độ lệch từ.';
+
+  @override
+  String get compassModelExpired =>
+      'Mô hình từ trường đã hết hạn, độ lệch có thể kém chính xác. Hãy cập nhật ứng dụng.';
+
+  @override
+  String compassFieldStrength(int value) {
+    return 'Từ trường $value µT';
+  }
+
+  @override
+  String get compassCameraMode => 'Theo hướng camera sau';
+
+  @override
+  String get compassOptions => 'Tuỳ chọn la bàn';
+
+  @override
+  String get compassOptionTrueNorth => 'Bắc thực';
+
+  @override
+  String get compassOptionTrueNorthHint =>
+      'Cộng độ lệch từ theo mô hình WMM2025, tính ngoại tuyến.';
+
+  @override
+  String get compassOptionHaptic => 'Rung khi qua hướng chính';
+
+  @override
+  String get compassOptionHapticHint =>
+      'Rung nhẹ mỗi khi kim đi qua một trong 8 hướng.';
+
+  @override
+  String get compassCalibrateAction => 'Hiệu chuẩn';
+
+  @override
+  String get calibTitle => 'Hiệu chuẩn la bàn';
+
+  @override
+  String get calibInstruction =>
+      'Cầm chắc máy, xoay cổ tay vẽ hình số 8 trong không khí. Lần lượt nghiêng máy lên, xuống, sang trái, sang phải.';
+
+  @override
+  String get calibTip =>
+      'Đứng xa nam châm, loa, sạc không dây, ốp lưng có nam châm và vật kim loại lớn.';
+
+  @override
+  String calibProgress(int percent) {
+    return 'Đã quét $percent%';
+  }
+
+  @override
+  String calibDone(String level) {
+    return 'Hiệu chuẩn xong. Độ tin cậy: $level.';
+  }
+
+  @override
+  String get calibFinish => 'Xong';
 }

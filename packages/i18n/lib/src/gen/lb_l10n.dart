@@ -439,6 +439,120 @@ abstract class LbL10n {
   /// In vi, this message translates to:
   /// **'Tây Bắc'**
   String get dirLongNW;
+
+  /// Số độ của hướng, 1 chữ số thập phân
+  ///
+  /// In vi, this message translates to:
+  /// **'{value}°'**
+  String compassHeadingPrecise(double value);
+
+  /// Chú thích: hướng đang tính theo bắc thực (địa lý)
+  ///
+  /// In vi, this message translates to:
+  /// **'Theo bắc thực'**
+  String get compassTrueNorth;
+
+  /// Độ lệch từ WMM tại vị trí hiện tại; side = Đông / Tây
+  ///
+  /// In vi, this message translates to:
+  /// **'Độ lệch từ {value}° {side}'**
+  String compassDeclination(double value, String side);
+
+  /// Người dùng chọn bắc thực nhưng app chưa có vị trí
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có vị trí nên đang theo bắc từ. Bắc thực cần vị trí để tính độ lệch từ.'**
+  String get compassNeedLocation;
+
+  /// WMM quá hạn hiệu lực
+  ///
+  /// In vi, this message translates to:
+  /// **'Mô hình từ trường đã hết hạn, độ lệch có thể kém chính xác. Hãy cập nhật ứng dụng.'**
+  String get compassModelExpired;
+
+  /// Cường độ từ trường đo được
+  ///
+  /// In vi, this message translates to:
+  /// **'Từ trường {value} µT'**
+  String compassFieldStrength(int value);
+
+  /// Máy dựng đứng: hướng tính theo camera sau
+  ///
+  /// In vi, this message translates to:
+  /// **'Theo hướng camera sau'**
+  String get compassCameraMode;
+
+  /// Nút / tiêu đề bảng tuỳ chọn la bàn
+  ///
+  /// In vi, this message translates to:
+  /// **'Tuỳ chọn la bàn'**
+  String get compassOptions;
+
+  /// Công tắc: dùng bắc thực
+  ///
+  /// In vi, this message translates to:
+  /// **'Bắc thực'**
+  String get compassOptionTrueNorth;
+
+  /// Mô tả công tắc bắc thực
+  ///
+  /// In vi, this message translates to:
+  /// **'Cộng độ lệch từ theo mô hình WMM2025, tính ngoại tuyến.'**
+  String get compassOptionTrueNorthHint;
+
+  /// Công tắc: rung nhẹ khi qua 8 hướng
+  ///
+  /// In vi, this message translates to:
+  /// **'Rung khi qua hướng chính'**
+  String get compassOptionHaptic;
+
+  /// Mô tả công tắc rung
+  ///
+  /// In vi, this message translates to:
+  /// **'Rung nhẹ mỗi khi kim đi qua một trong 8 hướng.'**
+  String get compassOptionHapticHint;
+
+  /// Nút mở màn hiệu chuẩn
+  ///
+  /// In vi, this message translates to:
+  /// **'Hiệu chuẩn'**
+  String get compassCalibrateAction;
+
+  /// Tiêu đề màn hiệu chuẩn
+  ///
+  /// In vi, this message translates to:
+  /// **'Hiệu chuẩn la bàn'**
+  String get calibTitle;
+
+  /// Hướng dẫn hiệu chuẩn hình số 8
+  ///
+  /// In vi, this message translates to:
+  /// **'Cầm chắc máy, xoay cổ tay vẽ hình số 8 trong không khí. Lần lượt nghiêng máy lên, xuống, sang trái, sang phải.'**
+  String get calibInstruction;
+
+  /// Mẹo khi hiệu chuẩn
+  ///
+  /// In vi, this message translates to:
+  /// **'Đứng xa nam châm, loa, sạc không dây, ốp lưng có nam châm và vật kim loại lớn.'**
+  String get calibTip;
+
+  /// Tiến độ hiệu chuẩn
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã quét {percent}%'**
+  String calibProgress(int percent);
+
+  /// Kết quả hiệu chuẩn
+  ///
+  /// In vi, this message translates to:
+  /// **'Hiệu chuẩn xong. Độ tin cậy: {level}.'**
+  String calibDone(String level);
+
+  /// Nút đóng màn hiệu chuẩn
+  ///
+  /// In vi, this message translates to:
+  /// **'Xong'**
+  String get calibFinish;
 }
 
 class _LbL10nDelegate extends LocalizationsDelegate<LbL10n> {

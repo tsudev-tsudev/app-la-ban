@@ -33,6 +33,23 @@ Widget dung(OMaTran o, List<Override> ghiDe) => ProviderScope(
   child: khungThu(const ManLaBan(), o: o),
 );
 
+/// Hà Nội, ngày cố định -> độ lệch WMM ổn định cho golden.
+const haNoi = ViTriDiaLy(viDo: 21.0285, kinhDo: 105.8542, doCaoM: 15);
+
+class ViTriThu extends ViTriNotifier {
+  @override
+  ViTriDiaLy? build() => haNoi;
+}
+
+final List<Override> coViTri = [
+  viTriProvider.overrideWith(ViTriThu.new),
+  dongHoProvider.overrideWithValue(() => DateTime.utc(2026, 10, 28)),
+];
+
+/// Kho tuỳ chọn trong bộ nhớ với giá trị ban đầu [t].
+Override tuyChon(TuyChonLaBan t) =>
+    khoTuyChonLaBanProvider.overrideWithValue(KhoTuyChonLaBanBoNho(t));
+
 Override coHuong(HuongDoc h) =>
     huongProvider.overrideWith((ref) => Stream.value(h));
 
@@ -47,8 +64,8 @@ void main() {
     await kiemMaTran(tester, (o) => dung(o, ghiDe));
   });
 
-  testWidgets('golden', (tester) async {
-    final ghiDe = [coHuong(doc())];
+  testWidgets('golden (bắc thực, Hà Nội)', (tester) async {
+    final ghiDe = [coHuong(doc()), ...coViTri];
     await chupGolden(tester, 'man_la_ban', (o) => dung(o, ghiDe));
   });
 
@@ -69,8 +86,9 @@ void main() {
   ) async {
     await tester.pumpWidget(dung(oChup.first, [coHuong(doc())]));
     await tester.pump();
-    expect(find.textContaining('127°'), findsOneWidget);
-    expect(find.textContaining('ĐN'), findsOneWidget);
+    expect(find.textContaining('127,4°'), findsOneWidget);
+    expect(find.textContaining('ĐN'), findsWidgets);
+    expect(find.text('Từ trường 45 µT'), findsOneWidget);
     expect(find.text('Độ tin cậy: Cao'), findsOneWidget);
     expect(find.text('Ngóc 3° · Nghiêng -2°'), findsOneWidget);
     expect(find.bySemanticsLabel('Hướng 127 độ, Đông Nam'), findsOneWidget);
@@ -136,8 +154,7 @@ void main() {
     );
     await tester.pump();
     await tester.pump();
-    expect(find.textContaining('90°'), findsOneWidget);
-    expect(find.textContaining('Đ'), findsWidgets);
+    expect(find.textContaining('90,0°'), findsOneWidget);
   });
 
   testWidgets('app xuống nền -> thôi nghe cảm biến, trở lại -> nghe lại', (
@@ -162,7 +179,7 @@ void main() {
     await tester.pump();
     await tester.pump();
     expect(soLanHuy, 1);
-    expect(find.textContaining('127°'), findsNothing);
+    expect(find.textContaining('127,4°'), findsNothing);
 
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
@@ -170,7 +187,7 @@ void main() {
     await tester.pump();
     await tester.pump();
     expect(soLanNghe, 2);
-    expect(find.textContaining('127°'), findsOneWidget);
+    expect(find.textContaining('127,4°'), findsOneWidget);
   });
 
   testWidgets('tab ẩn (TickerMode tắt) không nghe cảm biến', (tester) async {
@@ -191,5 +208,117 @@ void main() {
     );
     await tester.pump();
     expect(soLanNghe, 0);
+  });
+
+  testWidgets('bắc thực: cộng độ lệch WMM tại Hà Nội, hiện độ lệch Tây', (
+    tester,
+  ) async {
+    await tester.pumpWidget(dung(oChup.first, [coHuong(doc()), ...coViTri]));
+    await tester.pump();
+    final kq = tinhTuTruong(
+      HeSoWmm.wmm2025,
+      viDo: haNoi.viDo,
+      kinhDo: haNoi.kinhDo,
+      doCaoKm: 0.015,
+      nam: namThapPhan(DateTime.utc(2026, 10, 28)),
+    );
+    expect(kq.doLech, lessThan(0));
+    final mongDoi = tinhHuongHienThi(
+      127.4,
+      muonBacThuc: true,
+      tuTruong: kq,
+    ).soDo01;
+    final chu = mongDoi.toStringAsFixed(1).replaceAll('.', ',');
+    expect(find.textContaining('$chu°'), findsOneWidget);
+    expect(
+      find.textContaining(
+        'Theo bắc thực · Độ lệch từ '
+        '${kq.doLech.abs().toStringAsFixed(1).replaceAll('.', ',')}° Tây',
+      ),
+      findsOneWidget,
+    );
+    expect(find.textContaining('Chưa có vị trí'), findsNothing);
+  });
+
+  testWidgets('bắc thực nhưng chưa có vị trí -> theo bắc từ + ghi chú', (
+    tester,
+  ) async {
+    await tester.pumpWidget(dung(oChup.first, [coHuong(doc())]));
+    await tester.pump();
+    expect(find.text('Theo bắc từ'), findsOneWidget);
+    expect(find.textContaining('Chưa có vị trí'), findsOneWidget);
+  });
+
+  testWidgets('chọn bắc từ: không ghi chú vị trí', (tester) async {
+    await tester.pumpWidget(
+      dung(oChup.first, [
+        coHuong(doc()),
+        tuyChon(const TuyChonLaBan(bacThuc: false)),
+      ]),
+    );
+    await tester.pump();
+    expect(find.text('Theo bắc từ'), findsOneWidget);
+    expect(find.textContaining('Chưa có vị trí'), findsNothing);
+  });
+
+  testWidgets('bảng tuỳ chọn: tắt bắc thực / rung, ghi vào kho', (
+    tester,
+  ) async {
+    final kho = KhoTuyChonLaBanBoNho();
+    await tester.pumpWidget(
+      dung(oChup.first, [
+        coHuong(doc()),
+        ...coViTri,
+        khoTuyChonLaBanProvider.overrideWithValue(kho),
+      ]),
+    );
+    await tester.pump();
+    expect(find.textContaining('Theo bắc thực'), findsOneWidget);
+    await tester.tap(find.byTooltip('Tuỳ chọn la bàn'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Bắc thực'));
+    await tester.pump();
+    await tester.tap(find.text('Rung khi qua hướng chính'));
+    await tester.pumpAndSettle();
+    expect(kho.doc(), const TuyChonLaBan(bacThuc: false, rung: false));
+    Navigator.of(tester.element(find.text('Bắc thực'))).pop();
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Theo bắc từ'), findsOneWidget);
+  });
+
+  testWidgets('rung khi kim qua hướng chính; tắt rung thì im', (tester) async {
+    for (final bat in [true, false]) {
+      var soLan = 0;
+      final cho = StreamController<HuongDoc>();
+      addTearDown(cho.close);
+      await tester.pumpWidget(
+        dung(oChup.first, [
+          huongProvider.overrideWith((ref) => cho.stream),
+          tuyChon(TuyChonLaBan(bacThuc: false, rung: bat)),
+          rungProvider.overrideWithValue(() => soLan++),
+        ]),
+      );
+      for (final d in <double>[60, 66, 71, 80, 100, 116]) {
+        cho.add(doc(phuongVi: d));
+        await tester.pump();
+      }
+      // 60 -> 71 qua Đông (90° ở giữa cung 67,5-112,5), 116 qua Đông Nam.
+      expect(soLan, bat ? 2 : 0);
+      await tester.pumpWidget(const SizedBox.shrink());
+    }
+  });
+
+  testWidgets('nút Hiệu chuẩn trong cảnh báo mở màn hiệu chuẩn', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      dung(oChup.first, [coHuong(doc(muc: MucTinCay.thap, nhieuTu: true))]),
+    );
+    await tester.pump();
+    await tester.tap(find.widgetWithText(TextButton, 'Hiệu chuẩn'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(find.byType(ManHieuChuan), findsOneWidget);
+    expect(find.text('Hiệu chuẩn la bàn'), findsOneWidget);
   });
 }

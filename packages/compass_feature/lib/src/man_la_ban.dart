@@ -1,14 +1,20 @@
 import 'dart:math' as math;
 
+import 'package:compass_feature/src/bac_thuc_provider.dart';
+import 'package:compass_feature/src/domain/huong_hien_thi.dart';
+import 'package:compass_feature/src/domain/moc_rung.dart';
 import 'package:compass_feature/src/huong_provider.dart';
+import 'package:compass_feature/src/man_hieu_chuan.dart';
+import 'package:compass_feature/src/mat_la_ban.dart';
+import 'package:compass_feature/src/tuy_chon_provider.dart';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:i18n/i18n.dart';
 import 'package:sensors/sensors.dart';
 
-/// Tab La bàn - bản đọc hướng của A2 (hoa gió xoay theo bắc từ, số độ, độ tin
-/// cậy, cảnh báo nhiễu / hiệu chuẩn). Mặt la bàn CustomPainter + bắc thực ở A3.
+/// Tab La bàn: mặt la bàn CustomPainter, số độ 0,1°, 8 hướng, bắc thực /
+/// bắc từ (WMM2025 ngoại tuyến), độ tin cậy, cảnh báo nhiễu từ, hiệu chuẩn.
 class ManLaBan extends ConsumerStatefulWidget {
   const new({super.key});
 
@@ -19,6 +25,7 @@ class ManLaBan extends ConsumerStatefulWidget {
 class _ManLaBanState extends ConsumerState<ManLaBan> {
   late final AppLifecycleListener _vongDoi;
   var _truocMat = true;
+  final _rungMoc = BoRungMoc();
 
   @override
   void initState() {
@@ -45,10 +52,26 @@ class _ManLaBanState extends ConsumerState<ManLaBan> {
     final dangThay = _truocMat && TickerMode.valuesOf(context).enabled;
     final Widget than;
     if (!dangThay) {
+      _rungMoc.datLai();
       than = const SizedBox.shrink();
     } else {
+      final tuyChon = ref.watch(tuyChonLaBanProvider);
+      final tuTruong = ref.watch(tuTruongProvider);
+      HuongHienThi doi(HuongDoc h) => tinhHuongHienThi(
+        h.phuongVi,
+        muonBacThuc: tuyChon.bacThuc,
+        tuTruong: tuTruong,
+      );
+      ref.listen(huongProvider, (_, moi) {
+        if (moi case AsyncData(:final value)) {
+          final moc = _rungMoc.nap(doi(value).phuongVi);
+          if (moc != null && ref.read(tuyChonLaBanProvider).rung) {
+            ref.read(rungProvider)();
+          }
+        }
+      });
       than = switch (ref.watch(huongProvider)) {
-        AsyncData(:final value) => _DocHuong(h: value),
+        AsyncData(:final value) => _DocHuong(h: value, hh: doi(value)),
         AsyncError(:final error) => LbTrangTrong(
           hinh: const LbIcon(LbIcons.laBanHoaGio, size: 96),
           moTa: error is NgoaiLeCamBien && error.loi == LoiCamBien.khongCoLaBan
@@ -65,8 +88,81 @@ class _ManLaBanState extends ConsumerState<ManLaBan> {
       };
     }
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.tabCompass)),
+      appBar: AppBar(
+        title: Text(l10n.tabCompass),
+        actions: [
+          IconButton(
+            tooltip: l10n.compassCalibrateAction,
+            icon: const LbIcon(LbIcons.hieuChuanSo8),
+            onPressed: () => moHieuChuan(context),
+          ),
+          IconButton(
+            tooltip: l10n.compassOptions,
+            icon: const LbIcon(LbIcons.bacThuc),
+            onPressed: () => moTuyChon(context),
+          ),
+        ],
+      ),
       body: than,
+    );
+  }
+}
+
+/// Mở màn hiệu chuẩn hình số 8 (toàn màn, che thanh tab).
+Future<void> moHieuChuan(BuildContext context) =>
+    Navigator.of(context, rootNavigator: true).push(
+      MaterialPageRoute<void>(
+        fullscreenDialog: true,
+        builder: (_) => const ManHieuChuan(),
+      ),
+    );
+
+/// Bảng tuỳ chọn: bắc thực / bắc từ, rung.
+Future<void> moTuyChon(BuildContext context) => showModalBottomSheet<void>(
+  context: context,
+  useRootNavigator: true,
+  showDragHandle: true,
+  isScrollControlled: true,
+  builder: (_) => const BangTuyChon(),
+);
+
+class BangTuyChon extends ConsumerWidget {
+  const new({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final t = ref.watch(tuyChonLaBanProvider);
+    final n = ref.read(tuyChonLaBanProvider.notifier);
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.only(bottom: LbSpacing.md),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: LbSpacing.md),
+              child: Text(
+                l10n.compassOptions,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+            SwitchListTile(
+              value: t.bacThuc,
+              onChanged: (v) => n.datBacThuc(bat: v),
+              title: Text(l10n.compassOptionTrueNorth),
+              subtitle: Text(l10n.compassOptionTrueNorthHint),
+            ),
+            SwitchListTile(
+              value: t.rung,
+              onChanged: (v) => n.datRung(bat: v),
+              title: Text(l10n.compassOptionHaptic),
+              subtitle: Text(l10n.compassOptionHapticHint),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -100,26 +196,36 @@ String tenMuc(LbL10n l, MucTinCay m) => switch (m) {
 };
 
 class _DocHuong extends StatelessWidget {
-  const new({required this.h});
+  const new({required this.h, required this.hh});
 
   final HuongDoc h;
+  final HuongHienThi hh;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final theme = Theme.of(context);
-    final mau = theme.colorScheme;
-    final tk = LbThemeExt.of(context).colors;
-    final so = h.phuongVi.round() % 360;
-    final huong = huongChinh(h.phuongVi);
-    final mauMuc = switch (h.muc) {
-      MucTinCay.cao => tk.successStrong,
-      MucTinCay.trungBinh => tk.warningStrong,
-      MucTinCay.thap => tk.dangerStrong,
-    };
     return LayoutBuilder(
       builder: (context, rang) {
-        final canh = math.min(240, rang.biggest.shortestSide * 0.5).toDouble();
+        // Màn ngang đủ rộng: mặt la bàn bên trái, thông tin bên phải.
+        final ngang =
+            rang.maxWidth >= 600 && rang.maxWidth > rang.maxHeight * 1.2;
+        final canh = ngang
+            ? math.min(rang.maxHeight - 2 * LbSpacing.lg, rang.maxWidth * 0.45)
+            : math.min(rang.maxWidth - 2 * LbSpacing.lg, rang.maxHeight * 0.55);
+        final mat = Semantics(
+          label: l10n.compassHeadingSemantics(
+            hh.soDo01.round() % 360,
+            tenDai(l10n, huongChinh(hh.phuongVi)),
+          ),
+          excludeSemantics: true,
+          child: MatLaBan(
+            phuongVi: hh.phuongVi,
+            canh: math.max(120, math.min(380, canh)),
+            nhan8: [for (final c in HuongChinh.values) tenNgan(l10n, c)],
+            mau: MauMatLaBan.tuTheme(context),
+          ),
+        );
+        final thongTin = _ThongTin(h: h, hh: hh);
         return SingleChildScrollView(
           padding: const EdgeInsets.all(LbSpacing.lg),
           child: ConstrainedBox(
@@ -127,90 +233,31 @@ class _DocHuong extends StatelessWidget {
               minHeight: math.max(0, rang.maxHeight - 2 * LbSpacing.lg),
             ),
             child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 480),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Semantics(
-                      label: l10n.compassHeadingSemantics(
-                        so,
-                        tenDai(l10n, huong),
-                      ),
-                      excludeSemantics: true,
+              child: ngang
+                  ? Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        mat,
+                        const SizedBox(width: LbSpacing.xl),
+                        Flexible(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 420),
+                            child: thongTin,
+                          ),
+                        ),
+                      ],
+                    )
+                  : ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 480),
                       child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          // Vạch mốc cố định = hướng mép trên màn hình.
-                          CustomPaint(
-                            size: const Size(20, 12),
-                            painter: _VachMoc(tk.accentStrong),
-                          ),
-                          const SizedBox(height: LbSpacing.xxs),
-                          _HoaGio(
-                            phuongVi: h.phuongVi,
-                            canh: canh,
-                            chuBac: l10n.dirShortN,
-                            mauHoa: mau.primary,
-                            mauBac: tk.accentStrong,
-                          ),
+                          mat,
                           const SizedBox(height: LbSpacing.md),
-                          // Số độ luôn một dòng: chữ hệ thống rất lớn thì
-                          // thu nhỏ vừa bề ngang thay vì vỡ dòng.
-                          FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text.rich(
-                              TextSpan(
-                                children: [
-                                  TextSpan(text: l10n.compassDegrees(so)),
-                                  const TextSpan(text: '  '),
-                                  TextSpan(
-                                    text: tenNgan(l10n, huong),
-                                    style: TextStyle(color: mau.primary),
-                                  ),
-                                ],
-                              ),
-                              maxLines: 1,
-                              style: LbType.telemetryLarge.copyWith(
-                                color: mau.onSurface,
-                              ),
-                            ),
-                          ),
+                          thongTin,
                         ],
                       ),
                     ),
-                    Text(
-                      l10n.compassMagneticNorth,
-                      style: theme.textTheme.bodySmall,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: LbSpacing.md),
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: LbSpacing.xs,
-                      runSpacing: LbSpacing.xs,
-                      children: [
-                        _Nhan(
-                          cham: mauMuc,
-                          chu: l10n.compassAccuracy(tenMuc(l10n, h.muc)),
-                        ),
-                        _Nhan(
-                          chu: l10n.compassTilt(h.doc.round(), h.lan.round()),
-                        ),
-                      ],
-                    ),
-                    if (h.nhieuTu)
-                      _CanhBao(
-                        icon: LbIcons.khien,
-                        noiDung: l10n.compassInterference,
-                      )
-                    else if (h.canHieuChuan)
-                      _CanhBao(
-                        icon: LbIcons.hieuChuanSo8,
-                        noiDung: l10n.compassCalibrate,
-                      ),
-                  ],
-                ),
-              ),
             ),
           ),
         );
@@ -219,74 +266,94 @@ class _DocHuong extends StatelessWidget {
   }
 }
 
-/// Hoa gió xoay ngược hướng máy để chữ Bắc luôn chỉ bắc từ.
-class _HoaGio extends StatelessWidget {
-  const new({
-    required this.phuongVi,
-    required this.canh,
-    required this.chuBac,
-    required this.mauHoa,
-    required this.mauBac,
-  });
+class _ThongTin extends StatelessWidget {
+  const new({required this.h, required this.hh});
 
-  final double phuongVi;
-  final double canh;
-  final String chuBac;
-  final Color mauHoa;
-  final Color mauBac;
+  final HuongDoc h;
+  final HuongHienThi hh;
 
   @override
   Widget build(BuildContext context) {
-    return Transform.rotate(
-      angle: -doSangRad(phuongVi),
-      child: SizedBox.square(
-        dimension: canh,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            LbIcon(LbIcons.laBanHoaGio, size: canh * 0.72, color: mauHoa),
-            Align(
-              alignment: Alignment.topCenter,
-              // Chữ là một phần hình vẽ: cỡ theo hoa gió, không theo cỡ chữ
-              // hệ thống (đã có nhãn trình đọc màn hình ở trên).
-              child: Text(
-                chuBac,
-                textScaler: TextScaler.noScaling,
-                style: LbType.title.copyWith(
-                  color: mauBac,
-                  fontSize: canh * 0.11,
-                  fontWeight: FontWeight.w800,
-                  height: 1,
-                ),
+    final l10n = context.l10n;
+    final theme = Theme.of(context);
+    final mau = theme.colorScheme;
+    final tk = LbThemeExt.of(context).colors;
+    final huong = huongChinh(hh.phuongVi);
+    final mauMuc = switch (h.muc) {
+      MucTinCay.cao => tk.successStrong,
+      MucTinCay.trungBinh => tk.warningStrong,
+      MucTinCay.thap => tk.dangerStrong,
+    };
+    final doLech = hh.doLech;
+    final dongThamChieu = [
+      if (hh.bacThuc) l10n.compassTrueNorth else l10n.compassMagneticNorth,
+      if (doLech != null)
+        l10n.compassDeclination(
+          double.parse(doLech.abs().toStringAsFixed(1)),
+          doLech < 0 ? l10n.dirLongW : l10n.dirLongE,
+        ),
+    ].join(' · ');
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Số độ luôn một dòng: chữ hệ thống rất lớn thì thu nhỏ vừa bề
+        // ngang thay vì vỡ dòng.
+        ExcludeSemantics(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(text: l10n.compassHeadingPrecise(hh.soDo01)),
+                  const TextSpan(text: '  '),
+                  TextSpan(
+                    text: tenNgan(l10n, huong),
+                    style: TextStyle(color: tk.primaryDeep),
+                  ),
+                ],
               ),
+              maxLines: 1,
+              style: LbType.telemetryLarge.copyWith(color: mau.onSurface),
             ),
+          ),
+        ),
+        Text(
+          dongThamChieu,
+          style: theme.textTheme.bodySmall,
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: LbSpacing.md),
+        Wrap(
+          alignment: WrapAlignment.center,
+          spacing: LbSpacing.xs,
+          runSpacing: LbSpacing.xs,
+          children: [
+            _Nhan(cham: mauMuc, chu: l10n.compassAccuracy(tenMuc(l10n, h.muc))),
+            if (h.cuongDoTu.isFinite)
+              _Nhan(chu: l10n.compassFieldStrength(h.cuongDoTu.round())),
+            _Nhan(chu: l10n.compassTilt(h.doc.round(), h.lan.round())),
+            if (h.theoCamera) _Nhan(chu: l10n.compassCameraMode),
           ],
         ),
-      ),
+        if (h.nhieuTu)
+          _CanhBao(
+            icon: LbIcons.khien,
+            noiDung: l10n.compassInterference,
+            hanhDong: l10n.compassCalibrateAction,
+          )
+        else if (h.canHieuChuan)
+          _CanhBao(
+            icon: LbIcons.hieuChuanSo8,
+            noiDung: l10n.compassCalibrate,
+            hanhDong: l10n.compassCalibrateAction,
+          ),
+        if (hh.thieuViTri)
+          _GhiChu(icon: LbIcons.ghimGps, noiDung: l10n.compassNeedLocation)
+        else if (hh.moHinhCu)
+          _GhiChu(icon: LbIcons.bacThuc, noiDung: l10n.compassModelExpired),
+      ],
     );
   }
-}
-
-/// Tam giác chỉ xuống - vạch mốc (lubber line) của la bàn.
-class _VachMoc extends CustomPainter {
-  new(this.mau);
-
-  final Color mau;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    canvas.drawPath(
-      Path()
-        ..moveTo(0, 0)
-        ..lineTo(size.width, 0)
-        ..lineTo(size.width / 2, size.height)
-        ..close(),
-      Paint()..color = mau,
-    );
-  }
-
-  @override
-  bool shouldRepaint(_VachMoc old) => old.mau != mau;
 }
 
 /// Nhãn viền bo tròn, chữ dài thì xuống dòng (Chip cắt chữ khi phóng to).
@@ -328,10 +395,15 @@ class _Nhan extends StatelessWidget {
 }
 
 class _CanhBao extends StatelessWidget {
-  const new({required this.icon, required this.noiDung});
+  const new({
+    required this.icon,
+    required this.noiDung,
+    required this.hanhDong,
+  });
 
   final LbIconData icon;
   final String noiDung;
+  final String hanhDong;
 
   @override
   Widget build(BuildContext context) {
@@ -347,20 +419,55 @@ class _CanhBao extends StatelessWidget {
           ),
           child: Padding(
             padding: const EdgeInsets.all(LbSpacing.sm),
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                LbIcon(icon, color: mau.onErrorContainer),
-                const SizedBox(width: LbSpacing.sm),
-                Expanded(
-                  child: Text(
-                    noiDung,
-                    style: TextStyle(color: mau.onErrorContainer),
+                Row(
+                  children: [
+                    LbIcon(icon, color: mau.onErrorContainer),
+                    const SizedBox(width: LbSpacing.sm),
+                    Expanded(
+                      child: Text(
+                        noiDung,
+                        style: TextStyle(color: mau.onErrorContainer),
+                      ),
+                    ),
+                  ],
+                ),
+                TextButton(
+                  style: TextButton.styleFrom(
+                    foregroundColor: mau.onErrorContainer,
                   ),
+                  onPressed: () => moHieuChuan(context),
+                  child: Text(hanhDong),
                 ),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _GhiChu extends StatelessWidget {
+  const new({required this.icon, required this.noiDung});
+
+  final LbIconData icon;
+  final String noiDung;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: LbSpacing.md),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          LbIcon(icon, size: 20, color: theme.colorScheme.onSurfaceVariant),
+          const SizedBox(width: LbSpacing.xs),
+          Expanded(child: Text(noiDung, style: theme.textTheme.bodySmall)),
+        ],
       ),
     );
   }

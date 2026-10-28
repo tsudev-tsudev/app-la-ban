@@ -198,6 +198,93 @@ class LbL10nEn extends LbL10n {
 
   @override
   String get dirLongNW => 'Northwest';
+
+  @override
+  String compassHeadingPrecise(double value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPatternDigits(
+          locale: localeName,
+          decimalDigits: 1,
+        );
+    final String valueString = valueNumberFormat.format(value);
+
+    return '$valueString°';
+  }
+
+  @override
+  String get compassTrueNorth => 'True north';
+
+  @override
+  String compassDeclination(double value, String side) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPatternDigits(
+          locale: localeName,
+          decimalDigits: 1,
+        );
+    final String valueString = valueNumberFormat.format(value);
+
+    return 'Declination $valueString° $side';
+  }
+
+  @override
+  String get compassNeedLocation =>
+      'No location yet, so showing magnetic north. True north needs your location to compute declination.';
+
+  @override
+  String get compassModelExpired =>
+      'The magnetic model has expired, so declination may be less accurate. Please update the app.';
+
+  @override
+  String compassFieldStrength(int value) {
+    return 'Field $value µT';
+  }
+
+  @override
+  String get compassCameraMode => 'Following rear camera';
+
+  @override
+  String get compassOptions => 'Compass options';
+
+  @override
+  String get compassOptionTrueNorth => 'True north';
+
+  @override
+  String get compassOptionTrueNorthHint =>
+      'Adds magnetic declination from the WMM2025 model, computed offline.';
+
+  @override
+  String get compassOptionHaptic => 'Vibrate at cardinal points';
+
+  @override
+  String get compassOptionHapticHint =>
+      'A light tap each time the dial passes one of the 8 directions.';
+
+  @override
+  String get compassCalibrateAction => 'Calibrate';
+
+  @override
+  String get calibTitle => 'Calibrate compass';
+
+  @override
+  String get calibInstruction =>
+      'Hold the phone firmly and move your wrist in a figure 8 in the air. Then tilt the phone up, down, left and right.';
+
+  @override
+  String get calibTip =>
+      'Stay away from magnets, speakers, wireless chargers, magnetic cases and large metal objects.';
+
+  @override
+  String calibProgress(int percent) {
+    return 'Scanned $percent%';
+  }
+
+  @override
+  String calibDone(String level) {
+    return 'Calibration done. Accuracy: $level.';
+  }
+
+  @override
+  String get calibFinish => 'Done';
 }
 
 /// The translations for English (`en_XA`).
@@ -395,4 +482,91 @@ class LbL10nEnXa extends LbL10nEn {
 
   @override
   String get dirLongNW => '[Ñởřťhŵẽšť ····]';
+
+  @override
+  String compassHeadingPrecise(double value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPatternDigits(
+          locale: localeName,
+          decimalDigits: 1,
+        );
+    final String valueString = valueNumberFormat.format(value);
+
+    return '[$valueString° ··]';
+  }
+
+  @override
+  String get compassTrueNorth => '[Ťřữẽ ñởřťh ····]';
+
+  @override
+  String compassDeclination(double value, String side) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPatternDigits(
+          locale: localeName,
+          decimalDigits: 1,
+        );
+    final String valueString = valueNumberFormat.format(value);
+
+    return '[Đẽçłỉñảťỉởñ $valueString° $side ······]';
+  }
+
+  @override
+  String get compassNeedLocation =>
+      '[Ñở łởçảťỉởñ ỹẽť, šở šhởŵỉñğ mảğñẽťỉç ñởřťh. Ťřữẽ ñởřťh ñẽẽđš ỹởữř łởçảťỉởñ ťở çởmpữťẽ đẽçłỉñảťỉởñ. ········································]';
+
+  @override
+  String get compassModelExpired =>
+      '[Ťhẽ mảğñẽťỉç mởđẽł hảš ẽxpỉřẽđ, šở đẽçłỉñảťỉởñ mảỹ bẽ łẽšš ảççữřảťẽ. Płẽảšẽ ữpđảťẽ ťhẽ ảpp. ·····································]';
+
+  @override
+  String compassFieldStrength(int value) {
+    return '[Fỉẽłđ $value µŤ ····]';
+  }
+
+  @override
+  String get compassCameraMode => '[Fởłłởŵỉñğ řẽảř çảmẽřả ·········]';
+
+  @override
+  String get compassOptions => '[Çởmpảšš ởpťỉởñš ······]';
+
+  @override
+  String get compassOptionTrueNorth => '[Ťřữẽ ñởřťh ····]';
+
+  @override
+  String get compassOptionTrueNorthHint =>
+      '[Ảđđš mảğñẽťỉç đẽçłỉñảťỉởñ fřởm ťhẽ ŴMM2025 mởđẽł, çởmpữťẽđ ởffłỉñẽ. ···························]';
+
+  @override
+  String get compassOptionHaptic => '[Vỉbřảťẽ ảť çảřđỉñảł pởỉñťš ···········]';
+
+  @override
+  String get compassOptionHapticHint =>
+      '[Ả łỉğhť ťảp ẽảçh ťỉmẽ ťhẽ đỉảł pảššẽš ởñẽ ởf ťhẽ 8 đỉřẽçťỉởñš. ·························]';
+
+  @override
+  String get compassCalibrateAction => '[Çảłỉbřảťẽ ····]';
+
+  @override
+  String get calibTitle => '[Çảłỉbřảťẽ çởmpảšš ·······]';
+
+  @override
+  String get calibInstruction =>
+      '[Hởłđ ťhẽ phởñẽ fỉřmłỹ ảñđ mởvẽ ỹởữř ŵřỉšť ỉñ ả fỉğữřẽ 8 ỉñ ťhẽ ảỉř. Ťhẽñ ťỉłť ťhẽ phởñẽ ữp, đởŵñ, łẽfť ảñđ řỉğhť. ··············································]';
+
+  @override
+  String get calibTip =>
+      '[Šťảỹ ảŵảỹ fřởm mảğñẽťš, špẽảkẽřš, ŵỉřẽłẽšš çhảřğẽřš, mảğñẽťỉç çảšẽš ảñđ łảřğẽ mẽťảł ởbjẽçťš. ·····································]';
+
+  @override
+  String calibProgress(int percent) {
+    return '[Šçảññẽđ $percent% ····]';
+  }
+
+  @override
+  String calibDone(String level) {
+    return '[Çảłỉbřảťỉởñ đởñẽ. Ảççữřảçỹ: $level. ············]';
+  }
+
+  @override
+  String get calibFinish => '[Đởñẽ ··]';
 }
