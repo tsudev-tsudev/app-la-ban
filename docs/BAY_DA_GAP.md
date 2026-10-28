@@ -75,3 +75,7 @@ Kế thừa từ repo anh em (ban-do-3d / ubnd) - áp dụng vì cùng hạ tầ
   tảng (`huongThu` trong `app/test/ho_tro.dart`, `dungApp(ghiDeThem: ...)`). (A2)
 - CAM BIEN HUONG MAN HINH: phương vị phải lấy theo mép trên MÀN HÌNH (`Display.getRotation`), không phải đỉnh máy - xoay
   ngang lệch 90°. Máy dựng đứng thì hình chiếu suy biến -> dùng hướng camera sau (-Z). Xem `tuTheTuQuat`. (A2)
+- PROGRESS SEMANTICS SO: `LinearProgressIndicator(semanticsValue: ...)` phải là chuỗi SỐ ("60"), chuỗi chữ ("Đã quét 60%")
+  làm flushSemantics ném "Progress bar value ... must be valid numbers" -> chỉ đặt `semanticsLabel`. (A3)
+- WMM NGUON: hệ số + bảng thử chính thức lấy từ WMM2025COF.zip của NOAA NCEI (ncei.noaa.gov/sites/default/files/2024-12/);
+  thay mô hình (WMM2030) = chép WMM.COF vào `wmm2025_cof.dart`-tương ứng + bảng TestValues vào `packages/sensors/test/du_lieu`. (A3)
