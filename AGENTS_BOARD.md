@@ -1,6 +1,7 @@
 # Trạng thái SỐNG - quy trình: AGENTS_KICKOFF.md · lệnh: `./agents.sh help`
 
 ## LOCKS (chỉ tệp ĐANG sửa - xoá ngay khi xong)
+- agent-laban · design/ tools/build/ packages/design_system/ app/ web/ · phase N1 thương hiệu
 
 ## Lưu ý đang hiệu lực (<= 8 dòng)
 - FLUTTER: PATH=$HOME/tools/flutter/bin (3.47.8, Dart 3.13 - constructor 'const new(...)'); JAVA_HOME=~/tools/java/jdk, ANDROID_HOME=~/tools/android-sdk. Mot 'flutter pub get' o GOC (pub workspace). find DART 3.13

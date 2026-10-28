@@ -1,3 +1,4 @@
+import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:la_ban/src/flavor.dart';
 
@@ -15,7 +16,18 @@ class LaBanApp extends StatelessWidget {
       title: flavor.appName,
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        body: Center(child: Text(flavor.appName)),
+        backgroundColor: LbColors.light.bg,
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Cùng biểu tượng, cùng vị trí với splash native -> chuyển mượt.
+              const LbLogoDong(size: 128),
+              const SizedBox(height: LbSpacing.lg),
+              Text(flavor.appName),
+            ],
+          ),
+        ),
       ),
     );
   }

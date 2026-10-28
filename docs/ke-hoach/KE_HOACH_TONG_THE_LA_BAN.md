@@ -48,7 +48,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | # | Mã | Tên | Phụ thuộc | Trạng thái |
 |---|---|---|---|---|
 | 1 | N0 | Khởi tạo repo, toolchain, cổng kiểm | - | ✅ 28/10 |
-| 2 | N1 | Thương hiệu: logo, icon, tokens | N0 | ⬜ |
+| 2 | N1 | Thương hiệu: logo, icon, tokens | N0 | ✅ 28/10 |
 | 3 | N2 | Nền Cloudflare + landing tạm | N0 | ⬜ |
 | 4 | A1 | Khung app (theme, i18n, router, responsive, golden) | N1 | ⬜ |
 | 5 | A2 | Cảm biến + sensor fusion | A1 | ⬜ |
@@ -105,6 +105,17 @@ Developer, Codemagic, duyệt Privacy Policy · trước R4 chốt đơn vị pe
   kim cyan/coral + wordmark "La bàn") -> xuất PNG -> HỎI người dùng chọn; app icon iOS 1024 + Android adaptive/monochrome;
   favicon, OG image; bộ icon 24dp (Spec §2.3); splash + animation onboarding < 300 KB; `design/LICENSES.md`, `design/BRAND.md`.
 - Cổng: sinh token không đổi diff; tương phản đạt; ảnh icon trên launcher.
+- Kết quả (28/10): người dùng chọn logo **B** (vòng gradient xanh + kim kim cương Bắc cyan / Nam coral) trong 3 phương án
+  (`design/logo/phuong-an/so-sanh.png`). `design/tokens.json` -> `tools/build/tokens.mjs` (tự viết thay Style Dictionary,
+  hàm thuần + test 100%) -> `tokens.g.dart` (LbColors/LbSpacing/LbRadius/LbShadows/LbGlass/LbType/LbBreakpoint/LbMotion)
+  + `design/gen/tokens.css` (đã import ở landing + admin). Thêm biến thể chữ an toàn `*Strong`, `on*`; 54 cặp tương phản
+  đạt AA (`tuong-phan.mjs`). Cổng thêm bước "Thương hiệu" (token --check, tương phản, quy ước icon). App icon iOS (không
+  alpha) + Android adaptive / monochrome / legacy, nhãn DEV / STG cho flavor; splash Android < 12 + 12+ (SplashScreen API)
+  + iOS (màu LaunchBackground light/dark); favicon svg/ico, apple-touch, OG 1200x630; 11 icon 24dp. Hoạt ảnh onboarding
+  = `LbLogoDong` (CustomPainter, dao động tắt dần, tôn trọng reduce motion) thay Lottie/Rive - 0 KB, không thêm SDK;
+  golden `lb_logo.png`. `design/BRAND.md`, `design/LICENSES.md` (Be Vietnam Pro OFL). Khác thẻ: Style Dictionary -> script
+  riêng; brand guideline dạng Markdown (không PDF/Figma); "ảnh icon trên launcher" kiểm bằng ảnh xem trước
+  `design/logo/xem-truoc-launcher.png` + build APK dev - chưa thử trên máy thật (chưa có thiết bị, làm ở A2).
 
 ### N2 - Nền Cloudflare
 - Đọc thêm: SEC-EDGE, SEC-TLS, SEC-HDR.
@@ -118,6 +129,9 @@ Developer, Codemagic, duyệt Privacy Policy · trước R4 chốt đơn vị pe
   breakpoint + SafeArea; tiện ích golden (alchemist) 12 kích thước × theme × locale × font scale; pseudo-locale test; lint chặn
   import ngược lớp.
 - Cổng: golden xanh; đổi ngôn ngữ/theme không rebuild toàn cây.
+- Phát sinh (từ N1): đóng gói font `design/fonts/BeVietnamPro-*.ttf` vào `packages/design_system` (family `BeVietnamPro`,
+  `LbType` đã trỏ `package: design_system`) + đăng ký OFL vào `LicenseRegistry`; chọn cách vẽ icon 24dp `design/icons`
+  trong Flutter (flutter_svg = SDK bên thứ ba -> HỎI, hoặc sinh Path Dart / icon font); onboarding dùng `LbLogoDong`.
 
 ### A2 - Cảm biến + fusion
 - Đọc thêm: Spec §4.1.
