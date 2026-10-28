@@ -13,6 +13,7 @@ export 'package:sensors/sensors.dart'
 export 'src/bac_thuc_provider.dart';
 export 'src/domain/huong_hien_thi.dart';
 export 'src/domain/moc_rung.dart';
+export 'src/domain/noi_suy_goc.dart';
 export 'src/domain/tien_do_hieu_chuan.dart';
 export 'src/domain/tuy_chon_la_ban.dart';
 export 'src/huong_provider.dart';

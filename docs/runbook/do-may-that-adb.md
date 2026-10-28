@@ -66,6 +66,20 @@ với **cổng kết nối mới** (cổng đổi mỗi lần bật lại công 
 | `protocol fault` / mã sai | Mã hết hạn - mở lại hộp thoại ghép nối, dùng mã + cổng MỚI. |
 | Kết nối rớt sau vài phút | Tắt chế độ tiết kiệm pin / Wi-Fi ngủ khi khoá màn hình trong lúc đo; để màn hình luôn bật (Tuỳ chọn nhà phát triển -> **Không khoá màn hình** khi sạc). |
 
+### Cáp USB (khi Wi-Fi rớt liên tục)
+
+Samsung tự tắt Gỡ lỗi không dây sau vài phút / khi Wi-Fi nối lại. WSL2 không thấy USB (cần usbipd-win - KHÔNG cài được từ
+agent), nhưng `adb.exe` của Android SDK trên Windows thấy điện thoại:
+
+```bash
+W=/mnt/c/Users/<user>/AppData/Local/Android/Sdk/platform-tools/adb.exe
+$W kill-server; $W devices -l          # "unauthorized" -> trên điện thoại chọn "Luôn cho phép" + Cho phép
+cp app-dev-profile.apk /mnt/c/Users/<user>/AppData/Local/Temp/laban.apk
+$W install -r 'C:\Users\<user>\AppData\Local\Temp\laban.apk'   # adb.exe cần đường dẫn Windows
+```
+
+Máy đang sạc qua cáp: KHÔNG đo pin được, và dòng sạc có thể lệch cảm biến từ (đừng đo sai số tuyệt đối khi cắm cáp).
+
 Xong phần 2 thì báo agent: **"đã adb connect, model ..."**. Phần dưới agent chạy, người dùng chỉ cầm máy theo lời nhắc.
 
 ---
@@ -76,17 +90,25 @@ Biến môi trường như board (FLUTTER / GRADLE HOME / JAVA). Không chạy s
 
 ### 3.1 FPS + jank (cổng A3: 60 FPS, jank < 1%; 120 Hz: >= 110)
 
+`dumpsys gfxinfo` KHÔNG đếm khung Flutter (vẽ trên SurfaceView) - dùng atrace (bẫy DO KHUNG FLUTTER):
+
 ```bash
-cd app && flutter run --profile --flavor dev -t lib/main_dev.dart -d <IP:CỔNG>
-# Người dùng: mở tab La bàn, xoay máy liên tục 30 s (xoay chậm, nhanh, lật ngang).
-adb -s <IP:CỔNG> shell dumpsys gfxinfo com.tsudev.laban.dev reset   # trước khi xoay
-adb -s <IP:CỔNG> shell dumpsys gfxinfo com.tsudev.laban.dev         # sau 30 s: Janky frames, 50/90/99th percentile
-adb -s <IP:CỔNG> shell dumpsys display | grep -i refresh             # tần số màn hình thật
+cd app && flutter build apk --profile --flavor dev -t lib/main_dev.dart --target-platform android-arm64
+adb install -r build/app/outputs/flutter-apk/app-dev-profile.apk
+adb shell am start -n com.tsudev.laban.dev/com.tsudev.laban.MainActivity --ez trace-systrace true
+adb shell atrace -b 65536 -t 120 gfx view > at.txt      # người dùng xoay máy liên tục ~30 s trong lúc này
+adb shell dumpsys display | grep -m1 mActiveSfDisplayMode  # tần số màn hình thật
 ```
 
-Ghi thêm số liệu từ DevTools Performance (UI / Raster thread ms mỗi khung, `flutter run` in đường dẫn DevTools). Đạt:
-p99 khung < 16,7 ms (60 Hz) / < 8,3 ms (120 Hz), janky < 1%. Mặt số đã raster một lần (A3) - nếu Raster thread cao,
-kiểm `RepaintBoundary` của `MatLaBan` còn được cache (DevTools -> Highlight repaints).
+Đọc `at.txt`: thời gian `Animator::BeginFrame` (UI, chạy trên luồng platform) và `GPURasterizer::Draw` (raster) theo cặp
+B/E mỗi luồng; FPS = số `GPURasterizer::Draw` / giây; **rớt khung** = khoảng giữa hai lần bắt đầu raster > 1,5 vsync (bỏ
+khoảng > 100 ms = app nghỉ). Raster > vsync chưa chắc là rớt (gồm chờ `eglSwapBuffers`). Muốn so với cổng 60 Hz trên máy
+90 / 120 Hz: Samsung `adb shell settings put secure refresh_rate_mode 0` (ghi giá trị cũ, trả lại sau khi đo).
+
+Bản profile còn VM service (`adb logcat | grep "VM service"` -> `adb forward`): `getVMTimeline` cho cùng số liệu, chỉ dùng
+được khi adb chạy trong WSL (Wi-Fi), không dùng được qua `adb.exe` Windows (cổng forward nằm ở localhost Windows).
+
+Số đo tham chiếu (29/10, Galaxy M32 90 Hz): 60 Hz 58 FPS, rớt 0,35%, UI/raster p99 10,0/10,8 ms; 90 Hz 86 FPS, rớt 1,9%.
 
 ### 3.2 Sai số hướng (A2 + A3)
 
