@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
@@ -64,10 +65,12 @@ final class MauMatLaBan {
 /// Mặt la bàn: mặt số xoay theo [phuongVi] (chữ Bắc luôn chỉ bắc đang chọn),
 /// vạch mốc cố định ở đỉnh.
 ///
-/// Mặt số vẽ MỘT lần trong [RepaintBoundary] (chỉ vẽ lại khi đổi màu / ngôn
-/// ngữ / cỡ); mỗi khung hình chỉ đổi phép xoay của lớp đã raster -> giữ 60 /
-/// 120 FPS kể cả máy yếu.
-class MatLaBan extends StatelessWidget {
+/// Mặt số raster MỘT lần thành ảnh (chỉ làm lại khi đổi màu / ngôn ngữ / cỡ /
+/// mật độ điểm ảnh); mỗi khung hình chỉ vẽ ảnh đó với phép xoay mới. Impeller
+/// không có raster cache nên [RepaintBoundary] không đủ: đo trên Galaxy M32
+/// (Impeller GLES) vẽ lại 180 vạch + chữ mỗi khung tốn ~12,8 ms raster, quá
+/// ngân sách 11,1 ms của màn 90 Hz.
+class MatLaBan extends StatefulWidget {
   const new({
     required this.phuongVi,
     required this.canh,
@@ -84,23 +87,71 @@ class MatLaBan extends StatelessWidget {
   final MauMatLaBan mau;
 
   @override
+  State<MatLaBan> createState() => _MatLaBanState();
+}
+
+class _MatLaBanState extends State<MatLaBan> {
+  ui.Image? _anh;
+  MatSoPainter? _veAnh;
+  double _canhAnh = 0;
+  double _tiLeAnh = 0;
+
+  ui.Image _anhMatSo(double tiLe, TextDirection dir) {
+    final ve = MatSoPainter(
+      nhan8: widget.nhan8,
+      mau: widget.mau,
+      huongChu: dir,
+    );
+    final cu = _anh;
+    final veCu = _veAnh;
+    if (cu != null &&
+        veCu != null &&
+        _canhAnh == widget.canh &&
+        _tiLeAnh == tiLe &&
+        !ve.shouldRepaint(veCu)) {
+      return cu;
+    }
+    final px = math.max(1, (widget.canh * tiLe).ceil());
+    final ghi = ui.PictureRecorder();
+    final canvas = Canvas(ghi)..scale(px / widget.canh);
+    ve.paint(canvas, Size.square(widget.canh));
+    final hinh = ghi.endRecording();
+    final anh = hinh.toImageSync(px, px);
+    hinh.dispose();
+    cu?.dispose();
+    _anh = anh;
+    _veAnh = ve;
+    _canhAnh = widget.canh;
+    _tiLeAnh = tiLe;
+    return anh;
+  }
+
+  @override
+  void dispose() {
+    _anh?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final dir = Directionality.of(context);
+    final anh = _anhMatSo(
+      MediaQuery.devicePixelRatioOf(context),
+      Directionality.of(context),
+    );
     return SizedBox.square(
-      dimension: canh,
+      dimension: widget.canh,
       child: Stack(
         fit: StackFit.expand,
         children: [
           Transform.rotate(
-            angle: -phuongVi * math.pi / 180,
-            child: RepaintBoundary(
-              child: CustomPaint(
-                painter: MatSoPainter(nhan8: nhan8, mau: mau, huongChu: dir),
-                isComplex: true,
-              ),
+            angle: -widget.phuongVi * math.pi / 180,
+            child: RawImage(
+              image: anh,
+              width: widget.canh,
+              height: widget.canh,
             ),
           ),
-          CustomPaint(painter: VachMocPainter(mau.moc)),
+          CustomPaint(painter: VachMocPainter(widget.mau.moc)),
         ],
       ),
     );
