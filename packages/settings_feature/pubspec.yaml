@@ -11,6 +11,7 @@ dependencies:
   flutter_riverpod: ^3.4.3
   i18n:
   meta: any
+  storage:
 dev_dependencies:
   flutter_test:
     sdk: flutter

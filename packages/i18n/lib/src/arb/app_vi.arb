@@ -46,5 +46,19 @@
   "onboardingBody": "La bàn chính xác, dùng được khi không có mạng và giữ dữ liệu của bạn trên máy.",
   "@onboardingBody": {"description": "Mô tả màn giới thiệu lần đầu"},
   "onboardingStart": "Bắt đầu",
-  "@onboardingStart": {"description": "Nút đóng màn giới thiệu"}
+  "@onboardingStart": {"description": "Nút đóng màn giới thiệu"},
+  "safeModeTitle": "Chế độ an toàn",
+  "@safeModeTitle": {"description": "Tiêu đề băng báo chế độ an toàn"},
+  "safeModeCrash": "Ứng dụng gặp lỗi nhiều lần nên đã tạm tắt các tính năng mới. La bàn vẫn hoạt động bình thường.",
+  "@safeModeCrash": {"description": "Lý do: crash liên tiếp"},
+  "safeModeStorage": "Chưa mở được dữ liệu đã lưu. Dữ liệu cũ vẫn được giữ nguyên, la bàn vẫn hoạt động.",
+  "@safeModeStorage": {"description": "Lý do: lỗi CSDL / migration"},
+  "safeModeNewer": "Dữ liệu được tạo bởi phiên bản mới hơn. Hãy cập nhật ứng dụng để dùng lại.",
+  "@safeModeNewer": {"description": "Lý do: CSDL của bản app mới hơn"},
+  "safeModeRetry": "Thử chế độ thường",
+  "@safeModeRetry": {"description": "Nút thoát chế độ an toàn"},
+  "safeModeRetryDone": "Mở lại ứng dụng để áp dụng.",
+  "@safeModeRetryDone": {"description": "Thông báo sau khi bấm thoát chế độ an toàn"},
+  "featurePaused": "Tính năng này đang tạm tắt.",
+  "@featurePaused": {"description": "Màn hình thay thế khi cờ tính năng tắt"}
 }

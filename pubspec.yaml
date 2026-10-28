@@ -22,3 +22,8 @@ workspace:
   - packages/test_kit
 dev_dependencies:
   very_good_analysis: ^11.0.0
+# SQLCipher (QUYET_DINH Q11): package:sqlite3 tải bản SQLCipher dựng sẵn (kiểm sha256) cho mọi nền tảng, kể cả test Linux.
+hooks:
+  user_defines:
+    sqlite3:
+      source: sqlcipher

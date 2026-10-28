@@ -4,3 +4,24 @@ publish_to: none
 resolution: workspace
 environment:
   sdk: ^3.13.0
+  flutter: ">=3.38.0"
+dependencies:
+  core:
+  drift: ^2.35.3
+  flutter:
+    sdk: flutter
+  meta: any
+  sqlite3: ^3.8.0
+dev_dependencies:
+  build_runner: ">=2.10.0 <3.0.0"
+  drift_dev: ">=2.30.0 <3.0.0"
+  flutter_test:
+    sdk: flutter
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.tsudev.laban.storage
+        pluginClass: KhoKhoaPlugin
+      ios:
+        pluginClass: KhoKhoaPlugin

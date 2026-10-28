@@ -79,6 +79,30 @@ class LbL10nEn extends LbL10n {
 
   @override
   String get onboardingStart => 'Get started';
+
+  @override
+  String get safeModeTitle => 'Safe mode';
+
+  @override
+  String get safeModeCrash =>
+      'The app hit repeated errors, so newer features are paused. The compass still works normally.';
+
+  @override
+  String get safeModeStorage =>
+      'Your saved data could not be opened. It is kept unchanged and the compass still works.';
+
+  @override
+  String get safeModeNewer =>
+      'Your data was created by a newer version. Update the app to use it again.';
+
+  @override
+  String get safeModeRetry => 'Try normal mode';
+
+  @override
+  String get safeModeRetryDone => 'Restart the app to apply.';
+
+  @override
+  String get featurePaused => 'This feature is temporarily paused.';
 }
 
 /// The translations for English (`en_XA`).
@@ -156,4 +180,29 @@ class LbL10nEnXa extends LbL10nEn {
 
   @override
   String get onboardingStart => '[Ğẽť šťảřťẽđ ·····]';
+
+  @override
+  String get safeModeTitle => '[Šảfẽ mởđẽ ····]';
+
+  @override
+  String get safeModeCrash =>
+      '[Ťhẽ ảpp hỉť řẽpẽảťẽđ ẽřřởřš, šở ñẽŵẽř fẽảťữřẽš ảřẽ pảữšẽđ. Ťhẽ çởmpảšš šťỉłł ŵởřkš ñởřmảłłỹ. ·····································]';
+
+  @override
+  String get safeModeStorage =>
+      '[Ỹởữř šảvẽđ đảťả çởữłđ ñởť bẽ ởpẽñẽđ. Ỉť ỉš kẽpť ữñçhảñğẽđ ảñđ ťhẽ çởmpảšš šťỉłł ŵởřkš. ···································]';
+
+  @override
+  String get safeModeNewer =>
+      '[Ỹởữř đảťả ŵảš çřẽảťẽđ bỹ ả ñẽŵẽř vẽřšỉởñ. Ữpđảťẽ ťhẽ ảpp ťở ữšẽ ỉť ảğảỉñ. ······························]';
+
+  @override
+  String get safeModeRetry => '[Ťřỹ ñởřmảł mởđẽ ······]';
+
+  @override
+  String get safeModeRetryDone => '[Řẽšťảřť ťhẽ ảpp ťở ảppłỹ. ··········]';
+
+  @override
+  String get featurePaused =>
+      '[Ťhỉš fẽảťữřẽ ỉš ťẽmpởřảřỉłỹ pảữšẽđ. ··············]';
 }

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:design_system/src/tokens/tokens.g.dart';
 import 'package:flutter/material.dart';
 
@@ -19,8 +21,10 @@ class LbTrangTrong extends StatelessWidget {
       builder: (context, rang) => SingleChildScrollView(
         padding: const EdgeInsets.all(LbSpacing.lg),
         child: ConstrainedBox(
+          // Vùng thấp hơn phần đệm (băng an toàn + chữ x2 trên máy nhỏ) ->
+          // không ép chiều cao tối thiểu âm.
           constraints: BoxConstraints(
-            minHeight: rang.maxHeight - 2 * LbSpacing.lg,
+            minHeight: math.max(0, rang.maxHeight - 2 * LbSpacing.lg),
           ),
           child: Center(
             child: ConstrainedBox(

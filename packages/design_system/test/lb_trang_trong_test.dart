@@ -33,6 +33,19 @@ void main() {
       ),
     );
     expect(find.byType(Text), findsNothing);
+
+    // Vùng thấp hơn phần đệm 2 x lg: không ném lỗi ràng buộc âm.
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Center(
+          child: SizedBox(
+            height: 20,
+            child: LbTrangTrong(hinh: SizedBox(height: 10)),
+          ),
+        ),
+      ),
+    );
+    expect(tester.takeException(), isNull);
   });
 
   test('LbIconData.toString có tên tệp', () {

@@ -56,3 +56,15 @@ Kế thừa từ repo anh em (ban-do-3d / ubnd) - áp dụng vì cùng hạ tầ
   workers-types) - test chạy trong Node dùng shim `test/node-shim.d.ts`. (S1)
 - ZOD BUNDLE: zod 4 đẩy gói Worker 65 KiB -> 870 KiB; `minify = true` + tách `src/openapi.ts` (z.toJSONSchema) khỏi mã chạy
   -> ~490 KiB / gzip 111 KiB. (S1)
+- SQLCIPHER HOOK: `sqlcipher_flutter_libs` / `sqlite3_flutter_libs` đã EOL (0.x+eol) - SQLCipher bật bằng `hooks: user_defines:
+  sqlite3: source: sqlcipher` ở pubspec GỐC workspace; hook tải binary (kể cả cho `flutter test` Linux, lần đầu ~40 s).
+  Kiểm: `PRAGMA cipher_version`. Khoá sai chỉ lộ ở lệnh đọc ĐẦU TIÊN ("file is not a database"). (A5)
+- BUILD_RUNNER ANALYZER: `build_runner` 2.17 cần analyzer 14 nhưng `test` (core) + flutter_test ghim analyzer < 14 -> để
+  khoảng `build_runner: ">=2.10.0 <3.0.0"`, `drift_dev` tương tự, pub tự chọn 2.16.1. (A5)
+- DRIFT SCHEMAVERSION: `drift_dev make-migrations` chỉ đọc `schemaVersion => <số literal>` ("Could not read schema version")
+  -> không trả biến / tham số; test giả lập phiên bản mới bằng lớp con override `schemaVersion`. (A5)
+- DRIFT ISNULL: `package:drift/drift.dart` export `isNull` / `isNotNull` trùng matcher của flutter_test -> trong test
+  `import 'package:drift/drift.dart' hide isNull, isNotNull;`. (A5)
+- TRANG TRONG AM: `LbTrangTrong` trong vùng thấp hơn 48 px (băng an toàn + chữ x2 trên máy nhỏ) ném "negative minimum
+  height" -> đã kẹp `max(0, ...)`; widget tự tính chiều cao từ `LayoutBuilder` phải kẹp >= 0. (A5)
+
