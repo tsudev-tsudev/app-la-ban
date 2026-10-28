@@ -130,8 +130,13 @@ Developer, Codemagic, duyệt Privacy Policy · trước R4 chốt đơn vị pe
   import ngược lớp.
 - Cổng: golden xanh; đổi ngôn ngữ/theme không rebuild toàn cây.
 - Phát sinh (từ N1): đóng gói font `design/fonts/BeVietnamPro-*.ttf` vào `packages/design_system` (family `BeVietnamPro`,
-  `LbType` đã trỏ `package: design_system`) + đăng ký OFL vào `LicenseRegistry`; chọn cách vẽ icon 24dp `design/icons`
-  trong Flutter (flutter_svg = SDK bên thứ ba -> HỎI, hoặc sinh Path Dart / icon font); onboarding dùng `LbLogoDong`.
+  `LbType` đã trỏ `package: design_system`) + đăng ký OFL vào `LicenseRegistry`; vẽ icon 24dp `design/icons` theo
+  **QUYET_DINH Q30 (đã chốt - sinh mã Dart, không flutter_svg, không icon font)**: viết `tools/build/icon-dart.mjs` (hàm
+  thuần ở `icon-dart-sinh.mjs` + `node --test`: đủ lệnh path M/L/H/V/C/S/Q/T/A/Z cả hoa/thường, circle/rect(rx)/ellipse,
+  bỏ qua `v.01` chấm thì vẫn vẽ chấm tròn) -> `packages/design_system/lib/src/icons/lb_icons.g.dart` qua `dart format`
+  (giống `tokens.mjs`) + widget `LbIcon(LbIcons.xxx, size, color, semanticLabel)` dùng `IconTheme`, nét = size/12, đầu /
+  góc tròn; thêm `node tools/build/icon-dart.mjs --check` vào bước "Thương hiệu" của `cong.sh`; golden 11 icon light/dark
+  so với `design/icons/xem-truoc.png`. Onboarding dùng `LbLogoDong`.
 
 ### A2 - Cảm biến + fusion
 - Đọc thêm: Spec §4.1.

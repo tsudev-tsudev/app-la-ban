@@ -43,3 +43,9 @@ agent làm theo mặc định cho tới khi người dùng chốt khác; phase n
 | Q27 | Thiết bị thật để thử | Ít nhất 1 Android (người dùng) qua `adb` Wi-Fi; iPhone qua TestFlight | Firebase Test Lab (hạn mức miễn phí) | A2 |
 | Q28 | Reverse geocoding | Dữ liệu địa giới hành chính VN tĩnh (34 tỉnh / xã sau sắp xếp 2025) đóng gói offline, tra cục bộ; ngoài VN chỉ hiện tọa độ | Dịch vụ trả phí (Google / Mapbox) | A4 |
 | Q29 | Độ tuổi / gia đình | Đối tượng >= 13 tuổi, không tham gia "Designed for Families" | | R2 |
+
+## C. Chốt sau (người dùng giao agent chọn)
+
+| Mã | Chủ đề | Chốt | Lý do | Phase |
+|---|---|---|---|---|
+| Q30 | Vẽ icon SVG 24dp trong Flutter (28/10/2026, người dùng giao agent chọn phương án tối ưu) | **Sinh mã Dart lúc build**: `tools/build/icon-dart.mjs` đọc `design/icons/*.svg` -> `packages/design_system/lib/src/icons/lb_icons.g.dart` (mỗi icon là danh sách lệnh `Path` - moveTo / lineTo / cubicTo / quadraticBezierTo / arcToPoint, kể cả lệnh tương đối; `circle` / `rect` / `ellipse` -> addOval / addRRect) + widget `LbIcon` (CustomPainter, nét 2/24 theo cỡ, màu từ `IconTheme`). KHÔNG dùng `flutter_svg`, KHÔNG icon font | 0 SDK bên thứ ba (không ảnh hưởng Data Safety / Privacy Manifest, không thêm chuỗi cung ứng); không parse XML / tải asset lúc chạy -> vẽ đồng bộ ngay khung đầu, golden ổn định; giữ đúng nét stroke (icon font cần chuyển nét thành viền, mất kiểm soát độ dày). Đổi icon = sửa SVG rồi chạy lệnh sinh; cổng `--check` như token | A1 |
