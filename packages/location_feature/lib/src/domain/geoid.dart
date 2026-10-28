@@ -8,7 +8,7 @@ final class LuoiGeoid {
 
   /// Đọc asset: "LBGE" + u16 phiên bản + 181 x 360 int16 (dm), hàng vĩ độ
   /// 90 -> -90, cột kinh độ -180 -> 179.
-  factory LuoiGeoid.tuBytes(ByteData b) {
+  factory tuBytes(ByteData b) {
     const soO = 181 * 360;
     if (b.lengthInBytes != 6 + soO * 2 ||
         String.fromCharCodes(b.buffer.asUint8List(b.offsetInBytes, 4)) !=
@@ -28,7 +28,7 @@ final class LuoiGeoid {
 
   /// Độ cao geoid N (m) tại điểm - nội suy song tuyến.
   double doCao(double viDo, double kinhDo) {
-    final y = (90 - viDo.clamp(-90.0, 90.0)).toDouble();
+    final y = 90 - viDo.clamp(-90.0, 90.0);
     final x = ((kinhDo + 180) % 360 + 360) % 360;
     final h0 = y.floor().clamp(0, 179);
     final c0 = x.floor();

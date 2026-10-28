@@ -6,7 +6,7 @@ import 'package:meta/meta.dart';
 // ch.25 và ch.47 rút gọn các số hạng lớn). Sai số so ephem: mặt trời < 0,02°,
 // mặt trăng < 0,1°, giờ mọc / lặn < 1 phút - dư cho la bàn.
 
-const _rad = math.pi / 180;
+const double _rad = math.pi / 180;
 
 double _chuanHoa(double d) => (d % 360 + 360) % 360;
 
@@ -34,7 +34,8 @@ typedef _XichDao = ({double xichKinh, double xichVi, double khoangCachKm});
 
 _XichDao _tuHoangDao(double lambda, double beta, double t, double km) {
   final eps = (23.4392911 - 0.0130042 * t) * _rad;
-  final l = lambda * _rad, b = beta * _rad;
+  final l = lambda * _rad;
+  final b = beta * _rad;
   final ra = math.atan2(
     math.sin(l) * math.cos(eps) - math.tan(b) * math.sin(eps),
     math.cos(l),
@@ -129,7 +130,9 @@ const _bangB = <List<int>>[
 
 _XichDao _matTrang(double jd) {
   final t = _theKy(jd);
-  final t2 = t * t, t3 = t2 * t, t4 = t3 * t;
+  final t2 = t * t;
+  final t3 = t2 * t;
+  final t4 = t3 * t;
   final lp =
       218.3164477 +
       481267.88123421 * t -
@@ -165,7 +168,9 @@ _XichDao _matTrang(double jd) {
     _ => 1,
   };
   double sinD(double x) => math.sin(x * _rad);
-  var sl = 0.0, sr = 0.0, sb = 0.0;
+  var sl = 0.0;
+  var sr = 0.0;
+  var sb = 0.0;
   for (final h in _bangLR) {
     final arg = h[0] * d + h[1] * m + h[2] * mp + h[3] * f;
     final k = heSoE(h[1]);
@@ -219,7 +224,7 @@ ViTriBauTroi _ngang(_XichDao x, double jd, double viDo, double kinhDo) {
 /// cao nhìn thấy.
 double khucXa(double doCao) {
   if (doCao < -1.5) return 0;
-  final h = math.max(doCao, -1.0);
+  final h = math.max(doCao, -1);
   return 1 / 60 / math.tan((h + 7.31 / (h + 4.4)) * _rad);
 }
 
@@ -242,7 +247,8 @@ PhaTrang phaMatTrang(DateTime t) {
   final s = _matTroi(jd);
   final m = _matTrang(jd);
   double vec(double ra, double dec, int i) {
-    final r = ra * _rad, d = dec * _rad;
+    final r = ra * _rad;
+    final d = dec * _rad;
     return switch (i) {
       0 => math.cos(d) * math.cos(r),
       1 => math.cos(d) * math.sin(r),
@@ -310,7 +316,9 @@ SuKienNgay _tim(
   // Góc giờ ~ phương vị qua 180°: đổi dấu sin(phương vị) từ + sang -.
   double g(DateTime t) => math.sin(viTri(t).phuongVi * _rad);
 
-  DateTime chiaDoi(DateTime a, DateTime b, double Function(DateTime) h) {
+  DateTime chiaDoi(DateTime tu, DateTime den, double Function(DateTime) h) {
+    var a = tu;
+    var b = den;
     final ha = h(a);
     for (var i = 0; i < 20; i++) {
       final giua = a.add(
@@ -325,14 +333,18 @@ SuKienNgay _tim(
     return a.add(Duration(microseconds: b.difference(a).inMicroseconds ~/ 2));
   }
 
-  DateTime? moc, lan, dinh;
+  DateTime? moc;
+  DateTime? lan;
+  DateTime? dinh;
   var t0 = tu;
-  var f0 = f(t0), g0 = g(t0);
+  var f0 = f(t0);
+  var g0 = g(t0);
   var tren = f0 > 0;
   var luonTren = tren;
   while (t0.isBefore(den)) {
     final t1 = t0.add(buoc);
-    final f1 = f(t1), g1 = g(t1);
+    final f1 = f(t1);
+    final g1 = g(t1);
     if (f0 <= 0 && f1 > 0) {
       moc ??= chiaDoi(t0, t1, f);
       luonTren = false;

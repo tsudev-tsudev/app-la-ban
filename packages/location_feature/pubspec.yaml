@@ -6,3 +6,6 @@ environment:
   sdk: ^3.13.0
 dependencies:
   meta: any
+dev_dependencies:
+  flutter_test:
+    sdk: flutter

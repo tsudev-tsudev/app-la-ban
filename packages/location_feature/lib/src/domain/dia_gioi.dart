@@ -76,7 +76,7 @@ const _luongTu = 100000;
 final class BanDoDiaGioi {
   new _(this._b, this.nguon, this._tinh);
 
-  factory BanDoDiaGioi.tuBytes(Uint8List b) {
+  factory tuBytes(Uint8List b) {
     if (b.length < 8 || ascii.decode(b.sublist(0, 4)) != 'LBDG') {
       throw const FormatException('địa giới: sai định dạng');
     }
@@ -139,7 +139,8 @@ final class _Doc {
   int _i;
 
   int varint() {
-    var kq = 0, dich = 0;
+    var kq = 0;
+    var dich = 0;
     while (true) {
       final c = _b[_i++];
       kq |= (c & 0x7f) << dich;
@@ -195,10 +196,13 @@ final class _Doc {
     for (var v = 0; v < soVong; v++) {
       final n = varint();
       if (n == 0) continue;
-      final x0 = zigzag(), y0 = zigzag();
-      var xa = x0, ya = y0;
+      final x0 = zigzag();
+      final y0 = zigzag();
+      var xa = x0;
+      var ya = y0;
       for (var k = 1; k <= n; k++) {
-        int xb, yb;
+        int xb;
+        int yb;
         if (k < n) {
           xb = xa + zigzag();
           yb = ya + zigzag();

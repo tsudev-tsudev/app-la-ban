@@ -68,20 +68,24 @@ final class ToaDoUtm {
 }
 
 const _a = 6378137.0;
-const _f = 1 / 298.257223563;
+const double _f = 1 / 298.257223563;
 const _k0 = 0.9996;
 const _chuDai = 'CDEFGHJKLMNPQRSTUVWX';
 
 // Chuỗi Krüger bậc 6 (Karney 2011) - sai số < 1 mm trong múi.
-final _n = _f / (2 - _f);
-final _e = math.sqrt(_f * (2 - _f));
-final _bigA = () {
-  final n2 = _n * _n;
+const double _n = _f / (2 - _f);
+final double _e = math.sqrt(_f * (2 - _f));
+final double _bigA = () {
+  const n2 = _n * _n;
   return _a / (1 + _n) * (1 + n2 / 4 + n2 * n2 / 64 + n2 * n2 * n2 / 256);
 }();
-final _alpha = () {
-  final n = _n;
-  final n2 = n * n, n3 = n2 * n, n4 = n3 * n, n5 = n4 * n, n6 = n5 * n;
+final List<double> _alpha = () {
+  const n = _n;
+  const n2 = n * n;
+  const n3 = n2 * n;
+  const n4 = n3 * n;
+  const n5 = n4 * n;
+  const n6 = n5 * n;
   return [
     n / 2 -
         2 * n2 / 3 +
@@ -139,7 +143,8 @@ ToaDoUtm? sangUtm(double viDo, double kinhDo) {
   final t = _sinh(_atanh(sp) - _e * _atanh(_e * sp));
   final xiP = math.atan2(t, math.cos(lam));
   final etaP = _atanh(math.sin(lam) / math.sqrt(1 + t * t));
-  var xi = xiP, eta = etaP;
+  var xi = xiP;
+  var eta = etaP;
   for (var j = 1; j <= 6; j++) {
     final a = _alpha[j - 1];
     xi += a * math.sin(2 * j * xiP) * _cosh(2 * j * etaP);
@@ -164,23 +169,24 @@ const _hangMgrs = 'ABCDEFGHJKLMNPQRSTUV';
 String? sangMgrs(double viDo, double kinhDo, {int soChuSo = 5}) {
   final u = sangUtm(viDo, kinhDo);
   if (u == null) return null;
-  // Cắt cụt về mét trước (tránh 99999,9997 -> 100000).
-  final e = u.dong.floor();
-  final n = u.bac.floor();
+  // Cắt cụt về mét, dung sai 1 mm như GeoTrans (462758,9995 -> 462759).
+  final e = (u.dong + 1e-3).floor();
+  final n = (u.bac + 1e-3).floor();
   final bo = (u.vung - 1) % 3;
   final cot = _cotMgrs[bo][e ~/ 100000 - 1];
   final lech = u.vung.isEven ? 5 : 0;
   final hang = _hangMgrs[(n ~/ 100000 + lech) % 20];
   final chia = math.pow(10, 5 - soChuSo).toInt();
   String so(int v) => ((v % 100000) ~/ chia).toString().padLeft(soChuSo, '0');
-  return '${u.vung}${u.chuDai}$cot$hang${so(e)}${so(n)}';
+  final vung = u.vung.toString().padLeft(2, '0');
+  return '$vung${u.chuDai}$cot$hang${so(e)}${so(n)}';
 }
 
 /// MGRS có dấu cách để đọc: `48Q WJ 83629 25513`.
 String? dinhDangMgrs(double viDo, double kinhDo) {
   final m = sangMgrs(viDo, kinhDo);
   if (m == null) return null;
-  final i = m.length - 14;
+  const i = 1; // múi luôn 2 chữ số
   return '${m.substring(0, i + 2)} ${m.substring(i + 2, i + 4)} '
       '${m.substring(i + 4, i + 9)} ${m.substring(i + 9)}';
 }

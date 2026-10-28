@@ -82,7 +82,9 @@ double? _soHuuHan(Object? v) => v is num && v.isFinite ? v.toDouble() : null;
 /// nguồn]; NaN = không có.
 DocViTri? giaiMaDocViTri(Object? e) {
   if (e is! List || e.length < 10) return null;
-  final vi = _soHuuHan(e[0]), kinh = _soHuuHan(e[1]), ms = _soHuuHan(e[7]);
+  final vi = _soHuuHan(e[0]);
+  final kinh = _soHuuHan(e[1]);
+  final ms = _soHuuHan(e[7]);
   if (vi == null || kinh == null || ms == null) return null;
   if (vi.abs() > 90 || kinh.abs() > 180) return null;
   final nguon = _soHuuHan(e[9])?.toInt() ?? 3;
