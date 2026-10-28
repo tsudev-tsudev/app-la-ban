@@ -53,7 +53,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 4 | A1 | Khung app (theme, i18n, router, responsive, golden) | N1 | ✅ 28/10 |
 | 5 | A2 | Cảm biến + sensor fusion | A1 | ⬜ |
 | 6 | A3 | Mặt la bàn, bắc thực WMM, hiệu chuẩn | A2 | ⬜ |
-| 7 | S1 | API lõi + schema D1 | N2 | ⬜ |
+| 7 | S1 | API lõi + schema D1 | N2 | ✅ 28/10 |
 | 8 | A4 | Vị trí + telemetry | A3 | ⬜ |
 | 9 | A5 | Lưu trữ mã hóa, migration, safe mode | A1 | ⬜ |
 | 10 | S2 | Định danh thiết bị + attestation + phiên | S1, A5 | ⬜ |
@@ -175,6 +175,11 @@ Developer, Codemagic, duyệt Privacy Policy · trước R4 chốt đơn vị pe
   Spec §6.4 (audit có `hash_prev/hash_self`); DO `NonceGuard`, `RateWindow`; Rate Limiting binding; OpenAPI sinh tự động (không
   công khai); test vitest + miniflare.
 - Cổng: test xanh; `wrangler deploy --env staging`; mọi lỗi không lộ stack.
+- Kết quả (28/10, main 55b8dfa, PR #5): migration 0001 đủ 9 bảng §6.4 + `idempotency_keys` (audit chuỗi băm, trigger chỉ
+  thêm, enforcement bắt buộc TTL + four-eyes khác người); `BoTuyen` sinh middleware + OpenAPI (`openapi.json`, không công
+  khai); RFC 7807 chung chung + `x-request-id`, log che PII; DO `KhoNonce` / `GioiHanToc` thật; binding `RL_IP`,
+  Analytics Engine `SU_KIEN`, cron dọn hạn lưu. 61 vitest (gồm tích hợp Miniflare D1 + workerd). Đã migrate + deploy staging
+  rồi prod (`/v1/health` build 55b8dfa). Chưa có route nghiệp vụ: S2 thêm `/v1/device/*`, `/v1/session/refresh`.
 
 ### A4 - Vị trí + telemetry
 - Làm: quyền just-in-time (While Using, ưu tiên approximate); DD/DMS/UTM/MGRS; cao độ GPS + baro; tốc độ, độ chính xác; µT +
