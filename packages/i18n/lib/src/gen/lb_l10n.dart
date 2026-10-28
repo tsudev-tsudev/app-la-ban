@@ -553,6 +553,432 @@ abstract class LbL10n {
   /// In vi, this message translates to:
   /// **'Xong'**
   String get calibFinish;
+
+  /// Tiêu đề màn vị trí / telemetry
+  ///
+  /// In vi, this message translates to:
+  /// **'Vị trí & thông số'**
+  String get locTitle;
+
+  /// Lời mời bật vị trí (trước khi hỏi quyền)
+  ///
+  /// In vi, this message translates to:
+  /// **'Bật vị trí để dùng bắc thực, toạ độ, độ cao và giờ mặt trời mọc / lặn. Vị trí chỉ dùng trên máy, không gửi đi.'**
+  String get locIntro;
+
+  /// Nút xin quyền vị trí
+  ///
+  /// In vi, this message translates to:
+  /// **'Cho phép vị trí'**
+  String get locAllow;
+
+  /// Quyền bị từ chối hẳn
+  ///
+  /// In vi, this message translates to:
+  /// **'Quyền vị trí đã bị tắt. Bật lại trong Cài đặt của ứng dụng.'**
+  String get locDeniedForever;
+
+  /// Nút mở cài đặt app / vị trí
+  ///
+  /// In vi, this message translates to:
+  /// **'Mở cài đặt'**
+  String get locOpenSettings;
+
+  /// Dịch vụ vị trí tắt
+  ///
+  /// In vi, this message translates to:
+  /// **'Dịch vụ vị trí của máy đang tắt.'**
+  String get locServiceOff;
+
+  /// Chờ lần đọc vị trí đầu
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tìm vị trí...'**
+  String get locSearching;
+
+  /// Chỉ có quyền vị trí xấp xỉ
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang dùng vị trí xấp xỉ'**
+  String get locApproximate;
+
+  /// Nút mở màn chi tiết vị trí
+  ///
+  /// In vi, this message translates to:
+  /// **'Chi tiết'**
+  String get locDetails;
+
+  /// Thông báo đã chép
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã chép toạ độ'**
+  String get locCopied;
+
+  /// Nút chép toạ độ
+  ///
+  /// In vi, this message translates to:
+  /// **'Chép'**
+  String get locCopy;
+
+  /// Gợi ý chạm để đổi định dạng
+  ///
+  /// In vi, this message translates to:
+  /// **'Đổi định dạng toạ độ'**
+  String get locCycleFormat;
+
+  /// Sai số ngang (m)
+  ///
+  /// In vi, this message translates to:
+  /// **'±{value} m'**
+  String locAccuracy(int value);
+
+  /// Độ cao ngắn gọn trên thẻ
+  ///
+  /// In vi, this message translates to:
+  /// **'Cao {value} m'**
+  String locAltitude(int value);
+
+  /// Không tra được địa giới VN
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngoài lãnh thổ Việt Nam'**
+  String get locOutsideVn;
+
+  /// Ghi công dữ liệu OSM
+  ///
+  /// In vi, this message translates to:
+  /// **'Địa giới © OpenStreetMap contributors (ODbL)'**
+  String get locOsmCredit;
+
+  /// Mục toạ độ
+  ///
+  /// In vi, this message translates to:
+  /// **'Toạ độ'**
+  String get locSectionCoords;
+
+  /// Mục địa giới
+  ///
+  /// In vi, this message translates to:
+  /// **'Địa giới hành chính'**
+  String get locSectionPlace;
+
+  /// Mục độ cao
+  ///
+  /// In vi, this message translates to:
+  /// **'Độ cao'**
+  String get locSectionAltitude;
+
+  /// Mục tốc độ / hướng đi
+  ///
+  /// In vi, this message translates to:
+  /// **'Di chuyển'**
+  String get locSectionMotion;
+
+  /// Mục từ trường
+  ///
+  /// In vi, this message translates to:
+  /// **'Từ trường'**
+  String get locSectionField;
+
+  /// Mục thước thuỷ
+  ///
+  /// In vi, this message translates to:
+  /// **'Thước thuỷ'**
+  String get locSectionLevel;
+
+  /// Mục mặt trời
+  ///
+  /// In vi, this message translates to:
+  /// **'Mặt trời'**
+  String get locSectionSun;
+
+  /// Mục mặt trăng
+  ///
+  /// In vi, this message translates to:
+  /// **'Mặt trăng'**
+  String get locSectionMoon;
+
+  /// Tên định dạng DD
+  ///
+  /// In vi, this message translates to:
+  /// **'Độ thập phân'**
+  String get locFormatDd;
+
+  /// Tên định dạng DMS
+  ///
+  /// In vi, this message translates to:
+  /// **'Độ phút giây'**
+  String get locFormatDms;
+
+  /// Tên định dạng UTM
+  ///
+  /// In vi, this message translates to:
+  /// **'UTM'**
+  String get locFormatUtm;
+
+  /// Tên định dạng MGRS
+  ///
+  /// In vi, this message translates to:
+  /// **'MGRS'**
+  String get locFormatMgrs;
+
+  /// Giá trị không có
+  ///
+  /// In vi, this message translates to:
+  /// **'Không có'**
+  String get locNotAvailable;
+
+  /// Nhãn sai số ngang
+  ///
+  /// In vi, this message translates to:
+  /// **'Sai số ngang'**
+  String get locHorizontalAccuracy;
+
+  /// Nhãn độ cao GPS
+  ///
+  /// In vi, this message translates to:
+  /// **'GPS (trên mực biển)'**
+  String get locAltGps;
+
+  /// Nhãn độ cao khí áp
+  ///
+  /// In vi, this message translates to:
+  /// **'Khí áp kế'**
+  String get locAltBaro;
+
+  /// Ghi chú khí áp đã hiệu chỉnh
+  ///
+  /// In vi, this message translates to:
+  /// **'đã hiệu chỉnh theo GPS'**
+  String get locBaroCalibrated;
+
+  /// Ghi chú khí áp chưa hiệu chỉnh
+  ///
+  /// In vi, this message translates to:
+  /// **'theo áp suất chuẩn 1013 hPa'**
+  String get locBaroStandard;
+
+  /// Nhãn áp suất
+  ///
+  /// In vi, this message translates to:
+  /// **'Áp suất'**
+  String get locPressure;
+
+  /// Giá trị mét
+  ///
+  /// In vi, this message translates to:
+  /// **'{value} m'**
+  String locMeters(int value);
+
+  /// Mét kèm sai số
+  ///
+  /// In vi, this message translates to:
+  /// **'{value} m ±{acc} m'**
+  String locMetersPm(int value, int acc);
+
+  /// Áp suất hPa
+  ///
+  /// In vi, this message translates to:
+  /// **'{value} hPa'**
+  String locHpa(double value);
+
+  /// Nhãn tốc độ
+  ///
+  /// In vi, this message translates to:
+  /// **'Tốc độ'**
+  String get locSpeed;
+
+  /// Tốc độ km/h
+  ///
+  /// In vi, this message translates to:
+  /// **'{value} km/h'**
+  String locKmh(double value);
+
+  /// Nhãn hướng di chuyển
+  ///
+  /// In vi, this message translates to:
+  /// **'Hướng đi'**
+  String get locCourse;
+
+  /// Góc nguyên
+  ///
+  /// In vi, this message translates to:
+  /// **'{value}°'**
+  String locDegrees(int value);
+
+  /// Nhãn từ trường đo
+  ///
+  /// In vi, this message translates to:
+  /// **'Đo được'**
+  String get locFieldMeasured;
+
+  /// Nhãn từ trường mô hình
+  ///
+  /// In vi, this message translates to:
+  /// **'Mô hình WMM'**
+  String get locFieldModel;
+
+  /// Giá trị µT
+  ///
+  /// In vi, this message translates to:
+  /// **'{value} µT'**
+  String locMicroTesla(double value);
+
+  /// Lệch so với mô hình
+  ///
+  /// In vi, this message translates to:
+  /// **'Lệch {value}%'**
+  String locFieldDeviation(int value);
+
+  /// Cảnh báo µT ngoài dải
+  ///
+  /// In vi, this message translates to:
+  /// **'Từ trường bất thường (bình thường 25-65 µT): có thể có nam châm hoặc kim loại gần máy.'**
+  String get locFieldAbnormal;
+
+  /// Góc nghiêng thước thuỷ
+  ///
+  /// In vi, this message translates to:
+  /// **'Nghiêng {value}°'**
+  String locLevelTilt(double value);
+
+  /// Thước thuỷ đã cân bằng
+  ///
+  /// In vi, this message translates to:
+  /// **'Cân bằng'**
+  String get locLevelOk;
+
+  /// Gợi ý dùng thước thuỷ
+  ///
+  /// In vi, this message translates to:
+  /// **'Đặt máy nằm trên mặt cần đo.'**
+  String get locLevelHint;
+
+  /// Giờ mọc
+  ///
+  /// In vi, this message translates to:
+  /// **'Mọc'**
+  String get locRise;
+
+  /// Giờ lặn
+  ///
+  /// In vi, this message translates to:
+  /// **'Lặn'**
+  String get locSet;
+
+  /// Giờ trưa thực
+  ///
+  /// In vi, this message translates to:
+  /// **'Trưa thực'**
+  String get locNoon;
+
+  /// Giờ mặt trăng qua kinh tuyến
+  ///
+  /// In vi, this message translates to:
+  /// **'Qua kinh tuyến'**
+  String get locTransit;
+
+  /// Không lặn trong ngày
+  ///
+  /// In vi, this message translates to:
+  /// **'Ở trên chân trời cả ngày'**
+  String get locAlwaysUp;
+
+  /// Không mọc trong ngày
+  ///
+  /// In vi, this message translates to:
+  /// **'Ở dưới chân trời cả ngày'**
+  String get locAlwaysDown;
+
+  /// Vị trí bầu trời hiện tại
+  ///
+  /// In vi, this message translates to:
+  /// **'Hiện tại'**
+  String get locNow;
+
+  /// Phương vị / độ cao thiên thể
+  ///
+  /// In vi, this message translates to:
+  /// **'Phương vị {az}° · cao {alt}°'**
+  String locSkyPosition(int az, int alt);
+
+  /// Phần trăm đĩa trăng được chiếu sáng
+  ///
+  /// In vi, this message translates to:
+  /// **'Sáng {value}%'**
+  String locMoonIllumination(int value);
+
+  /// Chưa có vị trí cho mặt trời / mặt trăng
+  ///
+  /// In vi, this message translates to:
+  /// **'Cần vị trí để tính giờ mọc / lặn.'**
+  String get locNeedLocationSky;
+
+  /// Pha trăng
+  ///
+  /// In vi, this message translates to:
+  /// **'Trăng mới'**
+  String get moonNew;
+
+  /// Pha trăng
+  ///
+  /// In vi, this message translates to:
+  /// **'Trăng lưỡi liềm đầu tháng'**
+  String get moonWaxingCrescent;
+
+  /// Pha trăng
+  ///
+  /// In vi, this message translates to:
+  /// **'Trăng thượng huyền'**
+  String get moonFirstQuarter;
+
+  /// Pha trăng
+  ///
+  /// In vi, this message translates to:
+  /// **'Trăng khuyết đầu tháng'**
+  String get moonWaxingGibbous;
+
+  /// Pha trăng
+  ///
+  /// In vi, this message translates to:
+  /// **'Trăng tròn'**
+  String get moonFull;
+
+  /// Pha trăng
+  ///
+  /// In vi, this message translates to:
+  /// **'Trăng khuyết cuối tháng'**
+  String get moonWaningGibbous;
+
+  /// Pha trăng
+  ///
+  /// In vi, this message translates to:
+  /// **'Trăng hạ huyền'**
+  String get moonLastQuarter;
+
+  /// Pha trăng
+  ///
+  /// In vi, this message translates to:
+  /// **'Trăng lưỡi liềm cuối tháng'**
+  String get moonWaningCrescent;
+
+  /// Nguồn vị trí
+  ///
+  /// In vi, this message translates to:
+  /// **'GPS'**
+  String get locSourceGps;
+
+  /// Nguồn vị trí
+  ///
+  /// In vi, this message translates to:
+  /// **'Mạng'**
+  String get locSourceNetwork;
+
+  /// Nguồn vị trí
+  ///
+  /// In vi, this message translates to:
+  /// **'Hợp nhất'**
+  String get locSourceFused;
 }
 
 class _LbL10nDelegate extends LocalizationsDelegate<LbL10n> {

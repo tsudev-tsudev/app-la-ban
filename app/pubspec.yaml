@@ -19,6 +19,7 @@ dependencies:
   flutter_riverpod: ^3.4.3
   go_router: ^18.0.2
   i18n:
+  location_feature:
   map_feature:
   settings_feature:
   storage:

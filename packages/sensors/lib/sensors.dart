@@ -13,3 +13,4 @@ export 'src/domain/vi_tri.dart';
 export 'src/domain/wmm.dart';
 export 'src/du_lieu/dich_vu_huong.dart';
 export 'src/du_lieu/nguon_cam_bien.dart';
+export 'src/providers.dart';

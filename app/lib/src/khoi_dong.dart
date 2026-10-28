@@ -7,6 +7,7 @@ import 'package:la_ban/src/app.dart';
 import 'package:la_ban/src/flavor.dart';
 import 'package:la_ban/src/luu_tru.dart';
 import 'package:la_ban/src/phien_ban.dart';
+import 'package:location_feature/location_feature.dart';
 import 'package:settings_feature/settings_feature.dart';
 import 'package:storage/storage.dart';
 
@@ -45,6 +46,11 @@ Future<Widget> dungApp(
         khoCaiDatProvider.overrideWithValue(KhoCaiDatTep(kho.caiDat)),
         khoTuyChonLaBanProvider.overrideWithValue(
           KhoTuyChonLaBanTep(kho.laBan),
+        ),
+        khoViTriProvider.overrideWithValue(KhoViTriTep(kho.viTri)),
+        // Vị trí lưu gần nhất: bắc thực có ngay khung đầu, không chờ GPS.
+        viTriBanDauProvider.overrideWithValue(
+          viTriTuTuyChon(KhoViTriTep(kho.viTri).doc()),
         ),
       ] else
         anToanProvider.overrideWithValue(LyDoAnToan.migrationLoi),
