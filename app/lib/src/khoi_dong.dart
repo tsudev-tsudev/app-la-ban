@@ -1,3 +1,4 @@
+import 'package:compass_feature/compass_feature.dart';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,9 +41,12 @@ Future<Widget> dungApp(
   return ProviderScope(
     overrides: [
       khoLuuTruProvider.overrideWithValue(kho),
-      if (kho != null)
-        khoCaiDatProvider.overrideWithValue(KhoCaiDatTep(kho.caiDat))
-      else
+      if (kho != null) ...[
+        khoCaiDatProvider.overrideWithValue(KhoCaiDatTep(kho.caiDat)),
+        khoTuyChonLaBanProvider.overrideWithValue(
+          KhoTuyChonLaBanTep(kho.laBan),
+        ),
+      ] else
         anToanProvider.overrideWithValue(LyDoAnToan.migrationLoi),
       ...ghiDeThem,
     ],

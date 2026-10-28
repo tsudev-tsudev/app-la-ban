@@ -65,7 +65,7 @@ void main() {
     expect(find.byType(ManGioiThieu), findsNothing);
     expect(find.byType(NavigationBar), findsOneWidget);
     expect(find.byType(ManLaBan), findsOneWidget);
-    expect(find.textContaining('42°'), findsOneWidget);
+    expect(find.textContaining('42,0°'), findsOneWidget);
   });
 
   testWidgets('đổi ngôn ngữ / theme: giữ tab + state, không dựng lại màn', (

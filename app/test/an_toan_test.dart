@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:compass_feature/compass_feature.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -94,6 +95,7 @@ void main() {
     datHeThong(tester, oChup.first);
     TepJson.mo('${tm.path}/cai_dat.json')
         .ghiDongBo({'ngonNgu': 'en', 'daXemGioiThieu': true});
+    TepJson.mo('${tm.path}/la_ban.json').ghiDongBo({'bacThuc': false});
     final app = (await tester.runAsync(
       () => dungApp(
         Flavor.dev,
@@ -109,9 +111,12 @@ void main() {
     expect(TepJson.mo(trangThai).duLieu['soLanChuaOnDinh'], 1);
     await tester.pump(const Duration(seconds: 5));
     expect(TepJson.mo(trangThai).duLieu['soLanChuaOnDinh'], 0);
-    final kho = ProviderScope.containerOf(
+    final vungChua = ProviderScope.containerOf(
       tester.element(find.text('Compass').first),
-    ).read(khoLuuTruProvider)!;
+    );
+    expect(vungChua.read(tuyChonLaBanProvider).bacThuc, isFalse);
+    expect(find.text('Magnetic north'), findsOneWidget);
+    final kho = vungChua.read(khoLuuTruProvider)!;
     expect(kho.csdl, isNotNull);
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.runAsync(kho.dong);

@@ -54,7 +54,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 3 | N2 | Nền Cloudflare + landing tạm | N0 | ✅ 28/10 |
 | 4 | A1 | Khung app (theme, i18n, router, responsive, golden) | N1 | ✅ 28/10 |
 | 5 | A2 | Cảm biến + sensor fusion | A1 | ✅ 28/10 (đo máy thật ⛔ chờ người dùng) |
-| 6 | A3 | Mặt la bàn, bắc thực WMM, hiệu chuẩn | A2 | ⬜ |
+| 6 | A3 | Mặt la bàn, bắc thực WMM, hiệu chuẩn | A2 | ✅ 29/10 (60 FPS máy thật ⛔ chờ adb) |
 | 7 | S1 | API lõi + schema D1 | N2 | ✅ 28/10 |
 | 8 | A4 | Vị trí + telemetry | A3 | ⬜ |
 | 9 | A5 | Lưu trữ mã hóa, migration, safe mode | A1 | ✅ 28/10 |
@@ -190,6 +190,18 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   `huongProvider` (`HuongDoc`: phuongVi đã lọc, doc / lan, theoCamera, muc, nhieuTu, canHieuChuan, cuongDoTu) - bắc thực =
   phuongVi + độ lệch WMM. Đo trên máy thật phần A2 còn treo (sai số đứng yên, độ trễ khi xoay, pin) - làm cùng A3 khi có
   adb; nếu Madgwick kém hơn ROTATION_VECTOR trên máy thật thì đổi mặc định `uuTienHeThong` (hoặc thêm lựa chọn ở A8).
+- Kết quả (29/10): WMM2025 thuần Dart trong `packages/sensors/lib/src/domain/wmm.dart` (hệ số WMM.COF NOAA nhúng nguyên văn
+  ở `wmm2025_cof.dart`, sha256 ghi ở đầu tệp; `HeSoWmm.tuCof` đọc COF để S3 thay bằng config ký số qua `heSoWmmProvider`;
+  Legendre Schmidt + chuyển trắc địa/địa tâm WGS84). Cổng: 100/100 điểm `WMM2025_TestValues.txt` của NOAA lệch D/I < 0,006°,
+  X/Y/Z/H/F < 1 nT. `compass_feature`: mặt số CustomPainter (vạch 2/10/30°, số độ, 8 hướng dịch, Bắc màu nhấn, chữ dài tự
+  co) vẽ 1 lần trong RepaintBoundary, mỗi khung chỉ xoay layer; vạch mốc cố định; số độ 0,1° (`decimalPatternDigits`,
+  vi "127,4°"); bố cục ngang 2 cột. Bắc thực mặc định = phương vị từ + D tại `viTriProvider` (CHƯA có nguồn vị trí -> hiện
+  bắc từ + ghi chú "Chưa có vị trí"); µT, chế độ camera sau; cảnh báo nhiễu / hiệu chuẩn có nút mở màn hiệu chuẩn hình 8
+  (hoạt ảnh lemniscate, tôn trọng Giảm chuyển động, phủ 8 cung + 4 tư thế hoặc tin cậy cao 1,5 s). Rung `selectionClick` khi
+  qua 8 hướng (trễ 3°, không rung lặp ở ranh giới). Tuỳ chọn bắc thực / rung lưu `la_ban.json` (KhoLuuTru.laBan). Test
+  compass_feature 37, sensors +16; golden mới `man_hieu_chuan`. APK v0.1.0-beta.3. CHƯA đo 60 FPS / sai số trên máy thật.
+- Phát sinh (từ A3) cho A4: đẩy vị trí GPS / vị trí lưu gần nhất vào `viTriProvider` (`ref.read(viTriProvider.notifier).viTri
+  = ViTriDiaLy(...)`, kiểu ở `sensors`) - app nối vì tính năng không gọi nhau; khi đó bắc thực tự bật.
 
 ### S1 - API lõi
 - Đọc thêm: SEC-API, SEC-DATA.

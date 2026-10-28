@@ -11,6 +11,7 @@ final class KhoLuuTru {
   new _({
     required this.thuMuc,
     required this.caiDat,
+    required this.laBan,
     required this._trangThai,
     required this._co,
     required this.ketQuaCsdl,
@@ -56,6 +57,7 @@ final class KhoLuuTru {
     return KhoLuuTru._(
       thuMuc: thuMuc,
       caiDat: TepJson.mo('$thuMuc/cai_dat.json'),
+      laBan: TepJson.mo('$thuMuc/la_ban.json'),
       trangThai: trangThai,
       co: TepJson.mo('$thuMuc/co_tinh_nang.json'),
       ketQuaCsdl: kq,
@@ -68,6 +70,9 @@ final class KhoLuuTru {
 
   /// Cài đặt giao diện (settings_feature đọc / ghi).
   final TepJson caiDat;
+
+  /// Tuỳ chọn tab La bàn (compass_feature đọc / ghi).
+  final TepJson laBan;
 
   final TepJson _trangThai;
   final TepJson _co;
