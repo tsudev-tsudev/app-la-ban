@@ -29,6 +29,11 @@ dash=$(printf '%s\n' "$DOI" | grep -vE '^2026.*\.md$' | grep -E '\.(md|ts|tsx|mj
   | while read -r f; do [ -f "$f" ] && grep -lP '[\x{2013}\x{2014}]' "$f" || true; done)
 [ -z "$dash" ] || loi "Có em/en dash (chỉ dùng '-'):\n$dash"
 
+buoc "Thương hiệu: token sinh khớp nguồn + tương phản AA"
+node --test 'tools/build/*.test.mjs' >/dev/null || loi "test tools/build đỏ (node --test 'tools/build/*.test.mjs')"
+node tools/build/tokens.mjs --check
+node tools/kiem-tra/tuong-phan.mjs
+
 # --- Web / Worker ---
 ws_doi() { printf '%s\n' "$DOI" | grep -qE "^($1)/" ; }
 WEB_DOI=0
