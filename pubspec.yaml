@@ -19,5 +19,6 @@ workspace:
   - packages/storage
   - packages/i18n
   - packages/ads_iap
+  - packages/test_kit
 dev_dependencies:
   very_good_analysis: ^11.0.0

@@ -1,6 +1,7 @@
 name: la_ban
 description: Ứng dụng La bàn (Smart Compass) của TsuDev.
 publish_to: none
+# Đổi version thì sửa cả phienBanApp (lib/src/phien_ban.dart) - test kiểm hai nơi khớp.
 version: 0.1.0+1
 resolution: workspace
 
@@ -8,14 +9,24 @@ environment:
   sdk: ^3.13.0
 
 dependencies:
+  compass_feature:
   core:
   design_system:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  flutter_riverpod: ^3.4.3
+  go_router: ^18.0.2
+  i18n:
+  map_feature:
+  settings_feature:
+  waypoint_feature:
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  test_kit:
 
 flutter:
   uses-material-design: true

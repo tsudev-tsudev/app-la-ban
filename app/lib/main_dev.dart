@@ -1,5 +1,4 @@
-import 'package:flutter/widgets.dart';
-import 'package:la_ban/src/app.dart';
 import 'package:la_ban/src/flavor.dart';
+import 'package:la_ban/src/khoi_dong.dart';
 
-void main() => runApp(const LaBanApp(flavor: Flavor.dev));
+void main() => khoiDong(Flavor.dev);

@@ -5,6 +5,7 @@ analyzer:
     - "**/*.g.dart"
     - "**/*.freezed.dart"
     - "**/generated/**"
+    - "packages/i18n/lib/src/gen/**"
     - "build/**"
   language:
     strict-casts: true

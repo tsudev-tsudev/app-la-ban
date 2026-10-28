@@ -4,3 +4,12 @@ publish_to: none
 resolution: workspace
 environment:
   sdk: ^3.13.0
+dependencies:
+  design_system:
+  flutter:
+    sdk: flutter
+  i18n:
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  test_kit:

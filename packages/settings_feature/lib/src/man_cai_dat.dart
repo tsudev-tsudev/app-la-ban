@@ -1,0 +1,110 @@
+import 'package:design_system/design_system.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:i18n/i18n.dart';
+import 'package:settings_feature/src/cai_dat_provider.dart';
+import 'package:settings_feature/src/domain/cai_dat.dart';
+
+/// Tab Cài đặt: ngôn ngữ, giao diện, giấy phép, phiên bản.
+class ManCaiDat extends ConsumerWidget {
+  const new({required this.phienBan, super.key});
+
+  /// Chuỗi phiên bản app (do app truyền vào, ví dụ `0.1.0+1`).
+  final String phienBan;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final ngonNgu = ref.watch(caiDatProvider.select((c) => c.ngonNgu));
+    final cheDo = ref.watch(caiDatProvider.select((c) => c.cheDo));
+    final tb = ref.read(caiDatProvider.notifier);
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n.tabSettings)),
+      body: ListView(
+        padding: const EdgeInsets.symmetric(vertical: LbSpacing.xs),
+        children: [
+          _TieuDeMuc(l10n.settingsLanguage),
+          RadioGroup<LuaChonNgonNgu>(
+            groupValue: ngonNgu,
+            onChanged: (v) => tb.datNgonNgu(v!),
+            child: Column(
+              children: [
+                for (final (v, ten) in [
+                  (LuaChonNgonNgu.heThong, l10n.optionSystem),
+                  (LuaChonNgonNgu.vi, l10n.languageVietnamese),
+                  (LuaChonNgonNgu.en, l10n.languageEnglish),
+                ])
+                  RadioListTile<LuaChonNgonNgu>(
+                    key: ValueKey('ngon-ngu-${v.name}'),
+                    value: v,
+                    title: Text(ten),
+                  ),
+              ],
+            ),
+          ),
+          const Divider(),
+          _TieuDeMuc(l10n.settingsTheme),
+          RadioGroup<CheDoGiaoDien>(
+            groupValue: cheDo,
+            onChanged: (v) => tb.datCheDo(v!),
+            child: Column(
+              children: [
+                for (final (v, ten) in [
+                  (CheDoGiaoDien.heThong, l10n.optionSystem),
+                  (CheDoGiaoDien.sang, l10n.themeLight),
+                  (CheDoGiaoDien.toi, l10n.themeDark),
+                ])
+                  RadioListTile<CheDoGiaoDien>(
+                    key: ValueKey('che-do-${v.name}'),
+                    value: v,
+                    title: Text(ten),
+                  ),
+              ],
+            ),
+          ),
+          const Divider(),
+          ListTile(
+            leading: const LbIcon(LbIcons.khien),
+            title: Text(l10n.settingsLicenses),
+            onTap: () => showLicensePage(
+              context: context,
+              applicationName: l10n.appTitle,
+              applicationVersion: phienBan,
+            ),
+          ),
+          ListTile(
+            title: Text(
+              l10n.settingsVersion(phienBan),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TieuDeMuc extends StatelessWidget {
+  const new(this.chu);
+
+  final String chu;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.fromLTRB(
+      LbSpacing.md,
+      LbSpacing.md,
+      LbSpacing.md,
+      LbSpacing.xxs,
+    ),
+    child: Semantics(
+      header: true,
+      child: Text(
+        chu,
+        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+          color: Theme.of(context).colorScheme.primary,
+        ),
+      ),
+    ),
+  );
+}

@@ -50,7 +50,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 1 | N0 | Khởi tạo repo, toolchain, cổng kiểm | - | ✅ 28/10 |
 | 2 | N1 | Thương hiệu: logo, icon, tokens | N0 | ✅ 28/10 |
 | 3 | N2 | Nền Cloudflare + landing tạm | N0 | ✅ 28/10 |
-| 4 | A1 | Khung app (theme, i18n, router, responsive, golden) | N1 | ⬜ |
+| 4 | A1 | Khung app (theme, i18n, router, responsive, golden) | N1 | ✅ 28/10 |
 | 5 | A2 | Cảm biến + sensor fusion | A1 | ⬜ |
 | 6 | A3 | Mặt la bàn, bắc thực WMM, hiệu chuẩn | A2 | ⬜ |
 | 7 | S1 | API lõi + schema D1 | N2 | ⬜ |
@@ -150,6 +150,13 @@ Developer, Codemagic, duyệt Privacy Policy · trước R4 chốt đơn vị pe
   (giống `tokens.mjs`) + widget `LbIcon(LbIcons.xxx, size, color, semanticLabel)` dùng `IconTheme`, nét = size/12, đầu /
   góc tròn; thêm `node tools/build/icon-dart.mjs --check` vào bước "Thương hiệu" của `cong.sh`; golden 11 icon light/dark
   so với `design/icons/xem-truoc.png`. Onboarding dùng `LbLogoDong`.
+- Kết quả (28/10): go_router `StatefulShellRoute.indexedStack` 4 tab + `/chao` (giới thiệu, `LbLogoDong`); rail ở medium /
+  expanded, thanh dưới ở compact; `LbTheme` sáng/tối + `LbThemeExt` từ tokens; font Be Vietnam Pro đóng gói + OFL vào
+  `LicenseRegistry`; i18n gen-l10n `LbL10n` vi/en + pseudo-locale en-XA sinh từ en (`tools/build/arb-gia.mjs`); icon 24dp ->
+  `LbIcons` (`tools/build/icon-dart.mjs`, đủ lệnh path) + `LbIcon`, thêm icon `cai-dat`; gói `test_kit` (QUYET_DINH Q31,
+  thay alchemist): ma trận 12 kích thước x 2 theme x 3 ngôn ngữ x 3 cỡ chữ (216 ô / màn, app thử cả 4 tab) không tràn +
+  golden 5 ô đại diện; test "đổi ngôn ngữ / theme giữ router, tab, State, số lần build"; luật lớp `tools/kiem-tra/lop.mjs`
+  trong cổng. Độ phủ lib: app 100%, design_system / settings / feature >= 89%.
 
 ### A2 - Cảm biến + fusion
 - Đọc thêm: Spec §4.1.
@@ -180,6 +187,8 @@ Developer, Codemagic, duyệt Privacy Policy · trước R4 chốt đơn vị pe
   migration + khôi phục khi lỗi; khung test migration mọi phiên bản (10.000 waypoint, so checksum); crash sentinel 3 lần ->
   safe mode; feature flag cục bộ.
 - Cổng: test migration + khôi phục xanh.
+- Phát sinh (từ A1): `CaiDat` (ngôn ngữ, sáng/tối, `daXemGioiThieu`) trong `settings_feature` mới giữ trong bộ nhớ -> lưu
+  bền qua storage (đọc trước khung đầu để không nháy theme / không hiện lại màn giới thiệu).
 
 ### S2 - Định danh + attestation + phiên
 - Đọc thêm: SEC-ID.

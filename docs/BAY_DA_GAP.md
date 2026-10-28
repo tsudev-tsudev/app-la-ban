@@ -39,3 +39,13 @@ Kế thừa từ repo anh em (ban-do-3d / ubnd) - áp dụng vì cùng hạ tầ
 - ZONE DUNG CHUNG: `tsudev.com` có Worker / rule / bản ghi của dự án khác (tsudev, PTSAM...). Không PUT đè ruleset
   entrypoint; thêm rule qua `POST .../rulesets/<id>/rules`, nhận diện rule mình bằng description `la-ban: ...`. HSTS đặt ở
   header từng site, KHÔNG bật HSTS cấp zone (sẽ ép mọi tên miền con). (N2)
+- GOLDEN THEME DO: chụp nhiều ô golden bằng `pumpWidget` liên tiếp lên cùng MaterialApp -> theme đang `AnimatedTheme` (200 ms)
+  nên ảnh "dark" ra nền sáng. Dùng `chupGolden` của `test_kit` (bơm `SizedBox.shrink()` trước mỗi ô). (A1)
+- TRAN CAO 0: RenderFlex tràn với con cao 0 (`SizedBox(width: 700)`) KHÔNG báo lỗi -> test "bắt tràn" phải dùng con có
+  chiều cao. (A1)
+- FONT THIEU GLYPH: Be Vietnam Pro không có `ȧ ƀ ḗ ƒ ŀ ƥ ẋ ẏ ⟦ ⟧`... -> pseudo-locale chỉ dùng ký tự có trong font (test
+  `arb-gia.test.mjs` kiểm cmap), nếu không golden vẽ bằng font dự phòng. (A1)
+- RIVERPOD 3 OVERRIDE: kiểu `Override` không còn export từ `flutter_riverpod.dart` -> `import
+  'package:flutter_riverpod/misc.dart' show Override;`. (A1)
+- NAV ICON TRANG: M3 vẽ icon tab đang chọn bằng `onSecondaryContainer`; ColorScheme tự dựng mà không đặt thì ra trắng trên
+  nền cyan nhạt -> LbTheme đặt `secondaryContainer` / `onSecondaryContainer` + `iconTheme` của NavigationBar / Rail. (A1)

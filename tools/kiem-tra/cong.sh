@@ -29,11 +29,19 @@ dash=$(printf '%s\n' "$DOI" | grep -vE '^2026.*\.md$' | grep -E '\.(md|ts|tsx|mj
   | while read -r f; do [ -f "$f" ] && grep -lP '[\x{2013}\x{2014}]' "$f" || true; done)
 [ -z "$dash" ] || loi "Có em/en dash (chỉ dùng '-'):\n$dash"
 
-buoc "Thương hiệu: token sinh khớp nguồn + tương phản AA + quy ước icon"
-node --test 'tools/build/*.test.mjs' 'tools/cloudflare/*.test.mjs' >/dev/null || loi "test tools đỏ (node --test 'tools/build/*.test.mjs' 'tools/cloudflare/*.test.mjs')"
+buoc "Thương hiệu: token / icon / pseudo-locale sinh khớp nguồn + tương phản AA + font + lớp Dart"
+node --test 'tools/build/*.test.mjs' 'tools/cloudflare/*.test.mjs' 'tools/kiem-tra/*.test.mjs' >/dev/null \
+  || loi "test tools đỏ (node --test 'tools/build/*.test.mjs' 'tools/cloudflare/*.test.mjs' 'tools/kiem-tra/*.test.mjs')"
 node tools/build/tokens.mjs --check
 node tools/kiem-tra/tuong-phan.mjs
 node tools/build/icon.mjs
+node tools/build/icon-dart.mjs --check
+node tools/build/arb-gia.mjs --check
+for f in design/fonts/*.ttf design/fonts/OFL.txt; do
+  cmp -s "$f" "packages/design_system/fonts/$(basename "$f")" || loi "packages/design_system/fonts lệch design/fonts ($(basename "$f")) - chép lại"
+done
+echo "font app khớp design/fonts ✓"
+node tools/kiem-tra/lop.mjs
 
 # --- Web / Worker ---
 ws_doi() { printf '%s\n' "$DOI" | grep -qE "^($1)/" ; }
