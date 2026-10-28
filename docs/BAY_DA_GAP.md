@@ -14,6 +14,17 @@ Kế thừa từ repo anh em (ban-do-3d / ubnd) - áp dụng vì cùng hạ tầ
 - TRAI MANG VAO DOI SO: `push(...a)` / `Math.max(...a)` với mảng lớn -> tràn ngăn xếp. Dùng vòng lặp.
 
 ## Bẫy của repo này
+- IMPELLER RASTER CACHE: Impeller (mặc định Android, máy yếu chạy backend GLES) KHÔNG có raster cache - `RepaintBoundary` chỉ
+  giữ display list, GPU vẫn vẽ lại toàn bộ mỗi khung. Hình tĩnh phức tạp xoay / dịch mỗi khung -> vẽ 1 lần ra `ui.Image`
+  (`Picture.toImageSync`) rồi vẽ ảnh. Mặt la bàn M32: 12,8 -> 7,3 ms raster. (A3 máy thật, 29/10/2026)
+- DO KHUNG FLUTTER: `dumpsys gfxinfo` KHÔNG đếm khung Flutter (vẽ trên SurfaceView), SurfaceFlinger `--latency` không có mốc
+  mong muốn hợp lệ. Đo: mở app với `am start ... --ez trace-systrace true` (bản profile) -> `adb shell atrace -t 60 gfx view`
+  -> đọc `Animator::BeginFrame` (UI, chạy trên luồng platform) và `GPURasterizer::Draw` (raster). Jank = khoảng giữa hai
+  khung > 1,5 vsync, không phải "raster > vsync" (gồm cả chờ eglSwapBuffers). (A3)
+- ADB WIFI WSL: WSL2 NAT không thấy mDNS -> `adb connect` phải biết CỔNG KẾT NỐI (trang Gỡ lỗi không dây, khác cổng ghép
+  nối); Samsung tự tắt Gỡ lỗi không dây sau vài phút / khi Wi-Fi nối lại. Ổn định hơn: cáp USB + `adb.exe` của Windows
+  (`/mnt/c/Users/<u>/AppData/Local/Android/Sdk/platform-tools/adb.exe`, cài APK từ đường dẫn Windows). Cài usbipd-win /
+  mở adb server ra mạng (`-a`) bị chặn quyền - đừng thử. (A3)
 - NODE 24: repo dùng Node 24 (`.nvmrc`); mặc định máy là Node 20 cho repo khác. Astro 7 / vitest 5 / vite 8 KHÔNG chạy trên 20.
   Luôn `nvm use` (cong.sh và hook tự làm). (N0, 28/10/2026)
 - NPM AUDIT 400: npm 10 gọi endpoint audit cũ đã ngừng -> lỗi 400. npm 11 (đi kèm Node 24) chạy được. (N0)

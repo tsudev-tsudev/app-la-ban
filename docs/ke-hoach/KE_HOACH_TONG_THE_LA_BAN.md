@@ -53,8 +53,8 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 2 | N1 | Thương hiệu: logo, icon, tokens | N0 | ✅ 28/10 |
 | 3 | N2 | Nền Cloudflare + landing tạm | N0 | ✅ 28/10 |
 | 4 | A1 | Khung app (theme, i18n, router, responsive, golden) | N1 | ✅ 28/10 |
-| 5 | A2 | Cảm biến + sensor fusion | A1 | ✅ 28/10 (đo máy thật ⛔ chờ người dùng) |
-| 6 | A3 | Mặt la bàn, bắc thực WMM, hiệu chuẩn | A2 | ✅ 29/10 (60 FPS máy thật ⛔ chờ adb) |
+| 5 | A2 | Cảm biến + sensor fusion | A1 | ✅ 28/10 · máy thật 29/10: đứng yên ±0,45°, nhiễu từ OK (sai số tuyệt đối / trễ / pin ⛔) |
+| 6 | A3 | Mặt la bàn, bắc thực WMM, hiệu chuẩn | A2 | ✅ 29/10 · máy thật M32: 60 Hz rớt 0,35%, 90 Hz 86 FPS |
 | 7 | S1 | API lõi + schema D1 | N2 | ✅ 28/10 |
 | 8 | A4 | Vị trí + telemetry | A3 | ⬜ |
 | 9 | A5 | Lưu trữ mã hóa, migration, safe mode | A1 | ✅ 28/10 |
@@ -200,6 +200,16 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   (hoạt ảnh lemniscate, tôn trọng Giảm chuyển động, phủ 8 cung + 4 tư thế hoặc tin cậy cao 1,5 s). Rung `selectionClick` khi
   qua 8 hướng (trễ 3°, không rung lặp ở ranh giới). Tuỳ chọn bắc thực / rung lưu `la_ban.json` (KhoLuuTru.laBan). Test
   compass_feature 37, sensors +16; golden mới `man_hieu_chuan`. APK v0.1.0-beta.3. CHƯA đo 60 FPS / sai số trên máy thật.
+- Đo máy thật (29/10, Galaxy M32 SM-M325FV, Android 13, Helio G80, 90 Hz, Impeller GLES; bản dev profile, atrace qua
+  USB - runbook `do-may-that-adb.md`): mặt số trong RepaintBoundary tốn ~12,8 ms raster MỖI khung (Impeller không có raster
+  cache, bẫy IMPELLER RASTER CACHE) -> raster mặt số thành `ui.Image` một lần, mỗi khung chỉ xoay ảnh: 7,3 ms. Lô cảm biến
+  chỉ ~45 lần/giây -> mặt số đổi mỗi 2 vsync (~45 FPS) -> `BoNoiSuyGoc` (domain, test) + Ticker nội suy góc theo vsync, chỉ
+  dựng lại phép xoay. Kết quả: 60 Hz 58 FPS, rớt khung 0,35%, UI/raster p99 10,0/10,8 ms (cổng đạt); 90 Hz 86 FPS, rớt
+  1,9% (0,26% do raster, còn lại pipeline UI+raster sát 11,1 ms trên G80). Đứng yên 58 s: ±0,45°, trôi +0,1°. Nam châm:
+  66 µT -> cảnh báo nhiễu + tin cậy Thấp, hướng giữ (308,5 -> 308,2°), bỏ nam châm -> 38 µT, Cao, hết cảnh báo. Dựng
+  đứng + xoay ngang: nhãn "Theo hướng camera sau", ngóc 89° (chưa so lệch 90° - thiếu hướng chuẩn). CHƯA đo: sai số tuyệt đối (cáp sạc gây lệch, cần
+  hướng chuẩn), độ trễ xoay 90° (cần video 60 fps + ffmpeg), pin (phải rút cáp), Madgwick vs ROTATION_VECTOR -> làm khi có
+  máy rảnh / Wi-Fi ổn định (Samsung tự tắt Gỡ lỗi không dây sau ~2 phút trên mạng này).
 - Phát sinh (từ A3) cho A4: đẩy vị trí GPS / vị trí lưu gần nhất vào `viTriProvider` (`ref.read(viTriProvider.notifier).viTri
   = ViTriDiaLy(...)`, kiểu ở `sensors`) - app nối vì tính năng không gọi nhau; khi đó bắc thực tự bật.
 
