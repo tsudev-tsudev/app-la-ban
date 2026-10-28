@@ -1,9 +1,133 @@
-# Worker la-ban-api. Tài nguyên (D1, KV, R2, DO, route) khai báo ở phase N2 / S1.
+# Worker la-ban-api. Cấp cao nhất = PRODUCTION (`npm run deploy`); `--env staging` = staging; `--env dev` = chỉ chạy máy.
+# Tài nguyên tạo ở N2 (QUYET_DINH Q3); bảng D1 thêm từ S1 bằng migration BẤT BIẾN ở migrations/.
+# Không workers.dev / preview URL: mọi lưu lượng phải qua tên miền proxied (SEC-EDGE EDG-01).
 name = "la-ban-api"
 main = "src/index.ts"
 compatibility_date = "2026-10-01"
 compatibility_flags = ["nodejs_compat"]
 workers_dev = false
+preview_urls = false
+routes = [{ pattern = "compass-api.tsudev.com", custom_domain = true }]
+
+[observability]
+enabled = true
 
 [vars]
+MOI_TRUONG = "prod"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "la-ban"
+database_id = "cfca0a7f-203a-408b-a45b-bd76c636769f"
+migrations_dir = "migrations"
+
+[[kv_namespaces]]
+binding = "CAU_HINH"
+id = "c3e4afcafd2241f0bd1c9c2edd2be09f"
+
+[[r2_buckets]]
+binding = "CDN"
+bucket_name = "la-ban-cdn"
+
+[[r2_buckets]]
+binding = "NHAT_KY"
+bucket_name = "la-ban-nhat-ky"
+
+# Analytics Engine (binding SU_KIEN, dataset la_ban_su_kien) thêm khi người dùng bật trên dashboard (lỗi 10089) - xem LOG N2.
+
+[[durable_objects.bindings]]
+name = "KHO_NONCE"
+class_name = "KhoNonce"
+
+[[durable_objects.bindings]]
+name = "GIOI_HAN_TOC"
+class_name = "GioiHanToc"
+
+[[durable_objects.bindings]]
+name = "PHONG_SOC"
+class_name = "PhongSoc"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["KhoNonce", "GioiHanToc", "PhongSoc"]
+
+# ---------------------------------------------------------------- staging
+[env.staging]
+name = "la-ban-api-staging"
+workers_dev = false
+preview_urls = false
+routes = [{ pattern = "compass-api-stg.tsudev.com", custom_domain = true }]
+
+[env.staging.observability]
+enabled = true
+
+[env.staging.vars]
+MOI_TRUONG = "staging"
+
+[[env.staging.d1_databases]]
+binding = "DB"
+database_name = "la-ban-staging"
+database_id = "20ba2503-6007-4c7f-a390-43177c5310ce"
+migrations_dir = "migrations"
+
+[[env.staging.kv_namespaces]]
+binding = "CAU_HINH"
+id = "9168f99dc8ab418fa1d5022b482b1cf6"
+
+[[env.staging.r2_buckets]]
+binding = "CDN"
+bucket_name = "la-ban-cdn-staging"
+
+[[env.staging.r2_buckets]]
+binding = "NHAT_KY"
+bucket_name = "la-ban-nhat-ky-staging"
+
+[[env.staging.durable_objects.bindings]]
+name = "KHO_NONCE"
+class_name = "KhoNonce"
+
+[[env.staging.durable_objects.bindings]]
+name = "GIOI_HAN_TOC"
+class_name = "GioiHanToc"
+
+[[env.staging.durable_objects.bindings]]
+name = "PHONG_SOC"
+class_name = "PhongSoc"
+
+# ---------------------------------------------------------------- dev (chỉ `wrangler dev`, binding mô phỏng cục bộ)
+[env.dev]
+name = "la-ban-api-dev"
+workers_dev = false
+
+[env.dev.vars]
 MOI_TRUONG = "dev"
+
+[[env.dev.d1_databases]]
+binding = "DB"
+database_name = "la-ban-dev"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
+
+[[env.dev.kv_namespaces]]
+binding = "CAU_HINH"
+id = "00000000000000000000000000000000"
+
+[[env.dev.r2_buckets]]
+binding = "CDN"
+bucket_name = "la-ban-cdn-dev"
+
+[[env.dev.r2_buckets]]
+binding = "NHAT_KY"
+bucket_name = "la-ban-nhat-ky-dev"
+
+[[env.dev.durable_objects.bindings]]
+name = "KHO_NONCE"
+class_name = "KhoNonce"
+
+[[env.dev.durable_objects.bindings]]
+name = "GIOI_HAN_TOC"
+class_name = "GioiHanToc"
+
+[[env.dev.durable_objects.bindings]]
+name = "PHONG_SOC"
+class_name = "PhongSoc"

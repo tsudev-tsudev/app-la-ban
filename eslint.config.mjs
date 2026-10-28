@@ -14,8 +14,12 @@ export default tseslint.config(
     },
   },
   {
-    files: ['tools/**/*.mjs', 'eslint.config.mjs'],
-    languageOptions: { globals: { process: 'readonly', console: 'readonly' } },
+    files: ['tools/**/*.mjs', 'eslint.config.mjs', 'web/status/build.mjs'],
+    languageOptions: { globals: { process: 'readonly', console: 'readonly', fetch: 'readonly', structuredClone: 'readonly' } },
     rules: { 'no-console': 'off' },
+  },
+  {
+    files: ['web/*/public/**/*.js', 'web/status/src/**/*.js'],
+    languageOptions: { globals: { Response: 'readonly', URL: 'readonly', fetch: 'readonly', document: 'readonly' } },
   },
 );

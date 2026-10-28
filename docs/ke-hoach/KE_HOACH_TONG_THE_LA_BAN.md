@@ -49,7 +49,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 |---|---|---|---|---|
 | 1 | N0 | Khởi tạo repo, toolchain, cổng kiểm | - | ✅ 28/10 |
 | 2 | N1 | Thương hiệu: logo, icon, tokens | N0 | ✅ 28/10 |
-| 3 | N2 | Nền Cloudflare + landing tạm | N0 | ⬜ |
+| 3 | N2 | Nền Cloudflare + landing tạm | N0 | ✅ 28/10 |
 | 4 | A1 | Khung app (theme, i18n, router, responsive, golden) | N1 | ⬜ |
 | 5 | A2 | Cảm biến + sensor fusion | A1 | ⬜ |
 | 6 | A3 | Mặt la bàn, bắc thực WMM, hiệu chuẩn | A2 | ⬜ |
@@ -123,6 +123,19 @@ Developer, Codemagic, duyệt Privacy Policy · trước R4 chốt đơn vị pe
   dry-run mặc định); Worker khung env dev/staging/prod + `/v1/health`; D1, KV, R2, khai báo DO; Pages landing ("Sắp ra mắt") +
   admin (403 tới S6); `_headers` nền; `security.txt`, `robots.txt`; `docs/chi-phi.md` (hạn mức hiện hành).
 - Cổng: `curl -sI` đúng header ở mọi tên miền; SSL Labs >= A; health trả mã build.
+- Kết quả (28/10): cổng đạt - 5 tên miền đúng header (`curl -sI`), SSL Labs A+ (`compass`, `compass-api`), TLS 1.1 bị từ
+  chối, health trả mã build. Zone áp bởi người dùng (min TLS 1.0 -> 1.2, CAA apex, 3 CNAME, domain Pages / R2, rule header cdn). Worker `la-ban-api` (prod `compass-api.tsudev.com`) + `la-ban-api-staging`
+  (`compass-api-stg.tsudev.com`, tên miền thứ 6 cho staging) + env dev cục bộ; `/v1/health` trả `build` = commit
+  (`BAN_BUILD`); header bảo mật mọi phản hồi (`thuan/tieu-de.ts`), CORS allowlist khớp nguyên chuỗi (`thuan/cors.ts`).
+  D1 `la-ban[-staging]` (APAC), KV `la-ban-cau-hinh[-staging]`, R2 `la-ban-cdn` / `la-ban-nhat-ky` (+ staging), DO khung
+  `KhoNonce` / `GioiHanToc` / `PhongSoc` (SQLite, trả 501). `workers_dev` + preview URL tắt. Pages `la-ban-landing`
+  ("Sắp ra mắt" vi/en, `_headers` CSP không inline, `security.txt`, `robots.txt`, `sitemap.xml`), `la-ban-admin`
+  (`_worker.js` 403 mọi đường dẫn tới S6), `la-ban-status` (tĩnh, gọi health). Zone as code: `tools/cloudflare/zone.json`
+  + `ke-hoach.mjs` (thuần, test 100% dòng) + `ap-dung.mjs` (dry-run mặc định, không bao giờ xoá - zone dùng chung).
+  `tools/build/deploy-web.sh`, `docs/chi-phi.md`, `docs/runbook/trien-khai-cloudflare.md`. Khác thẻ: DNSSEC đã bật sẵn;
+  Analytics Engine chờ người dùng bật dashboard; HSTS đặt theo site (không cấp zone); `security@tsudev.com` cần người dùng tạo
+  rule Email Routing (token thiếu quyền); `*.pages.dev` vẫn truy cập được (admin 403 ở đó; S6 thêm Access); script dò bot
+  Cloudflare chèn `<script>` nội tuyến vào landing -> CSP chặn (trang vẫn chạy), S8 làm nonce middleware.
 
 ### A1 - Khung app
 - Làm: shell route 4 tab (La bàn · Bản đồ · Điểm · Cài đặt); theme từ tokens; ARB vi/en đổi tức thì không mất state; layout 3

@@ -1,5 +1,5 @@
 ---
-// Trang tạm "Sắp ra mắt" - nội dung đầy đủ ở phase R1.
+// Trang tạm "Sắp ra mắt" (N2) - nội dung đầy đủ ở phase R1. Song ngữ trên cùng trang, không JS.
 import '../../../../design/gen/tokens.css';
 const tieuDe = 'La bàn - Sắp ra mắt';
 ---
@@ -12,6 +12,7 @@ const tieuDe = 'La bàn - Sắp ra mắt';
     <meta name="description" content="Ứng dụng La bàn của TsuDev - sắp ra mắt trên Google Play và App Store." />
     <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0B1220" media="(prefers-color-scheme: dark)" />
+    <link rel="canonical" href={new URL('/', Astro.site).href} />
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -25,8 +26,67 @@ const tieuDe = 'La bàn - Sắp ra mắt';
   </head>
   <body>
     <main>
-      <h1>La bàn</h1>
-      <p>Sắp ra mắt trên Google Play và App Store.</p>
+      <picture>
+        <source srcset="/logo-nen-toi.svg" media="(prefers-color-scheme: dark)" />
+        <img src="/logo.svg" alt="La bàn" width="320" height="96" />
+      </picture>
+      <h1>Sắp ra mắt</h1>
+      <p>La bàn thông minh - chính xác, riêng tư. Sắp có trên Google Play và App Store.</p>
+      <p lang="en" class="phu">Smart Compass - accurate and private. Coming soon to Google Play and the App Store.</p>
     </main>
+    <footer>
+      <a href="/.well-known/security.txt">security.txt</a>
+      <span aria-hidden="true">·</span>
+      <span>© TsuDev</span>
+    </footer>
   </body>
 </html>
+
+<style>
+  :global(html) {
+    color-scheme: light dark;
+  }
+  :global(body) {
+    margin: 0;
+    min-height: 100dvh;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    background: var(--lb-color-bg);
+    color: var(--lb-color-text);
+    font: var(--lb-type-body);
+  }
+  main {
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: var(--lb-space-md);
+    padding: var(--lb-space-xl) var(--lb-space-md);
+    text-align: center;
+  }
+  img {
+    max-width: min(320px, 80vw);
+    height: auto;
+  }
+  h1 {
+    margin: 0;
+    font: var(--lb-type-headline);
+  }
+  p {
+    margin: 0;
+    max-width: 36rem;
+  }
+  .phu {
+    color: var(--lb-color-text-muted);
+  }
+  footer {
+    display: flex;
+    justify-content: center;
+    gap: var(--lb-space-xs);
+    padding: var(--lb-space-md);
+    color: var(--lb-color-text-muted);
+    font: var(--lb-type-body-small);
+  }
+  a {
+    color: var(--lb-color-primary-deep);
+  }
+</style>
