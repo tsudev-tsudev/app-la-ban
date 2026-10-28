@@ -63,10 +63,11 @@ bằng font khác.
 
 ## 6. Bộ icon 24dp
 
-11 icon tự vẽ (Spec §2.3): `la-ban-hoa-gio`, `mat-la-ban-3d`, `bac-thuc`, `ghim-gps`, `hieu-chuan-so-8`, `khien`,
-`thuoc-thuy`, `camera-ar`, `ban-do`, `diem-moc`, `chia-se-qr`. Quy ước (kiểm tự động): `viewBox 0 0 24 24`, nét 2,
-đầu / góc tròn, không tô, màu `currentColor`, vùng vẽ trong lề 2. Icon mới theo đúng quy ước rồi chạy
-`node tools/build/icon.mjs xem-truoc`.
+12 icon tự vẽ (Spec §2.3 + `cai-dat` cho tab Cài đặt từ A1): `la-ban-hoa-gio`, `mat-la-ban-3d`, `bac-thuc`,
+`ghim-gps`, `hieu-chuan-so-8`, `khien`, `thuoc-thuy`, `camera-ar`, `ban-do`, `diem-moc`, `chia-se-qr`, `cai-dat`. Quy ước
+(kiểm tự động): `viewBox 0 0 24 24`, nét 2, đầu / góc tròn, không tô, màu `currentColor`, vùng vẽ trong lề 2. Icon mới
+theo đúng quy ước rồi chạy `node tools/build/icon.mjs xem-truoc` và `node tools/build/icon-dart.mjs` (mã Dart
+`LbIcons.*`, QUYET_DINH Q30; cổng kiểm `--check`).
 
 ## 7. Web
 

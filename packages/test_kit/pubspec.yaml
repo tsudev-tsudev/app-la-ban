@@ -1,0 +1,15 @@
+name: test_kit
+description: "Tiện ích test giao diện dùng chung (CHỈ dev_dependencies): font thật, ma trận golden, khung MaterialApp."
+publish_to: none
+resolution: workspace
+environment:
+  sdk: ^3.13.0
+dependencies:
+  design_system:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  flutter_test:
+    sdk: flutter
+  i18n:
