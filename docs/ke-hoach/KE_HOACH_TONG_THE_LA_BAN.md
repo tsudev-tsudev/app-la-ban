@@ -364,8 +364,8 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
 - Kết quả (28/10, main fac899e, PR #8): khoá upload RSA 4096 (chứng chỉ SHA-256 `CF:09:E7:24:...:F6:BD`, hạn 2056);
   nén thư viện native (`useLegacyPackaging`) -> arm64 10,3 MB / universal 28,7 MB. Phát hành `v0.1.0-beta.1`: GitHub
   pre-release (2 APK + `SHA256SUMS`), R2 `compass-cdn.tsudev.com/android/` (đúng `content-type` + `attachment`, SHA-256
-  khớp), `latest.json`; landing `/tai-ve` đã deploy hiện phiên bản + SHA-256 + QR. Chưa cài thử trên máy thật (chờ người
-  dùng). Phát hành bản sau: tăng `version` ở `app/pubspec.yaml` + `phienBanApp` -> PR -> `./tools/build/phat-hanh-apk.sh`
+  khớp), `latest.json`; landing `/tai-ve` đã deploy hiện phiên bản + SHA-256 + QR. Người dùng đã tải + cài thành công
+  trên điện thoại Android thật (28/10, sau sửa PR #9: bỏ CSP sandbox ở `/android/`, cảnh báo trình duyệt Zalo/Facebook). Phát hành bản sau: tăng `version` ở `app/pubspec.yaml` + `phienBanApp` -> PR -> `./tools/build/phat-hanh-apk.sh`
   trên main sạch -> `./tools/build/deploy-web.sh landing`.
 - Phát sinh -> S3: `/v1/status` đọc `latest.json` để app báo có bản mới (bản tải ngoài Play chưa có cơ chế tự cập nhật).
 
