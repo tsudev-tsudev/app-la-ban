@@ -9,7 +9,12 @@ npx wrangler d1 migrations apply la-ban-staging --env staging --remote && npm ru
 npx wrangler d1 migrations apply la-ban --env= --remote && npm run deploy                         # production
 curl -s https://compass-api.tsudev.com/v1/health    # build = mã commit vừa deploy
 ```
-`npm run deploy*` gắn `BAN_BUILD` = `git rev-parse --short HEAD` -> deploy SAU khi commit. Cấp cao nhất của `wrangler.toml`
+`npm run deploy*` gắn `BAN_BUILD` = `git rev-parse --short HEAD` -> deploy SAU khi commit.
+
+Từ S1: migration D1 ở `workers/api/migrations/` (BẤT BIẾN, chạy `migrations apply` TRƯỚC deploy); binding Rate Limiting
+`RL_IP` (namespace_id 1001 prod / 1002 staging / 1003 dev, 600 yêu cầu / 60 s / IP); Analytics Engine `SU_KIEN`; cron
+`17 19 * * *` (02:17 giờ VN) dọn idempotency hết hạn, sự kiện > 180 ngày, rút gọn IP > 90 ngày. `minify = true`
+(zod làm gói ~870 KiB -> ~490 KiB). Tài liệu API: `workers/api/openapi.json` (sinh bằng test, KHÔNG phục vụ công khai). Cấp cao nhất của `wrangler.toml`
 là production (`--env=` để wrangler không cảnh báo), `--env dev` chỉ cho `npm run dev` (:8797).
 
 ## Web (Pages)

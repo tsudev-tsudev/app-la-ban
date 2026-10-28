@@ -49,3 +49,10 @@ Kế thừa từ repo anh em (ban-do-3d / ubnd) - áp dụng vì cùng hạ tầ
   'package:flutter_riverpod/misc.dart' show Override;`. (A1)
 - NAV ICON TRANG: M3 vẽ icon tab đang chọn bằng `onSecondaryContainer`; ColorScheme tự dựng mà không đặt thì ra trắng trên
   nền cyan nhạt -> LbTheme đặt `secondaryContainer` / `onSecondaryContainer` + `iconTheme` của NavigationBar / Rail. (A1)
+- MINIFLARE 5: `new Miniflare({ modules, script, d1Databases... })` báo "Unrecognized keys" - cấu trúc mới là
+  `workers: [{ config: ... }]`; giữ dạng cũ và bọc `convertV4MiniflareOptions(...)`. `ratelimits` bắt buộc `namespace_id`,
+  `period` chỉ 10 | 60. Test tích hợp: `workers/api/test/tich-hop/mf.ts`. (S1)
+- WORKER TYPES VS NODE: không thêm `@types/node` vào `workers/api` (xung đột Request / Response toàn cục với
+  workers-types) - test chạy trong Node dùng shim `test/node-shim.d.ts`. (S1)
+- ZOD BUNDLE: zod 4 đẩy gói Worker 65 KiB -> 870 KiB; `minify = true` + tách `src/openapi.ts` (z.toJSONSchema) khỏi mã chạy
+  -> ~490 KiB / gzip 111 KiB. (S1)

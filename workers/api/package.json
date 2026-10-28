@@ -11,10 +11,12 @@
     "deploy": "wrangler deploy --env= --var BAN_BUILD:$(git rev-parse --short HEAD)"
   },
   "devDependencies": {
-    "wrangler": "^4.154.0",
     "@cloudflare/workers-types": "^5.20261028.1",
+    "esbuild": "0.28.2",
+    "miniflare": "5.20261023.1-beta",
+    "typescript": "~6.0.0",
     "vitest": "^5.0.5",
-    "typescript": "~6.0.0"
+    "wrangler": "^4.154.0"
   },
   "dependencies": {
     "hono": "^4.13.14",
