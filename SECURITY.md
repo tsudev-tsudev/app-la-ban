@@ -1,7 +1,7 @@
 # Chính sách bảo mật - La bàn
 
 ## Báo cáo lỗ hổng
-Gửi email tới **security@tsudev.com** (chuyển tiếp bằng Cloudflare Email Routing - người dùng tạo rule, token agent không có quyền) (hoặc liên hệ ghi trong `https://compass.tsudev.com/.well-known/security.txt`).
+Gửi email tới **security@tsudev.com** (chuyển tiếp bằng Cloudflare Email Routing, rule đã bật 28/10/2026) (hoặc liên hệ ghi trong `https://compass.tsudev.com/.well-known/security.txt`).
 Vui lòng mô tả: thành phần bị ảnh hưởng, bước tái hiện, tác động. KHÔNG công bố trước khi được phản hồi.
 
 - Xác nhận đã nhận: trong 3 ngày làm việc.
