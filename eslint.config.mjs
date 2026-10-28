@@ -20,6 +20,6 @@ export default tseslint.config(
   },
   {
     files: ['web/*/public/**/*.js', 'web/status/src/**/*.js'],
-    languageOptions: { globals: { Response: 'readonly', URL: 'readonly', fetch: 'readonly', document: 'readonly' } },
+    languageOptions: { globals: { Response: 'readonly', URL: 'readonly', fetch: 'readonly', document: 'readonly', navigator: 'readonly' } },
   },
 );
