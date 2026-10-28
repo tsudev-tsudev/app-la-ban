@@ -26,6 +26,7 @@ dist/
 # Flutter / Dart
 .dart_tool/
 build/
+!tools/build/
 .flutter-plugins
 .flutter-plugins-dependencies
 .fvm/flutter_sdk
