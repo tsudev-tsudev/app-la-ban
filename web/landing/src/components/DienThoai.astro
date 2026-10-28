@@ -1,0 +1,215 @@
+---
+// Minh hoạ điện thoại chạy La bàn (SVG thuần, màu theo token): mặt la bàn + thẻ telemetry. Kim lắc nhẹ bằng CSS
+// (tắt khi prefers-reduced-motion). Không ảnh chụp để trang nhẹ và sắc nét mọi độ phân giải.
+import type { NgonNgu } from '../i18n/noi-dung';
+interface Props {
+  lang: NgonNgu;
+}
+const { lang } = Astro.props;
+const huong = lang === 'vi' ? { b: 'B', d: 'Đ', n: 'N', t: 'T', ten: 'Đông Bắc', thuc: 'Bắc thực', toaDo: 'Toạ độ', doCao: 'Độ cao' } : { b: 'N', d: 'E', n: 'S', t: 'W', ten: 'Northeast', thuc: 'True north', toaDo: 'Coordinates', doCao: 'Altitude' };
+const vach = Array.from({ length: 72 }, (_, i) => i * 5);
+const so = [30, 60, 120, 150, 210, 240, 300, 330];
+const diem = (goc: number, r: number) => {
+  const a = ((goc - 90) * Math.PI) / 180;
+  return { x: 160 + r * Math.cos(a), y: 230 + r * Math.sin(a) };
+};
+---
+<div class="dt" role="img" aria-label={lang === 'vi' ? 'Màn hình ứng dụng La bàn hướng 42 độ Đông Bắc' : 'La bàn app screen heading 42 degrees northeast'}>
+  <svg viewBox="0 0 320 640" aria-hidden="true">
+    <defs>
+      <linearGradient id="dt-vong" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#2962FF" />
+        <stop offset="1" stop-color="#1A56DB" />
+      </linearGradient>
+      <radialGradient id="dt-mat" cx="0.5" cy="0.45" r="0.6">
+        <stop offset="0" class="mat-sang" />
+        <stop offset="1" class="mat-toi" />
+      </radialGradient>
+    </defs>
+    <rect class="vo" x="4" y="4" width="312" height="632" rx="44" />
+    <rect class="man" x="16" y="16" width="288" height="608" rx="34" />
+    <rect class="tai" x="128" y="28" width="64" height="10" rx="5" />
+    <text class="t-nho" x="40" y="72">9:41</text>
+    <text class="t-nho" x="280" y="72" text-anchor="end">100%</text>
+    <text class="t-huong" x="160" y="110" text-anchor="middle">42°</text>
+    <text class="t-ten" x="160" y="132" text-anchor="middle">{huong.ten} · {huong.thuc}</text>
+    <g transform="translate(160 256) scale(0.88) translate(-160 -230)">
+    <g class="mat">
+      <circle cx="160" cy="230" r="118" fill="url(#dt-mat)" />
+      <circle cx="160" cy="230" r="118" fill="none" stroke="url(#dt-vong)" stroke-width="10" />
+      {
+        vach.map((g) => {
+          const dai = g % 30 === 0 ? 12 : 6;
+          const a = diem(g, 104);
+          const b = diem(g, 104 - dai);
+          return <line class={g % 30 === 0 ? 'vach dai' : 'vach'} x1={a.x} y1={a.y} x2={b.x} y2={b.y} />;
+        })
+      }
+      {
+        so.map((g) => {
+          const p = diem(g, 78);
+          return <text class="t-so" x={p.x} y={p.y + 4} text-anchor="middle">{g}</text>;
+        })
+      }
+      <text class="t-bac" x="160" y="150" text-anchor="middle">{huong.b}</text>
+      <text class="t-chu" x="244" y="235" text-anchor="middle">{huong.d}</text>
+      <text class="t-chu" x="160" y="320" text-anchor="middle">{huong.n}</text>
+      <text class="t-chu" x="76" y="235" text-anchor="middle">{huong.t}</text>
+    </g>
+    <g class="kim">
+      <polygon points="160,150 160,230 176,230" fill="#00B8D4" />
+      <polygon points="160,150 160,230 144,230" fill="#00E5FF" />
+      <polygon points="160,310 160,230 176,230" fill="#FF6D00" />
+      <polygon points="160,310 160,230 144,230" fill="#FF8A3D" />
+      <circle cx="160" cy="230" r="9" fill="#fff" stroke="#0B1220" stroke-width="3" />
+    </g>
+    <polygon class="moc" points="160,112 152,98 168,98" />
+    </g>
+    <g class="the-tt">
+      <rect x="32" y="380" width="124" height="84" rx="16" />
+      <rect x="164" y="380" width="124" height="84" rx="16" />
+      <text class="t-nhan" x="48" y="406">{huong.toaDo}</text>
+      <text class="t-gt" x="48" y="430">21.0285° N</text>
+      <text class="t-gt" x="48" y="452">105.8542° E</text>
+      <text class="t-nhan" x="180" y="406">{huong.doCao}</text>
+      <text class="t-lon" x="180" y="448">18 m</text>
+    </g>
+    <g class="the-tt">
+      <rect x="32" y="476" width="256" height="64" rx="16" />
+      <text class="t-nhan" x="48" y="502">µT</text>
+      <text class="t-gt" x="48" y="524">45.2 · OK</text>
+      <rect class="vach-tot" x="150" y="506" width="122" height="8" rx="4" />
+      <rect class="vach-tot-day" x="150" y="506" width="78" height="8" rx="4" />
+    </g>
+    <g class="thanh-duoi">
+      <rect x="32" y="560" width="256" height="48" rx="24" />
+      <circle class="tab-on" cx="80" cy="584" r="14" />
+      <circle class="tab" cx="133" cy="584" r="6" />
+      <circle class="tab" cx="187" cy="584" r="6" />
+      <circle class="tab" cx="240" cy="584" r="6" />
+    </g>
+  </svg>
+</div>
+
+<style>
+  .dt {
+    width: min(100%, 320px);
+    margin-inline: auto;
+    filter: drop-shadow(0 30px 50px rgb(26 86 219 / 0.25));
+  }
+  svg {
+    width: 100%;
+    height: auto;
+  }
+  .vo {
+    fill: #0b1220;
+  }
+  .man {
+    fill: var(--lb-color-bg);
+  }
+  .tai {
+    fill: #0b1220;
+  }
+  .mat-sang {
+    stop-color: var(--lb-color-surface-raised);
+  }
+  .mat-toi {
+    stop-color: var(--lb-color-surface);
+  }
+  text {
+    font-family: var(--lb-font-family);
+    fill: var(--lb-color-text);
+  }
+  .t-nho {
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .t-huong {
+    font-size: 44px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .t-ten {
+    font-size: 12px;
+    fill: var(--lb-color-text-muted);
+  }
+  .vach {
+    stroke: var(--lb-color-outline-strong);
+    stroke-width: 1.5;
+  }
+  .vach.dai {
+    stroke: var(--lb-color-text);
+    stroke-width: 2.5;
+  }
+  .t-so {
+    font-size: 11px;
+    fill: var(--lb-color-text-muted);
+  }
+  .t-chu {
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .t-bac {
+    font-size: 18px;
+    font-weight: 700;
+    fill: var(--lb-color-accent-strong);
+  }
+  .mat,
+  .kim {
+    transform-origin: 160px 230px;
+    transform: rotate(-42deg);
+    animation: lac 7s ease-in-out infinite;
+  }
+  .kim polygon {
+    filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.25));
+  }
+  .moc {
+    fill: var(--lb-color-accent);
+  }
+  @keyframes lac {
+    0%,
+    100% {
+      transform: rotate(-42deg);
+    }
+    35% {
+      transform: rotate(-38deg);
+    }
+    65% {
+      transform: rotate(-45deg);
+    }
+  }
+  .the-tt rect:not(.vach-tot):not(.vach-tot-day) {
+    fill: var(--lb-color-surface-raised);
+    stroke: var(--lb-color-outline);
+  }
+  .t-nhan {
+    font-size: 11px;
+    font-weight: 600;
+    fill: var(--lb-color-text-muted);
+  }
+  .t-gt {
+    font-size: 13px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .t-lon {
+    font-size: 28px;
+    font-weight: 700;
+  }
+  .vach-tot {
+    fill: var(--lb-color-outline);
+  }
+  .vach-tot-day {
+    fill: var(--lb-color-success);
+  }
+  .thanh-duoi rect {
+    fill: var(--lb-color-surface-raised);
+    stroke: var(--lb-color-outline);
+  }
+  .tab-on {
+    fill: var(--lb-color-primary-deep);
+  }
+  .tab {
+    fill: var(--lb-color-outline-strong);
+  }
+</style>

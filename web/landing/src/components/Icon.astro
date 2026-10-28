@@ -1,0 +1,12 @@
+---
+// Icon 24dp của bộ nhận diện (design/icons/*.svg, nét currentColor) nhúng thẳng vào HTML - không tải thêm, không JS.
+const tat = import.meta.glob('../../../../design/icons/*.svg', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
+interface Props {
+  ten: string;
+}
+const { ten } = Astro.props;
+const svg = Object.entries(tat).find(([p]) => p.endsWith(`/${ten}.svg`))?.[1];
+if (!svg) throw new Error(`thiếu icon ${ten}`);
+const ma = svg.replace('<svg ', '<svg aria-hidden="true" focusable="false" ');
+---
+<Fragment set:html={ma} />

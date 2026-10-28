@@ -15,6 +15,8 @@ World Editor 3D. Yêu cầu bảo mật chi tiết (mã `SEC-...`): `KE_HOACH_BA
 3. Bảo vệ giao diện web (chống sao chép, chuột phải, DevTools) là lớp răn đe có bật/tắt từ xa, không thay kiểm soát server.
 4. Quảng cáo / IAP chỉ bật sau Release Gate (Spec §12.1).
 5. Mọi tính năng: vi + en, light + dark, không overflow, có test.
+6. **Android trước** (QUYET_DINH Q33, chốt 28/10/2026): mọi phase chỉ thi công + nghiệm thu phần Android; phần iOS gom vào
+   phase I1 (đầu năm 2027, khi có máy Mac + Apple Developer). Bản thử phát hành dạng APK tải trực tiếp (R0, Q34) trước khi lên Play.
 
 ## 1. Kiến trúc thực hiện
 
@@ -64,7 +66,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 15 | S7 | Admin SOC 2 | S6 | ⬜ |
 | 16 | A6 | Waypoint, chia sẻ, deep link | A5, S3 | ⬜ |
 | 17 | A7 | Bản đồ offline + Camera AR | A6 | ⬜ |
-| 18 | R1 | Landing hoàn chỉnh | N2, S7 | ⬜ |
+| 18 | R1 | Landing hoàn chỉnh (kéo lên làm cùng R0 theo yêu cầu người dùng) | N2 | ⬜ |
 | 19 | S8 | Bảo vệ edge web (CSP, header, WAF as code) | R1 | ⬜ |
 | 20 | S9 | Lớp bảo vệ nội dung web + build sạch | S8 | ⬜ |
 | 21 | A8 | Cài đặt, quyền riêng tư, trợ năng, hiệu năng | A7, S4 | ⬜ |
@@ -73,13 +75,15 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 24 | R3 | QA tổng + kiểm thử bảo mật | R2, S9, S10 | ⬜ |
 | 25 | R4 | Phát hành v1.0.0 + OTA | R3 | ⬜ |
 | 26 | M1 | Quảng cáo + IAP (v1.1.0) sau Release Gate | R4 | ⬜ |
+| 27 | R0 | Bản APK thử: khoá ký, script phát hành GitHub Release + R2, trang tải | A5 | ⬜ |
+| 28 | I1 | iOS (đầu 2027): build, App Attest, Privacy Manifest, TestFlight, App Store | R4, máy Mac | ⬜ |
 
 Có thể giao agent thứ hai song song: S1 với A2-A3 · A5 với A4 · S5 với S4 · A6 với S6-S7 · R1 với A7 · A8 với S8-S9.
 
 **Việc người dùng:** trước N2 tạo API token Cloudflare (zone tsudev.com: DNS, WAF, Lists; Workers, Pages, D1, R2) lưu ở
 `~/.config/la-ban/cf.env` · trước A2 bật Wireless debugging trên 1 điện thoại Android · trước S2 Google Cloud project + Play
-Integrity API + service account, Apple Team ID · trước S6 bật Cloudflare Zero Trust · trước R2 tài khoản Play Console + Apple
-Developer, Codemagic, duyệt Privacy Policy · trước R4 chốt đơn vị pentest, bấm phát hành · trước M1 tài khoản AdMob + RevenueCat.
+Integrity API + service account (Apple Team ID dời sang I1) · trước S6 bật Cloudflare Zero Trust · trước R2 tài khoản Play Console, duyệt Privacy
+Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer · trước R4 chốt đơn vị pentest, bấm phát hành · trước M1 tài khoản AdMob + RevenueCat.
 
 ## 4. Thẻ phase
 
@@ -208,7 +212,7 @@ Developer, Codemagic, duyệt Privacy Policy · trước R4 chốt đơn vị pe
 ### S2 - Định danh + attestation + phiên
 - Đọc thêm: SEC-ID.
 - Làm: Installation ID; khóa ECDSA P-256 phần cứng; `/v1/device/register|attest`, `/v1/session/refresh`; xác minh Play Integrity
-  ở server; xác minh App Attest (attestation + assertion) ở server; JWT ES256 15 phút gắn khóa thiết bị; refresh xoay vòng +
+  ở server (xác minh App Attest dời sang I1 - Q33); JWT ES256 15 phút gắn khóa thiết bị; refresh xoay vòng +
   phát hiện dùng lại; trạng thái `UNVERIFIED` khi dịch vụ lỗi.
 - Cổng: test với token mẫu; luồng end-to-end trên máy thật (staging).
 - Phát sinh (từ S1): route mới đăng ký qua `boTuyen.dangKy` (workers/api/src/tuyen.ts - schema zod strict, giới hạn, Idempotency
@@ -288,6 +292,15 @@ Developer, Codemagic, duyệt Privacy Policy · trước R4 chốt đơn vị pe
 - Làm: Astro vi/en: giới thiệu, nút tải store, hướng dẫn hiệu chuẩn, `/privacy`, `/terms`, `/appeal` (Turnstile, gửi Worker),
   `/w/<token>` fallback; SEO, OG; Core Web Vitals Good.
 - Cổng: Lighthouse >= 95; form khiếu nại vào Admin.
+- Kết quả (28/10, làm cùng R0 theo yêu cầu người dùng): 13 trang tĩnh vi/en (`/`, `/tai-ve`, `/huong-dan`,
+  `/quyen-rieng-tu`, `/dieu-khoan`, `/khieu-nai` + `/en/*`, 404, sitemap hreflang sinh từ `DUONG_DAN`), chữ ở một nguồn
+  `src/i18n/noi-dung.ts` (kiểu bắt buộc đủ khoá hai ngôn ngữ); 0 JS phía trình duyệt (menu di động `<details>`, hỏi đáp
+  `<details>`), không thuộc tính `style` inline (CSP hiện có giữ nguyên); minh hoạ điện thoại + mặt la bàn bằng SVG theo
+  token sáng / tối, kim lắc bằng CSS (tắt khi reduced-motion); font Be Vietnam Pro tách tập Việt + Latin woff2 (~36 KB / độ
+  đậm); trang tải đọc `latest.json` LÚC BUILD (QR sinh lúc build bằng `qrcode`, chỉ devDependency). Đã soát ảnh chụp 390 /
+  1280 px sáng / tối: không tràn ngang.
+- Phát sinh -> S7: form khiếu nại (Turnstile + route Worker vào bảng `appeals`) thay mailto hiện tại; Lighthouse đo sau
+  deploy. -> S8: CSP nonce cho script dò bot của Cloudflare vẫn như cũ.
 
 ### S8 - Bảo vệ edge web
 - Đọc thêm: SEC-EDGE, SEC-WEB-CSP.
@@ -319,7 +332,9 @@ Developer, Codemagic, duyệt Privacy Policy · trước R4 chốt đơn vị pe
 - Làm: khóa upload Android (ngoài repo) + Play App Signing; scheme/configuration flavor iOS dev/staging/prod (Xcode trên Codemagic/Mac); Codemagic cho iOS (App Store Connect API key); Privacy Manifest +
   Required Reason API; Data Safety khớp thực tế (gồm SDK bên thứ ba); `NS*UsageDescription` vi/en; ảnh store sinh tự động từ
   integration test; listing vi/en; ghi chú reviewer về cơ chế bảo mật; allow-list thiết bị review.
-- Cổng: bản internal (Play) + TestFlight cài được.
+- Cổng: bản internal (Play) cài được (TestFlight dời sang I1 - Q33).
+- Ghi chú (Q33/Q34): phần iOS của thẻ này (scheme flavor, Codemagic, Privacy Manifest, `NS*UsageDescription`) chuyển sang I1.
+  Play App Signing: chọn tải lên khoá upload R0 làm khoá ký ứng dụng để người đã cài APK thử cập nhật thẳng từ Play.
 
 ### R3 - QA tổng
 - Đọc thêm: SEC-TEST.
@@ -328,7 +343,7 @@ Developer, Codemagic, duyệt Privacy Policy · trước R4 chốt đơn vị pe
 - Cổng: tiêu chí Spec §15 mục 1-11 đạt; 0 Critical/High mở.
 
 ### R4 - Phát hành v1.0.0
-- Làm: staged rollout Play (1->5->20->50->100%) + iOS phased; Shorebird kênh staging -> stable; theo dõi crash-free, ANR, chặn
+- Làm: staged rollout Play (1->5->20->50->100%) (iOS phased ở I1); Shorebird kênh staging -> stable; theo dõi crash-free, ANR, chặn
   nhầm; runbook trực.
 - Cổng: crash-free >= 99,8%; không sự cố mở. Bắt đầu đếm 4 tuần Release Gate.
 
@@ -338,3 +353,18 @@ Developer, Codemagic, duyệt Privacy Policy · trước R4 chốt đơn vị pe
   RevenueCat Pro + webhook + Restore; thiết bị restricted/banned không nhận quảng cáo/thưởng; kill-switch từng loại quảng cáo;
   cập nhật Data Safety / Privacy Label.
 - Cổng: chênh FPS có/không quảng cáo < 2%; không che la bàn; v1.1.0.
+
+### R0 - Bản APK thử nghiệm (Android, QUYET_DINH Q34)
+- Làm: khoá upload RSA 4096 ngoài repo (`~/.config/la-ban/android/upload.jks` + `key.properties`, người dùng sao lưu);
+  `build.gradle.kts` ký release bằng khoá đó khi có, không có thì ký debug (máy khác vẫn build được); `tools/build/phat-hanh-apk.sh`:
+  kiểm cây git sạch + đúng tag -> `flutter build apk --flavor prod --release --obfuscate --split-debug-info` (arm64-v8a +
+  universal) -> `apksigner verify` -> SHA-256 -> R2 `la-ban-cdn/android/` (tên có phiên bản + `latest.json`) -> GitHub
+  Release pre-release (APK + `SHA256SUMS`) -> ghi `web/landing/src/data/apk.json` cho trang tải; symbol giữ ngoài repo.
+- Cổng: `apksigner verify` đạt; tải từ `compass-cdn` đúng SHA-256; cài được trên máy Android thật (người dùng thử).
+
+### I1 - iOS (đầu năm 2027, QUYET_DINH Q33)
+- Làm: build iOS trên Mac / Codemagic (Q6); scheme flavor dev/staging/prod; plugin `storage` Keychain + `sensors` CoreMotion
+  thử thật; App Attest (client + xác minh attestation / assertion ở Worker); kiểm tra jailbreak (S4 phần iOS); Privacy Manifest
+  + Required Reason API; `NS*UsageDescription` vi/en; TestFlight -> App Store (Q21 tên "La bàn: Smart Compass"); nút App Store
+  trên landing.
+- Cổng: TestFlight cài được; golden + test chung vẫn xanh; App Attest end-to-end trên staging.

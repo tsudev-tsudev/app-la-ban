@@ -1,0 +1,92 @@
+---
+import Icon from '../components/Icon.astro';
+import Trang from '../layouts/Trang.astro';
+import { NOI_DUNG, type NgonNgu } from '../i18n/noi-dung';
+
+interface Props {
+  lang: NgonNgu;
+}
+const { lang } = Astro.props;
+const h = NOI_DUNG[lang].huong;
+---
+<Trang lang={lang} trang="huong">
+  <section class="dau-trang khung">
+    <h1>{h.tieuDe}</h1>
+    <p>{h.moTa}</p>
+  </section>
+  <section class="khung vung-hd">
+    <nav class="muc-luc the" aria-label={h.tieuDe}>
+      <ol>
+        {h.muc.map((m, i) => <li><a href={`#muc-${i + 1}`}>{m.tieuDe}</a></li>)}
+      </ol>
+    </nav>
+    <div class="ds-muc">
+      {
+        h.muc.map((m, i) => (
+          <article class="the muc" id={`muc-${i + 1}`}>
+            <span class="o-icon">
+              <Icon ten={m.icon} />
+            </span>
+            <div class="muc-chu">
+              <h2>{m.tieuDe}</h2>
+              <p class="mo">{m.noiDung}</p>
+              {m.buoc && (
+                <ol class="buoc">
+                  {m.buoc.map((b) => <li>{b}</li>)}
+                </ol>
+              )}
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+</Trang>
+
+<style>
+  .vung-hd {
+    display: grid;
+    gap: var(--lb-space-lg);
+    padding-bottom: clamp(48px, 8vw, 96px);
+  }
+  @media (min-width: 840px) {
+    .vung-hd {
+      grid-template-columns: 260px 1fr;
+      align-items: start;
+    }
+    .muc-luc {
+      position: sticky;
+      top: 88px;
+    }
+  }
+  .muc-luc ol {
+    margin: 0;
+    padding-left: 1.25rem;
+    display: grid;
+    gap: var(--lb-space-xs);
+  }
+  .ds-muc {
+    display: grid;
+    gap: var(--lb-space-md);
+    min-width: 0;
+  }
+  .muc {
+    display: flex;
+    gap: var(--lb-space-md);
+    align-items: start;
+  }
+  .muc-chu {
+    display: grid;
+    gap: var(--lb-space-xs);
+    min-width: 0;
+  }
+  .muc h2 {
+    font: var(--lb-type-title);
+  }
+  .buoc {
+    margin: var(--lb-space-xs) 0 0;
+    padding-left: 1.25rem;
+    display: grid;
+    gap: var(--lb-space-xs);
+  }
+</style>
