@@ -1,0 +1,79 @@
+---
+// Khiếu nại hạn chế: chưa có form (form + Turnstile + route Worker làm ở S7) -> mailto điền sẵn mẫu.
+import Icon from '../components/Icon.astro';
+import Trang from '../layouts/Trang.astro';
+import { NOI_DUNG, type NgonNgu } from '../i18n/noi-dung';
+
+interface Props {
+  lang: NgonNgu;
+}
+const { lang } = Astro.props;
+const t = NOI_DUNG[lang];
+const k = t.khieu;
+const mailto = `mailto:security@tsudev.com?subject=${encodeURIComponent(k.chuDeEmail)}&body=${encodeURIComponent(k.thanEmail)}`;
+---
+<Trang lang={lang} trang="khieu">
+  <section class="dau-trang khung">
+    <h1>{t.trang.khieu.tieuDe.split(' - ')[0]}</h1>
+    <p>{k.moTa}</p>
+  </section>
+  <section class="khung vung-kn">
+    <ol class="buoc">
+      {
+        k.buoc.map((b, i) => (
+          <li class="the">
+            <span class="so" aria-hidden="true">{i + 1}</span>
+            <div>
+              <h2>{b.tieuDe}</h2>
+              <p class="mo">{b.noiDung}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+    <a class="nut nut-chinh" href={mailto}><Icon ten="chia-se-qr" />{k.nutEmail}</a>
+    <p class="mo luu-y">{k.luuY}</p>
+  </section>
+</Trang>
+
+<style>
+  .vung-kn {
+    display: grid;
+    gap: var(--lb-space-lg);
+    justify-items: start;
+    padding-bottom: clamp(48px, 8vw, 96px);
+  }
+  .buoc {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--lb-space-md);
+    width: 100%;
+    max-width: 46rem;
+  }
+  .buoc li {
+    display: flex;
+    gap: var(--lb-space-md);
+    align-items: start;
+  }
+  .buoc h2 {
+    font: var(--lb-type-title);
+    margin-bottom: 4px;
+  }
+  .so {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--lb-color-primary-deep);
+    color: var(--lb-color-on-primary-deep);
+    font: var(--lb-type-label);
+  }
+  .luu-y {
+    font: var(--lb-type-body-small);
+    max-width: 46rem;
+  }
+</style>

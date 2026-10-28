@@ -1,0 +1,397 @@
+---
+import DienThoai from '../components/DienThoai.astro';
+import Icon from '../components/Icon.astro';
+import Trang from '../layouts/Trang.astro';
+import { DUONG_DAN, NOI_DUNG, type NgonNgu } from '../i18n/noi-dung';
+import { napBanApk } from '../lib/apk';
+
+interface Props {
+  lang: NgonNgu;
+}
+const { lang } = Astro.props;
+const t = NOI_DUNG[lang];
+const c = t.chu;
+const tai = DUONG_DAN.tai[lang];
+const ban = await napBanApk();
+---
+<Trang lang={lang} trang="chu">
+  <section class="hero khung">
+    <div class="hero-chu">
+      <span class="nhan-nho"><span class="cham" aria-hidden="true"></span>{c.nhan}{ban && ` · v${ban.phienBan}`}</span>
+      <h1>{c.tieuDe} <span class="nhan-mau">{c.tieuDeNhan}</span></h1>
+      <p class="hero-mo">{c.moTa}</p>
+      <div class="hang-nut">
+        <a class="nut nut-chinh" href={tai}><Icon ten="ghim-gps" />{c.nutApk}</a>
+        <span class="nut nut-tat" aria-disabled="true">{c.nutPlay}</span>
+        <span class="nut nut-tat" aria-disabled="true">{c.nutIos}</span>
+      </div>
+      <p class="ghi-chu">{c.ghiChuBeta}</p>
+    </div>
+    <div class="hero-hinh">
+      <DienThoai lang={lang} />
+    </div>
+  </section>
+
+  <section class="khung so-lieu" aria-label="Số liệu">
+    {
+      c.soLieu.map((s) => (
+        <div>
+          <strong>{s.so}</strong>
+          <span>{s.nhan}</span>
+        </div>
+      ))
+    }
+  </section>
+
+  <section id="tinh-nang" class="vung khung">
+    <div class="dau-vung">
+      <h2>{c.tinhNangTieuDe}</h2>
+      <p>{c.tinhNangMoTa}</p>
+    </div>
+    <div class="luoi">
+      {
+        c.tinhNang.map((f) => (
+          <article class="the tinh-nang">
+            <div class="the-dau">
+              <span class="o-icon">
+                <Icon ten={f.icon} />
+              </span>
+              {f.sapCo && <span class="sap-co">{c.sapCo}</span>}
+            </div>
+            <h3>{f.tieuDe}</h3>
+            <p class="mo">{f.noiDung}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="vung vung-phu">
+    <div class="khung chinh-xac">
+      <div class="dau-vung">
+        <h2>{c.chinhXacTieuDe}</h2>
+        <p>{c.chinhXacMoTa}</p>
+      </div>
+      <ol class="cac-buoc">
+        {
+          c.chinhXac.map((m, i) => (
+            <li>
+              <span class="so-buoc" aria-hidden="true">{i + 1}</span>
+              <div>
+                <h3>{m.tieuDe}</h3>
+                <p class="mo">{m.noiDung}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section id="bao-mat" class="vung khung">
+    <div class="dau-vung">
+      <h2>{c.baoMatTieuDe}</h2>
+      <p>{c.baoMatMoTa}</p>
+    </div>
+    <div class="luoi luoi-2">
+      {
+        c.baoMat.map((m) => (
+          <article class="the bao-mat">
+            <span class="o-icon">
+              <Icon ten={m.icon} />
+            </span>
+            <div>
+              <h3>{m.tieuDe}</h3>
+              <p class="mo">{m.noiDung}</p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="vung vung-phu">
+    <div class="khung">
+      <div class="dau-vung">
+        <h2>{c.loTrinhTieuDe}</h2>
+      </div>
+      <ol class="lo-trinh">
+        {
+          c.loTrinh.map((m) => (
+            <li class={`lt-${m.trangThai}`}>
+              <span class="lt-moc">{m.moc}</span>
+              <h3>{m.tieuDe}</h3>
+              <p class="mo">{m.noiDung}</p>
+              <span class="lt-trang-thai">{c.trangThaiLoTrinh[m.trangThai]}</span>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="vung khung hoi-dap">
+    <div class="dau-vung">
+      <h2>{c.hoiDapTieuDe}</h2>
+    </div>
+    <div class="ds-hoi">
+      {
+        c.hoiDap.map((h) => (
+          <details>
+            <summary>{h.tieuDe}</summary>
+            <p class="mo">{h.noiDung}</p>
+          </details>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="khung cuoi-wrap">
+    <div class="cuoi">
+      <div>
+        <h2>{c.cuoiTieuDe}</h2>
+        <p>{c.cuoiMoTa}</p>
+      </div>
+      <a class="nut nut-sang" href={tai}>{c.nutApk}</a>
+    </div>
+  </section>
+</Trang>
+
+<style>
+  .hero {
+    display: grid;
+    gap: var(--lb-space-xxl);
+    align-items: center;
+    padding-block: clamp(40px, 7vw, 88px) clamp(32px, 5vw, 64px);
+    background: var(--nen-hero);
+  }
+  @media (min-width: 840px) {
+    .hero {
+      grid-template-columns: 1.15fr 0.85fr;
+    }
+  }
+  .hero-chu {
+    display: grid;
+    gap: var(--lb-space-lg);
+    justify-items: start;
+  }
+  h1 {
+    font: var(--lb-type-display);
+    font-size: clamp(2.25rem, 6vw, 4rem);
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+  }
+  .nhan-mau {
+    display: block;
+    background: linear-gradient(90deg, var(--lb-color-primary-deep), var(--lb-color-secondary) 55%, #00b8d4);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hero-mo {
+    font-size: 1.125rem;
+    line-height: 1.7;
+    color: var(--lb-color-text-muted);
+    max-width: 36rem;
+  }
+  .hang-nut {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--lb-space-sm);
+  }
+  .ghi-chu {
+    font: var(--lb-type-body-small);
+    color: var(--lb-color-text-muted);
+  }
+  .so-lieu {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    margin-block: var(--lb-space-md);
+  }
+  @media (min-width: 840px) {
+    .so-lieu {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  .so-lieu div {
+    display: grid;
+    gap: 4px;
+    padding: var(--lb-space-lg) var(--lb-space-md);
+    border-top: 2px solid var(--lb-color-outline);
+  }
+  .so-lieu strong {
+    font: var(--lb-type-telemetry);
+    color: var(--lb-color-primary-deep);
+    font-variant-numeric: tabular-nums;
+  }
+  .so-lieu span {
+    color: var(--lb-color-text-muted);
+    font: var(--lb-type-body-small);
+  }
+  .tinh-nang {
+    display: grid;
+    gap: var(--lb-space-sm);
+    align-content: start;
+    transition: transform var(--lb-motion-normal) ease, box-shadow var(--lb-motion-normal) ease;
+  }
+  .tinh-nang:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--lb-shadow-md);
+  }
+  .the-dau {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: var(--lb-space-xs);
+  }
+  .sap-co {
+    padding: 2px 10px;
+    border-radius: 999px;
+    font: var(--lb-type-caption);
+    color: var(--lb-color-accent-strong);
+    border: 1px solid currentColor;
+  }
+  .cac-buoc {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--lb-space-md);
+  }
+  @media (min-width: 840px) {
+    .cac-buoc {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .cac-buoc li {
+    display: flex;
+    gap: var(--lb-space-md);
+    padding: var(--lb-space-lg);
+    border-radius: var(--lb-radius-lg);
+    background: var(--lb-color-surface-raised);
+    border: var(--vien);
+  }
+  .cac-buoc h3 {
+    margin-bottom: var(--lb-space-xxs);
+  }
+  .so-buoc {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--lb-color-primary-deep);
+    color: var(--lb-color-on-primary-deep);
+    font: var(--lb-type-label);
+  }
+  .luoi-2 {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
+  }
+  .bao-mat {
+    display: flex;
+    gap: var(--lb-space-md);
+    align-items: start;
+  }
+  .bao-mat h3 {
+    margin-bottom: var(--lb-space-xxs);
+  }
+  .lo-trinh {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--lb-space-md);
+  }
+  @media (min-width: 840px) {
+    .lo-trinh {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  .lo-trinh li {
+    position: relative;
+    display: grid;
+    gap: var(--lb-space-xs);
+    align-content: start;
+    padding: var(--lb-space-lg);
+    padding-top: calc(var(--lb-space-lg) + 6px);
+    border-radius: var(--lb-radius-lg);
+    background: var(--lb-color-surface-raised);
+    border: var(--vien);
+    overflow: hidden;
+  }
+  .lo-trinh li::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 6px;
+    background: var(--lb-color-outline);
+  }
+  .lo-trinh .lt-xong::before {
+    background: var(--lb-color-success);
+  }
+  .lo-trinh .lt-dang::before {
+    background: linear-gradient(90deg, var(--lb-color-primary), var(--lb-color-secondary));
+  }
+  .lt-moc {
+    font: var(--lb-type-caption);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--lb-color-text-muted);
+  }
+  .lt-trang-thai {
+    margin-top: var(--lb-space-xs);
+    font: var(--lb-type-label);
+    color: var(--lb-color-primary-deep);
+  }
+  .lt-xong .lt-trang-thai {
+    color: var(--lb-color-success-strong);
+  }
+  .lt-sau .lt-trang-thai {
+    color: var(--lb-color-text-muted);
+  }
+  .ds-hoi {
+    display: grid;
+    gap: var(--lb-space-sm);
+    max-width: 52rem;
+  }
+  details {
+    border: var(--vien);
+    border-radius: var(--lb-radius-md);
+    background: var(--lb-color-surface-raised);
+  }
+  summary {
+    cursor: pointer;
+    padding: var(--lb-space-md) var(--lb-space-lg);
+    font: var(--lb-type-label);
+    font-size: 1rem;
+    list-style-position: outside;
+  }
+  details p {
+    padding: 0 var(--lb-space-lg) var(--lb-space-md);
+  }
+  .cuoi-wrap {
+    padding-bottom: clamp(48px, 8vw, 96px);
+  }
+  .cuoi {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--lb-space-lg);
+    padding: clamp(24px, 5vw, 48px);
+    border-radius: var(--lb-radius-xl);
+    background: linear-gradient(120deg, #1a56db, #2962ff 55%, #00b8d4);
+    color: #fff;
+    box-shadow: var(--lb-shadow-lg);
+  }
+  .cuoi p {
+    margin-top: var(--lb-space-xs);
+    opacity: 0.92;
+  }
+  .nut-sang {
+    background: #fff;
+    color: #1a56db;
+  }
+</style>

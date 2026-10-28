@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
@@ -47,10 +49,31 @@ android {
         }
     }
 
+    // Nén thư viện native trong APK: tệp tải trực tiếp (Q34) nhỏ đi gần một nửa; bản Play (AAB) do Play tự tối ưu.
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
+
+    // Khoá upload (QUYET_DINH Q34) nằm NGOÀI repo: LA_BAN_KEY_PROPERTIES hoặc ~/.config/la-ban/android/key.properties.
+    // Không có tệp (máy khác / CI) -> bản release ký debug, chỉ dùng thử cục bộ; script phát hành bắt buộc có khoá.
+    val tepKhoa = file(System.getenv("LA_BAN_KEY_PROPERTIES") ?: "${System.getProperty("user.home")}/.config/la-ban/android/key.properties")
+    val khoa = Properties().apply { if (tepKhoa.isFile) tepKhoa.inputStream().use { load(it) } }
+    signingConfigs {
+        if (khoa.getProperty("storeFile") != null) {
+            create("upload") {
+                storeFile = file(khoa.getProperty("storeFile"))
+                storePassword = khoa.getProperty("storePassword")
+                keyAlias = khoa.getProperty("keyAlias")
+                keyPassword = khoa.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // Khóa upload thật cấu hình ở phase R2 (ngoài repo); tạm ký debug để `flutter run --release` chạy được.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.findByName("upload") ?: signingConfigs.getByName("debug")
         }
     }
 }

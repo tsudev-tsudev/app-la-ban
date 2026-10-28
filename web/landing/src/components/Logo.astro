@@ -1,0 +1,12 @@
+---
+// Logo ngang (design/logo) - bản sáng / tối theo prefers-color-scheme, không JS.
+interface Props {
+  rong?: number;
+}
+const { rong = 132 } = Astro.props;
+const cao = Math.round((rong * 160) / 578);
+---
+<picture>
+  <source srcset="/logo-nen-toi.svg" media="(prefers-color-scheme: dark)" />
+  <img src="/logo.svg" alt="La bàn" width={rong} height={cao} />
+</picture>

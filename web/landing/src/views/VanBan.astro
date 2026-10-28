@@ -1,0 +1,44 @@
+---
+// Trang văn bản pháp lý (quyền riêng tư / điều khoản).
+import Trang from '../layouts/Trang.astro';
+import { NOI_DUNG, type NgonNgu } from '../i18n/noi-dung';
+
+interface Props {
+  lang: NgonNgu;
+  loai: 'rieng' | 'khoan';
+}
+const { lang, loai } = Astro.props;
+const t = NOI_DUNG[lang];
+const vb = t[loai];
+---
+<Trang lang={lang} trang={loai}>
+  <section class="dau-trang khung">
+    <h1>{t.trang[loai].tieuDe.split(' - ')[0]}</h1>
+    <p>{vb.moTa}</p>
+    <p class="cap-nhat">{vb.capNhat}</p>
+  </section>
+  <div class="khung vung-vb">
+    <div class="van-ban">
+      {
+        vb.muc.map((m) => (
+          <section>
+            <h2>{m.tieuDe}</h2>
+            <p>{m.noiDung}</p>
+          </section>
+        ))
+      }
+    </div>
+  </div>
+</Trang>
+
+<style>
+  .cap-nhat {
+    font: var(--lb-type-label);
+  }
+  .vung-vb {
+    padding-bottom: clamp(48px, 8vw, 96px);
+  }
+  .van-ban h2 {
+    font: var(--lb-type-title);
+  }
+</style>

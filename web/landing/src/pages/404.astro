@@ -1,0 +1,39 @@
+---
+import Trang from '../layouts/Trang.astro';
+import { NOI_DUNG } from '../i18n/noi-dung';
+const vi = NOI_DUNG.vi.loi404;
+const en = NOI_DUNG.en.loi404;
+---
+<Trang lang="vi" trang="404">
+  <section class="dau-trang khung loi">
+    <p class="ma-loi" aria-hidden="true">404</p>
+    <h1>{vi.tieuDe}</h1>
+    <p>{vi.moTa}</p>
+    <p lang="en">{en.tieuDe}. {en.moTa}</p>
+    <div class="hang">
+      <a class="nut nut-chinh" href="/">{vi.veTrangChu}</a>
+      <a class="nut nut-phu" href="/en/" lang="en">{en.veTrangChu}</a>
+    </div>
+  </section>
+</Trang>
+
+<style>
+  .loi {
+    min-height: 60vh;
+    display: grid;
+    align-content: center;
+    gap: var(--lb-space-sm);
+  }
+  .ma-loi {
+    font: var(--lb-type-telemetry-large);
+    font-size: clamp(4rem, 14vw, 8rem);
+    line-height: 1;
+    color: var(--lb-color-primary-deep);
+  }
+  .hang {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--lb-space-sm);
+    margin-top: var(--lb-space-md);
+  }
+</style>

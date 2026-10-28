@@ -1,0 +1,303 @@
+---
+// Khung mọi trang: meta SEO + OG + hreflang vi/en, header (menu di động bằng <details>, không JS), footer.
+import '../../../../design/gen/tokens.css';
+import '../styles/global.css';
+import Logo from '../components/Logo.astro';
+import { DUONG_DAN, NOI_DUNG, type NgonNgu, type TrangId } from '../i18n/noi-dung';
+
+interface Props {
+  lang: NgonNgu;
+  trang: TrangId | '404';
+}
+const { lang, trang } = Astro.props;
+const t = NOI_DUNG[lang];
+const khac: NgonNgu = lang === 'vi' ? 'en' : 'vi';
+const meta = trang === '404' ? { tieuDe: `${t.loi404.tieuDe} - La bàn`, moTa: t.loi404.moTa } : t.trang[trang];
+const site = Astro.site ?? new URL('https://compass.tsudev.com');
+const url = (p: string) => new URL(p, site).href;
+const duong = (id: TrangId, l: NgonNgu = lang) => DUONG_DAN[id][l];
+const chu = duong('chu');
+const nav = [
+  { href: `${chu}#tinh-nang`, nhan: t.nav.tinhNang },
+  { href: `${chu}#bao-mat`, nhan: t.nav.baoMat },
+  { href: duong('huong'), nhan: t.nav.huongDan },
+];
+const linkKhac = trang === '404' ? DUONG_DAN.chu[khac] : DUONG_DAN[trang][khac];
+const jsonLd =
+  trang === 'chu'
+    ? JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: 'La bàn',
+        alternateName: 'TsuDev Smart Compass',
+        operatingSystem: 'Android',
+        applicationCategory: 'UtilitiesApplication',
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'VND' },
+        publisher: { '@type': 'Organization', name: 'TsuDev', url: site.href },
+        inLanguage: ['vi', 'en'],
+      })
+    : null;
+---
+<!doctype html>
+<html lang={t.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{meta.tieuDe}</title>
+    <meta name="description" content={meta.moTa} />
+    <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0B1220" media="(prefers-color-scheme: dark)" />
+    {trang === '404' ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={url(DUONG_DAN[trang][lang])} />}
+    {
+      trang !== '404' && (
+        <>
+          <link rel="alternate" hreflang="vi" href={url(DUONG_DAN[trang].vi)} />
+          <link rel="alternate" hreflang="en" href={url(DUONG_DAN[trang].en)} />
+          <link rel="alternate" hreflang="x-default" href={url(DUONG_DAN[trang].vi)} />
+        </>
+      )
+    }
+    <link rel="preload" href="/fonts/be-vietnam-pro-regular.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/be-vietnam-pro-bold.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="La bàn" />
+    <meta property="og:locale" content={lang === 'vi' ? 'vi_VN' : 'en_US'} />
+    <meta property="og:title" content={meta.tieuDe} />
+    <meta property="og:description" content={meta.moTa} />
+    <meta property="og:url" content={trang === '404' ? site.href : url(DUONG_DAN[trang][lang])} />
+    <meta property="og:image" content={url('/og.png')} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    {jsonLd && <script type="application/ld+json" set:html={jsonLd} />}
+  </head>
+  <body>
+    <a class="bo-qua" href="#noi-dung">{t.boQua}</a>
+    <header class="dau khung">
+      <a class="thuong-hieu" href={chu} aria-label="La bàn"><Logo /></a>
+      <nav class="nav-rong" aria-label="Chính">
+        {nav.map((n) => <a href={n.href}>{n.nhan}</a>)}
+        <a class="doi-ngu" href={linkKhac} hreflang={khac} lang={khac}>{t.doiNgonNgu}</a>
+        <a class="nut nut-chinh nut-nho" href={duong('tai')}>{t.nav.taiVe}</a>
+      </nav>
+      <details class="menu">
+        <summary aria-label={t.nav.menu}>
+          <span class="gach" aria-hidden="true"></span>
+        </summary>
+        <nav class="nav-hep" aria-label="Menu">
+          {nav.map((n) => <a href={n.href}>{n.nhan}</a>)}
+          <a href={duong('tai')}>{t.nav.taiVe}</a>
+          <a href={linkKhac} hreflang={khac} lang={khac}>{t.doiNgonNgu}</a>
+        </nav>
+      </details>
+    </header>
+    <main id="noi-dung">
+      <slot />
+    </main>
+    <footer class="chan khung">
+      <div class="chan-tren">
+        <div class="chan-thuong-hieu">
+          <Logo rong={116} />
+          <p class="mo">{t.trang.chu.moTa}</p>
+        </div>
+        <nav class="chan-cot" aria-label={t.nav.taiVe}>
+          <a href={duong('tai')}>{t.nav.taiVe}</a>
+          <a href={duong('huong')}>{t.nav.huongDan}</a>
+          <a href={duong('khieu')}>{t.trang.khieu.tieuDe.split(' - ')[0]}</a>
+        </nav>
+        <nav class="chan-cot" aria-label="Pháp lý">
+          <a href={duong('rieng')}>{t.trang.rieng.tieuDe.split(' - ')[0]}</a>
+          <a href={duong('khoan')}>{t.trang.khoan.tieuDe.split(' - ')[0]}</a>
+          <a href="https://compass-status.tsudev.com/">{t.chan.trangThai}</a>
+          <a href="/.well-known/security.txt">security.txt</a>
+        </nav>
+      </div>
+      <div class="chan-duoi">
+        <span>{t.chan.banQuyen}</span>
+        <span><a href="mailto:contact@tsudev.com">{t.chan.lienHe}: contact@tsudev.com</a></span>
+        <span><a href="/fonts/OFL.txt">{t.chan.giayPhepFont}</a></span>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style>
+  .bo-qua {
+    position: absolute;
+    left: 16px;
+    top: -64px;
+    z-index: 20;
+    padding: 8px 16px;
+    border-radius: var(--lb-radius-sm);
+    background: var(--lb-color-primary-deep);
+    color: var(--lb-color-on-primary-deep);
+  }
+  .bo-qua:focus {
+    top: 8px;
+  }
+  .dau {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--lb-space-md);
+    min-height: 68px;
+    background: var(--lb-glass-fill);
+    backdrop-filter: blur(var(--lb-glass-blur)) saturate(1.4);
+    -webkit-backdrop-filter: blur(var(--lb-glass-blur)) saturate(1.4);
+    border-bottom: 1px solid var(--lb-color-outline);
+  }
+  .thuong-hieu {
+    display: block;
+    flex: none;
+  }
+  .nav-rong {
+    display: none;
+    align-items: center;
+    gap: var(--lb-space-lg);
+  }
+  .nav-rong a:not(.nut) {
+    color: var(--lb-color-text);
+    text-decoration: none;
+    font: var(--lb-type-label);
+  }
+  .nav-rong a:not(.nut):hover {
+    color: var(--lb-color-primary-deep);
+  }
+  .doi-ngu {
+    padding: 6px 10px;
+    border: 1px solid var(--lb-color-outline);
+    border-radius: var(--lb-radius-sm);
+  }
+  .nut-nho {
+    min-height: 40px;
+    padding: 8px 16px;
+  }
+  .menu summary {
+    list-style: none;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--lb-radius-md);
+    border: 1px solid var(--lb-color-outline);
+    cursor: pointer;
+  }
+  .menu summary::-webkit-details-marker {
+    display: none;
+  }
+  .gach,
+  .gach::before,
+  .gach::after {
+    display: block;
+    width: 20px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--lb-color-text);
+    position: relative;
+    transition: transform var(--lb-motion-normal) ease, opacity var(--lb-motion-fast);
+  }
+  .gach::before,
+  .gach::after {
+    content: '';
+    position: absolute;
+  }
+  .gach::before {
+    top: -6px;
+  }
+  .gach::after {
+    top: 6px;
+  }
+  .menu[open] .gach {
+    background: transparent;
+  }
+  .menu[open] .gach::before {
+    transform: translateY(6px) rotate(45deg);
+  }
+  .menu[open] .gach::after {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+  .nav-hep {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    display: grid;
+    padding: var(--lb-space-xs) var(--le) var(--lb-space-md);
+    background: var(--lb-color-surface-raised);
+    border-bottom: 1px solid var(--lb-color-outline);
+    box-shadow: var(--lb-shadow-md);
+  }
+  .nav-hep a {
+    padding: 14px 4px;
+    color: var(--lb-color-text);
+    text-decoration: none;
+    font: var(--lb-type-label);
+    font-size: 1rem;
+    border-bottom: 1px solid var(--lb-color-outline);
+  }
+  .nav-hep a:last-child {
+    border-bottom: 0;
+  }
+  @media (min-width: 840px) {
+    .nav-rong {
+      display: flex;
+    }
+    .menu {
+      display: none;
+    }
+  }
+  .chan {
+    margin-top: auto;
+    padding-block: var(--lb-space-xxl) var(--lb-space-lg);
+    border-top: 1px solid var(--lb-color-outline);
+    background: var(--lb-color-surface);
+    font: var(--lb-type-body-small);
+  }
+  .chan-tren {
+    display: grid;
+    gap: var(--lb-space-xl);
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 600px) {
+    .chan-tren {
+      grid-template-columns: 2fr 1fr 1fr;
+    }
+  }
+  .chan-thuong-hieu {
+    display: grid;
+    gap: var(--lb-space-sm);
+    max-width: 28rem;
+  }
+  .chan-cot {
+    display: grid;
+    align-content: start;
+    gap: var(--lb-space-sm);
+  }
+  .chan-cot a {
+    color: var(--lb-color-text);
+    text-decoration: none;
+  }
+  .chan-cot a:hover {
+    color: var(--lb-color-primary-deep);
+    text-decoration: underline;
+  }
+  .chan-duoi {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--lb-space-xs) var(--lb-space-lg);
+    margin-top: var(--lb-space-xl);
+    padding-top: var(--lb-space-md);
+    border-top: 1px solid var(--lb-color-outline);
+    color: var(--lb-color-text-muted);
+  }
+  .chan-duoi a {
+    color: inherit;
+  }
+</style>
