@@ -1,6 +1,7 @@
 import 'dart:io';
-import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:location_feature/location_feature.dart';
 
@@ -146,4 +147,22 @@ void main() {
       expect(daDoiCho(cu, 21.001, 105), isTrue);
     });
   });
+
+  test('đăng ký giấy phép dữ liệu ODbL + EGM96', () async {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    dangKyGiayPhepDuLieu(bundle: _BoDocTep());
+    final ds = await LicenseRegistry.licenses.toList();
+    final muc = ds.where((l) => l.packages.contains('OpenStreetMap (ODbL)'));
+    expect(muc, hasLength(1));
+    final vb = muc.single.paragraphs.map((p) => p.text).join('\n');
+    expect(vb, contains('© OpenStreetMap contributors'));
+    expect(vb, contains('EGM96'));
+  });
+}
+
+class _BoDocTep extends CachingAssetBundle {
+  @override
+  Future<ByteData> load(String key) async => ByteData.sublistView(
+    File(key.replaceFirst('packages/location_feature/', '')).readAsBytesSync(),
+  );
 }

@@ -1,0 +1,9 @@
+Địa giới hành chính Việt Nam (tỉnh / thành, xã / phường / đặc khu sau sắp xếp 01/07/2025):
+© OpenStreetMap contributors. Dữ liệu dùng theo Open Database License (ODbL) 1.0 - https://opendatacommons.org/licenses/odbl/1-0/
+Nguồn: bản trích Việt Nam của Geofabrik (download.geofabrik.de), đã đơn giản hoá ranh giới. Bản quyền và thông tin chi tiết:
+https://www.openstreetmap.org/copyright
+Vùng bao đặc khu Hoàng Sa (thành phố Đà Nẵng) và Trường Sa (tỉnh Khánh Hòa) do TsuDev bổ sung theo các Nghị quyết sắp xếp đơn vị
+hành chính năm 2025 của Ủy ban Thường vụ Quốc hội.
+
+Mô hình geoid EGM96 (lưới 1 độ suy từ lưới 15 phút us_nga_egm96_15 của PROJ): National Geospatial-Intelligence Agency (NGA),
+thuộc phạm vi công cộng (public domain).

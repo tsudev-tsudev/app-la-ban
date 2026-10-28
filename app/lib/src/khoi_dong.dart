@@ -16,6 +16,7 @@ import 'package:storage/storage.dart';
 Future<void> khoiDong(Flavor flavor) async {
   WidgetsFlutterBinding.ensureInitialized();
   dangKyGiayPhepFont();
+  dangKyGiayPhepDuLieu();
   runApp(await dungApp(flavor));
 }
 

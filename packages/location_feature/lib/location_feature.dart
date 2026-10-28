@@ -11,6 +11,7 @@ export 'src/domain/toa_do.dart';
 export 'src/domain/tu_truong.dart';
 export 'src/domain/tuy_chon_vi_tri.dart';
 export 'src/du_lieu/nguon_vi_tri.dart';
+export 'src/giay_phep_du_lieu.dart';
 export 'src/hien_thi.dart';
 export 'src/man_vi_tri.dart';
 export 'src/the_vi_tri.dart';

@@ -90,3 +90,12 @@ Kế thừa từ repo anh em (ban-do-3d / ubnd) - áp dụng vì cùng hạ tầ
   làm flushSemantics ném "Progress bar value ... must be valid numbers" -> chỉ đặt `semanticsLabel`. (A3)
 - WMM NGUON: hệ số + bảng thử chính thức lấy từ WMM2025COF.zip của NOAA NCEI (ncei.noaa.gov/sites/default/files/2024-12/);
   thay mô hình (WMM2030) = chép WMM.COF vào `wmm2025_cof.dart`-tương ứng + bảng TestValues vào `packages/sensors/test/du_lieu`. (A3)
+- GEOFABRIK THIEU HOANG SA TRUONG SA: bản trích `vietnam-latest.osm.pbf` của Geofabrik cắt theo đường bao gần bờ -> không có
+  Hoàng Sa, Trường Sa; quan hệ tỉnh Khánh Hòa không khép vòng nên bộ ghép vùng của osmium BỎ IM LẶNG (không lỗi). Sau sắp xếp
+  2025, OSM để xã / phường ở `admin_level=6` (không phải 8). `tools/build/dia-gioi.py` dựng lại tỉnh hở bằng polygonize và
+  thêm vùng bao biển hai đặc khu; luôn kiểm in ra đủ 34 tỉnh. (A4)
+- MGRS MUI 2 CHU SO + DUNG SAI 1 MM: GeoTrans (NGA) viết múi 2 chữ số (`07WDR...`) và cắt cụt mét với dung sai ~1 mm
+  (462758,9995 -> 462759); cắt cụt thô `floor` lệch 1 m ở biên. Xem `sangMgrs`. (A4)
+- ASSET BAT DONG BO TRONG GOLDEN: `FutureProvider` override bằng `async` cần nhiều khung mới có dữ liệu -> `chupGolden` (1 lần
+  pump 2 s) chụp lúc chưa lấp. Override bằng `SynchronousFuture(...)`. ListView lười: mục ngoài màn chưa dựng ->
+  `scrollUntilVisible` trước `find`. (A4)

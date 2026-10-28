@@ -28,3 +28,4 @@ flutter:
   assets:
     - assets/dia_gioi_vn.bin
     - assets/geoid_egm96_1do.bin
+    - assets/GIAY_PHEP_DU_LIEU.txt
