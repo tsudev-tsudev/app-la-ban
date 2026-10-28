@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'package:compass_feature/src/bac_thuc_provider.dart';
 import 'package:compass_feature/src/domain/huong_hien_thi.dart';
 import 'package:compass_feature/src/domain/moc_rung.dart';
-import 'package:compass_feature/src/huong_provider.dart';
 import 'package:compass_feature/src/man_hieu_chuan.dart';
 import 'package:compass_feature/src/mat_la_ban.dart';
 import 'package:compass_feature/src/tuy_chon_provider.dart';
@@ -16,7 +15,11 @@ import 'package:sensors/sensors.dart';
 /// Tab La bàn: mặt la bàn CustomPainter, số độ 0,1°, 8 hướng, bắc thực /
 /// bắc từ (WMM2025 ngoại tuyến), độ tin cậy, cảnh báo nhiễu từ, hiệu chuẩn.
 class ManLaBan extends ConsumerStatefulWidget {
-  const new({super.key});
+  const new({this.theDuoi, super.key});
+
+  /// Thẻ app gắn dưới phần thông tin (thẻ vị trí của location_feature - tính
+  /// năng không gọi nhau, app nối). Chỉ dựng khi tab đang thấy.
+  final Widget? theDuoi;
 
   @override
   ConsumerState<ManLaBan> createState() => _ManLaBanState();
@@ -71,7 +74,11 @@ class _ManLaBanState extends ConsumerState<ManLaBan> {
         }
       });
       than = switch (ref.watch(huongProvider)) {
-        AsyncData(:final value) => _DocHuong(h: value, hh: doi(value)),
+        AsyncData(:final value) => _DocHuong(
+          h: value,
+          hh: doi(value),
+          theDuoi: widget.theDuoi,
+        ),
         AsyncError(:final error) => LbTrangTrong(
           hinh: const LbIcon(LbIcons.laBanHoaGio, size: 96),
           moTa: error is NgoaiLeCamBien && error.loi == LoiCamBien.khongCoLaBan
@@ -196,10 +203,11 @@ String tenMuc(LbL10n l, MucTinCay m) => switch (m) {
 };
 
 class _DocHuong extends StatelessWidget {
-  const new({required this.h, required this.hh});
+  const new({required this.h, required this.hh, this.theDuoi});
 
   final HuongDoc h;
   final HuongHienThi hh;
+  final Widget? theDuoi;
 
   @override
   Widget build(BuildContext context) {
@@ -225,7 +233,15 @@ class _DocHuong extends StatelessWidget {
             mau: MauMatLaBan.tuTheme(context),
           ),
         );
-        final thongTin = _ThongTin(h: h, hh: hh);
+        final thongTin = theDuoi == null
+            ? _ThongTin(h: h, hh: hh)
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _ThongTin(h: h, hh: hh),
+                  theDuoi!,
+                ],
+              );
         return SingleChildScrollView(
           padding: const EdgeInsets.all(LbSpacing.lg),
           child: ConstrainedBox(

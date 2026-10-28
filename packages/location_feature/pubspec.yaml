@@ -4,3 +4,28 @@ publish_to: none
 resolution: workspace
 environment:
   sdk: ^3.13.0
+  flutter: ">=3.38.0"
+dependencies:
+  design_system:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^3.4.3
+  i18n:
+  meta: any
+  sensors:
+  storage:
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  test_kit:
+# Mã nền tảng của plugin nội bộ nằm trong gói (QUYET_DINH Q32). Chỉ Android (Q33) - iOS CoreLocation ở I1.
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.tsudev.laban.location
+        pluginClass: ViTriPlugin
+  assets:
+    - assets/dia_gioi_vn.bin
+    - assets/geoid_egm96_1do.bin
+    - assets/GIAY_PHEP_DU_LIEU.txt

@@ -284,4 +284,272 @@ class LbL10nVi extends LbL10n {
 
   @override
   String get calibFinish => 'Xong';
+
+  @override
+  String get locTitle => 'Vị trí & thông số';
+
+  @override
+  String get locIntro =>
+      'Bật vị trí để dùng bắc thực, toạ độ, độ cao và giờ mặt trời mọc / lặn. Vị trí chỉ dùng trên máy, không gửi đi.';
+
+  @override
+  String get locAllow => 'Cho phép vị trí';
+
+  @override
+  String get locDeniedForever =>
+      'Quyền vị trí đã bị tắt. Bật lại trong Cài đặt của ứng dụng.';
+
+  @override
+  String get locOpenSettings => 'Mở cài đặt';
+
+  @override
+  String get locServiceOff => 'Dịch vụ vị trí của máy đang tắt.';
+
+  @override
+  String get locSearching => 'Đang tìm vị trí...';
+
+  @override
+  String get locApproximate => 'Đang dùng vị trí xấp xỉ';
+
+  @override
+  String get locDetails => 'Chi tiết';
+
+  @override
+  String get locCopied => 'Đã chép toạ độ';
+
+  @override
+  String get locCopy => 'Chép';
+
+  @override
+  String get locCycleFormat => 'Đổi định dạng toạ độ';
+
+  @override
+  String locAccuracy(int value) {
+    return '±$value m';
+  }
+
+  @override
+  String locAltitude(int value) {
+    return 'Cao $value m';
+  }
+
+  @override
+  String get locOutsideVn => 'Ngoài lãnh thổ Việt Nam';
+
+  @override
+  String get locOsmCredit => 'Địa giới © OpenStreetMap contributors (ODbL)';
+
+  @override
+  String get locSectionCoords => 'Toạ độ';
+
+  @override
+  String get locSectionPlace => 'Địa giới hành chính';
+
+  @override
+  String get locSectionAltitude => 'Độ cao';
+
+  @override
+  String get locSectionMotion => 'Di chuyển';
+
+  @override
+  String get locSectionField => 'Từ trường';
+
+  @override
+  String get locSectionLevel => 'Thước thuỷ';
+
+  @override
+  String get locSectionSun => 'Mặt trời';
+
+  @override
+  String get locSectionMoon => 'Mặt trăng';
+
+  @override
+  String get locFormatDd => 'Độ thập phân';
+
+  @override
+  String get locFormatDms => 'Độ phút giây';
+
+  @override
+  String get locFormatUtm => 'UTM';
+
+  @override
+  String get locFormatMgrs => 'MGRS';
+
+  @override
+  String get locNotAvailable => 'Không có';
+
+  @override
+  String get locHorizontalAccuracy => 'Sai số ngang';
+
+  @override
+  String get locAltGps => 'GPS (trên mực biển)';
+
+  @override
+  String get locAltBaro => 'Khí áp kế';
+
+  @override
+  String get locBaroCalibrated => 'đã hiệu chỉnh theo GPS';
+
+  @override
+  String get locBaroStandard => 'theo áp suất chuẩn 1013 hPa';
+
+  @override
+  String get locPressure => 'Áp suất';
+
+  @override
+  String locMeters(int value) {
+    return '$value m';
+  }
+
+  @override
+  String locMetersPm(int value, int acc) {
+    return '$value m ±$acc m';
+  }
+
+  @override
+  String locHpa(double value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPatternDigits(
+          locale: localeName,
+          decimalDigits: 1,
+        );
+    final String valueString = valueNumberFormat.format(value);
+
+    return '$valueString hPa';
+  }
+
+  @override
+  String get locSpeed => 'Tốc độ';
+
+  @override
+  String locKmh(double value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPatternDigits(
+          locale: localeName,
+          decimalDigits: 1,
+        );
+    final String valueString = valueNumberFormat.format(value);
+
+    return '$valueString km/h';
+  }
+
+  @override
+  String get locCourse => 'Hướng đi';
+
+  @override
+  String locDegrees(int value) {
+    return '$value°';
+  }
+
+  @override
+  String get locFieldMeasured => 'Đo được';
+
+  @override
+  String get locFieldModel => 'Mô hình WMM';
+
+  @override
+  String locMicroTesla(double value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPatternDigits(
+          locale: localeName,
+          decimalDigits: 1,
+        );
+    final String valueString = valueNumberFormat.format(value);
+
+    return '$valueString µT';
+  }
+
+  @override
+  String locFieldDeviation(int value) {
+    return 'Lệch $value%';
+  }
+
+  @override
+  String get locFieldAbnormal =>
+      'Từ trường bất thường (bình thường 25-65 µT): có thể có nam châm hoặc kim loại gần máy.';
+
+  @override
+  String locLevelTilt(double value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPatternDigits(
+          locale: localeName,
+          decimalDigits: 1,
+        );
+    final String valueString = valueNumberFormat.format(value);
+
+    return 'Nghiêng $valueString°';
+  }
+
+  @override
+  String get locLevelOk => 'Cân bằng';
+
+  @override
+  String get locLevelHint => 'Đặt máy nằm trên mặt cần đo.';
+
+  @override
+  String get locRise => 'Mọc';
+
+  @override
+  String get locSet => 'Lặn';
+
+  @override
+  String get locNoon => 'Trưa thực';
+
+  @override
+  String get locTransit => 'Qua kinh tuyến';
+
+  @override
+  String get locAlwaysUp => 'Ở trên chân trời cả ngày';
+
+  @override
+  String get locAlwaysDown => 'Ở dưới chân trời cả ngày';
+
+  @override
+  String get locNow => 'Hiện tại';
+
+  @override
+  String locSkyPosition(int az, int alt) {
+    return 'Phương vị $az° · cao $alt°';
+  }
+
+  @override
+  String locMoonIllumination(int value) {
+    return 'Sáng $value%';
+  }
+
+  @override
+  String get locNeedLocationSky => 'Cần vị trí để tính giờ mọc / lặn.';
+
+  @override
+  String get moonNew => 'Trăng mới';
+
+  @override
+  String get moonWaxingCrescent => 'Trăng lưỡi liềm đầu tháng';
+
+  @override
+  String get moonFirstQuarter => 'Trăng thượng huyền';
+
+  @override
+  String get moonWaxingGibbous => 'Trăng khuyết đầu tháng';
+
+  @override
+  String get moonFull => 'Trăng tròn';
+
+  @override
+  String get moonWaningGibbous => 'Trăng khuyết cuối tháng';
+
+  @override
+  String get moonLastQuarter => 'Trăng hạ huyền';
+
+  @override
+  String get moonWaningCrescent => 'Trăng lưỡi liềm cuối tháng';
+
+  @override
+  String get locSourceGps => 'GPS';
+
+  @override
+  String get locSourceNetwork => 'Mạng';
+
+  @override
+  String get locSourceFused => 'Hợp nhất';
 }

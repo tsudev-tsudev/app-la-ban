@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:compass_feature/src/bac_thuc_provider.dart';
 import 'package:compass_feature/src/domain/tien_do_hieu_chuan.dart';
-import 'package:compass_feature/src/huong_provider.dart';
 import 'package:compass_feature/src/man_la_ban.dart' show tenMuc;
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';

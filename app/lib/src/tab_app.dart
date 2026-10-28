@@ -6,6 +6,7 @@ import 'package:i18n/i18n.dart';
 import 'package:la_ban/src/bang_an_toan.dart';
 import 'package:la_ban/src/luu_tru.dart';
 import 'package:la_ban/src/phien_ban.dart';
+import 'package:location_feature/location_feature.dart';
 import 'package:map_feature/map_feature.dart';
 import 'package:settings_feature/settings_feature.dart';
 import 'package:storage/storage.dart';
@@ -28,7 +29,7 @@ final dsTabProvider = Provider<List<TabApp>>((ref) {
       duongDan: '/la-ban',
       icon: LbIcons.laBanHoaGio,
       nhan: (l) => l.tabCompass,
-      man: const ManLaBan(),
+      man: const ManLaBan(theDuoi: TheViTri()),
     ),
     (
       duongDan: '/ban-do',

@@ -285,6 +285,274 @@ class LbL10nEn extends LbL10n {
 
   @override
   String get calibFinish => 'Done';
+
+  @override
+  String get locTitle => 'Location & telemetry';
+
+  @override
+  String get locIntro =>
+      'Turn on location for true north, coordinates, altitude and sunrise / sunset times. Your location stays on this device.';
+
+  @override
+  String get locAllow => 'Allow location';
+
+  @override
+  String get locDeniedForever =>
+      'Location permission is off. Turn it on in the app settings.';
+
+  @override
+  String get locOpenSettings => 'Open settings';
+
+  @override
+  String get locServiceOff => 'Device location is turned off.';
+
+  @override
+  String get locSearching => 'Finding your location...';
+
+  @override
+  String get locApproximate => 'Using approximate location';
+
+  @override
+  String get locDetails => 'Details';
+
+  @override
+  String get locCopied => 'Coordinates copied';
+
+  @override
+  String get locCopy => 'Copy';
+
+  @override
+  String get locCycleFormat => 'Change coordinate format';
+
+  @override
+  String locAccuracy(int value) {
+    return '±$value m';
+  }
+
+  @override
+  String locAltitude(int value) {
+    return 'Alt. $value m';
+  }
+
+  @override
+  String get locOutsideVn => 'Outside Vietnam';
+
+  @override
+  String get locOsmCredit => 'Boundaries © OpenStreetMap contributors (ODbL)';
+
+  @override
+  String get locSectionCoords => 'Coordinates';
+
+  @override
+  String get locSectionPlace => 'Administrative area';
+
+  @override
+  String get locSectionAltitude => 'Altitude';
+
+  @override
+  String get locSectionMotion => 'Motion';
+
+  @override
+  String get locSectionField => 'Magnetic field';
+
+  @override
+  String get locSectionLevel => 'Bubble level';
+
+  @override
+  String get locSectionSun => 'Sun';
+
+  @override
+  String get locSectionMoon => 'Moon';
+
+  @override
+  String get locFormatDd => 'Decimal degrees';
+
+  @override
+  String get locFormatDms => 'Degrees minutes seconds';
+
+  @override
+  String get locFormatUtm => 'UTM';
+
+  @override
+  String get locFormatMgrs => 'MGRS';
+
+  @override
+  String get locNotAvailable => 'Not available';
+
+  @override
+  String get locHorizontalAccuracy => 'Horizontal accuracy';
+
+  @override
+  String get locAltGps => 'GPS (above sea level)';
+
+  @override
+  String get locAltBaro => 'Barometer';
+
+  @override
+  String get locBaroCalibrated => 'calibrated with GPS';
+
+  @override
+  String get locBaroStandard => 'using standard 1013 hPa';
+
+  @override
+  String get locPressure => 'Pressure';
+
+  @override
+  String locMeters(int value) {
+    return '$value m';
+  }
+
+  @override
+  String locMetersPm(int value, int acc) {
+    return '$value m ±$acc m';
+  }
+
+  @override
+  String locHpa(double value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPatternDigits(
+          locale: localeName,
+          decimalDigits: 1,
+        );
+    final String valueString = valueNumberFormat.format(value);
+
+    return '$valueString hPa';
+  }
+
+  @override
+  String get locSpeed => 'Speed';
+
+  @override
+  String locKmh(double value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPatternDigits(
+          locale: localeName,
+          decimalDigits: 1,
+        );
+    final String valueString = valueNumberFormat.format(value);
+
+    return '$valueString km/h';
+  }
+
+  @override
+  String get locCourse => 'Course';
+
+  @override
+  String locDegrees(int value) {
+    return '$value°';
+  }
+
+  @override
+  String get locFieldMeasured => 'Measured';
+
+  @override
+  String get locFieldModel => 'WMM model';
+
+  @override
+  String locMicroTesla(double value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPatternDigits(
+          locale: localeName,
+          decimalDigits: 1,
+        );
+    final String valueString = valueNumberFormat.format(value);
+
+    return '$valueString µT';
+  }
+
+  @override
+  String locFieldDeviation(int value) {
+    return 'Off by $value%';
+  }
+
+  @override
+  String get locFieldAbnormal =>
+      'Unusual magnetic field (normal is 25-65 µT): there may be a magnet or metal near the device.';
+
+  @override
+  String locLevelTilt(double value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPatternDigits(
+          locale: localeName,
+          decimalDigits: 1,
+        );
+    final String valueString = valueNumberFormat.format(value);
+
+    return 'Tilt $valueString°';
+  }
+
+  @override
+  String get locLevelOk => 'Level';
+
+  @override
+  String get locLevelHint => 'Lay the device on the surface to check.';
+
+  @override
+  String get locRise => 'Rise';
+
+  @override
+  String get locSet => 'Set';
+
+  @override
+  String get locNoon => 'Solar noon';
+
+  @override
+  String get locTransit => 'Transit';
+
+  @override
+  String get locAlwaysUp => 'Up all day';
+
+  @override
+  String get locAlwaysDown => 'Down all day';
+
+  @override
+  String get locNow => 'Now';
+
+  @override
+  String locSkyPosition(int az, int alt) {
+    return 'Azimuth $az° · elevation $alt°';
+  }
+
+  @override
+  String locMoonIllumination(int value) {
+    return '$value% lit';
+  }
+
+  @override
+  String get locNeedLocationSky => 'Location is needed for rise / set times.';
+
+  @override
+  String get moonNew => 'New moon';
+
+  @override
+  String get moonWaxingCrescent => 'Waxing crescent';
+
+  @override
+  String get moonFirstQuarter => 'First quarter';
+
+  @override
+  String get moonWaxingGibbous => 'Waxing gibbous';
+
+  @override
+  String get moonFull => 'Full moon';
+
+  @override
+  String get moonWaningGibbous => 'Waning gibbous';
+
+  @override
+  String get moonLastQuarter => 'Last quarter';
+
+  @override
+  String get moonWaningCrescent => 'Waning crescent';
+
+  @override
+  String get locSourceGps => 'GPS';
+
+  @override
+  String get locSourceNetwork => 'Network';
+
+  @override
+  String get locSourceFused => 'Fused';
 }
 
 /// The translations for English (`en_XA`).
@@ -569,4 +837,275 @@ class LbL10nEnXa extends LbL10nEn {
 
   @override
   String get calibFinish => '[Đởñẽ ··]';
+
+  @override
+  String get locTitle => '[Łởçảťỉởñ & ťẽłẽmẽťřỹ ········]';
+
+  @override
+  String get locIntro =>
+      '[Ťữřñ ởñ łởçảťỉởñ fởř ťřữẽ ñởřťh, çởởřđỉñảťẽš, ảłťỉťữđẽ ảñđ šữñřỉšẽ / šữñšẽť ťỉmẽš. Ỹởữř łởçảťỉởñ šťảỹš ởñ ťhỉš đẽvỉçẽ. ················································]';
+
+  @override
+  String get locAllow => '[Ảłłởŵ łởçảťỉởñ ······]';
+
+  @override
+  String get locDeniedForever =>
+      '[Łởçảťỉởñ pẽřmỉššỉởñ ỉš ởff. Ťữřñ ỉť ởñ ỉñ ťhẽ ảpp šẽťťỉñğš. ························]';
+
+  @override
+  String get locOpenSettings => '[Ởpẽñ šẽťťỉñğš ······]';
+
+  @override
+  String get locServiceOff => '[Đẽvỉçẽ łởçảťỉởñ ỉš ťữřñẽđ ởff. ············]';
+
+  @override
+  String get locSearching => '[Fỉñđỉñğ ỹởữř łởçảťỉởñ... ··········]';
+
+  @override
+  String get locApproximate => '[Ữšỉñğ ảppřởxỉmảťẽ łởçảťỉởñ ···········]';
+
+  @override
+  String get locDetails => '[Đẽťảỉłš ···]';
+
+  @override
+  String get locCopied => '[Çởởřđỉñảťẽš çởpỉẽđ ········]';
+
+  @override
+  String get locCopy => '[Çởpỹ ··]';
+
+  @override
+  String get locCycleFormat => '[Çhảñğẽ çởởřđỉñảťẽ fởřmảť ··········]';
+
+  @override
+  String locAccuracy(int value) {
+    return '[±$value m ··]';
+  }
+
+  @override
+  String locAltitude(int value) {
+    return '[Ảłť. $value m ···]';
+  }
+
+  @override
+  String get locOutsideVn => '[Ởữťšỉđẽ Vỉẽťñảm ······]';
+
+  @override
+  String get locOsmCredit =>
+      '[Bởữñđảřỉẽš © ỞpẽñŠťřẽẽťMảp çởñťřỉbữťởřš (ỞĐbŁ) ···················]';
+
+  @override
+  String get locSectionCoords => '[Çởởřđỉñảťẽš ·····]';
+
+  @override
+  String get locSectionPlace => '[Ảđmỉñỉšťřảťỉvẽ ảřẽả ········]';
+
+  @override
+  String get locSectionAltitude => '[Ảłťỉťữđẽ ····]';
+
+  @override
+  String get locSectionMotion => '[Mởťỉởñ ···]';
+
+  @override
+  String get locSectionField => '[Mảğñẽťỉç fỉẽłđ ······]';
+
+  @override
+  String get locSectionLevel => '[Bữbbłẽ łẽvẽł ·····]';
+
+  @override
+  String get locSectionSun => '[Šữñ ··]';
+
+  @override
+  String get locSectionMoon => '[Mởởñ ··]';
+
+  @override
+  String get locFormatDd => '[Đẽçỉmảł đẽğřẽẽš ······]';
+
+  @override
+  String get locFormatDms => '[Đẽğřẽẽš mỉñữťẽš šẽçởñđš ··········]';
+
+  @override
+  String get locFormatUtm => '[ỮŤM ··]';
+
+  @override
+  String get locFormatMgrs => '[MĞŘŠ ··]';
+
+  @override
+  String get locNotAvailable => '[Ñởť ảvảỉłảbłẽ ······]';
+
+  @override
+  String get locHorizontalAccuracy => '[Hởřỉžởñťảł ảççữřảçỹ ········]';
+
+  @override
+  String get locAltGps => '[ĞPŠ (ảbởvẽ šẽả łẽvẽł) ·········]';
+
+  @override
+  String get locAltBaro => '[Bảřởmẽťẽř ····]';
+
+  @override
+  String get locBaroCalibrated => '[çảłỉbřảťẽđ ŵỉťh ĞPŠ ········]';
+
+  @override
+  String get locBaroStandard => '[ữšỉñğ šťảñđảřđ 1013 hPả ··········]';
+
+  @override
+  String get locPressure => '[Přẽššữřẽ ····]';
+
+  @override
+  String locMeters(int value) {
+    return '[$value m ··]';
+  }
+
+  @override
+  String locMetersPm(int value, int acc) {
+    return '[$value m ±$acc m ···]';
+  }
+
+  @override
+  String locHpa(double value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPatternDigits(
+          locale: localeName,
+          decimalDigits: 1,
+        );
+    final String valueString = valueNumberFormat.format(value);
+
+    return '[$valueString hPả ··]';
+  }
+
+  @override
+  String get locSpeed => '[Špẽẽđ ··]';
+
+  @override
+  String locKmh(double value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPatternDigits(
+          locale: localeName,
+          decimalDigits: 1,
+        );
+    final String valueString = valueNumberFormat.format(value);
+
+    return '[$valueString km/h ··]';
+  }
+
+  @override
+  String get locCourse => '[Çởữřšẽ ···]';
+
+  @override
+  String locDegrees(int value) {
+    return '[$value° ··]';
+  }
+
+  @override
+  String get locFieldMeasured => '[Mẽảšữřẽđ ····]';
+
+  @override
+  String get locFieldModel => '[ŴMM mởđẽł ····]';
+
+  @override
+  String locMicroTesla(double value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPatternDigits(
+          locale: localeName,
+          decimalDigits: 1,
+        );
+    final String valueString = valueNumberFormat.format(value);
+
+    return '[$valueString µŤ ··]';
+  }
+
+  @override
+  String locFieldDeviation(int value) {
+    return '[Ởff bỹ $value% ····]';
+  }
+
+  @override
+  String get locFieldAbnormal =>
+      '[Ữñữšữảł mảğñẽťỉç fỉẽłđ (ñởřmảł ỉš 25-65 µŤ): ťhẽřẽ mảỹ bẽ ả mảğñẽť ởř mẽťảł ñẽảř ťhẽ đẽvỉçẽ. ·····································]';
+
+  @override
+  String locLevelTilt(double value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPatternDigits(
+          locale: localeName,
+          decimalDigits: 1,
+        );
+    final String valueString = valueNumberFormat.format(value);
+
+    return '[Ťỉłť $valueString° ···]';
+  }
+
+  @override
+  String get locLevelOk => '[Łẽvẽł ··]';
+
+  @override
+  String get locLevelHint =>
+      '[Łảỹ ťhẽ đẽvỉçẽ ởñ ťhẽ šữřfảçẽ ťở çhẽçk. ················]';
+
+  @override
+  String get locRise => '[Řỉšẽ ··]';
+
+  @override
+  String get locSet => '[Šẽť ··]';
+
+  @override
+  String get locNoon => '[Šởłảř ñởởñ ····]';
+
+  @override
+  String get locTransit => '[Ťřảñšỉť ···]';
+
+  @override
+  String get locAlwaysUp => '[Ữp ảłł đảỹ ····]';
+
+  @override
+  String get locAlwaysDown => '[Đởŵñ ảłł đảỹ ·····]';
+
+  @override
+  String get locNow => '[Ñởŵ ··]';
+
+  @override
+  String locSkyPosition(int az, int alt) {
+    return '[Ảžỉmữťh $az° · ẽłẽvảťỉởñ $alt° ··········]';
+  }
+
+  @override
+  String locMoonIllumination(int value) {
+    return '[$value% łỉť ··]';
+  }
+
+  @override
+  String get locNeedLocationSky =>
+      '[Łởçảťỉởñ ỉš ñẽẽđẽđ fởř řỉšẽ / šẽť ťỉmẽš. ················]';
+
+  @override
+  String get moonNew => '[Ñẽŵ mởởñ ····]';
+
+  @override
+  String get moonWaxingCrescent => '[Ŵảxỉñğ çřẽšçẽñť ······]';
+
+  @override
+  String get moonFirstQuarter => '[Fỉřšť qữảřťẽř ······]';
+
+  @override
+  String get moonWaxingGibbous => '[Ŵảxỉñğ ğỉbbởữš ······]';
+
+  @override
+  String get moonFull => '[Fữłł mởởñ ····]';
+
+  @override
+  String get moonWaningGibbous => '[Ŵảñỉñğ ğỉbbởữš ······]';
+
+  @override
+  String get moonLastQuarter => '[Łảšť qữảřťẽř ·····]';
+
+  @override
+  String get moonWaningCrescent => '[Ŵảñỉñğ çřẽšçẽñť ······]';
+
+  @override
+  String get locSourceGps => '[ĞPŠ ··]';
+
+  @override
+  String get locSourceNetwork => '[Ñẽťŵởřk ···]';
+
+  @override
+  String get locSourceFused => '[Fữšẽđ ··]';
 }

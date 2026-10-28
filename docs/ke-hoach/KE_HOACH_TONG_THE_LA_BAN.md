@@ -56,7 +56,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 5 | A2 | Cảm biến + sensor fusion | A1 | ✅ 28/10 · máy thật 29/10: đứng yên ±0,45°, nhiễu từ OK (sai số tuyệt đối / trễ / pin ⛔) |
 | 6 | A3 | Mặt la bàn, bắc thực WMM, hiệu chuẩn | A2 | ✅ 29/10 · máy thật M32: 60 Hz rớt 0,35%, 90 Hz 86 FPS |
 | 7 | S1 | API lõi + schema D1 | N2 | ✅ 28/10 |
-| 8 | A4 | Vị trí + telemetry | A3 | ⬜ |
+| 8 | A4 | Vị trí + telemetry | A3 | ✅ 29/10 (chưa thử GPS máy thật) |
 | 9 | A5 | Lưu trữ mã hóa, migration, safe mode | A1 | ✅ 28/10 |
 | 10 | S2 | Định danh thiết bị + attestation + phiên | S1, A5 | ⬜ |
 | 11 | S3 | Ký request, pinning, Remote Config ký số | S2 | ⬜ |
@@ -229,6 +229,26 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
 - Làm: quyền just-in-time (While Using, ưu tiên approximate); DD/DMS/UTM/MGRS; cao độ GPS + baro; tốc độ, độ chính xác; µT +
   cảnh báo 25-65 µT; bubble level; mặt trời/mặt trăng offline; tra địa giới hành chính VN offline (Q28). VN-2000 để sau v1.0.
 - Cổng: unit test chuyển đổi tọa độ với điểm mẫu chuẩn; golden thẻ telemetry tự lấp.
+- Kết quả (29/10, nhánh `phase/a4-vi-tri`): plugin nội bộ `ViTriPlugin.kt` trong `packages/location_feature/android` dùng
+  LocationManager của hệ điều hành (FUSED_PROVIDER Android 12+, máy cũ GPS + mạng) - KHÔNG Play Services / SDK mới; quyền
+  COARSE + FINE "khi đang dùng", chỉ hỏi khi người dùng bấm "Cho phép vị trí" (tự nhớ đã hỏi để phân biệt chưa hỏi / từ chối
+  hẳn -> nút mở Cài đặt), dịch vụ vị trí tắt -> nút mở cài đặt vị trí. Domain thuần Dart (`lib/src/domain`): DD / DMS / UTM
+  (Krüger bậc 6) / MGRS khớp 328 điểm PROJ + GeoTrans (UTM < 1 mm, MGRS từng ký tự kể cả Na Uy / Svalbard); geoid EGM96 1°
+  (asset 130 KB, VN < 1,5 m so lưới 15'); độ cao khí áp + hiệu chỉnh QNH theo GPS; mặt trời / mặt trăng Meeus (so ephem 60
+  ca: mặt trời < 0,02°, mọc / lặn < 1 phút; mặt trăng < 0,1°, < 2 phút; pha); thước thuỷ có trễ; µT so WMM (25-65 µT, lệch >
+  20%); địa giới VN ngoại tuyến (Q28) - asset 2,2 MB từ OSM 27/10/2026: 34 tỉnh + 3320 xã / phường / đặc khu (Hoàng Sa thuộc
+  Đà Nẵng, Trường Sa thuộc Khánh Hòa), giải mã lười + chẵn-lẻ, công cụ `tools/build/dia-gioi.py`. Provider dùng chung
+  (`huongProvider`, `viTriProvider`, `tuTruongProvider`...) chuyển xuống `sensors` (compass_feature re-export) để la bàn và
+  vị trí dùng CHUNG một luồng cảm biến. Tab La bàn: `ManLaBan(theDuoi: TheViTri())` (app nối) - thẻ toạ độ (chạm đổi định
+  dạng, giữ để chép), xã / tỉnh, độ cao, sai số; mỗi lần đọc đẩy vào `viTriProvider` -> bắc thực tự bật; vị trí làm tròn 0,1°
+  lưu `vi_tri.json` làm vị trí ban đầu lần mở sau. Màn "Vị trí & thông số": 4 định dạng + chép, địa giới + © OpenStreetMap,
+  di chuyển, độ cao GPS / khí áp / áp suất, từ trường, thước thuỷ, mặt trời, mặt trăng. Giấy phép ODbL + EGM96 vào
+  `LicenseRegistry` và `design/LICENSES.md`. location_feature 422 test (domain phủ 94-100%), golden `the_vi_tri` +
+  `man_vi_tri`. CHƯA thử GPS / quyền trên máy thật.
+- Phát sinh (từ A4): iOS CoreLocation + Info.plist NSLocationWhenInUse -> I1. Thử GPS máy thật (quyền xấp xỉ / chính xác,
+  FUSED_PROVIDER, độ cao Android 14 mslAltitude) cùng đợt đo A2/A3 còn treo. VN-2000 vẫn để sau v1.0 (Q26). Màn vị trí mở
+  qua nút "Chi tiết" trên thẻ - A8 cân nhắc lối vào riêng (tab / phím tắt) và tuỳ chọn đơn vị (ft, mph). Dữ liệu địa giới
+  cập nhật qua config ký số / R2 ở S3 nếu cần (hiện nhúng trong APK).
 
 ### A5 - Lưu trữ + cập nhật an toàn
 - Đọc thêm: Spec §10, SEC-APP-STORAGE.
