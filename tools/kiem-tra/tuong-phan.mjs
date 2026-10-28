@@ -12,7 +12,9 @@ const kq = kiemCap(tokens.color, tokens.contrast);
 const truot = kq.filter((r) => !r.dat);
 if (process.argv.includes('-v') || truot.length) {
   for (const r of kq) {
-    console.log(`${r.dat ? '✓' : '✗'} ${r.theme.padEnd(5)} ${r.fg} / ${r.bg}: ${r.ratio.toFixed(2)} (>= ${r.min})`);
+    console.log(
+      `${r.dat ? '✓' : '✗'} ${r.theme.padEnd(5)} ${r.fg} / ${r.bg}: ${r.ratio.toFixed(2)} (>= ${r.min})`,
+    );
   }
 }
 if (truot.length) {

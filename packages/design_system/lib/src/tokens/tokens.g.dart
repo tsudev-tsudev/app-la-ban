@@ -137,37 +137,83 @@ abstract final class LbRadius {
 
 /// Bóng đổ theo theme (neumorphism nhẹ).
 final class LbShadows {
-  const LbShadows({
-    required this.sm,
-    required this.md,
-    required this.lg,
-  });
+  const LbShadows({required this.sm, required this.md, required this.lg});
 
   static const light = LbShadows(
     sm: [
-      BoxShadow(color: Color(0x1F0B1220), offset: Offset(0, 1), blurRadius: 3, spreadRadius: 0),
+      BoxShadow(
+        color: Color(0x1F0B1220),
+        offset: Offset(0, 1),
+        blurRadius: 3,
+        spreadRadius: 0,
+      ),
     ],
     md: [
-      BoxShadow(color: Color(0x260B1220), offset: Offset(0, 4), blurRadius: 12, spreadRadius: -2),
-      BoxShadow(color: Color(0xB3FFFFFF), offset: Offset(-2, -2), blurRadius: 8, spreadRadius: 0),
+      BoxShadow(
+        color: Color(0x260B1220),
+        offset: Offset(0, 4),
+        blurRadius: 12,
+        spreadRadius: -2,
+      ),
+      BoxShadow(
+        color: Color(0xB3FFFFFF),
+        offset: Offset(-2, -2),
+        blurRadius: 8,
+        spreadRadius: 0,
+      ),
     ],
     lg: [
-      BoxShadow(color: Color(0x330B1220), offset: Offset(0, 12), blurRadius: 32, spreadRadius: -6),
-      BoxShadow(color: Color(0xCCFFFFFF), offset: Offset(-4, -4), blurRadius: 16, spreadRadius: 0),
+      BoxShadow(
+        color: Color(0x330B1220),
+        offset: Offset(0, 12),
+        blurRadius: 32,
+        spreadRadius: -6,
+      ),
+      BoxShadow(
+        color: Color(0xCCFFFFFF),
+        offset: Offset(-4, -4),
+        blurRadius: 16,
+        spreadRadius: 0,
+      ),
     ],
   );
 
   static const dark = LbShadows(
     sm: [
-      BoxShadow(color: Color(0x66000000), offset: Offset(0, 1), blurRadius: 3, spreadRadius: 0),
+      BoxShadow(
+        color: Color(0x66000000),
+        offset: Offset(0, 1),
+        blurRadius: 3,
+        spreadRadius: 0,
+      ),
     ],
     md: [
-      BoxShadow(color: Color(0x80000000), offset: Offset(0, 4), blurRadius: 12, spreadRadius: -2),
-      BoxShadow(color: Color(0x14FFFFFF), offset: Offset(-1, -1), blurRadius: 6, spreadRadius: 0),
+      BoxShadow(
+        color: Color(0x80000000),
+        offset: Offset(0, 4),
+        blurRadius: 12,
+        spreadRadius: -2,
+      ),
+      BoxShadow(
+        color: Color(0x14FFFFFF),
+        offset: Offset(-1, -1),
+        blurRadius: 6,
+        spreadRadius: 0,
+      ),
     ],
     lg: [
-      BoxShadow(color: Color(0x99000000), offset: Offset(0, 12), blurRadius: 32, spreadRadius: -6),
-      BoxShadow(color: Color(0x1AFFFFFF), offset: Offset(-2, -2), blurRadius: 12, spreadRadius: 0),
+      BoxShadow(
+        color: Color(0x99000000),
+        offset: Offset(0, 12),
+        blurRadius: 32,
+        spreadRadius: -6,
+      ),
+      BoxShadow(
+        color: Color(0x1AFFFFFF),
+        offset: Offset(-2, -2),
+        blurRadius: 12,
+        spreadRadius: 0,
+      ),
     ],
   );
 
@@ -181,8 +227,14 @@ final class LbGlass {
   const LbGlass({required this.fill, required this.border});
 
   static const double blur = 16;
-  static const light = LbGlass(fill: Color(0xB8FFFFFF), border: Color(0x99FFFFFF));
-  static const dark = LbGlass(fill: Color(0x99131C2E), border: Color(0x33FFFFFF));
+  static const light = LbGlass(
+    fill: Color(0xB8FFFFFF),
+    border: Color(0x99FFFFFF),
+  );
+  static const dark = LbGlass(
+    fill: Color(0x99131C2E),
+    border: Color(0x33FFFFFF),
+  );
 
   final Color fill;
   final Color border;
@@ -192,15 +244,71 @@ final class LbGlass {
 abstract final class LbType {
   static const String fontFamily = 'BeVietnamPro';
   static const String fontPackage = 'design_system';
-  static const display = TextStyle(fontFamily: fontFamily, package: fontPackage, fontSize: 48, height: 1.1667, fontWeight: FontWeight.w700);
-  static const headline = TextStyle(fontFamily: fontFamily, package: fontPackage, fontSize: 28, height: 1.2857, fontWeight: FontWeight.w700);
-  static const title = TextStyle(fontFamily: fontFamily, package: fontPackage, fontSize: 20, height: 1.4, fontWeight: FontWeight.w600);
-  static const body = TextStyle(fontFamily: fontFamily, package: fontPackage, fontSize: 16, height: 1.5, fontWeight: FontWeight.w400);
-  static const bodySmall = TextStyle(fontFamily: fontFamily, package: fontPackage, fontSize: 14, height: 1.4286, fontWeight: FontWeight.w400);
-  static const label = TextStyle(fontFamily: fontFamily, package: fontPackage, fontSize: 14, height: 1.4286, fontWeight: FontWeight.w600);
-  static const caption = TextStyle(fontFamily: fontFamily, package: fontPackage, fontSize: 12, height: 1.3333, fontWeight: FontWeight.w500);
-  static const telemetry = TextStyle(fontFamily: fontFamily, package: fontPackage, fontSize: 32, height: 1.25, fontWeight: FontWeight.w600, fontFeatures: [FontFeature.tabularFigures()]);
-  static const telemetryLarge = TextStyle(fontFamily: fontFamily, package: fontPackage, fontSize: 56, height: 1.1429, fontWeight: FontWeight.w700, fontFeatures: [FontFeature.tabularFigures()]);
+  static const display = TextStyle(
+    fontFamily: fontFamily,
+    package: fontPackage,
+    fontSize: 48,
+    height: 1.1667,
+    fontWeight: FontWeight.w700,
+  );
+  static const headline = TextStyle(
+    fontFamily: fontFamily,
+    package: fontPackage,
+    fontSize: 28,
+    height: 1.2857,
+    fontWeight: FontWeight.w700,
+  );
+  static const title = TextStyle(
+    fontFamily: fontFamily,
+    package: fontPackage,
+    fontSize: 20,
+    height: 1.4,
+    fontWeight: FontWeight.w600,
+  );
+  static const body = TextStyle(
+    fontFamily: fontFamily,
+    package: fontPackage,
+    fontSize: 16,
+    height: 1.5,
+    fontWeight: FontWeight.w400,
+  );
+  static const bodySmall = TextStyle(
+    fontFamily: fontFamily,
+    package: fontPackage,
+    fontSize: 14,
+    height: 1.4286,
+    fontWeight: FontWeight.w400,
+  );
+  static const label = TextStyle(
+    fontFamily: fontFamily,
+    package: fontPackage,
+    fontSize: 14,
+    height: 1.4286,
+    fontWeight: FontWeight.w600,
+  );
+  static const caption = TextStyle(
+    fontFamily: fontFamily,
+    package: fontPackage,
+    fontSize: 12,
+    height: 1.3333,
+    fontWeight: FontWeight.w500,
+  );
+  static const telemetry = TextStyle(
+    fontFamily: fontFamily,
+    package: fontPackage,
+    fontSize: 32,
+    height: 1.25,
+    fontWeight: FontWeight.w600,
+    fontFeatures: [FontFeature.tabularFigures()],
+  );
+  static const telemetryLarge = TextStyle(
+    fontFamily: fontFamily,
+    package: fontPackage,
+    fontSize: 56,
+    height: 1.1429,
+    fontWeight: FontWeight.w700,
+    fontFeatures: [FontFeature.tabularFigures()],
+  );
 }
 
 /// Breakpoint theo cạnh rộng (dp): compact < medium <= x < expanded <= x.
