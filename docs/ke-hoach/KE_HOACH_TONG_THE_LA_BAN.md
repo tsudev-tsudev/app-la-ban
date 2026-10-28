@@ -47,7 +47,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 
 | # | Mã | Tên | Phụ thuộc | Trạng thái |
 |---|---|---|---|---|
-| 1 | N0 | Khởi tạo repo, toolchain, cổng kiểm | - | 🟨 5/6 (28/10: còn flutter create + flutter test khi SDK tải xong) |
+| 1 | N0 | Khởi tạo repo, toolchain, cổng kiểm | - | ✅ 28/10 |
 | 2 | N1 | Thương hiệu: logo, icon, tokens | N0 | ⬜ |
 | 3 | N2 | Nền Cloudflare + landing tạm | N0 | ⬜ |
 | 4 | A1 | Khung app (theme, i18n, router, responsive, golden) | N1 | ⬜ |
@@ -91,13 +91,14 @@ Developer, Codemagic, duyệt Privacy Policy · trước R4 chốt đơn vị pe
   `tools/kiem-tra/cong.sh nhanh|day-du`; hook pre-commit (gitleaks, check-agents-md, chặn dash không phải ASCII); ADR-0001,
   README, SECURITY.md, CONTRIBUTING.md (quy định comment), LICENSE độc quyền; osv-scanner trong cổng.
 - Cổng: `day-du` xanh trên khung rỗng; `flutter test` xanh; commit đầu + PR. Xoá lưu ý CHUA CO GIT khỏi Board.
-- Kết quả (28/10, phiên 1): git + repo `tsudev-tsudev/app-la-ban` (private); Node 24 (.nvmrc) + npm workspaces (Worker Hono/zod 4,
-  Astro 7, Vite 8 + React 19, shield) build + test xanh; cổng `cong.sh` + vệ sinh bản build (thử 4 lỗi cố ý đều bắt được); hook
-  pre-commit (secretlint, chặn dash, chặn tài liệu gốc); pub workspace + 14 package + app 3 flavor viết tay; ADR-0001, README,
-  SECURITY, CONTRIBUTING, LICENSE, Renovate. CÒN: Flutter SDK tải chậm -> `flutter create --platforms android,ios --org com.tsudev
-  --project-name la_ban app` (giữ lib/ đã có), cấu hình flavor gradle/xcode (`com.tsudev.laban[.dev|.stg]`), `flutter pub get` +
-  analyze + test, rồi `cong.sh day-du` xanh. Thay đổi so với thẻ: FVM -> git clone ghim commit; gitleaks/osv-scanner -> secretlint
-  + npm audit (tải binary bị chặn).
+- Kết quả (28/10): repo `tsudev-tsudev/app-la-ban` (private). Flutter 3.47.8 / Dart 3.13.7 ở `~/tools/flutter` (ghim
+  `.flutter-version`); app `android/` + `ios/` sinh bằng `flutter create`, Android 3 flavor `com.tsudev.laban[.dev|.stg]`,
+  `allowBackup=false`, `flutter build apk --flavor dev --debug` OK (com.tsudev.laban.dev, targetSdk 36); iOS mới đổi bundle id + tên (scheme flavor iOS cần Xcode -> R2). Node 24 + npm workspaces (Hono, zod 4,
+  Astro 7, Vite 8 + React 19, shield). `cong.sh day-du` xanh: eslint, tsc, vitest, astro check, 15 gói Dart analyze
+  `--fatal-infos` + test, build web, vệ sinh bản build, secretlint, npm audit 0 lỗ hổng. Khác thẻ: FVM -> git clone ghim commit;
+  gitleaks / osv-scanner -> secretlint + npm audit (tải binary bị chặn; tùy chọn nếu tự cài vào `~/tools/bin`); bảo vệ nhánh
+  cần GitHub Pro (403) -> chỉ theo quy trình. Dart 3.13 dùng cú pháp constructor `const new(...)` (lint
+  `unnecessary_type_name_in_constructor`) - `dart fix --apply` trong từng package.
 
 ### N1 - Thương hiệu
 - Làm: tokens (Spec §2.1) -> Style Dictionary -> Dart + CSS; script kiểm tương phản WCAG AA; 3 phương án logo SVG (hoa gió +
@@ -228,7 +229,7 @@ Developer, Codemagic, duyệt Privacy Policy · trước R4 chốt đơn vị pe
 - Cổng: diễn tập khôi phục đạt RPO/RTO; cảnh báo thử tới < 2 phút.
 
 ### R2 - Sẵn sàng store
-- Làm: khóa upload Android (ngoài repo) + Play App Signing; Codemagic cho iOS (App Store Connect API key); Privacy Manifest +
+- Làm: khóa upload Android (ngoài repo) + Play App Signing; scheme/configuration flavor iOS dev/staging/prod (Xcode trên Codemagic/Mac); Codemagic cho iOS (App Store Connect API key); Privacy Manifest +
   Required Reason API; Data Safety khớp thực tế (gồm SDK bên thứ ba); `NS*UsageDescription` vi/en; ảnh store sinh tự động từ
   integration test; listing vi/en; ghi chú reviewer về cơ chế bảo mật; allow-list thiết bị review.
 - Cổng: bản internal (Play) + TestFlight cài được.

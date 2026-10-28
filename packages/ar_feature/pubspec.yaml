@@ -1,6 +1,6 @@
 name: ar_feature
-description: Camera AR phủ hướng la bàn.
+description: "Camera AR phủ hướng la bàn."
 publish_to: none
 resolution: workspace
 environment:
-  sdk: ^3.12.0
+  sdk: ^3.13.0

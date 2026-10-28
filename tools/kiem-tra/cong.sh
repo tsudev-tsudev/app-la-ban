@@ -65,8 +65,11 @@ if [ -f pubspec.yaml ] && [ "$FLUTTER_SAN_SANG" = 1 ]; then
     for goi in $DART_DOI; do
       [ -f "$goi/pubspec.yaml" ] || continue
       echo "-- $goi"
-      (cd "$goi" && flutter analyze --fatal-infos --fatal-warnings >/dev/null && echo "   analyze ✓")
-      if [ -d "$goi/test" ]; then (cd "$goi" && flutter test --reporter compact); fi
+      if ! kq=$(cd "$goi" && flutter analyze --fatal-infos --fatal-warnings 2>&1); then
+        printf '%s\n' "$kq" | grep '•' >&2; loi "flutter analyze đỏ ở $goi"
+      fi
+      echo "   analyze ✓"
+      if [ -d "$goi/test" ]; then (cd "$goi" && flutter test --reporter failures-only); fi
     done
   fi
 fi

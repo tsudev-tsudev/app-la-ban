@@ -1,8 +1,8 @@
 name: core
-description: Kiểu dùng chung: Result/Failure, logger, hằng số.
+description: "Kiểu dùng chung: Result/Failure, logger, hằng số."
 publish_to: none
 resolution: workspace
 environment:
-  sdk: ^3.12.0
+  sdk: ^3.13.0
 dev_dependencies:
   test: ^1.25.0
