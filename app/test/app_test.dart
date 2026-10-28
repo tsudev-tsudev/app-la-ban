@@ -1,3 +1,4 @@
+import 'package:compass_feature/compass_feature.dart';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -63,10 +64,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(ManGioiThieu), findsNothing);
     expect(find.byType(NavigationBar), findsOneWidget);
-    expect(
-      find.text('Mặt la bàn sẽ hiện ở đây sau khi cảm biến sẵn sàng.'),
-      findsOneWidget,
-    );
+    expect(find.byType(ManLaBan), findsOneWidget);
+    expect(find.textContaining('42°'), findsOneWidget);
   });
 
   testWidgets('đổi ngôn ngữ / theme: giữ tab + state, không dựng lại màn', (
@@ -77,7 +76,11 @@ void main() {
     datManHinh(tester, manHinh12[3]);
     datHeThong(tester, oChup.first);
     final c = ProviderContainer(
-      overrides: [caiDatProvider.overrideWith(CaiDatDaXem.new), _tabDo],
+      overrides: [
+        caiDatProvider.overrideWith(CaiDatDaXem.new),
+        huongThu,
+        _tabDo,
+      ],
     );
     addTearDown(c.dispose);
     await tester.pumpWidget(
@@ -197,7 +200,7 @@ void main() {
     final t = tester.widget<Title>(find.byType(Title));
     expect(t.title, 'La bàn DEV');
     final prod = ProviderScope(
-      overrides: [caiDatProvider.overrideWith(CaiDatDaXem.new)],
+      overrides: [caiDatProvider.overrideWith(CaiDatDaXem.new), huongThu],
       child: const LaBanApp(flavor: Flavor.prod),
     );
     await tester.pumpWidget(prod);

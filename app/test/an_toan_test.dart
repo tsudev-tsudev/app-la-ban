@@ -95,7 +95,12 @@ void main() {
     TepJson.mo('${tm.path}/cai_dat.json')
         .ghiDongBo({'ngonNgu': 'en', 'daXemGioiThieu': true});
     final app = (await tester.runAsync(
-      () => dungApp(Flavor.dev, khoKhoa: KhoKhoaBoNho(tm.path), nen: false),
+      () => dungApp(
+        Flavor.dev,
+        khoKhoa: KhoKhoaBoNho(tm.path),
+        nen: false,
+        ghiDeThem: [huongThu],
+      ),
     ))!;
     await tester.pumpWidget(app);
     await tester.pump();
@@ -115,7 +120,12 @@ void main() {
   testWidgets('dungApp: kho lỗi -> vẫn chạy, chế độ an toàn', (tester) async {
     datHeThong(tester, oChup.first);
     final app = (await tester.runAsync(
-      () => dungApp(Flavor.dev, khoKhoa: KhoHong(), nen: false),
+      () => dungApp(
+        Flavor.dev,
+        khoKhoa: KhoHong(),
+        nen: false,
+        ghiDeThem: [huongThu],
+      ),
     ))!;
     await tester.pumpWidget(app);
     await tester.pump(const Duration(seconds: 2));
@@ -138,7 +148,12 @@ void main() {
     );
     TepJson.mo('${tm.path}/cai_dat.json').ghiDongBo({'daXemGioiThieu': true});
     final app = (await tester.runAsync(
-      () => dungApp(Flavor.dev, khoKhoa: KhoKhoaBoNho(tm.path), nen: false),
+      () => dungApp(
+        Flavor.dev,
+        khoKhoa: KhoKhoaBoNho(tm.path),
+        nen: false,
+        ghiDeThem: [huongThu],
+      ),
     ))!;
     await tester.pumpWidget(app);
     await tester.pumpAndSettle();

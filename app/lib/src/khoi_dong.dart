@@ -1,6 +1,7 @@
 import 'package:design_system/design_system.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:la_ban/src/app.dart';
 import 'package:la_ban/src/flavor.dart';
 import 'package:la_ban/src/luu_tru.dart';
@@ -18,10 +19,12 @@ Future<void> khoiDong(Flavor flavor) async {
 
 /// Mở kho lưu trữ (canh gác crash -> cài đặt -> CSDL mã hoá) rồi dựng cây
 /// app với các provider đã nối. Lỗi kho -> vẫn chạy, ở chế độ an toàn.
+/// [ghiDeThem]: thay nguồn nền tảng khác trong test (ví dụ cảm biến).
 Future<Widget> dungApp(
   Flavor flavor, {
   KhoKhoa khoKhoa = const KhoKhoaNenTang(),
   bool nen = true,
+  List<Override> ghiDeThem = const [],
 }) async {
   KhoLuuTru? kho;
   try {
@@ -41,6 +44,7 @@ Future<Widget> dungApp(
         khoCaiDatProvider.overrideWithValue(KhoCaiDatTep(kho.caiDat))
       else
         anToanProvider.overrideWithValue(LyDoAnToan.migrationLoi),
+      ...ghiDeThem,
     ],
     child: LaBanApp(flavor: flavor),
   );

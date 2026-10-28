@@ -53,7 +53,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 2 | N1 | Thương hiệu: logo, icon, tokens | N0 | ✅ 28/10 |
 | 3 | N2 | Nền Cloudflare + landing tạm | N0 | ✅ 28/10 |
 | 4 | A1 | Khung app (theme, i18n, router, responsive, golden) | N1 | ✅ 28/10 |
-| 5 | A2 | Cảm biến + sensor fusion | A1 | ⬜ |
+| 5 | A2 | Cảm biến + sensor fusion | A1 | ✅ 28/10 (đo máy thật ⛔ chờ người dùng) |
 | 6 | A3 | Mặt la bàn, bắc thực WMM, hiệu chuẩn | A2 | ⬜ |
 | 7 | S1 | API lõi + schema D1 | N2 | ✅ 28/10 |
 | 8 | A4 | Vị trí + telemetry | A3 | ⬜ |
@@ -167,11 +167,29 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
 - Làm: plugin nội bộ `sensors` (EventChannel) Android `TYPE_ROTATION_VECTOR`/mag/accel/gyro/baro + accuracy, iOS CoreMotion +
   `CLHeading`; Dart thuần: Madgwick + bù nghiêng + lọc thích ứng + thống kê vòng (359°->0°); xử lý ngoài UI isolate; dừng khi nền.
 - Cổng: unit test bộ lọc với dữ liệu ghi sẵn; đo trên điện thoại thật (ghi `TEST` vào LOG).
+- Kết quả (28/10): `packages/sensors` thành plugin nội bộ CHỈ Android (Q33) - `CamBienPlugin.kt` nghe ROTATION_VECTOR /
+  GAME_ROTATION_VECTOR / MAGNETIC_FIELD / ACCELEROMETER / GYROSCOPE (100 Hz) / PRESSURE (5 Hz) trên HandlerThread riêng,
+  gom lô `DoubleArray` 7 số/mẫu mỗi 16 ms + mẫu hướng màn hình, không gửi tên / hãng cảm biến. Dart thuần (`lib/src/domain`):
+  thống kê vòng (`hieuGoc`, `thongKeVong`, `CuaSoVong`, 8 hướng), quaternion, bù nghiêng gia tốc + từ (như
+  `getRotationMatrix`), phương vị theo mép trên MÀN HÌNH (xoay 0/90/180/270) và tự chuyển sang hướng camera sau khi dựng
+  đứng (liền mạch ở 45°), Madgwick MARG/IMU (khởi tạo bằng bù nghiêng, beta 1,5 trong 1,5 s đầu rồi 0,08), Kalman góc vòng
+  2 trạng thái + lọc thông thấp thích ứng có dự báo theo tốc độ (không trễ khi xoay đều), phát hiện nhiễu từ (dải 18-75 µT
+  + lệch > 20% so với nền EMA -> bỏ từ trường, giữ hướng bằng con quay), mức tin cậy cao / trung bình / thấp + cần hiệu
+  chuẩn, phát hiện đứng yên 3 s -> hạ 20 Hz. Nguồn tự chọn: Madgwick (đủ con quay) > ROTATION_VECTOR > bù nghiêng.
+  `DichVuHuong` chạy hợp nhất trong isolate riêng, một kết quả / lô; tab La bàn chỉ nghe khi app tiền cảnh + tab đang thấy
+  (autoDispose -> nền tảng huỷ đăng ký cảm biến). Màn tạm: hoa gió xoay + chữ B, vạch mốc, số độ + 8 hướng, độ tin cậy,
+  ngóc / nghiêng, cảnh báo nhiễu từ / hiệu chuẩn (vi/en, golden). Test sensors 56 (dữ liệu mô phỏng seed cố định: quỹ đạo
+  nghiêng, xoay qua 0°, lệch con quay, nam châm, tạm dừng), phủ 99%; compass_feature 8; app 20. Phát hành APK
+  v0.1.0-beta.2 để đo trên máy thật - CHƯA đo (chưa có thiết bị adb).
 
 ### A3 - Mặt la bàn
 - Làm: CustomPainter + RepaintBoundary; heading 0,1°, 8 hướng; WMM2025 nhúng offline (hệ số cập nhật qua config ký số); bắc
   từ/bắc thực; mức tin cậy High/Medium/Low; luồng hiệu chuẩn hình 8; haptic; cảnh báo nhiễu từ.
 - Cổng: declination so bảng NOAA < 0,2°; 60 FPS profile trên máy thật; golden.
+- Phát sinh (từ A2): thay `_DocHuong` / `_HoaGio` tạm trong `man_la_ban.dart` bằng mặt la bàn CustomPainter; đọc
+  `huongProvider` (`HuongDoc`: phuongVi đã lọc, doc / lan, theoCamera, muc, nhieuTu, canHieuChuan, cuongDoTu) - bắc thực =
+  phuongVi + độ lệch WMM. Đo trên máy thật phần A2 còn treo (sai số đứng yên, độ trễ khi xoay, pin) - làm cùng A3 khi có
+  adb; nếu Madgwick kém hơn ROTATION_VECTOR trên máy thật thì đổi mặc định `uuTienHeThong` (hoặc thêm lựa chọn ở A8).
 
 ### S1 - API lõi
 - Đọc thêm: SEC-API, SEC-DATA.
@@ -374,4 +392,7 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   thử thật; App Attest (client + xác minh attestation / assertion ở Worker); kiểm tra jailbreak (S4 phần iOS); Privacy Manifest
   + Required Reason API; `NS*UsageDescription` vi/en; TestFlight -> App Store (Q21 tên "La bàn: Smart Compass"); nút App Store
   trên landing.
+- Phát sinh (từ A2): `packages/sensors` hiện chỉ khai báo plugin Android - thêm `ios/` (CoreMotion deviceMotion
+  xArbitraryCorrectedZVertical + magnetometer đã hiệu chuẩn, CLHeading cho độ chính xác) phát đúng định dạng lô 7 số của
+  `giaiMaLo`; trước đó iOS hiện "không có cảm biến la bàn".
 - Cổng: TestFlight cài được; golden + test chung vẫn xanh; App Attest end-to-end trên staging.

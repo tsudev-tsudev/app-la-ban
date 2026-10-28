@@ -28,10 +28,6 @@ class LbL10nEn extends LbL10n {
   String get tabSettings => 'Settings';
 
   @override
-  String get compassPlaceholder =>
-      'The compass dial will appear here once the sensors are ready.';
-
-  @override
   String get mapPlaceholder => 'The offline map will appear here.';
 
   @override
@@ -103,6 +99,105 @@ class LbL10nEn extends LbL10n {
 
   @override
   String get featurePaused => 'This feature is temporarily paused.';
+
+  @override
+  String get compassStarting => 'Starting sensors...';
+
+  @override
+  String get compassNoSensor =>
+      'This device has no compass sensor (magnetometer).';
+
+  @override
+  String get compassError =>
+      'Could not read the sensors. Please reopen the app.';
+
+  @override
+  String compassDegrees(int value) {
+    return '$value°';
+  }
+
+  @override
+  String get compassMagneticNorth => 'Magnetic north';
+
+  @override
+  String compassHeadingSemantics(int value, String direction) {
+    return 'Heading $value degrees, $direction';
+  }
+
+  @override
+  String compassTilt(int pitch, int roll) {
+    return 'Pitch $pitch° · Roll $roll°';
+  }
+
+  @override
+  String compassAccuracy(String level) {
+    return 'Accuracy: $level';
+  }
+
+  @override
+  String get accuracyHigh => 'High';
+
+  @override
+  String get accuracyMedium => 'Medium';
+
+  @override
+  String get accuracyLow => 'Low';
+
+  @override
+  String get compassInterference =>
+      'Magnetic interference: move away from magnets, speakers, magnetic cases or large metal objects.';
+
+  @override
+  String get compassCalibrate =>
+      'Low accuracy: move your phone in a figure-8 a few times.';
+
+  @override
+  String get dirShortN => 'N';
+
+  @override
+  String get dirLongN => 'North';
+
+  @override
+  String get dirShortNE => 'NE';
+
+  @override
+  String get dirLongNE => 'Northeast';
+
+  @override
+  String get dirShortE => 'E';
+
+  @override
+  String get dirLongE => 'East';
+
+  @override
+  String get dirShortSE => 'SE';
+
+  @override
+  String get dirLongSE => 'Southeast';
+
+  @override
+  String get dirShortS => 'S';
+
+  @override
+  String get dirLongS => 'South';
+
+  @override
+  String get dirShortSW => 'SW';
+
+  @override
+  String get dirLongSW => 'Southwest';
+
+  @override
+  String get dirShortW => 'W';
+
+  @override
+  String get dirLongW => 'West';
+
+  @override
+  String get dirShortNW => 'NW';
+
+  @override
+  String get dirLongNW => 'Northwest';
 }
 
 /// The translations for English (`en_XA`).
@@ -126,10 +221,6 @@ class LbL10nEnXa extends LbL10nEn {
 
   @override
   String get tabSettings => '[Šẽťťỉñğš ····]';
-
-  @override
-  String get compassPlaceholder =>
-      '[Ťhẽ çởmpảšš đỉảł ŵỉłł ảppẽảř hẽřẽ ởñçẽ ťhẽ šẽñšởřš ảřẽ řẽảđỹ. ·························]';
 
   @override
   String get mapPlaceholder =>
@@ -205,4 +296,103 @@ class LbL10nEnXa extends LbL10nEn {
   @override
   String get featurePaused =>
       '[Ťhỉš fẽảťữřẽ ỉš ťẽmpởřảřỉłỹ pảữšẽđ. ··············]';
+
+  @override
+  String get compassStarting => '[Šťảřťỉñğ šẽñšởřš... ········]';
+
+  @override
+  String get compassNoSensor =>
+      '[Ťhỉš đẽvỉçẽ hảš ñở çởmpảšš šẽñšởř (mảğñẽťởmẽťẽř). ····················]';
+
+  @override
+  String get compassError =>
+      '[Çởữłđ ñởť řẽảđ ťhẽ šẽñšởřš. Płẽảšẽ řẽởpẽñ ťhẽ ảpp. ····················]';
+
+  @override
+  String compassDegrees(int value) {
+    return '[$value° ··]';
+  }
+
+  @override
+  String get compassMagneticNorth => '[Mảğñẽťỉç ñởřťh ······]';
+
+  @override
+  String compassHeadingSemantics(int value, String direction) {
+    return '[Hẽảđỉñğ $value đẽğřẽẽš, $direction ········]';
+  }
+
+  @override
+  String compassTilt(int pitch, int roll) {
+    return '[Pỉťçh $pitch° · Řởłł $roll° ·······]';
+  }
+
+  @override
+  String compassAccuracy(String level) {
+    return '[Ảççữřảçỹ: $level ····]';
+  }
+
+  @override
+  String get accuracyHigh => '[Hỉğh ··]';
+
+  @override
+  String get accuracyMedium => '[Mẽđỉữm ···]';
+
+  @override
+  String get accuracyLow => '[Łởŵ ··]';
+
+  @override
+  String get compassInterference =>
+      '[Mảğñẽťỉç ỉñťẽřfẽřẽñçẽ: mởvẽ ảŵảỹ fřởm mảğñẽťš, špẽảkẽřš, mảğñẽťỉç çảšẽš ởř łảřğẽ mẽťảł ởbjẽçťš. ······································]';
+
+  @override
+  String get compassCalibrate =>
+      '[Łởŵ ảççữřảçỹ: mởvẽ ỹởữř phởñẽ ỉñ ả fỉğữřẽ-8 ả fẽŵ ťỉmẽš. ·······················]';
+
+  @override
+  String get dirShortN => '[Ñ ··]';
+
+  @override
+  String get dirLongN => '[Ñởřťh ··]';
+
+  @override
+  String get dirShortNE => '[ÑẼ ··]';
+
+  @override
+  String get dirLongNE => '[Ñởřťhẽảšť ····]';
+
+  @override
+  String get dirShortE => '[Ẽ ··]';
+
+  @override
+  String get dirLongE => '[Ẽảšť ··]';
+
+  @override
+  String get dirShortSE => '[ŠẼ ··]';
+
+  @override
+  String get dirLongSE => '[Šởữťhẽảšť ····]';
+
+  @override
+  String get dirShortS => '[Š ··]';
+
+  @override
+  String get dirLongS => '[Šởữťh ··]';
+
+  @override
+  String get dirShortSW => '[ŠŴ ··]';
+
+  @override
+  String get dirLongSW => '[Šởữťhŵẽšť ····]';
+
+  @override
+  String get dirShortW => '[Ŵ ··]';
+
+  @override
+  String get dirLongW => '[Ŵẽšť ··]';
+
+  @override
+  String get dirShortNW => '[ÑŴ ··]';
+
+  @override
+  String get dirLongNW => '[Ñởřťhŵẽšť ····]';
 }
