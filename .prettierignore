@@ -1,0 +1,10 @@
+2026*.md
+*.md
+node_modules
+dist
+.astro
+.wrangler
+app
+packages
+native
+package-lock.json

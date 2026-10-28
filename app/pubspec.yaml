@@ -1,0 +1,21 @@
+name: la_ban
+description: Ứng dụng La bàn (Smart Compass) của TsuDev.
+publish_to: none
+version: 0.1.0+1
+resolution: workspace
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  core:
+  design_system:
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

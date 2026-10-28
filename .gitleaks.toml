@@ -1,0 +1,5 @@
+[extend]
+useDefault = true
+
+[allowlist]
+paths = ['''node_modules''', '''dist''', '''\.dart_tool''', '''build''', '''\.wrangler''', '''\.astro''', '''^2026.*\.md$''', '''package-lock\.json''', '''pubspec\.lock''']

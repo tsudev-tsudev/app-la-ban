@@ -1,0 +1,6 @@
+name: sensors
+description: Đọc cảm biến qua platform channel + bộ lọc / sensor fusion thuần Dart.
+publish_to: none
+resolution: workspace
+environment:
+  sdk: ^3.12.0

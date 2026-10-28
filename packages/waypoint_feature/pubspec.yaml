@@ -1,0 +1,6 @@
+name: waypoint_feature
+description: Điểm lưu, điều hướng, GPX/KML, chia sẻ.
+publish_to: none
+resolution: workspace
+environment:
+  sdk: ^3.12.0

@@ -1,0 +1,6 @@
+name: location_feature
+description: Vị trí và telemetry: tọa độ, cao độ, từ trường, thước thủy.
+publish_to: none
+resolution: workspace
+environment:
+  sdk: ^3.12.0

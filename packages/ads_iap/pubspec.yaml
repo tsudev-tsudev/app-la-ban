@@ -1,0 +1,6 @@
+name: ads_iap
+description: Quảng cáo và mua trong app - chỉ bật sau Release Gate.
+publish_to: none
+resolution: workspace
+environment:
+  sdk: ^3.12.0

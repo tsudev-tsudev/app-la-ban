@@ -1,0 +1,6 @@
+name: settings_feature
+description: Cài đặt, quyền riêng tư, ngôn ngữ, giao diện.
+publish_to: none
+resolution: workspace
+environment:
+  sdk: ^3.12.0

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", ":dependencyDashboard"],
+  "timezone": "Asia/Ho_Chi_Minh",
+  "schedule": ["before 6am on monday"],
+  "packageRules": [
+    { "matchUpdateTypes": ["minor", "patch"], "matchCurrentVersion": "!/^0/", "groupName": "phụ thuộc nhỏ" },
+    { "matchPackageNames": ["typescript"], "allowedVersions": "<6.1", "description": "typescript-eslint chưa hỗ trợ TS 7" }
+  ]
+}

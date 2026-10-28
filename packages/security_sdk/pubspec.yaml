@@ -1,0 +1,6 @@
+name: security_sdk
+description: Định danh cài đặt, attestation, tín hiệu môi trường, phản ứng theo mức rủi ro.
+publish_to: none
+resolution: workspace
+environment:
+  sdk: ^3.12.0

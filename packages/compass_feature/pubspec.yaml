@@ -1,0 +1,6 @@
+name: compass_feature
+description: Màn hình la bàn: mặt la bàn, bắc thực, hiệu chuẩn.
+publish_to: none
+resolution: workspace
+environment:
+  sdk: ^3.12.0

@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Kích hoạt: git config core.hooksPath tools/hooks (N0 đã đặt).
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+./agents.sh check-agents-md >/dev/null || { echo "AGENTS.md lệch CLAUDE.md - chạy ./agents.sh sync-agents-md" >&2; exit 1; }
+tep=$(git diff --cached --name-only --diff-filter=ACM)
+[ -z "$tep" ] && exit 0
+# Tài liệu gốc không được commit.
+if printf '%s\n' "$tep" | grep -qE '^2026.*\.md$'; then echo "Không commit tài liệu gốc 2026*.md" >&2; exit 1; fi
+# Chỉ dùng gạch nối ASCII.
+dash=$(printf '%s\n' "$tep" | while read -r f; do [ -f "$f" ] && grep -lP '[\x{2013}\x{2014}]' "$f" || true; done)
+[ -z "$dash" ] || { echo "Có em/en dash:"; echo "$dash"; exit 1; } >&2
+# Quét bí mật trên tệp đã stage.
+if [ -s "$HOME/.nvm/nvm.sh" ]; then set +u; . "$HOME/.nvm/nvm.sh"; nvm use >/dev/null; set -u; fi
+printf '%s\n' "$tep" | xargs npx --no-install secretlint --secretlintignore .secretlintignore
+if command -v gitleaks >/dev/null; then gitleaks git --staged --no-banner --redact -c .gitleaks.toml; fi

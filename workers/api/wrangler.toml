@@ -1,0 +1,9 @@
+# Worker la-ban-api. Tài nguyên (D1, KV, R2, DO, route) khai báo ở phase N2 / S1.
+name = "la-ban-api"
+main = "src/index.ts"
+compatibility_date = "2026-10-01"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = false
+
+[vars]
+MOI_TRUONG = "dev"

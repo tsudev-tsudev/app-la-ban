@@ -1,0 +1,6 @@
+name: map_feature
+description: Bản đồ MapLibre và gói tile offline.
+publish_to: none
+resolution: workspace
+environment:
+  sdk: ^3.12.0

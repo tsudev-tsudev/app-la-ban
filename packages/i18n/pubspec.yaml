@@ -1,0 +1,6 @@
+name: i18n
+description: Chuỗi giao diện vi/en (ARB).
+publish_to: none
+resolution: workspace
+environment:
+  sdk: ^3.12.0

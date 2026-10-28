@@ -1,0 +1,21 @@
+{
+  "name": "@laban/api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --port 8797 --inspector-port 9239",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "build": "wrangler deploy --dry-run --outdir dist"
+  },
+  "devDependencies": {
+    "wrangler": "^4.154.0",
+    "@cloudflare/workers-types": "^5.20261028.1",
+    "vitest": "^5.0.5",
+    "typescript": "~6.0.0"
+  },
+  "dependencies": {
+    "hono": "^4.13.14",
+    "zod": "^4.6.7"
+  }
+}

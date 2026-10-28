@@ -1,0 +1,23 @@
+# Pub workspace (Dart >= 3.6): một lần 'flutter pub get' ở gốc cho app + mọi package.
+name: la_ban_workspace
+publish_to: none
+environment:
+  sdk: ^3.12.0
+workspace:
+  - app
+  - packages/core
+  - packages/design_system
+  - packages/sensors
+  - packages/compass_feature
+  - packages/location_feature
+  - packages/waypoint_feature
+  - packages/map_feature
+  - packages/ar_feature
+  - packages/settings_feature
+  - packages/security_sdk
+  - packages/network
+  - packages/storage
+  - packages/i18n
+  - packages/ads_iap
+dev_dependencies:
+  very_good_analysis: ^11.0.0

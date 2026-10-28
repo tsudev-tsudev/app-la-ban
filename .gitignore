@@ -1,0 +1,40 @@
+# Tài liệu gốc người dùng (không commit)
+/2026*.md
+docs/tai-lieu-goc/
+
+# Bí mật
+.env
+.env.*
+.dev.vars
+*.jks
+*.keystore
+key.properties
+*.p8
+*.p12
+*.mobileprovision
+google-services.json
+GoogleService-Info.plist
+service-account*.json
+
+# Node / web
+node_modules/
+dist/
+.astro/
+.wrangler/
+*.map
+
+# Flutter / Dart
+.dart_tool/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.fvm/flutter_sdk
+**/ios/Pods/
+**/android/.gradle/
+**/android/local.properties
+debug-info/
+coverage/
+
+# Hệ thống
+.DS_Store
+*.log

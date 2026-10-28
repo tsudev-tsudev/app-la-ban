@@ -1,0 +1,6 @@
+name: design_system
+description: Design tokens, theme, widget và icon dùng chung.
+publish_to: none
+resolution: workspace
+environment:
+  sdk: ^3.12.0
