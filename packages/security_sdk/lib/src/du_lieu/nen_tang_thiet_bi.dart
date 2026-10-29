@@ -70,3 +70,17 @@ final class NenTangThietBiKenh implements NenTangThietBi {
   @override
   Future<void> xoaKhoa() => _kenh.invokeMethod<void>('xoaKhoa');
 }
+
+/// Mở trang của La bàn (`https://compass.tsudev.com/...`) bằng trình duyệt -
+/// trang tải bản mới. false khi máy không có trình duyệt / URL ngoài trang.
+Future<bool> moTrangLaBan(Uri url) async {
+  try {
+    return await const MethodChannel('la_ban/thiet_bi')
+            .invokeMethod<bool>('moTrang', {'url': url.toString()}) ??
+        false;
+  } on PlatformException {
+    return false;
+  } on MissingPluginException {
+    return false;
+  }
+}

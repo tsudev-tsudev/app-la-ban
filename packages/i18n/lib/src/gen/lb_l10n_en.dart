@@ -553,6 +553,35 @@ class LbL10nEn extends LbL10n {
 
   @override
   String get locSourceFused => 'Fused';
+
+  @override
+  String get updateRequiredTitle => 'Update required';
+
+  @override
+  String get updateRequiredBody =>
+      'This version is no longer supported for security reasons. Download the new version to keep using the app.';
+
+  @override
+  String get updateAvailableTitle => 'A new version is available';
+
+  @override
+  String updateAvailableBody(String phienBan) {
+    return 'Version $phienBan is ready with fixes and improvements.';
+  }
+
+  @override
+  String get updateAvailableBodyGeneric =>
+      'A new version is ready with fixes and improvements.';
+
+  @override
+  String get updateNow => 'Update';
+
+  @override
+  String get updateLater => 'Later';
+
+  @override
+  String get updateOpenFailed =>
+      'Couldn\'t open the browser. Visit compass.tsudev.com/en/download to get the new version.';
 }
 
 /// The translations for English (`en_XA`).
@@ -1108,4 +1137,33 @@ class LbL10nEnXa extends LbL10nEn {
 
   @override
   String get locSourceFused => '[Fữšẽđ ··]';
+
+  @override
+  String get updateRequiredTitle => '[Ữpđảťẽ řẽqữỉřẽđ ······]';
+
+  @override
+  String get updateRequiredBody =>
+      '[Ťhỉš vẽřšỉởñ ỉš ñở łởñğẽř šữppởřťẽđ fởř šẽçữřỉťỹ řẽảšởñš. Đởŵñłởảđ ťhẽ ñẽŵ vẽřšỉởñ ťở kẽẽp ữšỉñğ ťhẽ ảpp. ··········································]';
+
+  @override
+  String get updateAvailableTitle => '[Ả ñẽŵ vẽřšỉởñ ỉš ảvảỉłảbłẽ ···········]';
+
+  @override
+  String updateAvailableBody(String phienBan) {
+    return '[Vẽřšỉởñ $phienBan ỉš řẽảđỹ ŵỉťh fỉxẽš ảñđ ỉmpřởvẽmẽñťš. ···················]';
+  }
+
+  @override
+  String get updateAvailableBodyGeneric =>
+      '[Ả ñẽŵ vẽřšỉởñ ỉš řẽảđỹ ŵỉťh fỉxẽš ảñđ ỉmpřởvẽmẽñťš. ·····················]';
+
+  @override
+  String get updateNow => '[Ữpđảťẽ ···]';
+
+  @override
+  String get updateLater => '[Łảťẽř ··]';
+
+  @override
+  String get updateOpenFailed =>
+      '[Çởữłđñ\'ť ởpẽñ ťhẽ břởŵšẽř. Vỉšỉť çởmpảšš.ťšữđẽv.çởm/ẽñ/đởŵñłởảđ ťở ğẽť ťhẽ ñẽŵ vẽřšỉởñ. ···································]';
 }

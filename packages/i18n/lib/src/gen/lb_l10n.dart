@@ -979,6 +979,54 @@ abstract class LbL10n {
   /// In vi, this message translates to:
   /// **'Hợp nhất'**
   String get locSourceFused;
+
+  /// Tiêu đề màn chặn khi phiên bản quá cũ (force update)
+  ///
+  /// In vi, this message translates to:
+  /// **'Cần cập nhật ứng dụng'**
+  String get updateRequiredTitle;
+
+  /// Nội dung màn bắt buộc cập nhật
+  ///
+  /// In vi, this message translates to:
+  /// **'Phiên bản này không còn được hỗ trợ vì lý do bảo mật. Hãy tải bản mới để tiếp tục sử dụng.'**
+  String get updateRequiredBody;
+
+  /// Tiêu đề băng gợi ý cập nhật
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã có phiên bản mới'**
+  String get updateAvailableTitle;
+
+  /// Băng gợi ý cập nhật
+  ///
+  /// In vi, this message translates to:
+  /// **'Bản {phienBan} đã sẵn sàng với các bản sửa lỗi và cải thiện.'**
+  String updateAvailableBody(String phienBan);
+
+  /// Băng gợi ý cập nhật khi không biết số phiên bản
+  ///
+  /// In vi, this message translates to:
+  /// **'Bản mới đã sẵn sàng với các bản sửa lỗi và cải thiện.'**
+  String get updateAvailableBodyGeneric;
+
+  /// Nút mở trang tải bản mới
+  ///
+  /// In vi, this message translates to:
+  /// **'Cập nhật'**
+  String get updateNow;
+
+  /// Nút ẩn băng gợi ý cập nhật trong phiên này
+  ///
+  /// In vi, this message translates to:
+  /// **'Để sau'**
+  String get updateLater;
+
+  /// Lỗi khi không mở được trang tải
+  ///
+  /// In vi, this message translates to:
+  /// **'Không mở được trình duyệt. Hãy vào compass.tsudev.com/tai-ve để tải bản mới.'**
+  String get updateOpenFailed;
 }
 
 class _LbL10nDelegate extends LocalizationsDelegate<LbL10n> {

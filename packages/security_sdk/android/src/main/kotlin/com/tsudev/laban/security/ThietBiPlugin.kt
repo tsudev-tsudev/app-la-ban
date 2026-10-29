@@ -1,6 +1,9 @@
 package com.tsudev.laban.security
 
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Handler
@@ -70,6 +73,20 @@ class ThietBiPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
                 val soDuAn = call.argument<Number>("soDuAn")?.toLong()
                 val bam = call.argument<String>("requestHash")
                 if (soDuAn == null || bam == null) result.error("integrity.thieu", null, null) else integrity(soDuAn, bam, result, thuLai = true)
+            }
+            // Trang tải bản mới (S3 force / soft update). Chỉ mở trang của chính mình - kênh này không phải trình mở URL chung.
+            "moTrang" -> {
+                val url = call.argument<String>("url")
+                if (url == null || !url.startsWith(TRANG_CHO_PHEP)) {
+                    result.error("moTrang.url", null, null)
+                } else {
+                    try {
+                        ngucanh.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                        result.success(true)
+                    } catch (_: ActivityNotFoundException) {
+                        result.success(false)
+                    }
+                }
             }
             else -> result.notImplemented()
         }
@@ -173,5 +190,6 @@ class ThietBiPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
     private companion object {
         const val KEYSTORE = "AndroidKeyStore"
         const val BI_DANH = "la_ban_thiet_bi_v1"
+        const val TRANG_CHO_PHEP = "https://compass.tsudev.com/"
     }
 }

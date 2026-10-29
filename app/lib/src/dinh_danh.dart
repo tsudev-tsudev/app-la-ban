@@ -42,6 +42,26 @@ final class ApiDinhDanhIo implements ApiDinhDanh {
       throw LoiKetNoi(e.lyDo);
     }
   }
+
+  @override
+  Future<PhanHoiKy> goiTho(
+    String phuongThuc,
+    String duongDan, {
+    List<int>? than,
+    Map<String, String> tieuDe = const {},
+  }) async {
+    try {
+      final r = await _api.goi(
+        phuongThuc,
+        duongDan,
+        than: than,
+        tieuDe: tieuDe,
+      );
+      return (status: r.status, duLieu: r.duLieu, gioMayChu: r.gioMayChu);
+    } on LoiMang catch (e) {
+      throw LoiKetNoi(e.lyDo);
+    }
+  }
 }
 
 /// `dinh_danh.json` qua TepJson của storage.
@@ -60,10 +80,11 @@ final class KhoTrangThaiTep implements KhoTrangThai {
   Future<void> ghi(Map<String, Object?> moi) => _t.ghi(moi);
 }
 
-DichVuDinhDanh taoDichVuDinhDanh(Flavor flavor, KhoLuuTru kho) {
+/// [api]: client đã ghim CA (S3 - `KenhApp.apiGhim`).
+DichVuDinhDanh taoDichVuDinhDanh(KhoLuuTru kho, ApiClient api) {
   final pb = tachPhienBan(phienBanApp);
   return DichVuDinhDanh(
-    api: ApiDinhDanhIo(ApiClientIo(flavor.apiGoc)),
+    api: ApiDinhDanhIo(api),
     nenTang: const NenTangThietBiKenh(),
     tep: KhoTrangThaiTep(TepJson.mo('${kho.thuMuc}/dinh_danh.json')),
     cauHinh: CauHinhDinhDanh(

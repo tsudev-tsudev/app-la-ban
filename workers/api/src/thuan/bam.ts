@@ -12,6 +12,10 @@ export function jsonChuan(giaTri: unknown): string {
 }
 
 export async function sha256Hex(vanBan: string): Promise<string> {
-  const so = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(vanBan));
+  return sha256HexByte(new TextEncoder().encode(vanBan) as Uint8Array<ArrayBuffer>);
+}
+
+export async function sha256HexByte(byte: ArrayBuffer | Uint8Array<ArrayBuffer>): Promise<string> {
+  const so = await crypto.subtle.digest('SHA-256', byte);
   return [...new Uint8Array(so)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }

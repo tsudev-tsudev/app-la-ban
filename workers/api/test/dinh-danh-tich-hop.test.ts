@@ -6,7 +6,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { sha256B64url } from '../src/attest/khoa';
 import { chuoiDangKy, chuoiLamMoi, chuoiXacThuc } from '../src/thuan/ma-hoa';
 import { taoMf } from './tich-hop/mf';
-import { google, googleGia, taoKhoaPhien, taoServiceAccount, taoThietBiGia, tokenGia, type ThietBiGia } from './tich-hop/thiet-bi-gia';
+import { google, googleGia, taoKhoaPhien, taoServiceAccount, taoThietBiGia, tieuDeKy, tokenGia, type ThietBiGia } from './tich-hop/thiet-bi-gia';
 
 let mf: Miniflare;
 let db: D1Database;
@@ -24,6 +24,10 @@ const goi = async (duong: string, body?: unknown, them: Record<string, string> =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- thân phản hồi tuỳ route trong test
   return { status: res.status, du: (vb ? JSON.parse(vb) : null) as Record<string, any> };
 };
+
+/** Gọi route phiên: Bearer + chữ ký request bằng khoá của [tb]. */
+const goiKy = async (tb: ThietBiGia, bearer: string, duong: string, body?: unknown) =>
+  goi(duong, body, await tieuDeKy(tb, bearer, { phuongThuc: body === undefined ? 'GET' : 'POST', duong, ...(body === undefined ? {} : { than: JSON.stringify(body) }) }));
 
 const phanQuyet = (requestHash: string, o: { tb?: string[]; goi?: string; ts?: number } = {}) => ({
   requestDetails: { requestPackageName: o.goi ?? GOI, requestHash, timestampMillis: String(o.ts ?? Date.now()) },
@@ -92,7 +96,7 @@ describe('đăng ký thiết bị', () => {
     const r = await dangKy(tb);
     expect(r.status).toBe(201);
     expect(r.du).toMatchObject({ trangThai: 'clean', mucTin: 'device' });
-    const me = await goi('/v1/device/me', undefined, { authorization: `Bearer ${r.du.phien.accessToken}` });
+    const me = await goiKy(tb, r.du.phien.accessToken, '/v1/device/me');
     expect(me).toMatchObject({ status: 200, du: { thietBiId: r.du.thietBiId, mucTin: 'device' } });
     const d = await db.prepare('SELECT installation_id_hash, public_key, attest_signals FROM devices WHERE id = ?').bind(r.du.thietBiId).first<Record<string, string>>();
     expect(d?.installation_id_hash).toMatch(/^[0-9a-f]{64}$/);
@@ -161,13 +165,15 @@ describe('đăng ký thiết bị', () => {
 
   it('đăng ký lại cùng bản cài (khoá mới) -> cùng thiết bị, phiên cũ bị thu hồi; thiết bị bị cấm -> 403', async () => {
     const id = crypto.randomUUID();
-    const dau = await dangKy(await taoThietBiGia(), id);
-    const sau = await dangKy(await taoThietBiGia(), id);
+    const tbDau = await taoThietBiGia();
+    const tbSau = await taoThietBiGia();
+    const dau = await dangKy(tbDau, id);
+    const sau = await dangKy(tbSau, id);
     expect(sau.du.thietBiId).toBe(dau.du.thietBiId);
-    expect((await goi('/v1/device/me', undefined, { authorization: `Bearer ${dau.du.phien.accessToken}` })).status).toBe(401);
-    expect((await goi('/v1/device/me', undefined, { authorization: `Bearer ${sau.du.phien.accessToken}` })).status).toBe(200);
+    expect((await goiKy(tbDau, dau.du.phien.accessToken, '/v1/device/me')).status).toBe(401);
+    expect((await goiKy(tbSau, sau.du.phien.accessToken, '/v1/device/me')).status).toBe(200);
     await db.prepare("UPDATE devices SET status = 'banned' WHERE id = ?").bind(sau.du.thietBiId).run();
-    expect((await goi('/v1/device/me', undefined, { authorization: `Bearer ${sau.du.phien.accessToken}` })).status).toBe(403);
+    expect((await goiKy(tbSau, sau.du.phien.accessToken, '/v1/device/me')).status).toBe(403);
     expect((await dangKy(await taoThietBiGia(), id)).du).toMatchObject({ code: 'thiet-bi-bi-cam' });
   });
 
@@ -197,7 +203,7 @@ describe('làm mới phiên', () => {
     await db.prepare('UPDATE sessions SET xoay_luc = xoay_luc - 60000 WHERE device_id = ? AND thay_boi IS NOT NULL').bind(r.du.thietBiId).run();
     expect(await lamMoi(tb, r1)).toMatchObject({ status: 401, du: { code: 'phien-thu-hoi' } });
     expect(await lamMoi(tb, m2.du.phien.refreshToken)).toMatchObject({ status: 401, du: { code: 'phien-thu-hoi' } });
-    expect((await goi('/v1/device/me', undefined, { authorization: `Bearer ${m2.du.phien.accessToken}` })).status).toBe(401);
+    expect((await goiKy(tb, m2.du.phien.accessToken, '/v1/device/me')).status).toBe(401);
     expect(await suKien(r.du.thietBiId, 'TOKEN_REUSE')).toBe(1);
   });
 
@@ -231,8 +237,8 @@ describe('xác minh lại (attest)', () => {
     const chuoi = chuoiXacThuc(ch.du.thachThuc, r.du.thietBiId);
     const body = { thachThuc: ch.du.thachThuc, chuKy: await tb.ky(chuoi), goi: GOI, integrityToken: tokenGia(phanQuyet(await sha256B64url(chuoi), { tb: ['MEETS_STRONG_INTEGRITY'] })) };
     expect((await goi('/v1/device/attest', body)).status).toBe(401);
-    const a = await goi('/v1/device/attest', body, { authorization: `Bearer ${r.du.phien.accessToken}` });
+    const a = await goiKy(tb, r.du.phien.accessToken, '/v1/device/attest', body);
     expect(a).toMatchObject({ status: 200, du: { mucTin: 'strong' } });
-    expect((await goi('/v1/device/me', undefined, { authorization: `Bearer ${r.du.phien.accessToken}` })).du.mucTin).toBe('strong');
+    expect((await goiKy(tb, r.du.phien.accessToken, '/v1/device/me')).du.mucTin).toBe('strong');
   });
 });

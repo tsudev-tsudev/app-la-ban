@@ -146,5 +146,13 @@
   "moonWaningCrescent": "Waning crescent",
   "locSourceGps": "GPS",
   "locSourceNetwork": "Network",
-  "locSourceFused": "Fused"
+  "locSourceFused": "Fused",
+  "updateRequiredTitle": "Update required",
+  "updateRequiredBody": "This version is no longer supported for security reasons. Download the new version to keep using the app.",
+  "updateAvailableTitle": "A new version is available",
+  "updateAvailableBody": "Version {phienBan} is ready with fixes and improvements.",
+  "updateAvailableBodyGeneric": "A new version is ready with fixes and improvements.",
+  "updateNow": "Update",
+  "updateLater": "Later",
+  "updateOpenFailed": "Couldn't open the browser. Visit compass.tsudev.com/en/download to get the new version."
 }

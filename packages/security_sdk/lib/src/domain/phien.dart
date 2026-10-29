@@ -104,3 +104,52 @@ abstract final class LichThuLai {
     return khoang[lan];
   }
 }
+
+/// Trạng thái thiết bị từ `/v1/status` (server quyết; S4 dùng để hiện màn
+/// khoá theo Risk Level).
+enum TrangThaiThietBi {
+  clean,
+  suspicious,
+  restricted,
+  banned;
+
+  static TrangThaiThietBi tuChuoi(Object? s) => TrangThaiThietBi.values
+      .firstWhere((m) => m.name == s, orElse: () => TrangThaiThietBi.clean);
+}
+
+/// Phản hồi `/v1/status`: trạng thái, mức tin cậy, mã REF (khi bị hạn chế /
+/// cấm) và bản APK mới nhất (bản tải ngoài Play chưa tự cập nhật được).
+final class TinhTrangThietBi {
+  const new({
+    required this.trangThai,
+    required this.mucTin,
+    this.ref,
+    this.banMoi,
+  });
+
+  final TrangThaiThietBi trangThai;
+  final MucTin mucTin;
+  final String? ref;
+  final ({String phienBan, int maPhienBan})? banMoi;
+
+  /// Thân JSON -> tình trạng; sai dạng -> null.
+  static TinhTrangThietBi? tuJson(Map<String, Object?>? j) {
+    if (j == null || j['trangThai'] is! String) return null;
+    final b = j['banMoi'];
+    final ref = j['ref'];
+    return TinhTrangThietBi(
+      trangThai: TrangThaiThietBi.tuChuoi(j['trangThai']),
+      mucTin: MucTin.tuChuoi(j['mucTin']),
+      ref: ref is String ? ref : null,
+      banMoi:
+          b is Map<String, Object?> &&
+              b['phienBan'] is String &&
+              b['maPhienBan'] is int
+          ? (
+              phienBan: b['phienBan']! as String,
+              maPhienBan: b['maPhienBan']! as int,
+            )
+          : null,
+    );
+  }
+}

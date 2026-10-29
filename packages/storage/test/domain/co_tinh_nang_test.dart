@@ -38,4 +38,17 @@ void main() {
       CoTinhNang.banDo: false,
     });
   });
+
+  test('tên cờ từ xa (kebab) -> cờ; tên lạ bỏ qua', () {
+    expect(coTuTenTuXa(['ban-do', 'chia-se', 'dong-bo', 'camera', 'banDo']), {
+      CoTinhNang.banDo,
+      CoTinhNang.chiaSe,
+      CoTinhNang.dongBo,
+    });
+    expect(coTuTenTuXa(['ar', 'quang-cao']), {
+      CoTinhNang.ar,
+      CoTinhNang.quangCao,
+    });
+    expect(coTuTenTuXa(const []), isEmpty);
+  });
 }

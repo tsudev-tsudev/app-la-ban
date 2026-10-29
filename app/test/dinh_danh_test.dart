@@ -52,6 +52,18 @@ final class _ApiTat implements ApiDinhDanh {
       ),
     };
   }
+
+  @override
+  Future<PhanHoiKy> goiTho(
+    String phuongThuc,
+    String duongDan, {
+    List<int>? than,
+    Map<String, String> tieuDe = const {},
+  }) async {
+    goi++;
+    if (!mang) throw const LoiKetNoi('SocketException');
+    return (status: 404, duLieu: null, gioMayChu: null);
+  }
 }
 
 final class _Kho implements KhoTrangThai {

@@ -1,0 +1,27 @@
+[
+  {
+    "ten": "GTS_Root_R1",
+    "pin": "hxqRlPTu1bMS/0DITB1SSu0vd4u/8l8TjPgfaAp63Gc=",
+    "het": "2036-06-22"
+  },
+  {
+    "ten": "GTS_Root_R3",
+    "pin": "QXnt2YHvdHR3tJYmQIr0Paosp6t/nggsEGD4QJZ3Q0g=",
+    "het": "2036-06-22"
+  },
+  {
+    "ten": "GTS_Root_R4",
+    "pin": "mEflZT5enoR1FuXLgYYGqnVEoZvmf9c2bVBpiOjYQ0c=",
+    "het": "2036-06-22"
+  },
+  {
+    "ten": "ISRG_Root_X1",
+    "pin": "C5+lpZ7tcVwmwQIMcRtPbsQtWLABXhQzejna0wHFr8M=",
+    "het": "2035-06-04"
+  },
+  {
+    "ten": "ISRG_Root_X2",
+    "pin": "diGVwiVYbubAI3RW4hB9xU8e/CH2GnkuvVFZE8zmgzI=",
+    "het": "2040-09-17"
+  }
+]

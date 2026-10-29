@@ -37,7 +37,7 @@ export function taoOpenApi(ds: readonly DinhNghiaTuyen[], phienBan: string): Rec
       },
     };
     if (thamSo.length) thao.parameters = thamSo;
-    if (d.xacThuc) thao.security = [{ phienThietBi: [] }];
+    if (d.xacThuc) thao.security = [{ phienThietBi: [], kyThietBi: [] }];
     if (d.body) {
       thao.requestBody = {
         required: true,
@@ -53,7 +53,16 @@ export function taoOpenApi(ds: readonly DinhNghiaTuyen[], phienBan: string): Rec
     paths,
     components: {
       schemas: { VanDe: z.toJSONSchema(SchemaVanDe) },
-      securitySchemes: { phienThietBi: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT ES256' } },
+      securitySchemes: {
+        phienThietBi: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT ES256' },
+        kyThietBi: {
+          type: 'apiKey',
+          in: 'header',
+          name: 'X-Signature',
+          description:
+            'ECDSA P-256 (DER, base64url) bằng khoá thiết bị trên "METHOD\\nPATH\\nSORTED_QUERY\\nSHA256_HEX(BODY)\\nX-Timestamp\\nX-Nonce"; kèm X-Timestamp (ms, lệch <= 60 s), X-Nonce (dùng 1 lần), X-Device-Id (tuỳ chọn).',
+        },
+      },
     },
   };
 }

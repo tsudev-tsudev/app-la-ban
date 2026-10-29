@@ -1,5 +1,7 @@
 // Thiết bị + Google giả cho test S2: khoá P-256 (như Android Keystore, chữ ký DER), khoá phiên server, service account
 // RSA và bộ giả lập oauth2 / decodeIntegrityToken. Token Integrity giả = "gia." + base64url(JSON phán quyết).
+import { sha256HexByte } from '../../src/thuan/bam';
+import { chuoiYeuCau } from '../../src/thuan/ky-yeu-cau';
 import { b64urlTuByte, b64urlTuChuoi, byteTuB64url } from '../../src/thuan/ma-hoa';
 
 const EC = { name: 'ECDSA', namedCurve: 'P-256' } as const;
@@ -72,4 +74,24 @@ export async function googleGia(req: Request): Promise<Response> {
     return Response.json({ tokenPayloadExternal: JSON.parse(new TextDecoder().decode(b)) });
   }
   return new Response('khong-ho-tro', { status: 599 });
+}
+
+/** Header ký request S3 (Spec §7.5) cho [tb]; ts / nonce / chữ ký ghi đè được để thử replay / lệch giờ / sai chữ ký. */
+export async function tieuDeKy(
+  tb: ThietBiGia,
+  bearer: string,
+  p: { phuongThuc: string; duong: string; than?: string; ts?: number; nonce?: string; thietBi?: string },
+): Promise<Record<string, string>> {
+  const ts = p.ts ?? Date.now();
+  const nonce = p.nonce ?? b64urlTuByte(crypto.getRandomValues(new Uint8Array(16)));
+  const [duongDan = '', query = ''] = p.duong.split('?');
+  const bamThan = await sha256HexByte(new TextEncoder().encode(p.than ?? '') as Uint8Array<ArrayBuffer>);
+  const chuoi = chuoiYeuCau({ phuongThuc: p.phuongThuc, duongDan, query, bamThan, ts, nonce });
+  return {
+    authorization: `Bearer ${bearer}`,
+    'x-timestamp': String(ts),
+    'x-nonce': nonce,
+    'x-signature': await tb.ky(chuoi),
+    ...(p.thietBi ? { 'x-device-id': p.thietBi } : {}),
+  };
 }

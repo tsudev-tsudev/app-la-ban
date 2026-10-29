@@ -54,7 +54,8 @@
         },
         "security": [
           {
-            "phienThietBi": []
+            "phienThietBi": [],
+            "kyThietBi": []
           }
         ],
         "requestBody": {
@@ -229,7 +230,8 @@
         },
         "security": [
           {
-            "phienThietBi": []
+            "phienThietBi": [],
+            "kyThietBi": []
           }
         ]
       }
@@ -418,6 +420,210 @@
         }
       }
     },
+    "/v1/events": {
+      "post": {
+        "summary": "Lô sự kiện bảo mật (<= 50) đã ký bằng khoá thiết bị -> Threat Engine (chống trùng event_id)",
+        "responses": {
+          "202": {
+            "description": "Thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "nhan": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "trung": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": [
+                    "nhan",
+                    "trung"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Lỗi RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VanDe"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "phienThietBi": [],
+            "kyThietBi": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "events": {
+                    "minItems": 1,
+                    "maxItems": 50,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "event_id": {
+                          "type": "string"
+                        },
+                        "ts": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                        },
+                        "type": {
+                          "type": "string",
+                          "pattern": "^[A-Z][A-Z0-9_]{2,47}$"
+                        },
+                        "severity": {
+                          "type": "string",
+                          "enum": [
+                            "info",
+                            "low",
+                            "medium",
+                            "high",
+                            "critical"
+                          ]
+                        },
+                        "signals": {
+                          "type": "object",
+                          "propertyNames": {
+                            "type": "string",
+                            "pattern": "^[a-z][a-z0-9_]{0,39}$"
+                          },
+                          "additionalProperties": {
+                            "anyOf": [
+                              {
+                                "type": "boolean"
+                              },
+                              {
+                                "type": "number"
+                              },
+                              {
+                                "type": "string",
+                                "maxLength": 128
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "app": {
+                          "type": "object",
+                          "properties": {
+                            "version": {
+                              "type": "string",
+                              "pattern": "^\\d+\\.\\d+\\.\\d+$"
+                            },
+                            "build": {
+                              "type": "integer",
+                              "minimum": 1,
+                              "maximum": 1000000000
+                            },
+                            "install_source": {
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "maxLength": 64
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            }
+                          },
+                          "required": [
+                            "version",
+                            "build",
+                            "install_source"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "env": {
+                          "type": "object",
+                          "properties": {
+                            "os": {
+                              "type": "string",
+                              "enum": [
+                                "android",
+                                "ios"
+                              ]
+                            },
+                            "os_ver": {
+                              "type": "string",
+                              "maxLength": 32
+                            },
+                            "model": {
+                              "type": "string",
+                              "maxLength": 64
+                            },
+                            "emulator": {
+                              "type": "boolean"
+                            },
+                            "root": {
+                              "type": "string",
+                              "enum": [
+                                "no",
+                                "suspected",
+                                "confirmed"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "os",
+                            "os_ver",
+                            "model",
+                            "emulator",
+                            "root"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "event_id",
+                        "ts",
+                        "type",
+                        "severity",
+                        "signals",
+                        "app",
+                        "env"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": [
+                  "events"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/health": {
       "get": {
         "summary": "Tình trạng dịch vụ và mã build đang phục vụ",
@@ -571,6 +777,92 @@
         }
       }
     },
+    "/v1/status": {
+      "get": {
+        "summary": "Trạng thái thiết bị (kể cả bị cấm) + mã REF khiếu nại + bản APK mới nhất",
+        "responses": {
+          "200": {
+            "description": "Thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "trangThai": {
+                      "type": "string",
+                      "enum": [
+                        "clean",
+                        "suspicious",
+                        "restricted",
+                        "banned"
+                      ]
+                    },
+                    "mucTin": {
+                      "type": "string"
+                    },
+                    "ref": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "banMoi": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "phienBan": {
+                              "type": "string"
+                            },
+                            "maPhienBan": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            }
+                          },
+                          "required": [
+                            "phienBan",
+                            "maPhienBan"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "trangThai",
+                    "mucTin",
+                    "ref",
+                    "banMoi"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Lỗi RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VanDe"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "phienThietBi": [],
+            "kyThietBi": []
+          }
+        ]
+      }
+    },
     "/v1/web/signals": {
       "post": {
         "summary": "Tín hiệu khiên web (công cụ nhà phát triển) từ landing / admin -> Threat Engine theo IP",
@@ -716,6 +1008,12 @@
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT ES256"
+      },
+      "kyThietBi": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Signature",
+        "description": "ECDSA P-256 (DER, base64url) bằng khoá thiết bị trên \"METHOD\\nPATH\\nSORTED_QUERY\\nSHA256_HEX(BODY)\\nX-Timestamp\\nX-Nonce\"; kèm X-Timestamp (ms, lệch <= 60 s), X-Nonce (dùng 1 lần), X-Device-Id (tuỳ chọn)."
       }
     }
   }

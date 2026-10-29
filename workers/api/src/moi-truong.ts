@@ -42,6 +42,8 @@ export type BienYeuCau = {
   thietBi?: string;
   phien?: string;
   mucTin?: string;
+  /** Trạng thái thiết bị (clean / suspicious / restricted / banned), đặt bởi xacThuc. */
+  trangThai?: string;
 };
 
 export type MoiTruongHono = { Bindings: Env; Variables: BienYeuCau };
