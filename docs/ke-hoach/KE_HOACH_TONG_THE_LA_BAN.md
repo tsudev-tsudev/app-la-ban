@@ -59,7 +59,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 8 | A4 | Vị trí + telemetry | A3 | ✅ 29/10 (chưa thử GPS máy thật) |
 | 9 | A5 | Lưu trữ mã hóa, migration, safe mode | A1 | ✅ 28/10 |
 | 10 | S2 | Định danh thiết bị + attestation + phiên | S1, A5 | ✅ 30/10 · máy thật M32 staging: mức `device` khi chưa lên Play; prod + staging e2e đạt |
-| 11 | S3 | Ký request, pinning, Remote Config ký số | S2 | ⬜ |
+| 11 | S3 | Ký request, pinning, Remote Config ký số | S2 | ✅ 30/10 · e2e staging + prod đạt; xoay pin thử trên staging (thư viện app + hạ tầng thật); chưa thử máy thật (không có adb) |
 | 12 | S4 | Làm cứng app | S3 | ⬜ |
 | 13 | S5 | Threat Engine + enforcement | S1 | ✅ 28/10 |
 | 14 | S6 | Admin SOC 1 | S5 | ⬜ |
@@ -307,6 +307,28 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
 - Làm: chữ ký request bằng khóa thiết bị (chuỗi chuẩn Spec §7.5); dio interceptor; SPKI pinning >= 2 pin + xoay pin qua config
   ký số; `network_security_config` + ATS chặt; `/v1/config` (Ed25519, KV) + `/v1/status`; force/soft update.
 - Cổng: request sai chữ ký / replay / hết hạn bị từ chối (test); xoay pin thử trên staging không cần bản mới.
+- Kết quả (30/10, nhánh `phase/s3-kenh-truyen`): Worker - middleware `xacThuc` (mọi route có phiên) kiểm thêm chữ ký request
+  bằng khoá thiết bị: chuỗi chuẩn `METHOD\nPATH\nSORTED_QUERY\nSHA256_HEX(BODY)\nTS\nNONCE` (`thuan/ky-yeu-cau.ts`, query
+  RFC 3986, vector chung với Dart), header `x-timestamp` (ms, lệch <= 60 s -> 401 `lech-gio` + `x-server-time` để app tự
+  hiệu chỉnh), `x-nonce` (DO KhoNonce 5 phút, kiểm SAU chữ ký), `x-signature`, `x-device-id` tuỳ chọn; khoá đang lưu phải khớp
+  `cnf.jkt`; sai chữ ký -> `SIGNATURE_MISMATCH` (<= 1/phút/thiết bị). Route mới: `GET /v1/config` (gói Ed25519 kid `app-1`
+  nguyên văn từ KV `app-cau-hinh`), `GET /v1/status` (trạng thái kể cả bị cấm + mã `REF-xxxxx-xxxxx` + bản APK mới từ R2
+  `android/latest.json`), `POST /v1/events` (lô <= 50, loại chỉ server sinh -> 422, chống trùng event_id, đồng bộ List khi
+  cần). App - `network`: ghim CA ở mức NEO TIN CẬY (dart:io chỉ lộ chứng chỉ lá; Cloudflare đổi khoá lá mỗi lần gia hạn) - bộ
+  5 CA gốc GTS R1/R3/R4 + ISRG X1/X2 sinh bởi `tools/build/goc-tin-cay.mjs` (cổng `--check`, kể cả pin-set Android), Ed25519
+  kiểm thuần Dart (RFC 8032, không thêm SDK), `DichVuCauHinh` (tải bằng kho CA hệ thống vì gói tự ký, chống gói cũ hơn, hết
+  hạn -> mặc định, >= 2 CA dùng được), `quyetDinhCapNhat`. `security_sdk`: `goiKy` (ký + thử lại 1 lần khi lệch giờ / token),
+  `tinhTrang`, `guiSuKien`, `moTrangLaBan` (Kotlin, chỉ https://compass.tsudev.com/). App: `KenhApp` (client ghim cho định
+  danh, đổi ghim khi Remote Config đổi), kill-switch nối `tinhCo(tatTuXa:)`, màn bắt buộc cập nhật + băng gợi ý (vi/en,
+  golden). Android `xml/mang.xml`: cấm cleartext, chỉ CA hệ thống, pin-set compass-api (hết hạn 2027-12-31); dev giữ HTTP
+  10.0.2.2/localhost; iOS ATS tường minh. Công cụ: `ky-cau-hinh.mjs ky-app|dua-len-app` (khoá `~/.config/la-ban/cau-hinh/app-1.pem`
+  NGOÀI repo). Test: Worker +20 (18 S3), network 33, security_sdk +8, app +8; `tools/thu/dinh-danh-e2e.mjs` thêm bước ký.
+  Gate xoay pin: KV staging chỉ ISRG -> client ghim `LoiMang(tls)`; xoay về mặc định -> 200, không build lại. Bản beta.5
+  ngoài thực tế chỉ dùng challenge/register/refresh nên không bị vỡ khi bắt buộc ký.
+- Phát sinh (từ S3): thử máy thật (Galaxy M32) cài v0.1.0-beta.6: `wrangler tail --env staging` thấy `/v1/config` +
+  `/v1/status` 200 sau mở app; xoay pin bằng `dua-len-app --pin` rồi mở lại app. Key attestation (chuỗi chứng thực Keystore)
+  ở server chưa làm -> S4 hoặc S10. Gia hạn `pin-set expiration` (mang.xml) trước R2. -> S4: dùng `guiSuKien` cho tín hiệu
+  RASP, `tinhTrangProvider` cho màn khoá + REF. -> S6: SOC tra thiết bị theo hậu tố REF (10 ký tự cuối id).
 
 ### S4 - Làm cứng app
 - Đọc thêm: SEC-APP.
