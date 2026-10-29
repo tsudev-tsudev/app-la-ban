@@ -37,6 +37,7 @@ export function taoOpenApi(ds: readonly DinhNghiaTuyen[], phienBan: string): Rec
       },
     };
     if (thamSo.length) thao.parameters = thamSo;
+    if (d.xacThuc) thao.security = [{ phienThietBi: [] }];
     if (d.body) {
       thao.requestBody = {
         required: true,
@@ -50,6 +51,9 @@ export function taoOpenApi(ds: readonly DinhNghiaTuyen[], phienBan: string): Rec
     info: { title: 'La bàn API', version: phienBan },
     servers: [{ url: 'https://compass-api.tsudev.com' }],
     paths,
-    components: { schemas: { VanDe: z.toJSONSchema(SchemaVanDe) } },
+    components: {
+      schemas: { VanDe: z.toJSONSchema(SchemaVanDe) },
+      securitySchemes: { phienThietBi: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT ES256' } },
+    },
   };
 }

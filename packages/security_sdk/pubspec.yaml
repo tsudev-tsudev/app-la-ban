@@ -4,3 +4,20 @@ publish_to: none
 resolution: workspace
 environment:
   sdk: ^3.13.0
+  flutter: ">=3.38.0"
+dependencies:
+  core:
+  crypto: ^3.0.6
+  flutter:
+    sdk: flutter
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  storage:
+# Plugin nội bộ (QUYET_DINH Q32): khoá Keystore + Play Integrity. Chỉ Android (Q33) - App Attest ở I1.
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.tsudev.laban.security
+        pluginClass: ThietBiPlugin

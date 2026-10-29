@@ -74,6 +74,10 @@ Không cần bật billing cho Play Integrity. Hạn mức miễn phí mặc đ�
 
 ### 1.4 Liên kết dự án Cloud với app trong Play Console
 
+> **Hoãn (29/10/2026):** thanh toán Play Console lỗi - làm bước này sau khi tạo được tài khoản nhà phát triển (dự kiến
+> từ 05/11/2026). S2 đã chạy không cần bước này (QUYET_DINH Q35); khi liên kết, chọn ĐÚNG dự án `app-la-ban`
+> (Project number 930761930572) - không đổi mã, không phát hành lại.
+
 Token Play Integrity chỉ giải mã được bằng dự án Cloud đã liên kết với app.
 
 1. Mở https://play.google.com/console (tài khoản nhà phát triển "TsuDev").

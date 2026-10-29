@@ -21,6 +21,8 @@ dependencies:
   i18n:
   location_feature:
   map_feature:
+  network:
+  security_sdk:
   settings_feature:
   storage:
   waypoint_feature:

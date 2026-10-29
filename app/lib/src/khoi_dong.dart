@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:la_ban/src/app.dart';
+import 'package:la_ban/src/dinh_danh.dart';
 import 'package:la_ban/src/flavor.dart';
 import 'package:la_ban/src/luu_tru.dart';
 import 'package:la_ban/src/phien_ban.dart';
@@ -17,16 +18,18 @@ Future<void> khoiDong(Flavor flavor) async {
   WidgetsFlutterBinding.ensureInitialized();
   dangKyGiayPhepFont();
   dangKyGiayPhepDuLieu();
-  runApp(await dungApp(flavor));
+  runApp(await dungApp(flavor, dinhDanh: true));
 }
 
 /// Mở kho lưu trữ (canh gác crash -> cài đặt -> CSDL mã hoá) rồi dựng cây
 /// app với các provider đã nối. Lỗi kho -> vẫn chạy, ở chế độ an toàn.
 /// [ghiDeThem]: thay nguồn nền tảng khác trong test (ví dụ cảm biến).
+/// [dinhDanh]: đăng ký thiết bị với API (S2) - tắt trong test (không mạng).
 Future<Widget> dungApp(
   Flavor flavor, {
   KhoKhoa khoKhoa = const KhoKhoaNenTang(),
   bool nen = true,
+  bool dinhDanh = false,
   List<Override> ghiDeThem = const [],
 }) async {
   KhoLuuTru? kho;
@@ -40,9 +43,12 @@ Future<Widget> dungApp(
     kho = null;
   }
   if (kho != null) theoDoiOnDinh(kho.danhDauOnDinh);
+  final dv = kho != null && dinhDanh ? taoDichVuDinhDanh(flavor, kho) : null;
+  if (dv != null) batDauDinhDanh(dv);
   return ProviderScope(
     overrides: [
       khoLuuTruProvider.overrideWithValue(kho),
+      dichVuDinhDanhProvider.overrideWithValue(dv),
       if (kho != null) ...[
         khoCaiDatProvider.overrideWithValue(KhoCaiDatTep(kho.caiDat)),
         khoTuyChonLaBanProvider.overrideWithValue(

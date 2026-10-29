@@ -43,6 +43,7 @@ export const CAU_HINH_MAC_DINH: CauHinhNguyCo = Object.freeze({
     PROXY: 15,
     USER_CA: 15,
     SIGNATURE_MISMATCH: 40,
+    TOKEN_REUSE: 40,
     RATE_ABUSE: 20,
     MULTI_ACCOUNT_SAME_IP: 10,
     HONEYPOT_HIT: 15,

@@ -82,7 +82,7 @@ Có thể giao agent thứ hai song song: S1 với A2-A3 · A5 với A4 · S5 v�
 
 **Việc người dùng:** trước N2 tạo API token Cloudflare (zone tsudev.com: DNS, WAF, Lists; Workers, Pages, D1, R2) lưu ở
 `~/.config/la-ban/cf.env` · trước A2 bật Wireless debugging trên 1 điện thoại Android · trước S2 Google Cloud project + Play
-Integrity API + service account (Apple Team ID dời sang I1) · trước S6 bật Cloudflare Zero Trust · trước R2 tài khoản Play Console, duyệt Privacy
+Integrity API + service account (Apple Team ID dời sang I1) · trước S6 bật Cloudflare Zero Trust · trước R2 tài khoản Play Console (hoãn ~7 ngày từ 29/10 do lỗi thanh toán - dự kiến từ 05/11/2026), duyệt Privacy
 Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer · trước R4 chốt đơn vị pentest, bấm phát hành · trước M1 tài khoản AdMob + RevenueCat.
 
 ## 4. Thẻ phase
@@ -279,6 +279,24 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   tự gắn) rồi `CAP_NHAT_OPENAPI=1 npx vitest run test/openapi.test.ts`; middleware xác thực đặt `phamViIdem` =
   `thiet-bi:<id>` / `phien:<id>` để Idempotency + giới hạn chiều `thiet-bi` / `phien` có hiệu lực; nonce dùng DO `KHO_NONCE`
   (`idFromName('thiet-bi:<id>')`, POST {nonce, ttlMs}); ghi `device_ips` khi đăng ký / làm mới phiên.
+- Kết quả (29/10): Worker - migration 0004 (expand: `sessions.chuoi / thay_boi / xoay_luc / ly_do_thu_hoi`,
+  `devices.attested_at / attest_signals`); route `/v1/device/challenge|register|attest|me`, `/v1/session/refresh`
+  (`src/dinh-danh.ts`); thách thức dùng một lần ở DO `KhoNonce` (`/cap`, `/dung`); chữ ký thiết bị P-256 DER kiểm bằng
+  WebCrypto; Play Integrity giải mã bằng service account (`attest/google.ts`, token Google đệm theo isolate) + đánh giá
+  thuần (`thuan/play-integrity.ts`: requestHash = base64url(SHA-256(chuỗi ký)) chống phát lại, gói + chứng chỉ upload,
+  strong / device / basic / failed / unverified); JWT ES256 15 phút có `cnf.jkt` (khoá `KHOA_PHIEN`, xoay bằng mảng JWK);
+  refresh 30 ngày xoay vòng, ân hạn 30 s, dùng lại -> thu hồi cả chuỗi + `TOKEN_REUSE` (điểm 40); middleware `xacThuc`
+  (đọc D1 mỗi yêu cầu - thu hồi / cấm có hiệu lực ngay) qua cờ `xacThuc` của BoTuyen. App - plugin nội bộ
+  `security_sdk` (Keystore EC StrongBox -> TEE, Play Integrity Standard 1.6.0 với project number 930761930572),
+  `DichVuDinhDanh` (Installation ID UUID v4 ở `dinh_danh.json`, đăng ký / làm mới / xác minh lại, chạy nền 3 s sau khung
+  đầu, offline vẫn chạy), `network.ApiClientIo` (dart:io, không thêm SDK). Test: Worker 17 thuần + 13 tích hợp
+  Miniflare (Google giả), Dart 13 + 4 + 2.
+- Phát sinh (từ S2) -> S3: ký MỌI request bằng khoá thiết bị, server kiểm khớp `cnf.jkt` của JWT; chuyển `ApiClientIo`
+  sang dio + interceptor (hoặc giữ dart:io) + SPKI pinning + `network_security_config` release chặt; kiểm chuỗi chứng
+  thực khoá Keystore (key attestation) ở server để xác nhận khoá nằm trong phần cứng (hiện app chỉ báo `mucBaoMat`).
+  -> R2: sau khi liên kết Play Console (Q35), Google có thể trả `PLAY_RECOGNIZED`; lỗi "App is not found" hiện xếp
+  `unverified` (không phạt thiết bị, kể cả token rác) - xem lại khi đã liên kết. -> S6: SOC hiển thị
+  `attestation_level` + `attest_signals`.
 
 ### S3 - Bảo vệ kênh truyền
 - Đọc thêm: SEC-NET.
@@ -423,6 +441,11 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   Required Reason API; Data Safety khớp thực tế (gồm SDK bên thứ ba); `NS*UsageDescription` vi/en; ảnh store sinh tự động từ
   integration test; listing vi/en; ghi chú reviewer về cơ chế bảo mật; allow-list thiết bị review.
 - Cổng: bản internal (Play) cài được (TestFlight dời sang I1 - Q33).
+- Chặn (29/10/2026): thanh toán 25 USD Play Console lỗi -> người dùng tạo tài khoản nhà phát triển Play sau ~7 ngày
+  (dự kiến từ 05/11/2026). Khi có tài khoản, làm theo thứ tự: tạo app `La bàn - TsuDev Compass` -> App integrity ->
+  liên kết dự án Cloud `app-la-ban` (Project number 930761930572, QUYET_DINH Q35 - không đổi mã) -> tải AAB internal
+  (gắn tên gói `com.tsudev.laban`) -> Play App Signing dùng khoá upload R0 -> kiểm phán quyết app chuyển từ
+  `UNRECOGNIZED_VERSION` sang `PLAY_RECOGNIZED` cho bản tải từ Play (bản APK R0 vẫn đạt nhờ cùng chứng chỉ).
 - Ghi chú (Q33/Q34): phần iOS của thẻ này (scheme flavor, Codemagic, Privacy Manifest, `NS*UsageDescription`) chuyển sang I1.
   Play App Signing: chọn tải lên khoá upload R0 làm khoá ký ứng dụng để người đã cài APK thử cập nhật thẳng từ Play.
 

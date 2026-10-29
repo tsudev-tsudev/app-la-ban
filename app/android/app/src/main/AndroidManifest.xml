@@ -1,4 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- S2: đăng ký thiết bị / phiên với compass-api (HTTPS). Pinning + network_security_config chặt ở S3. -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:label="${appName}"
         android:allowBackup="false"
