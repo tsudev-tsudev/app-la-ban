@@ -67,7 +67,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 16 | A6 | Waypoint, chia sẻ, deep link | A5, S3 | ⬜ |
 | 17 | A7 | Bản đồ offline + Camera AR | A6 | ⬜ |
 | 18 | R1 | Landing hoàn chỉnh (kéo lên làm cùng R0 theo yêu cầu người dùng) | N2 | ✅ 28/10 |
-| 19 | S8 | Bảo vệ edge web (CSP, header, WAF as code) | R1 | ⬜ |
+| 19 | S8 | Bảo vệ edge web (CSP, header, WAF as code) | R1 | ✅ 29/10 (CSP nghiêm Report-Only tới 05/11; Access ở S6, Turnstile ở S7) |
 | 20 | S9 | Lớp bảo vệ nội dung web + build sạch | S8 | ⬜ |
 | 21 | A8 | Cài đặt, quyền riêng tư, trợ năng, hiệu năng | A7, S4 | ⬜ |
 | 22 | S10 | Giám sát, log bất biến, backup, ứng phó sự cố | S7 | ⬜ |
@@ -368,6 +368,21 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   + custom rule + rate-limit rule ở `tools/cloudflare` (log-only trước); Access chặn admin; honeypot endpoint ghi sự kiện;
   Turnstile.
 - Cổng: securityheaders A+, SSL Labs A+, Observatory A+; preview branch trước main.
+- Kết quả (29/10): landing chạy Pages advanced mode `_worker.js` (nguồn `web/landing/edge/`, esbuild sau `astro build`,
+  `_routes.json` sinh tự động - tài sản tĩnh không gọi worker): mỗi trang HTML nhận nonce 128 bit mới, gắn vào CẢ hai header
+  CSP + mọi thẻ `<script>` (HTMLRewriter); bỏ ETag / header điều kiện (bẫy NONCE + 304), bỏ ACAO `*`. CSP CHẶN =
+  `script-src 'self' 'nonce-X'` (script dò bot Cloudflare chạy được, không `unsafe-*`); CSP REPORT-ONLY = `'strict-dynamic'`
+  + Trusted Types (`require-trusted-types-for 'script'; trusted-types 'none'`), cả hai `report-uri` + `report-to` ->
+  `POST /v1/web/csp` (Worker, CORS chỉ landing/admin, 30/phút/IP, chuẩn hoá không PII -> Analytics Engine). Đọc + tiêu chí bật
+  chặn: `docs/runbook/csp-bao-cao.md`. Honeypot: middleware `bayQuet` (đường dẫn máy quét `/.env`, `/wp-*`, `*.php`...) -> 404
+  + sự kiện `HONEYPOT_HIT` (nhãn bẫy, không nguyên đường dẫn; nén 10 s/IP/isolate) + rule R-006 (migration 0003, shadow:
+  >= 3 lần/giờ -> chặn IP). Zone as code tổng quát: `quyTac` (rule theo phase, nhận diện bằng description) + `rumLoaiTru`
+  (loại trừ Web Analytics tự chèn - bẫy WEB ANALYTICS TU CHEN); WAF custom MỘT rule "la-ban: chặn edge" (`$la_ban_chan_ip` cho
+  mọi host compass-* + admin ngoài VN) - Free zone dùng chung chỉ còn 2/5 custom rule, 0/1 rate-limit rule (bẫy WAF FREE ZONE
+  DUNG CHUNG). Managed: "Cloudflare Managed Free Ruleset" mặc định của zone (OWASP cần Pro). Observatory A+ (145) trước và sau.
+- Phát sinh (từ S8) -> 05/11/2026: đọc báo cáo CSP 7 ngày, chuyển `strict-dynamic` sang header chặn (runbook csp-bao-cao).
+  -> S6: Access chặn admin (cần Zero Trust) + CSP nonce cho admin (dùng lại `web/landing/edge` qua gói chung khi admin có
+  HTML thật). -> S7: Turnstile (widget + `siteverify` ở Worker) cùng form khiếu nại. -> S10: bảng CSP / honeypot trong SOC.
 
 ### S9 - Bảo vệ nội dung web + build sạch
 - Đọc thêm: SEC-WEB-SHIELD, SEC-WEB-BUILD.
