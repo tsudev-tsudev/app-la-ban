@@ -45,7 +45,7 @@ function quyTacPhaseKhac(muon, hien) {
  * @param {object} muon nội dung zone.json
  * @param {{caiDat: Record<string, unknown>, dnssec: string, dns: object[], pagesDomain: Record<string, string[]>,
  *   r2Domain: Record<string, string[]>, workerDomain: string[], headerRuleset: {id: string, rules: object[]} | null,
- *   phase?: Record<string, {id: string, rules: object[]} | null>, rum?: {id: string, rules: object[]} | null}} hien
+ *   phase?: Record<string, {id: string, rules: object[]} | null>}} hien
  * @returns {{loai: string, moTa: string, method?: string, path?: string, body?: unknown}[]}
  */
 export function lapKeHoach(muon, hien) {
@@ -166,20 +166,6 @@ export function lapKeHoach(muon, hien) {
         path: `/zones/{Z}/rulesets/${rs.id}/rules/${cu.id}`,
         body: rule,
       });
-    }
-  }
-
-  // Web Analytics (RUM) tự chèn cho cả zone -> loại trừ tên miền của La bàn (trang Quyền riêng tư: không công cụ phân
-  // tích; CSP cũng chặn beacon). Không đụng luật của dự án khác.
-  if ((muon.rumLoaiTru ?? []).length && hien.rum) {
-    for (const host of muon.rumLoaiTru) {
-      const cu = hien.rum.rules.find((r) => r.host === host);
-      const body = { host, paths: ['*'], inclusive: false, is_paused: false };
-      if (!cu) {
-        hd.push({ loai: 'rum-them', moTa: `loại trừ Web Analytics cho ${host}`, method: 'POST', path: `/accounts/{A}/rum/v2/${hien.rum.id}/rule`, body });
-      } else if (cu.inclusive !== false || cu.is_paused || JSON.stringify(cu.paths) !== '["*"]') {
-        hd.push({ loai: 'rum-sua', moTa: `sửa luật Web Analytics ${host}`, method: 'PUT', path: `/accounts/{A}/rum/v2/${hien.rum.id}/rule/${cu.id}`, body });
-      }
     }
   }
 

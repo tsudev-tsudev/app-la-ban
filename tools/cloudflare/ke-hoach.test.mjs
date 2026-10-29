@@ -120,16 +120,3 @@ test('action_parameters so sánh không phụ thuộc thứ tự khoá', () => {
   const hien = { id: 'r', description: 'la-ban: x', expression: 'e', action: 'skip', enabled: true, action_parameters: { b: { d: 3, c: 2 }, a: 1 } };
   assert.deepEqual(lapKeHoach({ quyTac: [q] }, { caiDat: {}, dns: [], pagesDomain: {}, r2Domain: {}, workerDomain: [], phase: { p: { id: 'x', rules: [hien] } } }), []);
 });
-
-test('rumLoaiTru: thêm luật loại trừ, giữ luật "*" của zone, sửa luật đang bao gồm', () => {
-  const nen = { caiDat: {}, dns: [], pagesDomain: {}, r2Domain: {}, workerDomain: [] };
-  const rum = (rules) => lapKeHoach({ rumLoaiTru: ['compass.tsudev.com', 'compass-admin.tsudev.com'] }, { ...nen, rum: { id: 'rs', rules } });
-  const tatCa = { id: 'z', host: '*', paths: ['*'], inclusive: true };
-  const hd = rum([tatCa, { id: 'c', host: 'compass-admin.tsudev.com', paths: ['*'], inclusive: true }]);
-  assert.deepEqual(hd.map((h) => [h.loai, h.method, h.path, h.body.inclusive]), [
-    ['rum-them', 'POST', '/accounts/{A}/rum/v2/rs/rule', false],
-    ['rum-sua', 'PUT', '/accounts/{A}/rum/v2/rs/rule/c', false],
-  ]);
-  assert.deepEqual(rum([tatCa, { id: 'a', host: 'compass.tsudev.com', paths: ['*'], inclusive: false }, { id: 'c', host: 'compass-admin.tsudev.com', paths: ['*'], inclusive: false }]), []);
-  assert.deepEqual(lapKeHoach({ rumLoaiTru: ['compass.tsudev.com'] }, { ...nen, rum: null }), []);
-});

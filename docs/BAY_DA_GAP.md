@@ -101,7 +101,10 @@ Kế thừa từ repo anh em (ban-do-3d / ubnd) - áp dụng vì cùng hạ tầ
   `scrollUntilVisible` trước `find`. (A4)
 - WEB ANALYTICS TU CHEN: zone `tsudev.com` bật Web Analytics (RUM) "automatic setup" cho host `*` -> Cloudflare chèn beacon
   `static.cloudflareinsights.com` vào MỌI trang compass-*: trái trang Quyền riêng tư ("không công cụ phân tích") và bị CSP
-  chặn. KHÔNG nới CSP - thêm luật loại trừ RUM theo host (`zone.json` `rumLoaiTru`, API `/accounts/<id>/rum/v2/<ruleset>/rule`).
+  chặn; khi landing có nonce, Cloudflare gắn nonce cho cả beacon -> analytics CHẠY THẬT. KHÔNG nới CSP. Luật Include/Exclude
+  của Web Analytics CHỈ có từ gói Pro (dashboard ẩn mục, API trả 10000 "Authentication error" - không phải lỗi token); site
+  RUM dùng chung với trang chính tsudev.com nên không tắt cả zone. Dùng Configuration Rule `set_config` `disable_rum` theo
+  host (`zone.json` quyTac phase `http_config_settings`, token cần "Zone > Config Rules > Edit").
   Muốn thử CSP thật với các script Cloudflare chèn: chỉ tên miền thật mới có (preview `*.pages.dev` không có). (S8)
 - NONCE + 304: trang HTML mang nonce mới mỗi lượt nhưng kho tài sản Pages trả `304` theo ETag -> trình duyệt dùng HTML cũ
   (nonce cũ) với header nonce mới -> script bị chặn. `_worker.ts` bỏ `If-None-Match` / `If-Modified-Since` trước khi hỏi

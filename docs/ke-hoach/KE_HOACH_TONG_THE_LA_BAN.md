@@ -376,8 +376,8 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   `POST /v1/web/csp` (Worker, CORS chỉ landing/admin, 30/phút/IP, chuẩn hoá không PII -> Analytics Engine). Đọc + tiêu chí bật
   chặn: `docs/runbook/csp-bao-cao.md`. Honeypot: middleware `bayQuet` (đường dẫn máy quét `/.env`, `/wp-*`, `*.php`...) -> 404
   + sự kiện `HONEYPOT_HIT` (nhãn bẫy, không nguyên đường dẫn; nén 10 s/IP/isolate) + rule R-006 (migration 0003, shadow:
-  >= 3 lần/giờ -> chặn IP). Zone as code tổng quát: `quyTac` (rule theo phase, nhận diện bằng description) + `rumLoaiTru`
-  (loại trừ Web Analytics tự chèn - bẫy WEB ANALYTICS TU CHEN); WAF custom MỘT rule "la-ban: chặn edge" (`$la_ban_chan_ip` cho
+  >= 3 lần/giờ -> chặn IP). Zone as code tổng quát: `quyTac` (rule theo phase, nhận diện bằng description), gồm Config Rule
+  `disable_rum` cho compass-* (Web Analytics tự chèn cả zone - bẫy WEB ANALYTICS TU CHEN; luật Exclude của RUM cần gói Pro); WAF custom MỘT rule "la-ban: chặn edge" (`$la_ban_chan_ip` cho
   mọi host compass-* + admin ngoài VN) - Free zone dùng chung chỉ còn 2/5 custom rule, 0/1 rate-limit rule (bẫy WAF FREE ZONE
   DUNG CHUNG). Managed: "Cloudflare Managed Free Ruleset" mặc định của zone (OWASP cần Pro). Observatory A+ (145) trước và sau.
 - Phát sinh (từ S8) -> 05/11/2026: đọc báo cáo CSP 7 ngày, chuyển `strict-dynamic` sang header chặn (runbook csp-bao-cao).
