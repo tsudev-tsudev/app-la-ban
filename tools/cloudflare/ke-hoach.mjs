@@ -25,10 +25,27 @@ function quyTacKhac(muon, hien) {
   return JSON.stringify(Object.entries(a).sort()) !== JSON.stringify(Object.entries(b).sort());
 }
 
+// So sánh ổn định (không phụ thuộc thứ tự khoá) cho action_parameters.
+function onDinh(v) {
+  if (Array.isArray(v)) return v.map(onDinh);
+  if (v && typeof v === 'object') return Object.fromEntries(Object.keys(v).sort().map((k) => [k, onDinh(v[k])]));
+  return v;
+}
+
+function quyTacPhaseKhac(muon, hien) {
+  return (
+    hien.expression !== muon.expression ||
+    hien.action !== muon.action ||
+    hien.enabled === false ||
+    JSON.stringify(onDinh(muon.action_parameters ?? null)) !== JSON.stringify(onDinh(hien.action_parameters ?? null))
+  );
+}
+
 /**
  * @param {object} muon nội dung zone.json
  * @param {{caiDat: Record<string, unknown>, dnssec: string, dns: object[], pagesDomain: Record<string, string[]>,
- *   r2Domain: Record<string, string[]>, workerDomain: string[], headerRuleset: {id: string, rules: object[]} | null}} hien
+ *   r2Domain: Record<string, string[]>, workerDomain: string[], headerRuleset: {id: string, rules: object[]} | null,
+ *   phase?: Record<string, {id: string, rules: object[]} | null>, rum?: {id: string, rules: object[]} | null}} hien
  * @returns {{loai: string, moTa: string, method?: string, path?: string, body?: unknown}[]}
  */
 export function lapKeHoach(muon, hien) {
@@ -120,6 +137,49 @@ export function lapKeHoach(muon, hien) {
         path: `/zones/{Z}/rulesets/${hien.headerRuleset.id}/rules/${cu.id}`,
         body: rule,
       });
+    }
+  }
+
+  // Rule ruleset theo phase (WAF custom...): nhận diện bằng description, chỉ thêm / sửa rule của mình.
+  for (const q of muon.quyTac ?? []) {
+    const rule = { description: q.description, expression: q.expression, action: q.action, enabled: true };
+    if (q.action_parameters) rule.action_parameters = q.action_parameters;
+    const rs = hien.phase?.[q.phase] ?? null;
+    if (!rs) {
+      hd.push({
+        loai: 'quy-tac-ruleset',
+        moTa: `tạo ruleset ${q.phase} với "${q.description}"`,
+        method: 'PUT',
+        path: `/zones/{Z}/rulesets/phases/${q.phase}/entrypoint`,
+        body: { rules: [rule] },
+      });
+      continue;
+    }
+    const cu = rs.rules.find((r) => r.description === q.description);
+    if (!cu) {
+      hd.push({ loai: 'quy-tac-them', moTa: `thêm rule ${q.phase} "${q.description}"`, method: 'POST', path: `/zones/{Z}/rulesets/${rs.id}/rules`, body: rule });
+    } else if (quyTacPhaseKhac(rule, cu)) {
+      hd.push({
+        loai: 'quy-tac-sua',
+        moTa: `sửa rule ${q.phase} "${q.description}"`,
+        method: 'PATCH',
+        path: `/zones/{Z}/rulesets/${rs.id}/rules/${cu.id}`,
+        body: rule,
+      });
+    }
+  }
+
+  // Web Analytics (RUM) tự chèn cho cả zone -> loại trừ tên miền của La bàn (trang Quyền riêng tư: không công cụ phân
+  // tích; CSP cũng chặn beacon). Không đụng luật của dự án khác.
+  if ((muon.rumLoaiTru ?? []).length && hien.rum) {
+    for (const host of muon.rumLoaiTru) {
+      const cu = hien.rum.rules.find((r) => r.host === host);
+      const body = { host, paths: ['*'], inclusive: false, is_paused: false };
+      if (!cu) {
+        hd.push({ loai: 'rum-them', moTa: `loại trừ Web Analytics cho ${host}`, method: 'POST', path: `/accounts/{A}/rum/v2/${hien.rum.id}/rule`, body });
+      } else if (cu.inclusive !== false || cu.is_paused || JSON.stringify(cu.paths) !== '["*"]') {
+        hd.push({ loai: 'rum-sua', moTa: `sửa luật Web Analytics ${host}`, method: 'PUT', path: `/accounts/{A}/rum/v2/${hien.rum.id}/rule/${cu.id}`, body });
+      }
     }
   }
 

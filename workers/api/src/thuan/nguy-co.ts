@@ -45,6 +45,7 @@ export const CAU_HINH_MAC_DINH: CauHinhNguyCo = Object.freeze({
     SIGNATURE_MISMATCH: 40,
     RATE_ABUSE: 20,
     MULTI_ACCOUNT_SAME_IP: 10,
+    HONEYPOT_HIT: 15,
   }),
   nguong: Object.freeze({ suspicious: 30, restricted: 60, banned: 90 }),
   hoiPhuc: Object.freeze({ diemMoiTuan: 5, san: 0 }),

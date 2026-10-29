@@ -3,11 +3,14 @@ import { cors } from 'hono/cors';
 import { z } from 'zod';
 import { donDep } from './d1/don-dep';
 import type { Env, MoiTruongHono } from './moi-truong';
+import { bayQuet } from './mw/bay';
 import { chanTheoThucThi } from './mw/chan';
 import { coBan, traVanDe, xuLyLoi } from './mw/co-ban';
 import { ghiLog } from './mw/ghi-log';
-import { gioiHanThoIp } from './mw/gioi-han';
-import { nguonChoPhep } from './thuan/cors';
+import { gioiHanRoute, gioiHanThoIp } from './mw/gioi-han';
+import { BAO_CAO_TOI_DA, laLoaiBaoCao, phanTichBaoCaoCsp } from './thuan/bao-cao-csp';
+import { NGUON_WEB, nguonChoPhep } from './thuan/cors';
+import { LoiApi } from './thuan/loi';
 import { laLuotHangNgay } from './thuan/don-dep';
 import { sucKhoe } from './thuan/suc-khoe';
 import { capNhatNguyCo } from './threat/dinh-ky';
@@ -23,6 +26,7 @@ export const app = new Hono<MoiTruongHono>();
 app.use('*', coBan);
 app.use('*', chanTheoThucThi);
 app.use('*', gioiHanThoIp);
+app.use('*', bayQuet);
 
 // Trang compass-status đọc health từ trình duyệt.
 app.use('/v1/health', cors({ origin: (o) => nguonChoPhep(o), allowMethods: ['GET'], maxAge: 600 }));
@@ -36,6 +40,28 @@ boTuyen.dangKy(
     phanHoi: z.object({ ok: z.literal(true), moiTruong: z.string(), build: z.string() }),
   },
   (c) => c.json(sucKhoe(c.env.MOI_TRUONG, c.env.BAN_BUILD)),
+);
+
+// Báo cáo vi phạm CSP từ landing / admin (S8, CSP-01). Trình duyệt tự gửi (report-uri: no-cors; Reporting API: có
+// preflight) nên route này đứng ngoài BoTuyen: không zod / idempotency, chỉ giới hạn kích thước + tốc độ, ghi Analytics Engine.
+app.use('/v1/web/csp', cors({ origin: (o) => nguonChoPhep(o, NGUON_WEB), allowMethods: ['POST'], allowHeaders: ['content-type'], maxAge: 86400 }));
+app.post(
+  '/v1/web/csp',
+  async (c, next) => {
+    c.set('tuyen', '/v1/web/csp');
+    await next();
+  },
+  gioiHanRoute([{ chieu: 'ip', gioiHan: 30, cuaSoMs: 60_000 }]),
+  async (c) => {
+    if (!laLoaiBaoCao(c.req.header('content-type'))) throw new LoiApi(415, 'can-json');
+    if (Number(c.req.header('content-length') ?? '0') > BAO_CAO_TOI_DA) throw new LoiApi(413, 'qua-lon');
+    const vanBan = await c.req.text();
+    const quocGia = c.req.header('cf-ipcountry') ?? '';
+    for (const b of phanTichBaoCaoCsp(vanBan)) {
+      c.env.SU_KIEN?.writeDataPoint({ indexes: ['csp'], blobs: ['csp', b.chiThi, b.biChan, b.trang, b.cheDo, b.nguon, quocGia], doubles: [1] });
+    }
+    return c.body(null, 204);
+  },
 );
 
 // API không cần được lập chỉ mục.

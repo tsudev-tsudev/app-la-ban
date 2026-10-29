@@ -65,6 +65,20 @@ for (const { bucket } of muon.r2Domain) {
 const workerDomain = (await doc(`/accounts/${acc}/workers/domains?zone_id=${zone}`)).map((d) => d.hostname);
 const headerRuleset = await doc(`/zones/${zone}/rulesets/phases/http_response_headers_transform/entrypoint`, null);
 
+const phase = {};
+for (const ten of new Set((muon.quyTac ?? []).map((q) => q.phase))) {
+  const rs = await doc(`/zones/${zone}/rulesets/phases/${ten}/entrypoint`, null);
+  phase[ten] = rs && { id: rs.id, rules: rs.rules ?? [] };
+}
+let rum = null;
+if ((muon.rumLoaiTru ?? []).length) {
+  const site = (await doc(`/accounts/${acc}/rum/site_info/list`, [])).find((x) => x.ruleset?.zone_tag === zone);
+  if (site) {
+    const r = await doc(`/accounts/${acc}/rum/v2/${site.ruleset.id}/rules`, null);
+    rum = r && { id: site.ruleset.id, rules: r.rules ?? [] };
+  }
+}
+
 const keHoach = lapKeHoach(muon, {
   caiDat,
   dnssec,
@@ -73,6 +87,8 @@ const keHoach = lapKeHoach(muon, {
   r2Domain,
   workerDomain,
   headerRuleset: headerRuleset && { id: headerRuleset.id, rules: headerRuleset.rules ?? [] },
+  phase,
+  rum,
 });
 
 if (keHoach.length === 0) {

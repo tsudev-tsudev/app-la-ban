@@ -140,5 +140,18 @@
         "cross-origin-resource-policy": "cross-origin"
       }
     }
+  ],
+  "quyTac": [
+    {
+      "phase": "http_request_firewall_custom",
+      "description": "la-ban: chặn edge (IP Threat Engine + admin ngoài VN)",
+      "expression": "(http.host in {\"compass.tsudev.com\" \"compass-api.tsudev.com\" \"compass-api-stg.tsudev.com\" \"compass-admin.tsudev.com\" \"compass-cdn.tsudev.com\" \"compass-status.tsudev.com\"} and ip.src in $la_ban_chan_ip) or (http.host eq \"compass-admin.tsudev.com\" and ip.src.country ne \"VN\")",
+      "action": "block"
+    }
+  ],
+  "rumLoaiTru": [
+    "compass.tsudev.com",
+    "compass-admin.tsudev.com",
+    "compass-status.tsudev.com"
   ]
 }
