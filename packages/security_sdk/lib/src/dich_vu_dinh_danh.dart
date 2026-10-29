@@ -46,6 +46,10 @@ final class DichVuDinhDanh {
   final int Function() _dongHo;
   Future<Result<PhienThietBi>>? _dangChay;
 
+  /// Giờ server - giờ máy (ms), học từ lần bị từ chối `lech-gio`; chỉ trong
+  /// bộ nhớ (đồng hồ máy có thể được chỉnh lại bất cứ lúc nào).
+  int _lechGio = 0;
+
   static int _gioHeThong() => DateTime.now().millisecondsSinceEpoch;
 
   /// Installation ID: sinh một lần, đổi khi cài lại / xoá dữ liệu (ID-01).
@@ -123,27 +127,119 @@ final class DichVuDinhDanh {
     final thach = await _thachThuc(installationId);
     final chuoi = chuoiXacThuc(thach, p.thietBiId);
     final may = await nenTang.thongTin();
-    final r = await api.post('/v1/device/attest', {
-      'thachThuc': thach,
-      'chuKy': await _ky(chuoi),
-      'goi': may.goi,
-      'integrityToken': await nenTang.integrity(
-        cauHinh.soDuAnCloud,
-        requestHash(chuoi),
-      ),
-    }, bearer: p.accessToken);
+    final kq = await goiKy(
+      'POST',
+      '/v1/device/attest',
+      body: {
+        'thachThuc': thach,
+        'chuKy': await _ky(chuoi),
+        'goi': may.goi,
+        'integrityToken': await nenTang.integrity(
+          cauHinh.soDuAnCloud,
+          requestHash(chuoi),
+        ),
+      },
+    );
+    if (kq case Err(:final failure)) return Err(failure);
+    final r = (kq as Ok<PhanHoiKy>).value;
     if (!r.ok) return Err(Failure('dinhDanh.xacMinh', '${r.status} ${r.ma}'));
     final muc = MucTin.tuChuoi(r.duLieu?['mucTin']);
+    final hienTai = phien ?? p;
     await _luu(
       PhienThietBi(
-        thietBiId: p.thietBiId,
-        accessToken: p.accessToken,
-        hetHan: p.hetHan,
-        refreshToken: p.refreshToken,
+        thietBiId: hienTai.thietBiId,
+        accessToken: hienTai.accessToken,
+        hetHan: hienTai.hetHan,
+        refreshToken: hienTai.refreshToken,
         mucTin: muc,
       ),
     );
     return Ok(muc);
+  });
+
+  /// Trạng thái thiết bị + mã REF + bản APK mới nhất (`/v1/status`).
+  Future<Result<TinhTrangThietBi>> tinhTrang() => _boc(() async {
+    final kq = await goiKy('GET', '/v1/status');
+    if (kq case Err(:final failure)) return Err(failure);
+    final r = (kq as Ok<PhanHoiKy>).value;
+    if (!r.ok) return Err(Failure('dinhDanh.trangThai', '${r.status} ${r.ma}'));
+    final t = TinhTrangThietBi.tuJson(r.duLieu);
+    return t == null ? const Err(Failure('dinhDanh.phanHoi')) : Ok(t);
+  });
+
+  /// Gửi lô sự kiện bảo mật (Spec §7.6b, <= 50) - S4 sinh sự kiện.
+  Future<Result<int>> guiSuKien(List<Map<String, Object?>> suKien) =>
+      _boc(() async {
+        final kq = await goiKy('POST', '/v1/events', body: {'events': suKien});
+        if (kq case Err(:final failure)) return Err(failure);
+        final r = (kq as Ok<PhanHoiKy>).value;
+        final nhan = r.duLieu?['nhan'];
+        if (!r.ok || nhan is! int) {
+          return Err(Failure('dinhDanh.suKien', '${r.status} ${r.ma}'));
+        }
+        return Ok(nhan);
+      });
+
+  /// Yêu cầu đã ký bằng khoá thiết bị (SEC-NET, Spec §7.5): Bearer + header
+  /// `x-device-id`, `x-timestamp`, `x-nonce`, `x-signature` trên chuỗi chuẩn
+  /// [chuoiYeuCau]. Bị từ chối một lần vì lệch giờ -> hiệu chỉnh theo giờ
+  /// server rồi ký lại; vì token / phiên -> làm mới phiên rồi gửi lại. Trả
+  /// phản hồi HTTP (kể cả lỗi) - người gọi xét `status`.
+  Future<Result<PhanHoiKy>> goiKy(
+    String phuongThuc,
+    String duongDan, {
+    Map<String, Object?>? body,
+  }) => _boc(() async {
+    final than = body == null ? null : utf8.encode(jsonEncode(body));
+    final uri = Uri.parse(duongDan);
+    for (var lan = 0; ; lan++) {
+      final ph = await damBaoPhien();
+      if (ph case Err(:final failure)) return Err(failure);
+      final p = (ph as Ok<PhienThietBi>).value;
+      final ts = _dongHo() + _lechGio;
+      final nonce = nonceNgauNhien();
+      final chuoi = chuoiYeuCau(
+        phuongThuc: phuongThuc,
+        duongDan: uri.path,
+        query: uri.query,
+        bamThan: bamThan(than ?? const []),
+        ts: ts,
+        nonce: nonce,
+      );
+      final r = await api.goiTho(
+        phuongThuc,
+        duongDan,
+        than: than,
+        tieuDe: {
+          'authorization': 'Bearer ${p.accessToken}',
+          'x-device-id': p.thietBiId,
+          'x-timestamp': '$ts',
+          'x-nonce': nonce,
+          'x-signature': await _ky(chuoi),
+        },
+      );
+      if (lan == 0 && r.status == 401) {
+        final gio = r.gioMayChu;
+        if (r.ma == 'lech-gio' && gio != null) {
+          _lechGio = gio - _dongHo();
+          continue;
+        }
+        if (r.ma == 'token-sai' || r.ma == 'phien-thu-hoi') {
+          // Hết hiệu lực sớm (thu hồi, khoá đổi): ép làm mới ở vòng sau.
+          await _luu(
+            PhienThietBi(
+              thietBiId: p.thietBiId,
+              accessToken: p.accessToken,
+              hetHan: 0,
+              refreshToken: p.refreshToken,
+              mucTin: p.mucTin,
+            ),
+          );
+          continue;
+        }
+      }
+      return Ok(r);
+    }
   });
 
   Future<Result<PhienThietBi>> _lamMoi(PhienThietBi p) => _boc(() async {

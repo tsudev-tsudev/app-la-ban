@@ -293,5 +293,21 @@
   "locSourceNetwork": "Mạng",
   "@locSourceNetwork": {"description": "Nguồn vị trí"},
   "locSourceFused": "Hợp nhất",
-  "@locSourceFused": {"description": "Nguồn vị trí"}
+  "@locSourceFused": {"description": "Nguồn vị trí"},
+  "updateRequiredTitle": "Cần cập nhật ứng dụng",
+  "@updateRequiredTitle": {"description": "Tiêu đề màn chặn khi phiên bản quá cũ (force update)"},
+  "updateRequiredBody": "Phiên bản này không còn được hỗ trợ vì lý do bảo mật. Hãy tải bản mới để tiếp tục sử dụng.",
+  "@updateRequiredBody": {"description": "Nội dung màn bắt buộc cập nhật"},
+  "updateAvailableTitle": "Đã có phiên bản mới",
+  "@updateAvailableTitle": {"description": "Tiêu đề băng gợi ý cập nhật"},
+  "updateAvailableBody": "Bản {phienBan} đã sẵn sàng với các bản sửa lỗi và cải thiện.",
+  "@updateAvailableBody": {"description": "Băng gợi ý cập nhật", "placeholders": {"phienBan": {"type": "String", "example": "0.1.0-beta.6"}}},
+  "updateAvailableBodyGeneric": "Bản mới đã sẵn sàng với các bản sửa lỗi và cải thiện.",
+  "@updateAvailableBodyGeneric": {"description": "Băng gợi ý cập nhật khi không biết số phiên bản"},
+  "updateNow": "Cập nhật",
+  "@updateNow": {"description": "Nút mở trang tải bản mới"},
+  "updateLater": "Để sau",
+  "@updateLater": {"description": "Nút ẩn băng gợi ý cập nhật trong phiên này"},
+  "updateOpenFailed": "Không mở được trình duyệt. Hãy vào compass.tsudev.com/tai-ve để tải bản mới.",
+  "@updateOpenFailed": {"description": "Lỗi khi không mở được trang tải"}
 }

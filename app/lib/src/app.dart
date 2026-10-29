@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:i18n/i18n.dart';
+import 'package:la_ban/src/cap_nhat.dart';
 import 'package:la_ban/src/flavor.dart';
 import 'package:la_ban/src/router.dart';
 import 'package:settings_feature/settings_feature.dart';
@@ -25,6 +26,8 @@ class LaBanApp extends ConsumerWidget {
           flavor == Flavor.prod ? c.l10n.appTitle : flavor.appName,
       debugShowCheckedModeBanner: false,
       routerConfig: ref.watch(routerProvider),
+      // Cập nhật bắt buộc / khuyến nghị (S3) phủ trên mọi màn.
+      builder: (_, child) => KhungCapNhat(child: child ?? const SizedBox()),
       theme: LbTheme.light,
       darkTheme: LbTheme.dark,
       themeMode: switch (cheDo) {

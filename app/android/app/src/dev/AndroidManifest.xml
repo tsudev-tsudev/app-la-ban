@@ -2,5 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools">
     <application
         android:networkSecurityConfig="@xml/mang_dev"
+        android:usesCleartextTraffic="true"
+        tools:replace="android:networkSecurityConfig,android:usesCleartextTraffic"
         tools:ignore="UnusedAttribute" />
 </manifest>

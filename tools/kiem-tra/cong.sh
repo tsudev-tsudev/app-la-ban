@@ -37,6 +37,7 @@ node tools/kiem-tra/tuong-phan.mjs
 node tools/build/icon.mjs
 node tools/build/icon-dart.mjs --check
 node tools/build/arb-gia.mjs --check
+node tools/build/goc-tin-cay.mjs --check
 for f in design/fonts/*.ttf design/fonts/OFL.txt; do
   cmp -s "$f" "packages/design_system/fonts/$(basename "$f")" || loi "packages/design_system/fonts lệch design/fonts ($(basename "$f")) - chép lại"
 done

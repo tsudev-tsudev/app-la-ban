@@ -1,11 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- S2: đăng ký thiết bị / phiên với compass-api (HTTPS). Pinning + network_security_config chặt ở S3. -->
+    <!-- S2: đăng ký thiết bị / phiên với compass-api (HTTPS). S3: cấm HTTP + chỉ CA hệ thống (xml/mang.xml). -->
     <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:label="${appName}"
         android:allowBackup="false"
         android:fullBackupContent="false"
         android:dataExtractionRules="@xml/quy_tac_trich_xuat"
+        android:networkSecurityConfig="@xml/mang"
+        android:usesCleartextTraffic="false"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

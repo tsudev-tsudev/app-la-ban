@@ -27,6 +27,30 @@ final class ApiGia implements ApiDinhDanh {
     return xuLy?.call(duongDan, body) ?? macDinh(duongDan, body);
   }
 
+  /// Yêu cầu đã ký: (phương thức, đường dẫn, thân, header).
+  final ky = <(String, String, List<int>?, Map<String, String>)>[];
+  PhanHoiKy? Function(String duong, Map<String, String> tieuDe)? xuLyKy;
+
+  @override
+  Future<PhanHoiKy> goiTho(
+    String phuongThuc,
+    String duongDan, {
+    List<int>? than,
+    Map<String, String> tieuDe = const {},
+  }) async {
+    if (matMang) throw const LoiKetNoi('SocketException');
+    ky.add((phuongThuc, duongDan, than, tieuDe));
+    final body = than == null
+        ? const <String, Object?>{}
+        : jsonDecode(utf8.decode(than)) as Map<String, Object?>;
+    goi.add((duongDan, body, tieuDe['authorization']?.substring(7)));
+    await Future<void>.delayed(Duration.zero);
+    final rieng = xuLyKy?.call(duongDan, tieuDe);
+    if (rieng != null) return rieng;
+    final r = macDinh(Uri.parse(duongDan).path, body);
+    return (status: r.status, duLieu: r.duLieu, gioMayChu: null);
+  }
+
   PhanHoiDinhDanh macDinh(String duong, Map<String, Object?> body) {
     dem++;
     return switch (duong) {
@@ -48,6 +72,19 @@ final class ApiGia implements ApiDinhDanh {
         duLieu: {'mucTin': 'device', 'phien': phienJson(dem)},
       ),
       '/v1/device/attest' => (status: 200, duLieu: {'mucTin': 'strong'}),
+      '/v1/status' => (
+        status: 200,
+        duLieu: {
+          'trangThai': 'banned',
+          'mucTin': 'device',
+          'ref': 'REF-00ABC-DEFGH',
+          'banMoi': {'phienBan': '0.1.0-beta.6', 'maPhienBan': 6},
+        },
+      ),
+      '/v1/events' => (
+        status: 202,
+        duLieu: {'nhan': (body['events']! as List<Object?>).length, 'trung': 0},
+      ),
       _ => (status: 404, duLieu: null),
     };
   }
@@ -139,6 +176,38 @@ void main() {
       expect(chuoiXacThuc('a', 'b'), 'la-ban/v1/xac-thuc\na\nb');
       expect(chuoiLamMoi('r', 5, 'n'), 'la-ban/v1/lam-moi\nr\n5\nn');
     });
+    test(
+      'chuỗi ký request: vector chung với workers/api/test/kenh.test.ts',
+      () {
+        const than = '{"a":1}';
+        final bam = bamThan(utf8.encode(than));
+        expect(
+          bam,
+          '015abd7f5cc57a2dd94b7590f04ad8084273905ee33ec5cebeae62276a97f862',
+        );
+        expect(
+          chuoiYeuCau(
+            phuongThuc: 'post',
+            duongDan: '/v1/events',
+            query: 'z=2&a=b c&a=%C3%A1&m=x+y&k=!*',
+            bamThan: bam,
+            ts: 1761800000000,
+            nonce: 'AAAAAAAAAAAAAAAAAAAAAA',
+          ),
+          'POST\n/v1/events\na=b%20c&a=%C3%A1&k=%21%2A&m=x%20y&z=2\n'
+          '015abd7f5cc57a2dd94b7590f04ad8084273905ee33ec5cebeae62276a97f862\n'
+          '1761800000000\nAAAAAAAAAAAAAAAAAAAAAA',
+        );
+        expect(
+          bamThan(const []),
+          'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+        );
+        expect(querySapXep(''), '');
+        expect(querySapXep('b=2&&a=3&a=1&c'), 'a=1&a=3&b=2&c=');
+        expect(maHoaRfc3986("a b!'()*~._-"), 'a%20b%21%27%28%29%2A~._-');
+      },
+    );
+
     test('UUID v4 + nonce đúng mẫu server', () {
       final r = Random(1);
       for (var i = 0; i < 50; i++) {
@@ -297,8 +366,132 @@ void main() {
       final (duong, body, bearer) = api.goi.last;
       expect(duong, '/v1/device/attest');
       expect(bearer, 'at2');
-      expect(nt.daKy.last, chuoiXacThuc(body['thachThuc']! as String, 'TB1'));
+      final daKy = nt.daKy;
+      expect(
+        daKy[daKy.length - 2],
+        chuoiXacThuc(body['thachThuc']! as String, 'TB1'),
+      );
+      expect(daKy.last, startsWith('POST\n/v1/device/attest\n\n'));
       expect(dv().phien?.mucTin, MucTin.strong);
+    });
+
+    group('yêu cầu ký (SEC-NET)', () {
+      test('header đủ, chữ ký trên đúng chuỗi chuẩn của byte gửi đi', () async {
+        bayGio = 1761800000000;
+        final d = dv();
+        final kq = await d.goiKy(
+          'POST',
+          '/v1/events?b=2&a=1',
+          body: {
+            'events': ['á'],
+          },
+        );
+        expect((kq as Ok<PhanHoiKy>).value.status, 202);
+        final (pt, duong, than, td) = api.ky.single;
+        expect((pt, duong), ('POST', '/v1/events?b=2&a=1'));
+        expect(utf8.decode(than!), '{"events":["á"]}');
+        expect(td['authorization'], 'Bearer at2');
+        expect(td['x-device-id'], 'TB1');
+        expect(td['x-timestamp'], '1761800000000');
+        expect(td['x-nonce'], matches(RegExp(r'^[A-Za-z0-9_-]{32}$')));
+        expect(td['x-signature'], b64url(List.filled(70, 1)));
+        expect(
+          nt.daKy.last,
+          chuoiYeuCau(
+            phuongThuc: 'POST',
+            duongDan: '/v1/events',
+            query: 'a=1&b=2',
+            bamThan: bamThan(than),
+            ts: 1761800000000,
+            nonce: td['x-nonce']!,
+          ),
+        );
+      });
+
+      test('lệch giờ -> hiệu chỉnh theo giờ server, ký lại một lần', () async {
+        bayGio = 1000000;
+        final d = dv();
+        var lan = 0;
+        api.xuLyKy = (_, td) => lan++ == 0
+            ? (status: 401, duLieu: {'code': 'lech-gio'}, gioMayChu: 1090000)
+            : null;
+        final kq = await d.goiKy('GET', '/v1/status');
+        expect((kq as Ok<PhanHoiKy>).value.status, 200);
+        expect(api.ky.map((k) => k.$4['x-timestamp']), ['1000000', '1090000']);
+        expect(api.ky.map((k) => k.$4['x-nonce']).toSet(), hasLength(2));
+        // Lần sau dùng luôn độ lệch đã học.
+        await d.goiKy('GET', '/v1/status');
+        expect(api.ky.last.$4['x-timestamp'], '1090000');
+      });
+
+      test(
+        'token bị từ chối -> làm mới rồi gửi lại; lần 2 lỗi thì trả',
+        () async {
+          final d = dv();
+          await d.damBaoPhien();
+          api.xuLyKy = (_, td) => td['authorization'] == 'Bearer at2'
+              ? (status: 401, duLieu: {'code': 'token-sai'}, gioMayChu: null)
+              : null;
+          final kq = await d.goiKy('GET', '/v1/status');
+          expect((kq as Ok<PhanHoiKy>).value.status, 200);
+          expect(api.goi.map((g) => g.$1), contains('/v1/session/refresh'));
+          expect(api.ky.last.$4['authorization'], isNot('Bearer at2'));
+          api.xuLyKy = (_, _) =>
+              (status: 401, duLieu: {'code': 'nonce'}, gioMayChu: null);
+          expect(
+            ((await d.goiKy(
+              'GET',
+              '/v1/status',
+            )) as Ok<PhanHoiKy>).value.status,
+            401,
+          );
+        },
+      );
+
+      test('tình trạng + bản mới; gửi lô sự kiện', () async {
+        final d = dv();
+        final t = (await d.tinhTrang() as Ok<TinhTrangThietBi>).value;
+        expect(t.trangThai, TrangThaiThietBi.banned);
+        expect(t.ref, 'REF-00ABC-DEFGH');
+        expect(t.banMoi, (phienBan: '0.1.0-beta.6', maPhienBan: 6));
+        final n = await d.guiSuKien([
+          {'type': 'A'},
+          {'type': 'B'},
+        ]);
+        expect((n as Ok<int>).value, 2);
+        api.xuLyKy = (_, _) => (status: 500, duLieu: null, gioMayChu: null);
+        expect(
+          ((await d.tinhTrang()) as Err).failure.code,
+          'dinhDanh.trangThai',
+        );
+        expect(
+          ((await d.guiSuKien(const [])) as Err).failure.code,
+          'dinhDanh.suKien',
+        );
+      });
+
+      test('mất mạng -> Failure dinhDanh.mang', () async {
+        final d = dv();
+        await d.damBaoPhien();
+        api.matMang = true;
+        expect(
+          ((await d.goiKy('GET', '/v1/status')) as Err).failure.code,
+          'dinhDanh.mang',
+        );
+      });
+
+      test('TinhTrangThietBi.tuJson: thiếu / lạ', () {
+        expect(TinhTrangThietBi.tuJson(null), isNull);
+        expect(TinhTrangThietBi.tuJson({'trangThai': 1}), isNull);
+        final t = TinhTrangThietBi.tuJson({
+          'trangThai': 'la',
+          'banMoi': {'phienBan': 1},
+        })!;
+        expect(
+          (t.trangThai, t.mucTin, t.ref, t.banMoi),
+          (TrangThaiThietBi.clean, MucTin.unverified, null, null),
+        );
+      });
     });
 
     test('thách thức lỗi -> Failure có mã ổn định', () async {

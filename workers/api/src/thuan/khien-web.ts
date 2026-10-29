@@ -7,20 +7,21 @@ export const KHOA_KV_KHIEN = 'web-khien';
 
 const B64URL = /^[A-Za-z0-9_-]+$/;
 
-const schemaGoi = z.strictObject({
-  kid: z.string().min(1).max(32),
-  duLieu: z.string().min(1).max(4096).regex(B64URL),
-  chuKy: z.string().min(1).max(128).regex(B64URL),
-});
+const schemaGoi = (toiDa: number) =>
+  z.strictObject({
+    kid: z.string().min(1).max(32),
+    duLieu: z.string().min(1).max(toiDa).regex(B64URL),
+    chuKy: z.string().min(1).max(128).regex(B64URL),
+  });
 
 /**
  * Gói trong KV -> chuỗi JSON để phục vụ nguyên văn, hoặc null nếu sai hình dạng. Worker KHÔNG kiểm chữ ký (không giữ khoá):
  * trình duyệt kiểm bằng khoá công khai nhúng sẵn, nên KV bị ghi bậy cũng chỉ làm trang về mức `chat`.
  */
-export function goiCauHinhHopLe(raw: string | null): string | null {
-  if (!raw || raw.length > 8192) return null;
+export function goiCauHinhHopLe(raw: string | null, duLieuToiDa = 4096): string | null {
+  if (!raw || raw.length > duLieuToiDa + 4096) return null;
   try {
-    const kq = schemaGoi.safeParse(JSON.parse(raw));
+    const kq = schemaGoi(duLieuToiDa).safeParse(JSON.parse(raw));
     return kq.success ? JSON.stringify(kq.data) : null;
   } catch {
     return null;

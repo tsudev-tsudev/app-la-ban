@@ -552,4 +552,33 @@ class LbL10nVi extends LbL10n {
 
   @override
   String get locSourceFused => 'Hợp nhất';
+
+  @override
+  String get updateRequiredTitle => 'Cần cập nhật ứng dụng';
+
+  @override
+  String get updateRequiredBody =>
+      'Phiên bản này không còn được hỗ trợ vì lý do bảo mật. Hãy tải bản mới để tiếp tục sử dụng.';
+
+  @override
+  String get updateAvailableTitle => 'Đã có phiên bản mới';
+
+  @override
+  String updateAvailableBody(String phienBan) {
+    return 'Bản $phienBan đã sẵn sàng với các bản sửa lỗi và cải thiện.';
+  }
+
+  @override
+  String get updateAvailableBodyGeneric =>
+      'Bản mới đã sẵn sàng với các bản sửa lỗi và cải thiện.';
+
+  @override
+  String get updateNow => 'Cập nhật';
+
+  @override
+  String get updateLater => 'Để sau';
+
+  @override
+  String get updateOpenFailed =>
+      'Không mở được trình duyệt. Hãy vào compass.tsudev.com/tai-ve để tải bản mới.';
 }

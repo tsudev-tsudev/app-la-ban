@@ -8,7 +8,7 @@ import { LoiApi } from './thuan/loi';
 import type { MoiTruongHono, Ngu } from './moi-truong';
 import { gioiHanRoute } from './mw/gioi-han';
 import { idempotency } from './mw/idempotency';
-import { xacThuc } from './mw/xac-thuc';
+import { taoXacThuc, xacThuc } from './mw/xac-thuc';
 
 export type DinhNghiaTuyen<B extends z.ZodType = z.ZodType, P extends z.ZodType = z.ZodType> = {
   phuongThuc: 'get' | 'post';
@@ -23,8 +23,11 @@ export type DinhNghiaTuyen<B extends z.ZodType = z.ZodType, P extends z.ZodType 
   /** POST mặc định bắt buộc Idempotency-Key; đặt false cho POST không ghi dữ liệu. */
   idempotent?: boolean;
   bodyToiDa?: number;
-  /** Cần phiên thiết bị (Bearer JWT, S2). Chạy TRƯỚC giới hạn để chiều `thiet-bi` / idempotency theo thiết bị có hiệu lực. */
-  xacThuc?: boolean;
+  /**
+   * Cần phiên thiết bị (Bearer JWT, S2) + chữ ký request bằng khoá thiết bị (S3). Chạy TRƯỚC giới hạn để chiều
+   * `thiet-bi` / idempotency theo thiết bị có hiệu lực. 'ke-ca-bi-cam': thiết bị bị cấm vẫn qua (chỉ /v1/status).
+   */
+  xacThuc?: boolean | 'ke-ca-bi-cam';
 };
 
 export type XuLy<B extends z.ZodType> = (c: Ngu, body: z.infer<B>) => Response | Promise<Response>;
@@ -54,7 +57,7 @@ export class BoTuyen {
         await next();
       },
     ];
-    if (d.xacThuc) chuoi.push(xacThuc);
+    if (d.xacThuc) chuoi.push(d.xacThuc === 'ke-ca-bi-cam' ? taoXacThuc({ choPhepBiCam: true }) : xacThuc);
     chuoi.push(gioiHanRoute(d.gioiHan ?? []));
     if (d.body) chuoi.push(docBody(d.body, d.bodyToiDa));
     if (d.phuongThuc === 'post' && d.idempotent !== false) chuoi.push(idempotency);

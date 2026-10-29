@@ -32,3 +32,16 @@ Map<CoTinhNang, bool> coTuJson(Map<String, Object?> j) => {
 Map<String, Object?> coRaJson(Map<CoTinhNang, bool> co) => {
   for (final MapEntry(:key, :value) in co.entries) key.name: value,
 };
+
+/// Tên cờ trong Remote Config (`ban-do`, `chia-se`...) -> cờ; tên lạ bị bỏ
+/// qua (Remote Config của bản mới có thể có cờ bản cũ chưa biết).
+Set<CoTinhNang> coTuTenTuXa(Iterable<String> ten) => {
+  for (final c in CoTinhNang.values)
+    if (ten.contains(
+      c.name.replaceAllMapped(
+        RegExp('[A-Z]'),
+        (m) => '-${m[0]!.toLowerCase()}',
+      ),
+    ))
+      c,
+};

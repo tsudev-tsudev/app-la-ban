@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:la_ban/src/kenh.dart';
 import 'package:storage/storage.dart';
 
 /// Kho lưu trữ đã mở lúc khởi động. null: không mở được (app vẫn chạy ở chế
@@ -14,11 +15,12 @@ final anToanProvider = Provider<LyDoAnToan?>(
   (ref) => ref.watch(khoLuuTruProvider)?.anToan,
 );
 
-/// Giá trị cuối của cờ tính năng (chế độ an toàn tắt hết). Kill-switch từ xa
-/// nối vào `tatTuXa` ở S3 (Remote Config ký số).
+/// Giá trị cuối của cờ tính năng (chế độ an toàn tắt hết; kill-switch từ
+/// Remote Config ký số - S3).
 final coTinhNangProvider = Provider<Map<CoTinhNang, bool>>(
   (ref) => tinhCo(
     cucBo: ref.watch(khoLuuTruProvider)?.coCucBo ?? const {},
+    tatTuXa: coTuTenTuXa(ref.watch(cauHinhTuXaProvider)?.tat ?? const {}),
     anToan: ref.watch(anToanProvider) != null,
   ),
 );

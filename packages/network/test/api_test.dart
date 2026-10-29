@@ -26,6 +26,19 @@ void main() {
             yc.response
               ..statusCode = 401
               ..write(jsonEncode({'status': 401, 'code': 'token-sai'}));
+          case '/lech':
+            yc.response
+              ..statusCode = 401
+              ..headers.set('x-server-time', '1761800000000')
+              ..write(jsonEncode({'status': 401, 'code': 'lech-gio'}));
+          case '/tho':
+            yc.response.write(
+              jsonEncode({
+                'than': than,
+                'pt': yc.method,
+                'ky': yc.headers.value('x-signature'),
+              }),
+            );
           case '/cham':
             await Future<void>.delayed(const Duration(seconds: 2));
           default:
@@ -61,6 +74,97 @@ void main() {
     final chet = ApiClientIo(Uri.parse('http://127.0.0.1:1'));
     await expectLater(chet.get('/x'), throwsA(isA<LoiMang>()));
   });
+
+  test('gọi thô: đúng byte + header thêm; giờ server khi lệch', () async {
+    final r = await api.goi(
+      'POST',
+      '/tho',
+      than: utf8.encode('{"b":"á"}'),
+      tieuDe: {'x-signature': 'abc'},
+    );
+    expect(r.duLieu, {'than': '{"b":"á"}', 'pt': 'POST', 'ky': 'abc'});
+    expect(r.gioMayChu, isNull);
+    final l = await api.get('/lech');
+    expect((l.status, l.ma, l.gioMayChu), (401, 'lech-gio', 1761800000000));
+  });
+
+  group(
+    'ghim CA (TLS thật, chứng chỉ tự ký sinh lúc chạy)',
+    () {
+      late Directory tam;
+      late HttpServer tls;
+      late String caPem;
+
+      setUpAll(() async {
+        tam = await Directory.systemTemp.createTemp('ghim');
+        final kq = await Process.run('openssl', [
+          'req',
+          '-x509',
+          '-newkey',
+          'ec',
+          '-pkeyopt',
+          'ec_paramgen_curve:P-256',
+          '-nodes',
+          '-days',
+          '2',
+          '-subj',
+          '/CN=127.0.0.1',
+          '-addext',
+          'subjectAltName=IP:127.0.0.1',
+          '-keyout',
+          '${tam.path}/k.pem',
+          '-out',
+          '${tam.path}/c.pem',
+        ]);
+        expect(kq.exitCode, 0, reason: '${kq.stderr}');
+        caPem = File('${tam.path}/c.pem').readAsStringSync();
+        final ctx = SecurityContext()
+          ..useCertificateChain('${tam.path}/c.pem')
+          ..usePrivateKey('${tam.path}/k.pem');
+        tls = await HttpServer.bindSecure(InternetAddress.loopbackIPv4, 0, ctx)
+          ..listen((yc) async {
+            yc.response.write('{"ok":true}');
+            await yc.response.close();
+          });
+      });
+      tearDownAll(() async {
+        await tls.close(force: true);
+        await tam.delete(recursive: true);
+      });
+
+      Uri goc() => Uri.parse('https://127.0.0.1:${tls.port}');
+
+      test('CA nằm trong bộ ghim -> nối được', () async {
+        final a = ApiClientIo(goc(), gocGhim: [caPem]);
+        expect((await a.get('/')).duLieu, {'ok': true});
+      });
+
+      test(
+        'bộ ghim mặc định (GTS / ISRG) -> LoiMang tls; xoay ghim -> nối được',
+        () async {
+          final a = ApiClientIo(goc(), gocGhim: gocMacDinh);
+          await expectLater(
+            a.get('/'),
+            throwsA(isA<LoiMang>().having((e) => e.lyDo, 'lyDo', 'tls')),
+          );
+          a.doiGhim([...gocMacDinh, caPem]);
+          expect((await a.get('/')).ok, isTrue);
+          a.doiGhim(gocMacDinh);
+          await expectLater(a.get('/'), throwsA(isA<LoiMang>()));
+        },
+      );
+
+      test('kho CA hệ thống (không ghim) cũng không tin CA tự ký', () async {
+        await expectLater(
+          ApiClientIo(goc()).get('/'),
+          throwsA(isA<LoiMang>().having((e) => e.lyDo, 'lyDo', 'tls')),
+        );
+      });
+    },
+    skip: Process.runSync('which', ['openssl']).exitCode == 0
+        ? false
+        : 'thiếu openssl',
+  );
 
   test('giaiMaThan', () {
     expect(giaiMaThan([]), isNull);

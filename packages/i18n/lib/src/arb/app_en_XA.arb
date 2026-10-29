@@ -146,5 +146,13 @@
   "moonWaningCrescent": "[Ŵảñỉñğ çřẽšçẽñť ······]",
   "locSourceGps": "[ĞPŠ ··]",
   "locSourceNetwork": "[Ñẽťŵởřk ···]",
-  "locSourceFused": "[Fữšẽđ ··]"
+  "locSourceFused": "[Fữšẽđ ··]",
+  "updateRequiredTitle": "[Ữpđảťẽ řẽqữỉřẽđ ······]",
+  "updateRequiredBody": "[Ťhỉš vẽřšỉởñ ỉš ñở łởñğẽř šữppởřťẽđ fởř šẽçữřỉťỹ řẽảšởñš. Đởŵñłởảđ ťhẽ ñẽŵ vẽřšỉởñ ťở kẽẽp ữšỉñğ ťhẽ ảpp. ··········································]",
+  "updateAvailableTitle": "[Ả ñẽŵ vẽřšỉởñ ỉš ảvảỉłảbłẽ ···········]",
+  "updateAvailableBody": "[Vẽřšỉởñ {phienBan} ỉš řẽảđỹ ŵỉťh fỉxẽš ảñđ ỉmpřởvẽmẽñťš. ···················]",
+  "updateAvailableBodyGeneric": "[Ả ñẽŵ vẽřšỉởñ ỉš řẽảđỹ ŵỉťh fỉxẽš ảñđ ỉmpřởvẽmẽñťš. ·····················]",
+  "updateNow": "[Ữpđảťẽ ···]",
+  "updateLater": "[Łảťẽř ··]",
+  "updateOpenFailed": "[Çởữłđñ'ť ởpẽñ ťhẽ břởŵšẽř. Vỉšỉť çởmpảšš.ťšữđẽv.çởm/ẽñ/đởŵñłởảđ ťở ğẽť ťhẽ ñẽŵ vẽřšỉởñ. ···································]"
 }
