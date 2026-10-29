@@ -1,6 +1,8 @@
 // Thử S2 end-to-end trên môi trường THẬT (mặc định staging): thách thức -> đăng ký bằng khoá P-256 phần mềm (không token
 // Play -> mức 'unverified') -> /v1/device/me -> làm mới -> dùng lại token cũ ngoài ân hạn KHÔNG thử (cần chờ 30 s).
 // Chạy: node tools/thu/dinh-danh-e2e.mjs [https://compass-api-stg.tsudev.com]
+// Thiết bị thử có model 'node' + os_version 'e2e' -> dọn sau khi thử (xoá sessions / device_ips / security_events /
+// device_links của chúng trước, rồi devices) để SOC không thấy dữ liệu rác.
 import { createHash, generateKeyPairSync, randomUUID, randomBytes, sign } from 'node:crypto';
 
 const goc = process.argv[2] ?? 'https://compass-api-stg.tsudev.com';
