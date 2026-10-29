@@ -147,11 +147,15 @@
       "description": "la-ban: chặn edge (IP Threat Engine + admin ngoài VN)",
       "expression": "(http.host in {\"compass.tsudev.com\" \"compass-api.tsudev.com\" \"compass-api-stg.tsudev.com\" \"compass-admin.tsudev.com\" \"compass-cdn.tsudev.com\" \"compass-status.tsudev.com\"} and ip.src in $la_ban_chan_ip) or (http.host eq \"compass-admin.tsudev.com\" and ip.src.country ne \"VN\")",
       "action": "block"
+    },
+    {
+      "phase": "http_config_settings",
+      "description": "la-ban: tắt Web Analytics (RUM) cho compass-*",
+      "expression": "(http.host in {\"compass.tsudev.com\" \"compass-admin.tsudev.com\" \"compass-status.tsudev.com\"})",
+      "action": "set_config",
+      "action_parameters": {
+        "disable_rum": true
+      }
     }
-  ],
-  "rumLoaiTru": [
-    "compass.tsudev.com",
-    "compass-admin.tsudev.com",
-    "compass-status.tsudev.com"
   ]
 }
