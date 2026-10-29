@@ -68,7 +68,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 17 | A7 | Bản đồ offline + Camera AR | A6 | ⬜ |
 | 18 | R1 | Landing hoàn chỉnh (kéo lên làm cùng R0 theo yêu cầu người dùng) | N2 | ✅ 28/10 |
 | 19 | S8 | Bảo vệ edge web (CSP, header, WAF as code) | R1 | ✅ 29/10 (CSP nghiêm Report-Only tới 05/11; Access ở S6, Turnstile ở S7) |
-| 20 | S9 | Lớp bảo vệ nội dung web + build sạch | S8 | ⬜ |
+| 20 | S9 | Lớp bảo vệ nội dung web + build sạch | S8 | ✅ 29/10 (bdbd740; `KHOA_URL_KY` chờ người dùng đặt, CSV audit ở S6) |
 | 21 | A8 | Cài đặt, quyền riêng tư, trợ năng, hiệu năng | A7, S4 | ⬜ |
 | 22 | S10 | Giám sát, log bất biến, backup, ứng phó sự cố | S7 | ⬜ |
 | 23 | R2 | Sẵn sàng store | A8, S4 | ⬜ |
@@ -389,6 +389,17 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
 - Làm: gói `web/shield` áp cho landing + admin, bật/tắt + mức độ qua config ký số; watermark động ở admin; ảnh qua URL ký; build
   xoá 100% comment, console, sourcemap, LICENSE.txt; làm rối mã module nhạy cảm (tương thích CSP); script `ve-sinh-ban-build`.
 - Cổng: script vệ sinh xanh; không ảnh hưởng trợ năng (ô nhập vẫn chọn/dán được); tín hiệu về Threat Engine.
+- Kết quả (29/10, PR #17, main bdbd740): gói `web/shield` -> `/js/khien.js` (IIFE 5,4 KB, terser đổi tên thuộc tính nội
+  bộ, không eval / innerHTML / style nội tuyến) nạp ở landing (`Trang.astro`) + admin (`index.html`), nonce tự gắn. Mức
+  `chat` mặc định; gói ký Ed25519 (khoá bí mật `~/.config/la-ban/cau-hinh/web-1.pem`, công khai ở `khoa.ts`) ở KV
+  `web-khien` staging + prod, hết hạn 27/01/2027, Chromium kiểm chữ ký OK. Dò DevTools: ước lượng zoom từ chiều ngang ->
+  phần thanh dọc (phóng 80-125% / toàn màn hình không báo nhầm), giữ 2 lần đo + điểm phím / chuột phải. Tín hiệu
+  `POST /v1/web/signals` -> `WEB_DEVTOOLS` theo IP (đã thấy trong D1 prod). URL ký `/v1/tn/*` (HMAC, <= 7 ngày, hotlink
+  403) - prod trả 503 tới khi người dùng đặt `KHOA_URL_KY` (auto mode chặn ghi secret). Watermark admin (Access email +
+  giờ UTC+7). `ve-sinh-ban-build` chặn thêm script / `on*` nội tuyến. CSP landing `connect-src` + compass-api; trang
+  Quyền riêng tư mục 7 nêu tín hiệu khiên. Production: 0 vi phạm enforce; report-only còn vi phạm từ script Cloudflare
+  chèn (Email Obfuscation `email-decode.min.js`, JS detections) - xử lý trước khi bật `strict-dynamic` 05/11.
+  Runbook: `docs/runbook/khien-web.md`.
 - Phát sinh (từ S9) -> S6: xuất CSV ghi audit (SH-04 nửa sau - cần API admin + Access); CSP admin thật (nonce + `connect-src`
   compass-api cho khiên) khi bỏ `_worker.js` 403; API admin cấp URL ký bằng `kyUrl` (SH-05) cho ảnh bằng chứng; watermark
   lấy email từ Access `get-identity` (đã nối, chờ Access). -> S10: bảng `WEB_DEVTOOLS` theo IP / quốc gia trong SOC; cân nhắc

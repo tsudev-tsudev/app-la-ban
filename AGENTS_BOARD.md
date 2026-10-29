@@ -1,7 +1,6 @@
 # Trạng thái SỐNG - quy trình: AGENTS_KICKOFF.md · lệnh: `./agents.sh help`
 
 ## LOCKS (chỉ tệp ĐANG sửa - xoá ngay khi xong)
-- agent-laban · web/shield web/landing web/admin workers/api tools · S9 web shield
 
 ## Lưu ý đang hiệu lực (<= 8 dòng)
 - PHAT HANH APK: tăng version pubspec + phienBanApp -> PR -> ./tools/build/phat-hanh-apk.sh (main sạch) -> deploy-web.sh landing. Khoá upload ~/.config/la-ban/android/ NGOÀI repo. find PHAT HANH APK

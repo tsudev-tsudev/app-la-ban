@@ -31,3 +31,11 @@ GROUP BY che_do, chi_thi, bi_chan, trang ORDER BY so DESC LIMIT 50 FORMAT JSON"
    challenge của Cloudflare gán `innerHTML` cho thẻ script -> GIỮ Trusted Types ở Report-Only nếu còn vi phạm từ nguồn này.
 3. Đạt -> chuyển phần `script-src` của Report-Only sang header chặn (giữ `'self'` cho trình duyệt CSP 2), deploy preview
    `./tools/build/deploy-web.sh landing <nhanh>` rồi main; đo bằng `curl -sI` + kiểm headless không lỗi console.
+
+## Ghi chú 29/10 (S9)
+
+Headless Chromium trên compass.tsudev.com thấy vi phạm REPORT-ONLY từ script Cloudflare chèn ở mức zone: Email Obfuscation
+(`/cdn-cgi/scripts/.../email-decode.min.js` - nạp bởi script nội tuyến, không mang nonce -> `strict-dynamic` chặn) và sink
+Trusted Types của JS detections. Trước khi chuyển `strict-dynamic` sang header chặn: tắt Email Obfuscation cho compass-*
+bằng Config Rule (`email_obfuscation: off`, thêm vào `tools/cloudflare` zone.json, người dùng chạy `ap-dung --apply`) - trang
+chỉ có email liên hệ dạng văn bản, không cần làm rối. Trusted Types của script Cloudflare: giữ Report-Only nếu còn vi phạm.
