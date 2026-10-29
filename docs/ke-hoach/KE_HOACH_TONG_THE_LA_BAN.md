@@ -58,7 +58,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 7 | S1 | API lõi + schema D1 | N2 | ✅ 28/10 |
 | 8 | A4 | Vị trí + telemetry | A3 | ✅ 29/10 (chưa thử GPS máy thật) |
 | 9 | A5 | Lưu trữ mã hóa, migration, safe mode | A1 | ✅ 28/10 |
-| 10 | S2 | Định danh thiết bị + attestation + phiên | S1, A5 | 🟨 29/10 mã + deploy xong (28c8a88) · ⛔ chờ `KHOA_PHIEN` + e2e máy thật staging |
+| 10 | S2 | Định danh thiết bị + attestation + phiên | S1, A5 | ✅ 30/10 · máy thật M32 staging: mức `device` khi chưa lên Play; prod + staging e2e đạt |
 | 11 | S3 | Ký request, pinning, Remote Config ký số | S2 | ⬜ |
 | 12 | S4 | Làm cứng app | S3 | ⬜ |
 | 13 | S5 | Threat Engine + enforcement | S1 | ✅ 28/10 |
@@ -294,9 +294,13 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
 - Phát sinh (từ S2) -> S3: ký MỌI request bằng khoá thiết bị, server kiểm khớp `cnf.jkt` của JWT; chuyển `ApiClientIo`
   sang dio + interceptor (hoặc giữ dart:io) + SPKI pinning + `network_security_config` release chặt; kiểm chuỗi chứng
   thực khoá Keystore (key attestation) ở server để xác nhận khoá nằm trong phần cứng (hiện app chỉ báo `mucBaoMat`).
-  -> R2: sau khi liên kết Play Console (Q35), Google có thể trả `PLAY_RECOGNIZED`; lỗi "App is not found" hiện xếp
-  `unverified` (không phạt thiết bị, kể cả token rác) - xem lại khi đã liên kết. -> S6: SOC hiển thị
+  -> R2: sau khi liên kết Play Console (Q35), bản tải từ Play nhận `PLAY_RECOGNIZED`. -> S6: SOC hiển thị
   `attestation_level` + `attest_signals`.
+- Nghiệm thu (30/10): `KHOA_PHIEN` đã đặt staging + prod (người dùng); `tools/thu/dinh-danh-e2e.mjs` đạt cả hai môi
+  trường; Galaxy M32 (Android 13) cài APK staging qua USB -> Keystore EC + Play Integrity Standard -> Google giải mã ->
+  `device` (`UNRECOGNIZED_VERSION`, `MEETS_DEVICE_INTEGRITY`, khoá Keystore TEE). Lần mở đầu trượt do Wi-Fi đang chuyển
+  -> thêm thử lại 30 s / 2 phút / 10 phút + chạy lại khi app về foreground (`ChayDinhDanh`). "App is not found" (chỉ token
+  rác) đổi từ `unverified` sang `failed`. Phát hành v0.1.0-beta.5 (APK prod có S2).
 
 ### S3 - Bảo vệ kênh truyền
 - Đọc thêm: SEC-NET.

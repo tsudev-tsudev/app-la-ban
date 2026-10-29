@@ -85,3 +85,22 @@ enum SauLamMoi {
     _ => thuLaiSau,
   };
 }
+
+/// Lịch thử lại đăng ký / làm mới khi lỗi (mạng chập chờn lúc mở app, Wi-Fi
+/// đang chuyển...). Hết lượt -> chờ lần app quay lại foreground.
+abstract final class LichThuLai {
+  static const khoang = [
+    Duration(seconds: 30),
+    Duration(minutes: 2),
+    Duration(minutes: 10),
+  ];
+
+  /// Chờ bao lâu trước lần thử thứ [lan] (đếm từ 0); null = thôi.
+  /// Thiết bị bị cấm thì không thử lại.
+  static Duration? cho(int lan, String maLoi) {
+    if (maLoi == 'dinhDanh.biCam' || lan < 0 || lan >= khoang.length) {
+      return null;
+    }
+    return khoang[lan];
+  }
+}

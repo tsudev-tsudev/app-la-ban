@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:core/core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:la_ban/src/flavor.dart';
@@ -79,12 +80,51 @@ DichVuDinhDanh taoDichVuDinhDanh(Flavor flavor, KhoLuuTru kho) {
 }
 
 /// Đăng ký / làm mới phiên ở nền sau khi app đã ổn định - không chặn khung
-/// đầu, lỗi (offline, Google lỗi) bỏ qua: la bàn chạy đủ khi không có mạng.
+/// đầu, lỗi (offline, Google lỗi) không làm phiền người dùng: la bàn chạy đủ
+/// khi không có mạng. Lỗi -> thử lại theo [LichThuLai]; mỗi lần app quay lại
+/// foreground chạy lại (rẻ: phiên còn hạn thì không gọi mạng).
 void batDauDinhDanh(
   DichVuDinhDanh dv, {
   Duration cho = const Duration(seconds: 3),
 }) {
+  final c = ChayDinhDanh(dv);
   WidgetsBinding.instance.addPostFrameCallback(
-    (_) => Timer(cho, () => unawaited(dv.damBaoPhien())),
+    (_) => Timer(cho, () {
+      c.chay();
+      AppLifecycleListener(onResume: c.chay);
+    }),
   );
+}
+
+/// Một lượt chạy + hẹn thử lại. Tách khỏi [batDauDinhDanh] để test được.
+final class ChayDinhDanh {
+  new(this._dv, {this._hen = Timer.new});
+
+  final DichVuDinhDanh _dv;
+  final Timer Function(Duration, void Function()) _hen;
+  Timer? _cho;
+  int _lan = 0;
+
+  /// Số lần thử lại đã hẹn liên tiếp (test).
+  int get lanThuLai => _lan;
+
+  void chay() => unawaited(_chay());
+
+  Future<void> _chay() async {
+    _cho?.cancel();
+    _cho = null;
+    final kq = await _dv.damBaoPhien();
+    switch (kq) {
+      case Ok():
+        _lan = 0;
+      case Err(:final failure):
+        final cho = LichThuLai.cho(_lan, failure.code);
+        if (cho == null) {
+          _lan = 0;
+          return;
+        }
+        _lan++;
+        _cho = _hen(cho, chay);
+    }
+  }
 }

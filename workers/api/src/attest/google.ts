@@ -63,9 +63,10 @@ export async function giaiMaToken(env: Env, goi: string, token: string, bayGio =
   }
   if (res.status >= 500 || res.status === 429) throw new LoiDichVu(`google-${res.status}`);
   if (!res.ok) {
-    // Gói chưa có trên Play / dự án chưa liên kết (QUYET_DINH Q35): lỗi CẤU HÌNH phía mình, không phải thiết bị gian lận.
+    // Dự án Cloud chưa được phép / chưa liên kết: lỗi CẤU HÌNH phía mình -> unverified. "App is not found" thì KHÔNG phải:
+    // máy thật (30/10, app chưa lên Play) giải mã bình thường; câu đó chỉ gặp với token rác / giả -> failed (QUYET_DINH Q35).
     const vb = await res.text().catch(() => '');
-    if (/app is not found|not linked|project/i.test(vb)) throw new LoiDichVu('app-chua-lien-ket');
+    if (/not linked|cloud project/i.test(vb)) throw new LoiDichVu('du-an-chua-lien-ket');
     return null;
   }
   const du = (await res.json().catch(() => null)) as { tokenPayloadExternal?: unknown } | null;

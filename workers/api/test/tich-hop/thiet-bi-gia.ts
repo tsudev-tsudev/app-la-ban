@@ -62,6 +62,7 @@ export async function googleGia(req: Request): Promise<Response> {
   }
   if (url.host === 'playintegrity.googleapis.com') {
     google.goiGiaiMa++;
+    if (google.loi === 4002) return Response.json({ error: { code: 400, message: 'The cloud project is not linked.', status: 'INVALID_ARGUMENT' } }, { status: 400 });
     if (google.loi === 4001) return Response.json({ error: { code: 400, message: 'App is not found.', status: 'INVALID_ARGUMENT' } }, { status: 400 });
     if (google.loi) return new Response('{}', { status: google.loi });
     if (req.headers.get('authorization') !== 'Bearer at-thu') return new Response('{}', { status: 401 });

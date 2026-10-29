@@ -130,11 +130,16 @@ describe('đăng ký thiết bị', () => {
     google.loi = 503;
     const r = await dangKy(await taoThietBiGia());
     expect(r).toMatchObject({ status: 201, du: { mucTin: 'unverified' } });
-    // Gói chưa có trên Play (Q35) -> lỗi cấu hình, không phạt thiết bị.
+    // Dự án Cloud chưa liên kết -> lỗi cấu hình, không phạt thiết bị.
+    google.loi = 4002;
+    const chuaLienKet = await dangKy(await taoThietBiGia());
+    expect(chuaLienKet).toMatchObject({ status: 201, du: { mucTin: 'unverified' } });
+    expect(await suKien(chuaLienKet.du.thietBiId, 'ATTEST_FAIL')).toBe(0);
+    // "App is not found" = token rác / giả (máy thật giải mã được dù chưa lên Play) -> failed.
     google.loi = 4001;
-    const chuaPlay = await dangKy(await taoThietBiGia());
-    expect(chuaPlay).toMatchObject({ status: 201, du: { mucTin: 'unverified' } });
-    expect(await suKien(chuaPlay.du.thietBiId, 'ATTEST_FAIL')).toBe(0);
+    const rac = await dangKy(await taoThietBiGia());
+    expect(rac).toMatchObject({ status: 201, du: { mucTin: 'failed' } });
+    expect(await suKien(rac.du.thietBiId, 'ATTEST_FAIL')).toBe(1);
   });
 
   it('thiết bị không đạt toàn vẹn -> failed + ATTEST_FAIL vào Threat Engine', async () => {
