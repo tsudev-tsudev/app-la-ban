@@ -10,6 +10,414 @@
     }
   ],
   "paths": {
+    "/v1/device/attest": {
+      "post": {
+        "summary": "Xác minh lại thiết bị (Play Integrity mới, thách thức mới) - cập nhật mức tin cậy",
+        "responses": {
+          "200": {
+            "description": "Thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "mucTin": {
+                      "type": "string",
+                      "enum": [
+                        "strong",
+                        "device",
+                        "basic",
+                        "failed",
+                        "unverified"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "mucTin"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Lỗi RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VanDe"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "phienThietBi": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "thachThuc": {
+                    "type": "string"
+                  },
+                  "chuKy": {
+                    "type": "string",
+                    "minLength": 80,
+                    "maxLength": 100,
+                    "pattern": "^[A-Za-z0-9_-]+$"
+                  },
+                  "goi": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$"
+                  },
+                  "integrityToken": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 16,
+                        "maxLength": 12000,
+                        "pattern": "^[A-Za-z0-9_.=-]+$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "thachThuc",
+                  "chuKy",
+                  "goi",
+                  "integrityToken"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/device/challenge": {
+      "post": {
+        "summary": "Cấp thách thức dùng một lần (5 phút) cho đăng ký / xác minh lại thiết bị",
+        "responses": {
+          "200": {
+            "description": "Thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "thachThuc": {
+                      "type": "string"
+                    },
+                    "hetHanMs": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": [
+                    "thachThuc",
+                    "hetHanMs"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Lỗi RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VanDe"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "installationId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  }
+                },
+                "required": [
+                  "installationId"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/device/me": {
+      "get": {
+        "summary": "Trạng thái + mức tin cậy của thiết bị đang đăng nhập",
+        "responses": {
+          "200": {
+            "description": "Thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "thietBiId": {
+                      "type": "string"
+                    },
+                    "trangThai": {
+                      "type": "string",
+                      "enum": [
+                        "clean",
+                        "suspicious",
+                        "restricted",
+                        "banned"
+                      ]
+                    },
+                    "mucTin": {
+                      "type": "string",
+                      "enum": [
+                        "strong",
+                        "device",
+                        "basic",
+                        "failed",
+                        "unverified"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "thietBiId",
+                    "trangThai",
+                    "mucTin"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Lỗi RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VanDe"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "phienThietBi": []
+          }
+        ]
+      }
+    },
+    "/v1/device/register": {
+      "post": {
+        "summary": "Đăng ký thiết bị: khoá P-256 phần cứng + chữ ký thách thức + Play Integrity -> phiên",
+        "responses": {
+          "201": {
+            "description": "Thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "thietBiId": {
+                      "type": "string"
+                    },
+                    "trangThai": {
+                      "type": "string",
+                      "enum": [
+                        "clean",
+                        "suspicious",
+                        "restricted",
+                        "banned"
+                      ]
+                    },
+                    "mucTin": {
+                      "type": "string",
+                      "enum": [
+                        "strong",
+                        "device",
+                        "basic",
+                        "failed",
+                        "unverified"
+                      ]
+                    },
+                    "phien": {
+                      "type": "object",
+                      "properties": {
+                        "accessToken": {
+                          "type": "string"
+                        },
+                        "hetHan": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "refreshToken": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "accessToken",
+                        "hetHan",
+                        "refreshToken"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "thietBiId",
+                    "trangThai",
+                    "mucTin",
+                    "phien"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Lỗi RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VanDe"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "installationId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "khoaCongKhai": {
+                    "type": "string",
+                    "minLength": 100,
+                    "maxLength": 140,
+                    "pattern": "^[A-Za-z0-9_-]+$"
+                  },
+                  "thachThuc": {
+                    "type": "string"
+                  },
+                  "chuKy": {
+                    "type": "string",
+                    "minLength": 80,
+                    "maxLength": 100,
+                    "pattern": "^[A-Za-z0-9_-]+$"
+                  },
+                  "nenTang": {
+                    "type": "string",
+                    "enum": [
+                      "android",
+                      "ios"
+                    ]
+                  },
+                  "goi": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$"
+                  },
+                  "integrityToken": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 16,
+                        "maxLength": 12000,
+                        "pattern": "^[A-Za-z0-9_.=-]+$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "thongTin": {
+                    "type": "object",
+                    "properties": {
+                      "heDieuHanh": {
+                        "type": "string",
+                        "maxLength": 32
+                      },
+                      "model": {
+                        "type": "string",
+                        "maxLength": 64
+                      },
+                      "phienBan": {
+                        "type": "string",
+                        "maxLength": 32
+                      },
+                      "build": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 1000000000
+                      },
+                      "ngonNgu": {
+                        "type": "string",
+                        "maxLength": 16
+                      }
+                    },
+                    "required": [
+                      "heDieuHanh",
+                      "model",
+                      "phienBan",
+                      "build",
+                      "ngonNgu"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "installationId",
+                  "khoaCongKhai",
+                  "thachThuc",
+                  "chuKy",
+                  "nenTang",
+                  "goi",
+                  "integrityToken",
+                  "thongTin"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/health": {
       "get": {
         "summary": "Tình trạng dịch vụ và mã build đang phục vụ",
@@ -50,6 +458,113 @@
                 "schema": {
                   "$ref": "#/components/schemas/VanDe"
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/session/refresh": {
+      "post": {
+        "summary": "Xoay refresh token (ký bằng khoá thiết bị); dùng lại token đã xoay -> thu hồi cả chuỗi",
+        "responses": {
+          "200": {
+            "description": "Thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "mucTin": {
+                      "type": "string",
+                      "enum": [
+                        "strong",
+                        "device",
+                        "basic",
+                        "failed",
+                        "unverified"
+                      ]
+                    },
+                    "phien": {
+                      "type": "object",
+                      "properties": {
+                        "accessToken": {
+                          "type": "string"
+                        },
+                        "hetHan": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "refreshToken": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "accessToken",
+                        "hetHan",
+                        "refreshToken"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "mucTin",
+                    "phien"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Lỗi RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VanDe"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "refreshToken": {
+                    "type": "string",
+                    "minLength": 43,
+                    "maxLength": 43,
+                    "pattern": "^[A-Za-z0-9_-]+$"
+                  },
+                  "ts": {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991
+                  },
+                  "nonce": {
+                    "type": "string"
+                  },
+                  "chuKy": {
+                    "type": "string",
+                    "minLength": 80,
+                    "maxLength": 100,
+                    "pattern": "^[A-Za-z0-9_-]+$"
+                  }
+                },
+                "required": [
+                  "refreshToken",
+                  "ts",
+                  "nonce",
+                  "chuKy"
+                ],
+                "additionalProperties": false
               }
             }
           }
@@ -194,6 +709,13 @@
           "status"
         ],
         "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "phienThietBi": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT ES256"
       }
     }
   }

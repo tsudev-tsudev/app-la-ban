@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { z } from 'zod';
 import { donDep } from './d1/don-dep';
+import { dangKyDinhDanh } from './dinh-danh';
 import { dangKyKhienWeb } from './khien-web';
 import type { Env, MoiTruongHono } from './moi-truong';
 import { bayQuet } from './mw/bay';
@@ -66,6 +67,7 @@ app.post(
 );
 
 dangKyKhienWeb(app, boTuyen);
+dangKyDinhDanh(app, boTuyen);
 
 // API không cần được lập chỉ mục.
 app.get('/robots.txt', (c) => c.text('User-agent: *\nDisallow: /\n'));

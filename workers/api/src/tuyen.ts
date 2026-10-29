@@ -8,6 +8,7 @@ import { LoiApi } from './thuan/loi';
 import type { MoiTruongHono, Ngu } from './moi-truong';
 import { gioiHanRoute } from './mw/gioi-han';
 import { idempotency } from './mw/idempotency';
+import { xacThuc } from './mw/xac-thuc';
 
 export type DinhNghiaTuyen<B extends z.ZodType = z.ZodType, P extends z.ZodType = z.ZodType> = {
   phuongThuc: 'get' | 'post';
@@ -22,6 +23,8 @@ export type DinhNghiaTuyen<B extends z.ZodType = z.ZodType, P extends z.ZodType 
   /** POST mặc định bắt buộc Idempotency-Key; đặt false cho POST không ghi dữ liệu. */
   idempotent?: boolean;
   bodyToiDa?: number;
+  /** Cần phiên thiết bị (Bearer JWT, S2). Chạy TRƯỚC giới hạn để chiều `thiet-bi` / idempotency theo thiết bị có hiệu lực. */
+  xacThuc?: boolean;
 };
 
 export type XuLy<B extends z.ZodType> = (c: Ngu, body: z.infer<B>) => Response | Promise<Response>;
@@ -50,8 +53,9 @@ export class BoTuyen {
         c.set('tuyen', d.duongDan);
         await next();
       },
-      gioiHanRoute(d.gioiHan ?? []),
     ];
+    if (d.xacThuc) chuoi.push(xacThuc);
+    chuoi.push(gioiHanRoute(d.gioiHan ?? []));
     if (d.body) chuoi.push(docBody(d.body, d.bodyToiDa));
     if (d.phuongThuc === 'post' && d.idempotent !== false) chuoi.push(idempotency);
     const cuoi: MiddlewareHandler<MoiTruongHono> = async (c) => xuLy(c, c.get('body') as z.infer<B>);

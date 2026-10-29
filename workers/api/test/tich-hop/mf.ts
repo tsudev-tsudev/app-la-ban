@@ -25,7 +25,14 @@ export function tachSql(sql: string): string[] {
   return ds;
 }
 
-export async function taoMf(rl: { limit: number; period: 10 | 60 } = { limit: 1000, period: 60 }): Promise<Miniflare> {
+export type TuyChonMf = {
+  /** Binding thêm (bí mật thử: KHOA_PHIEN, PLAY_INTEGRITY_SA_JSON...). */
+  bindings?: Record<string, string>;
+  /** Thay mạng ra ngoài của Worker (Google giả lập). */
+  outboundService?: (req: Request) => Response | Promise<Response>;
+};
+
+export async function taoMf(rl: { limit: number; period: 10 | 60 } = { limit: 1000, period: 60 }, tc: TuyChonMf = {}): Promise<Miniflare> {
   const kq = await build({
     entryPoints: [join(__dirname, 'worker-thu.ts')],
     bundle: true,
@@ -48,7 +55,8 @@ export async function taoMf(rl: { limit: number; period: 10 | 60 } = { limit: 10
         script: ma,
         compatibilityDate: '2026-10-01',
         compatibilityFlags: ['nodejs_compat'],
-        bindings: { MOI_TRUONG: 'test', KHOA_URL_KY: 'khoa-url-ky-thu' },
+        bindings: { MOI_TRUONG: 'test', KHOA_URL_KY: 'khoa-url-ky-thu', ...tc.bindings },
+        ...(tc.outboundService ? { outboundService: tc.outboundService } : {}),
         d1Databases: { DB: 'db-thu' },
         kvNamespaces: ['CAU_HINH'],
         r2Buckets: ['CDN'],

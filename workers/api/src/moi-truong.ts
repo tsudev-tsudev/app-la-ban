@@ -20,6 +20,14 @@ export type Env = {
   CF_LIST_ID?: string;
   /** HMAC ký URL tài nguyên `/v1/tn/*` (SH-05, wrangler secret). Thiếu -> route trả 503. */
   KHOA_URL_KY?: string;
+  /** Khoá ký phiên ES256 (JWK riêng tư có kid, hoặc mảng để xoay - wrangler secret). Thiếu -> route phiên trả 503. */
+  KHOA_PHIEN?: string;
+  /** JSON khoá service account giải mã Play Integrity (wrangler secret). Thiếu -> attestation 'unverified'. */
+  PLAY_INTEGRITY_SA_JSON?: string;
+  /** Gói Android được chấp nhận, cách nhau dấu phẩy (prod: chỉ com.tsudev.laban). */
+  PI_GOI?: string;
+  /** SHA-256 chứng chỉ ký app (hex, dấu phẩy). Rỗng = không kiểm (staging nhận bản ký debug). */
+  PI_CHUNG_CHI?: string;
 };
 
 export type BienYeuCau = {
@@ -30,6 +38,10 @@ export type BienYeuCau = {
   body?: unknown;
   /** Mẫu đường dẫn của route đã khớp (cho Analytics Engine / log), đặt bởi BoTuyen. */
   tuyen?: string;
+  /** Đặt bởi middleware xacThuc (S2). */
+  thietBi?: string;
+  phien?: string;
+  mucTin?: string;
 };
 
 export type MoiTruongHono = { Bindings: Env; Variables: BienYeuCau };
