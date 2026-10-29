@@ -42,7 +42,7 @@ async function doc(path, macDinh) {
   const j = await goi('GET', path);
   if (!j.success) {
     const ma = j.errors?.[0]?.code;
-    if (macDinh !== undefined && (ma === 10000 || ma === 8000007 || ma === 10006 || ma === 8000015 || ma === 7003)) return macDinh;
+    if (macDinh !== undefined && (ma === 10000 || ma === 10003 || ma === 8000007 || ma === 10006 || ma === 8000015 || ma === 7003)) return macDinh;
     throw new Error(`GET ${path}: ${JSON.stringify(j.errors)}`);
   }
   return j.result;
