@@ -62,7 +62,12 @@ export async function giaiMaToken(env: Env, goi: string, token: string, bayGio =
     throw new LoiDichVu(`google-${res.status}`);
   }
   if (res.status >= 500 || res.status === 429) throw new LoiDichVu(`google-${res.status}`);
-  if (!res.ok) return null;
+  if (!res.ok) {
+    // Gói chưa có trên Play / dự án chưa liên kết (QUYET_DINH Q35): lỗi CẤU HÌNH phía mình, không phải thiết bị gian lận.
+    const vb = await res.text().catch(() => '');
+    if (/app is not found|not linked|project/i.test(vb)) throw new LoiDichVu('app-chua-lien-ket');
+    return null;
+  }
   const du = (await res.json().catch(() => null)) as { tokenPayloadExternal?: unknown } | null;
   const kq = schemaPhanQuyet.safeParse(du?.tokenPayloadExternal);
   return kq.success ? kq.data : null;

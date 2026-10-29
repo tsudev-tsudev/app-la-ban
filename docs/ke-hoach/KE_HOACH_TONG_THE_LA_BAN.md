@@ -82,7 +82,7 @@ Có thể giao agent thứ hai song song: S1 với A2-A3 · A5 với A4 · S5 v�
 
 **Việc người dùng:** trước N2 tạo API token Cloudflare (zone tsudev.com: DNS, WAF, Lists; Workers, Pages, D1, R2) lưu ở
 `~/.config/la-ban/cf.env` · trước A2 bật Wireless debugging trên 1 điện thoại Android · trước S2 Google Cloud project + Play
-Integrity API + service account (Apple Team ID dời sang I1) · trước S6 bật Cloudflare Zero Trust · trước R2 tài khoản Play Console, duyệt Privacy
+Integrity API + service account (Apple Team ID dời sang I1) · trước S6 bật Cloudflare Zero Trust · trước R2 tài khoản Play Console (hoãn ~7 ngày từ 29/10 do lỗi thanh toán - dự kiến từ 05/11/2026), duyệt Privacy
 Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer · trước R4 chốt đơn vị pentest, bấm phát hành · trước M1 tài khoản AdMob + RevenueCat.
 
 ## 4. Thẻ phase
@@ -423,6 +423,11 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   Required Reason API; Data Safety khớp thực tế (gồm SDK bên thứ ba); `NS*UsageDescription` vi/en; ảnh store sinh tự động từ
   integration test; listing vi/en; ghi chú reviewer về cơ chế bảo mật; allow-list thiết bị review.
 - Cổng: bản internal (Play) cài được (TestFlight dời sang I1 - Q33).
+- Chặn (29/10/2026): thanh toán 25 USD Play Console lỗi -> người dùng tạo tài khoản nhà phát triển Play sau ~7 ngày
+  (dự kiến từ 05/11/2026). Khi có tài khoản, làm theo thứ tự: tạo app `La bàn - TsuDev Compass` -> App integrity ->
+  liên kết dự án Cloud `app-la-ban` (Project number 930761930572, QUYET_DINH Q35 - không đổi mã) -> tải AAB internal
+  (gắn tên gói `com.tsudev.laban`) -> Play App Signing dùng khoá upload R0 -> kiểm phán quyết app chuyển từ
+  `UNRECOGNIZED_VERSION` sang `PLAY_RECOGNIZED` cho bản tải từ Play (bản APK R0 vẫn đạt nhờ cùng chứng chỉ).
 - Ghi chú (Q33/Q34): phần iOS của thẻ này (scheme flavor, Codemagic, Privacy Manifest, `NS*UsageDescription`) chuyển sang I1.
   Play App Signing: chọn tải lên khoá upload R0 làm khoá ký ứng dụng để người đã cài APK thử cập nhật thẳng từ Play.
 

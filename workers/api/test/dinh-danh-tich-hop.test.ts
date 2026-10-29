@@ -130,6 +130,11 @@ describe('đăng ký thiết bị', () => {
     google.loi = 503;
     const r = await dangKy(await taoThietBiGia());
     expect(r).toMatchObject({ status: 201, du: { mucTin: 'unverified' } });
+    // Gói chưa có trên Play (Q35) -> lỗi cấu hình, không phạt thiết bị.
+    google.loi = 4001;
+    const chuaPlay = await dangKy(await taoThietBiGia());
+    expect(chuaPlay).toMatchObject({ status: 201, du: { mucTin: 'unverified' } });
+    expect(await suKien(chuaPlay.du.thietBiId, 'ATTEST_FAIL')).toBe(0);
   });
 
   it('thiết bị không đạt toàn vẹn -> failed + ATTEST_FAIL vào Threat Engine', async () => {
