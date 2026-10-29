@@ -58,7 +58,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 7 | S1 | API lõi + schema D1 | N2 | ✅ 28/10 |
 | 8 | A4 | Vị trí + telemetry | A3 | ✅ 29/10 (chưa thử GPS máy thật) |
 | 9 | A5 | Lưu trữ mã hóa, migration, safe mode | A1 | ✅ 28/10 |
-| 10 | S2 | Định danh thiết bị + attestation + phiên | S1, A5 | ⬜ |
+| 10 | S2 | Định danh thiết bị + attestation + phiên | S1, A5 | 🟨 29/10 mã + deploy xong (28c8a88) · ⛔ chờ `KHOA_PHIEN` + e2e máy thật staging |
 | 11 | S3 | Ký request, pinning, Remote Config ký số | S2 | ⬜ |
 | 12 | S4 | Làm cứng app | S3 | ⬜ |
 | 13 | S5 | Threat Engine + enforcement | S1 | ✅ 28/10 |
