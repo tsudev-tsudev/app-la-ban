@@ -167,6 +167,46 @@ describe('rule engine shadow / active', () => {
   });
 });
 
+describe('S8: bẫy quét + báo cáo CSP', () => {
+  it('đường dẫn bẫy -> 404 như thường + sự kiện HONEYPOT_HIT theo IP (nhãn, không nguyên đường dẫn)', async () => {
+    const ipQuet = '203.0.113.66';
+    const res = await mf.dispatchFetch(`${goc}/.env.local?x=1`, { headers: { 'cf-connecting-ip': ipQuet } });
+    expect(res.status).toBe(404);
+    expect(await res.json()).toMatchObject({ status: 404 });
+    let dong: { type: string; signals: string; device_id: string | null } | null = null;
+    for (let i = 0; i < 50 && !dong; i++) {
+      dong = await db.prepare('SELECT type, signals, device_id FROM security_events WHERE ip = ?').bind(ipQuet).first();
+      if (!dong) await new Promise((r) => setTimeout(r, 20));
+    }
+    expect(dong).toEqual({ type: 'HONEYPOT_HIT', signals: JSON.stringify({ bay: '/.env', method: 'GET' }), device_id: null });
+  });
+  it('R-006 active: chạm bẫy lặp lại -> chặn IP', async () => {
+    await datLuat('R-006', 'active');
+    const ipQuet = '203.0.113.67';
+    let kq: Kq | null = null;
+    for (let i = 0; i < 3; i++) kq = await guiLo({ thietBi: null, ip: ipQuet }, [sk('HONEYPOT_HIT')]);
+    expect(kq).toMatchObject({ kichHoat: ['R-006'], canDongBo: true });
+    const res = await mf.dispatchFetch(`${goc}/v1/health`, { headers: { 'cf-connecting-ip': ipQuet } });
+    expect(res.status).toBe(403);
+    await datLuat('R-006', 'shadow');
+  });
+  it('POST /v1/web/csp: 204, sai loại 415, preflight chỉ cho origin web', async () => {
+    const gui = (ct: string, body: string) =>
+      mf.dispatchFetch(`${goc}/v1/web/csp`, { method: 'POST', headers: { 'content-type': ct, 'cf-connecting-ip': '198.51.100.90' }, body });
+    const bc = JSON.stringify({ 'csp-report': { 'document-uri': 'https://compass.tsudev.com/', 'effective-directive': 'script-src-elem', 'blocked-uri': 'inline' } });
+    expect((await gui('application/csp-report', bc)).status).toBe(204);
+    expect((await gui('application/reports+json', '[]')).status).toBe(204);
+    expect((await gui('text/plain', bc)).status).toBe(415);
+    const pf = (origin: string) =>
+      mf.dispatchFetch(`${goc}/v1/web/csp`, {
+        method: 'OPTIONS',
+        headers: { origin, 'access-control-request-method': 'POST', 'access-control-request-headers': 'content-type' },
+      });
+    expect((await pf('https://compass.tsudev.com')).headers.get('access-control-allow-origin')).toBe('https://compass.tsudev.com');
+    expect((await pf('https://evil.example')).headers.get('access-control-allow-origin')).toBeNull();
+  });
+});
+
 describe('cron Threat Engine', () => {
   it('enforcement hết hạn -> hạ trạng thái theo điểm; đủ tuần không vi phạm -> trừ 5/tuần', async () => {
     const tb = await taoThietBi('198.18.11.1');
