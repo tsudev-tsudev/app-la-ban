@@ -1,0 +1,177 @@
+package com.tsudev.laban.security
+
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
+import android.os.Handler
+import android.os.Looper
+import android.security.keystore.KeyGenParameterSpec
+import android.security.keystore.KeyInfo
+import android.security.keystore.KeyProperties
+import com.google.android.play.core.integrity.IntegrityManagerFactory
+import com.google.android.play.core.integrity.StandardIntegrityException
+import com.google.android.play.core.integrity.StandardIntegrityManager.PrepareIntegrityTokenRequest
+import com.google.android.play.core.integrity.StandardIntegrityManager.StandardIntegrityTokenProvider
+import com.google.android.play.core.integrity.StandardIntegrityManager.StandardIntegrityTokenRequest
+import com.google.android.play.core.integrity.model.StandardIntegrityErrorCode
+import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.plugin.common.MethodCall
+import io.flutter.plugin.common.MethodChannel
+import java.security.KeyFactory
+import java.security.KeyPairGenerator
+import java.security.KeyStore
+import java.security.PrivateKey
+import java.security.Signature
+import java.security.spec.ECGenParameterSpec
+import java.util.concurrent.Executors
+
+/**
+ * Định danh thiết bị (SEC-ID ID-02, ID-03):
+ * - Khoá ECDSA P-256 trong Android Keystore, không xuất được (StrongBox nếu máy có, không thì TEE). Server chỉ nhận
+ *   khoá công khai (SPKI DER); mọi chữ ký làm trong Keystore.
+ * - Play Integrity Standard API: chuẩn bị provider một lần (theo số dự án Cloud), mỗi yêu cầu gắn requestHash do app
+ *   tính từ thách thức của server. Kết quả CHỈ server giải mã + đánh giá.
+ */
+class ThietBiPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
+    private lateinit var kenh: MethodChannel
+    private lateinit var ngucanh: Context
+    private val luong = Executors.newSingleThreadExecutor()
+    private val chinh = Handler(Looper.getMainLooper())
+    private var provider: StandardIntegrityTokenProvider? = null
+    private var soDuAnProvider: Long = 0
+
+    override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        ngucanh = binding.applicationContext
+        kenh = MethodChannel(binding.binaryMessenger, "la_ban/thiet_bi")
+        kenh.setMethodCallHandler(this)
+    }
+
+    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        kenh.setMethodCallHandler(null)
+    }
+
+    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+        when (call.method) {
+            // Keystore chậm (StrongBox hàng trăm ms) -> ngoài luồng UI.
+            "khoaCongKhai" -> ngoaiLuong(result, "khoa.loi") { khoaCongKhai() }
+            "ky" -> {
+                val du = call.argument<ByteArray>("duLieu")
+                if (du == null) result.error("ky.thieu", null, null) else ngoaiLuong(result, "ky.loi") { ky(du) }
+            }
+            // Không định danh phần cứng (CLAUDE.md): chỉ model + phiên bản Android + tên gói cho SOC / Play Integrity.
+            "thongTin" -> result.success(
+                mapOf("model" to Build.MODEL.take(64), "heDieuHanh" to Build.VERSION.RELEASE.take(32), "goi" to ngucanh.packageName),
+            )
+            "xoaKhoa" -> ngoaiLuong(result, "khoa.loi") {
+                KeyStore.getInstance(KEYSTORE).apply { load(null) }.deleteEntry(BI_DANH)
+                null
+            }
+            "integrity" -> {
+                val soDuAn = call.argument<Number>("soDuAn")?.toLong()
+                val bam = call.argument<String>("requestHash")
+                if (soDuAn == null || bam == null) result.error("integrity.thieu", null, null) else integrity(soDuAn, bam, result, thuLai = true)
+            }
+            else -> result.notImplemented()
+        }
+    }
+
+    private fun ngoaiLuong(result: MethodChannel.Result, maLoi: String, viec: () -> Any?) {
+        luong.execute {
+            try {
+                val kq = viec()
+                chinh.post { result.success(kq) }
+            } catch (e: Exception) {
+                chinh.post { result.error(maLoi, e.javaClass.simpleName, null) }
+            }
+        }
+    }
+
+    @Synchronized
+    private fun khoaCongKhai(): Map<String, Any> {
+        val ks = KeyStore.getInstance(KEYSTORE).apply { load(null) }
+        if (!ks.containsAlias(BI_DANH)) taoKhoa()
+        val chungChi = ks.getCertificate(BI_DANH) ?: throw IllegalStateException("khoa")
+        val rieng = ks.getKey(BI_DANH, null) as PrivateKey
+        val info = KeyFactory.getInstance(rieng.algorithm, KEYSTORE).getKeySpec(rieng, KeyInfo::class.java)
+        val mucBaoMat = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            when (info.securityLevel) {
+                KeyProperties.SECURITY_LEVEL_STRONGBOX -> "strongbox"
+                KeyProperties.SECURITY_LEVEL_TRUSTED_ENVIRONMENT -> "tee"
+                KeyProperties.SECURITY_LEVEL_SOFTWARE -> "phan-mem"
+                else -> "khac"
+            }
+        } else {
+            @Suppress("DEPRECATION")
+            if (info.isInsideSecureHardware) "tee" else "phan-mem"
+        }
+        return mapOf("spki" to chungChi.publicKey.encoded, "mucBaoMat" to mucBaoMat)
+    }
+
+    private fun taoKhoa() {
+        fun tao(strongBox: Boolean) {
+            val spec = KeyGenParameterSpec.Builder(BI_DANH, KeyProperties.PURPOSE_SIGN)
+                .setAlgorithmParameterSpec(ECGenParameterSpec("secp256r1"))
+                .setDigests(KeyProperties.DIGEST_SHA256)
+            if (strongBox && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) spec.setIsStrongBoxBacked(true)
+            KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_EC, KEYSTORE).apply { initialize(spec.build()) }.generateKeyPair()
+        }
+        val coStrongBox = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P &&
+            ngucanh.packageManager.hasSystemFeature(PackageManager.FEATURE_STRONGBOX_KEYSTORE)
+        if (!coStrongBox) return tao(strongBox = false)
+        try {
+            tao(strongBox = true)
+        } catch (e: Exception) {
+            tao(strongBox = false)
+        }
+    }
+
+    private fun ky(duLieu: ByteArray): ByteArray {
+        val ks = KeyStore.getInstance(KEYSTORE).apply { load(null) }
+        val rieng = ks.getKey(BI_DANH, null) as? PrivateKey ?: throw IllegalStateException("khoa")
+        return Signature.getInstance("SHA256withECDSA").run {
+            initSign(rieng)
+            update(duLieu)
+            sign()
+        }
+    }
+
+    private fun integrity(soDuAn: Long, bam: String, result: MethodChannel.Result, thuLai: Boolean) {
+        val coSan = provider
+        if (coSan == null || soDuAnProvider != soDuAn) {
+            IntegrityManagerFactory.createStandard(ngucanh)
+                .prepareIntegrityToken(PrepareIntegrityTokenRequest.builder().setCloudProjectNumber(soDuAn).build())
+                .addOnSuccessListener { p ->
+                    provider = p
+                    soDuAnProvider = soDuAn
+                    yeuCau(p, soDuAn, bam, result, thuLai)
+                }
+                .addOnFailureListener { e -> result.error("integrity.loi", maLoi(e), null) }
+            return
+        }
+        yeuCau(coSan, soDuAn, bam, result, thuLai)
+    }
+
+    private fun yeuCau(p: StandardIntegrityTokenProvider, soDuAn: Long, bam: String, result: MethodChannel.Result, thuLai: Boolean) {
+        p.request(StandardIntegrityTokenRequest.builder().setRequestHash(bam).build())
+            .addOnSuccessListener { t -> result.success(t.token()) }
+            .addOnFailureListener { e ->
+                // Provider hết hạn (vài giờ / Play cập nhật) -> chuẩn bị lại một lần.
+                if (thuLai && e is StandardIntegrityException &&
+                    e.errorCode == StandardIntegrityErrorCode.INTEGRITY_TOKEN_PROVIDER_INVALID
+                ) {
+                    provider = null
+                    integrity(soDuAn, bam, result, thuLai = false)
+                } else {
+                    result.error("integrity.loi", maLoi(e), null)
+                }
+            }
+    }
+
+    private fun maLoi(e: Exception): String =
+        if (e is StandardIntegrityException) "ma-${e.errorCode}" else e.javaClass.simpleName
+
+    private companion object {
+        const val KEYSTORE = "AndroidKeyStore"
+        const val BI_DANH = "la_ban_thiet_bi_v1"
+    }
+}
