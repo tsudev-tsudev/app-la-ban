@@ -183,6 +183,15 @@ void main() {
       expect(p.canLamMoi(39999), isFalse);
       expect(p.canLamMoi(40000), isTrue);
     });
+    test(
+      'lịch thử lại: 30 s -> 2 phút -> 10 phút -> thôi; bị cấm không thử',
+      () {
+        expect(LichThuLai.cho(0, 'dinhDanh.mang'), const Duration(seconds: 30));
+        expect(LichThuLai.cho(2, 'dinhDanh.mang'), const Duration(minutes: 10));
+        expect(LichThuLai.cho(3, 'dinhDanh.mang'), isNull);
+        expect(LichThuLai.cho(0, 'dinhDanh.biCam'), isNull);
+      },
+    );
     test('phản hồi lỗi làm mới', () {
       expect(SauLamMoi.tuPhanHoi(401, 'phien-thu-hoi'), SauLamMoi.dangKyLai);
       expect(SauLamMoi.tuPhanHoi(403, 'thiet-bi-bi-cam'), SauLamMoi.biCam);
