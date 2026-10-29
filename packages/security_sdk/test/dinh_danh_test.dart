@@ -5,49 +5,50 @@ import 'dart:typed_data';
 
 import 'package:core/core.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:network/network.dart';
 import 'package:security_sdk/security_sdk.dart';
 import 'package:storage/storage.dart';
 
 /// API giả: ghi lại yêu cầu, trả theo kịch bản.
-final class ApiGia implements ApiClient {
+final class ApiGia implements ApiDinhDanh {
   final goi = <(String, Map<String, Object?>, String?)>[];
-  PhanHoiApi Function(String duong, Map<String, Object?> body)? xuLy;
+  PhanHoiDinhDanh Function(String duong, Map<String, Object?> body)? xuLy;
   bool matMang = false;
   int dem = 0;
 
   @override
-  Future<PhanHoiApi> post(
+  Future<PhanHoiDinhDanh> post(
     String duongDan,
     Map<String, Object?> body, {
     String? bearer,
   }) async {
-    if (matMang) throw const LoiMang('SocketException');
+    if (matMang) throw const LoiKetNoi('SocketException');
     goi.add((duongDan, body, bearer));
     await Future<void>.delayed(Duration.zero);
     return xuLy?.call(duongDan, body) ?? macDinh(duongDan, body);
   }
 
-  @override
-  Future<PhanHoiApi> get(String duongDan, {String? bearer}) =>
-      throw UnimplementedError();
-
-  PhanHoiApi macDinh(String duong, Map<String, Object?> body) {
+  PhanHoiDinhDanh macDinh(String duong, Map<String, Object?> body) {
     dem++;
     return switch (duong) {
-      '/v1/device/challenge' => PhanHoiApi(200, {'thachThuc': 'T$dem' * 4}),
-      '/v1/device/register' => PhanHoiApi(201, {
-        'thietBiId': 'TB1',
-        'trangThai': 'clean',
-        'mucTin': body['integrityToken'] == null ? 'unverified' : 'device',
-        'phien': phienJson(dem),
-      }),
-      '/v1/session/refresh' => PhanHoiApi(200, {
-        'mucTin': 'device',
-        'phien': phienJson(dem),
-      }),
-      '/v1/device/attest' => const PhanHoiApi(200, {'mucTin': 'strong'}),
-      _ => const PhanHoiApi(404, null),
+      '/v1/device/challenge' => (
+        status: 200,
+        duLieu: {'thachThuc': 'T$dem' * 4},
+      ),
+      '/v1/device/register' => (
+        status: 201,
+        duLieu: {
+          'thietBiId': 'TB1',
+          'trangThai': 'clean',
+          'mucTin': body['integrityToken'] == null ? 'unverified' : 'device',
+          'phien': phienJson(dem),
+        },
+      ),
+      '/v1/session/refresh' => (
+        status: 200,
+        duLieu: {'mucTin': 'device', 'phien': phienJson(dem)},
+      ),
+      '/v1/device/attest' => (status: 200, duLieu: {'mucTin': 'strong'}),
+      _ => (status: 404, duLieu: null),
     };
   }
 
@@ -57,6 +58,22 @@ final class ApiGia implements ApiClient {
     'hetHan': hetHan,
     'refreshToken': 'rt$n',
   };
+}
+
+/// Kho trạng thái trên TepJson thật (như app nối).
+final class KhoTep implements KhoTrangThai {
+  new(this._t);
+
+  final TepJson _t;
+
+  @override
+  Map<String, Object?> get duLieu => _t.duLieu;
+
+  @override
+  void ghiDongBo(Map<String, Object?> moi) => _t.ghiDongBo(moi);
+
+  @override
+  Future<void> ghi(Map<String, Object?> moi) => _t.ghi(moi);
 }
 
 final class NenTangGia implements NenTangThietBi {
@@ -94,7 +111,7 @@ void main() {
   DichVuDinhDanh dv() => DichVuDinhDanh(
     api: api,
     nenTang: nt,
-    tep: TepJson.mo('${thuMuc.path}/dinh_danh.json'),
+    tep: KhoTep(TepJson.mo('${thuMuc.path}/dinh_danh.json')),
     cauHinh: CauHinhDinhDanh(
       soDuAnCloud: 930761930572,
       phienBanApp: '0.1.0',
@@ -221,7 +238,7 @@ void main() {
       await d.damBaoPhien();
       bayGio = api.hetHan;
       api.xuLy = (duong, body) => duong == '/v1/session/refresh'
-          ? const PhanHoiApi(401, {'code': 'phien-thu-hoi'})
+          ? (status: 401, duLieu: {'code': 'phien-thu-hoi'})
           : api.macDinh(duong, body);
       final kq = await d.damBaoPhien();
       expect(kq, isA<Ok<PhienThietBi>>());
@@ -236,7 +253,7 @@ void main() {
       final d = dv();
       await d.damBaoPhien();
       bayGio = api.hetHan;
-      api.xuLy = (_, _) => const PhanHoiApi(403, {'code': 'thiet-bi-bi-cam'});
+      api.xuLy = (_, _) => (status: 403, duLieu: {'code': 'thiet-bi-bi-cam'});
       final kq = await d.damBaoPhien();
       expect((kq as Err).failure.code, 'dinhDanh.biCam');
       expect(d.phien, isNotNull);
@@ -276,7 +293,7 @@ void main() {
     });
 
     test('thách thức lỗi -> Failure có mã ổn định', () async {
-      api.xuLy = (_, _) => const PhanHoiApi(429, {'code': 'qua-nhieu-yeu-cau'});
+      api.xuLy = (_, _) => (status: 429, duLieu: {'code': 'qua-nhieu-yeu-cau'});
       final kq = await dv().damBaoPhien();
       expect((kq as Err).failure.code, 'dinhDanh.thachThuc');
     });

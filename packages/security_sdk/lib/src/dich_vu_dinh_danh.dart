@@ -3,11 +3,10 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:core/core.dart';
-import 'package:network/network.dart';
 import 'package:security_sdk/src/domain/chuoi_ky.dart';
 import 'package:security_sdk/src/domain/phien.dart';
+import 'package:security_sdk/src/du_lieu/cong.dart';
 import 'package:security_sdk/src/du_lieu/nen_tang_thiet_bi.dart';
-import 'package:storage/storage.dart';
 
 /// Cấu hình theo flavor.
 final class CauHinhDinhDanh {
@@ -40,9 +39,9 @@ final class DichVuDinhDanh {
     int Function()? dongHo,
   }) : _dongHo = dongHo ?? _gioHeThong;
 
-  final ApiClient api;
+  final ApiDinhDanh api;
   final NenTangThietBi nenTang;
-  final TepJson tep;
+  final KhoTrangThai tep;
   final CauHinhDinhDanh cauHinh;
   final int Function() _dongHo;
   Future<Result<PhienThietBi>>? _dangChay;
@@ -194,7 +193,7 @@ final class DichVuDinhDanh {
       return await viec();
     } on _LoiBuoc catch (e) {
       return Err(Failure(e.ma, e.chiTiet));
-    } on LoiMang catch (e) {
+    } on LoiKetNoi catch (e) {
       return Err(Failure('dinhDanh.mang', e.lyDo));
     } on Object catch (e) {
       return Err(Failure('dinhDanh.nenTang', e.runtimeType.toString()));

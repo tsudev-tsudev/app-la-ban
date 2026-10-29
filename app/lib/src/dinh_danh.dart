@@ -22,12 +22,49 @@ final dichVuDinhDanhProvider = Provider<DichVuDinhDanh?>((_) => null);
   );
 }
 
+/// Nối `network` vào cổng của security_sdk (gói đó không phụ thuộc network).
+final class ApiDinhDanhIo implements ApiDinhDanh {
+  new(this._api);
+
+  final ApiClient _api;
+
+  @override
+  Future<PhanHoiDinhDanh> post(
+    String duongDan,
+    Map<String, Object?> body, {
+    String? bearer,
+  }) async {
+    try {
+      final r = await _api.post(duongDan, body, bearer: bearer);
+      return (status: r.status, duLieu: r.duLieu);
+    } on LoiMang catch (e) {
+      throw LoiKetNoi(e.lyDo);
+    }
+  }
+}
+
+/// `dinh_danh.json` qua TepJson của storage.
+final class KhoTrangThaiTep implements KhoTrangThai {
+  new(this._t);
+
+  final TepJson _t;
+
+  @override
+  Map<String, Object?> get duLieu => _t.duLieu;
+
+  @override
+  void ghiDongBo(Map<String, Object?> moi) => _t.ghiDongBo(moi);
+
+  @override
+  Future<void> ghi(Map<String, Object?> moi) => _t.ghi(moi);
+}
+
 DichVuDinhDanh taoDichVuDinhDanh(Flavor flavor, KhoLuuTru kho) {
   final pb = tachPhienBan(phienBanApp);
   return DichVuDinhDanh(
-    api: ApiClientIo(flavor.apiGoc),
+    api: ApiDinhDanhIo(ApiClientIo(flavor.apiGoc)),
     nenTang: const NenTangThietBiKenh(),
-    tep: TepJson.mo('${kho.thuMuc}/dinh_danh.json'),
+    tep: KhoTrangThaiTep(TepJson.mo('${kho.thuMuc}/dinh_danh.json')),
     cauHinh: CauHinhDinhDanh(
       soDuAnCloud: Flavor.soDuAnCloud,
       phienBanApp: pb.ten,
