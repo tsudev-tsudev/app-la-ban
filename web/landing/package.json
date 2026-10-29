@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev --port 3031",
-    "build": "astro build && node edge/dong-goi.mjs",
+    "build": "astro build && node ../shield/dong-goi.mjs dist/js/khien.js && node edge/dong-goi.mjs",
     "typecheck": "astro check",
     "test": "vitest run"
   },
@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
+    "@laban/web-shield": "*",
     "@types/qrcode": "^1.5.6",
     "esbuild": "0.28.2",
     "qrcode": "^1.5.4",

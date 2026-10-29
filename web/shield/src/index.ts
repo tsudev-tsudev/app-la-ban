@@ -1,14 +1,9 @@
-// Lớp bảo vệ nội dung web (SEC-WEB-SHIELD). Phase N0 chỉ định nghĩa cấu hình; hành vi thêm ở phase S9.
-export type MucBaoVe = 'tat' | 'nhe' | 'chat';
+// Lớp bảo vệ nội dung web (SEC-WEB-SHIELD, phase S9). Lớp răn đe + thu tín hiệu; lớp bảo vệ chính là SH-07 (Worker không
+// gửi dữ liệu nhạy cảm xuống client khi chưa đủ quyền).
+export { chuanHoaMuc, chuanHoaTrang, hanhViTheoMuc, type HanhVi, type MucBaoVe, type Trang } from './muc';
+export { phanLoaiPhim, type LoaiPhim, type PhimNhan } from './phim';
+export { capNhatDo, ketLuan, kichThuocBatThuong, NGUONG, TRANG_THAI_DAU, type DoKichThuoc, type TrangThaiDo } from './devtools';
+export { giaiB64url, kiemGoi, maB64url, mucChoTrang, phanTichGoi, phanTichNoiDung, type GoiCauHinh, type NoiDungCauHinh } from './cau-hinh';
+export { noiDungWatermark, soO } from './watermark';
+export { chuoiTheoNgonNgu } from './ngon-ngu';
 
-export type CauHinhShield = {
-  muc: MucBaoVe;
-  /** Endpoint nhận tín hiệu, mặc định /v1/web/signals của Worker. */
-  diemNhanTinHieu?: string;
-};
-
-const HOP_LE: readonly MucBaoVe[] = ['tat', 'nhe', 'chat'];
-
-export function chuanHoaMuc(giaTri: unknown): MucBaoVe {
-  return HOP_LE.includes(giaTri as MucBaoVe) ? (giaTri as MucBaoVe) : 'chat';
-}

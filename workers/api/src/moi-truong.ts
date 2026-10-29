@@ -18,6 +18,8 @@ export type Env = {
   CF_LISTS_TOKEN?: string;
   CF_ACCOUNT_ID?: string;
   CF_LIST_ID?: string;
+  /** HMAC ký URL tài nguyên `/v1/tn/*` (SH-05, wrangler secret). Thiếu -> route trả 503. */
+  KHOA_URL_KY?: string;
 };
 
 export type BienYeuCau = {

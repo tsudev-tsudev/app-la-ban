@@ -35,7 +35,12 @@ const luat = {
     [/\/\*[\s\S]*?\*\//, 'comment CSS'],
     [/sourceMappingURL=/, 'tham chiếu sourcemap'],
   ],
-  '.html': [[/<!--(?!\[if)[\s\S]*?-->/, 'comment HTML']],
+  '.html': [
+    [/<!--(?!\[if)[\s\S]*?-->/, 'comment HTML'],
+    // S9: script nội tuyến (trừ JSON-LD - dữ liệu, không chạy) và thuộc tính sự kiện chỉ chạy được khi nới CSP.
+    [/<script\b(?![^>]*\bsrc=)(?![^>]*type=["']?application\/ld\+json)[^>]*>/i, 'script nội tuyến'],
+    [/<[a-z][^>]*\son[a-z]+\s*=/i, 'thuộc tính sự kiện nội tuyến'],
+  ],
 };
 luat['.mjs'] = luat['.js'];
 
