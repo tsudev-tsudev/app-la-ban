@@ -68,7 +68,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 17 | A7 | Bản đồ offline + Camera AR | A6 | ⬜ |
 | 18 | R1 | Landing hoàn chỉnh (kéo lên làm cùng R0 theo yêu cầu người dùng) | N2 | ✅ 28/10 |
 | 19 | S8 | Bảo vệ edge web (CSP, header, WAF as code) | R1 | ✅ 29/10 (CSP nghiêm Report-Only tới 05/11; Access ở S6, Turnstile ở S7) |
-| 20 | S9 | Lớp bảo vệ nội dung web + build sạch | S8 | ✅ 29/10 (bdbd740; `KHOA_URL_KY` chờ người dùng đặt, CSV audit ở S6) |
+| 20 | S9 | Lớp bảo vệ nội dung web + build sạch | S8 | ✅ 29/10 (bdbd740; CSV audit ở S6) |
 | 21 | A8 | Cài đặt, quyền riêng tư, trợ năng, hiệu năng | A7, S4 | ⬜ |
 | 22 | S10 | Giám sát, log bất biến, backup, ứng phó sự cố | S7 | ⬜ |
 | 23 | R2 | Sẵn sàng store | A8, S4 | ⬜ |
@@ -395,7 +395,7 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   `web-khien` staging + prod, hết hạn 27/01/2027, Chromium kiểm chữ ký OK. Dò DevTools: ước lượng zoom từ chiều ngang ->
   phần thanh dọc (phóng 80-125% / toàn màn hình không báo nhầm), giữ 2 lần đo + điểm phím / chuột phải. Tín hiệu
   `POST /v1/web/signals` -> `WEB_DEVTOOLS` theo IP (đã thấy trong D1 prod). URL ký `/v1/tn/*` (HMAC, <= 7 ngày, hotlink
-  403) - prod trả 503 tới khi người dùng đặt `KHOA_URL_KY` (auto mode chặn ghi secret). Watermark admin (Access email +
+  403) - `KHOA_URL_KY` người dùng đặt 29/10 (staging + prod, route trả 403 với chữ ký sai). Watermark admin (Access email +
   giờ UTC+7). `ve-sinh-ban-build` chặn thêm script / `on*` nội tuyến. CSP landing `connect-src` + compass-api; trang
   Quyền riêng tư mục 7 nêu tín hiệu khiên. Production: 0 vi phạm enforce; report-only còn vi phạm từ script Cloudflare
   chèn (Email Obfuscation `email-decode.min.js`, JS detections) - xử lý trước khi bật `strict-dynamic` 05/11.
