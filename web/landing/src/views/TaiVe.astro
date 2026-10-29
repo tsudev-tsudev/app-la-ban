@@ -72,7 +72,7 @@ const tep = ban
                 </div>
                 <p class="sha">
                   <span>{d.sha}</span>
-                  <code>{f.sha256}</code>
+                  <code data-cho-chon>{f.sha256}</code>
                 </p>
               </article>
             ))}
@@ -137,7 +137,7 @@ const tep = ban
       <section>
         <h2>{d.kiemTieuDe}</h2>
         <p>{d.kiemMoTa}</p>
-        <pre class="lenh"><code>{ban ? `sha256sum ${ban.tep[0]?.ten}` : 'sha256sum la-ban-<version>-arm64.apk'}
+        <pre class="lenh" data-cho-chon><code>{ban ? `sha256sum ${ban.tep[0]?.ten}` : 'sha256sum la-ban-<version>-arm64.apk'}
 {'# Windows PowerShell'}
 {ban ? `Get-FileHash ${ban.tep[0]?.ten}` : 'Get-FileHash la-ban-<version>-arm64.apk'}</code></pre>
       </section>

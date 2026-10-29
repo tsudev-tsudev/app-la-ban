@@ -389,6 +389,10 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
 - Làm: gói `web/shield` áp cho landing + admin, bật/tắt + mức độ qua config ký số; watermark động ở admin; ảnh qua URL ký; build
   xoá 100% comment, console, sourcemap, LICENSE.txt; làm rối mã module nhạy cảm (tương thích CSP); script `ve-sinh-ban-build`.
 - Cổng: script vệ sinh xanh; không ảnh hưởng trợ năng (ô nhập vẫn chọn/dán được); tín hiệu về Threat Engine.
+- Phát sinh (từ S9) -> S6: xuất CSV ghi audit (SH-04 nửa sau - cần API admin + Access); CSP admin thật (nonce + `connect-src`
+  compass-api cho khiên) khi bỏ `_worker.js` 403; API admin cấp URL ký bằng `kyUrl` (SH-05) cho ảnh bằng chứng; watermark
+  lấy email từ Access `get-identity` (đã nối, chờ Access). -> S10: bảng `WEB_DEVTOOLS` theo IP / quốc gia trong SOC; cân nhắc
+  rule theo IP (shadow). -> Lịch: ký lại gói `web-khien` trước 27/01/2027 (runbook khien-web.md).
 
 ### A8 - Hoàn thiện app
 - Làm: màn Quyền riêng tư (xem/xuất/xóa, rút đồng ý); onboarding + thông báo xử lý dữ liệu (NĐ 13/2023); VoiceOver/TalkBack;

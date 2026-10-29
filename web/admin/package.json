@@ -4,13 +4,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 3030 --strictPort",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && vite build && node ../shield/dong-goi.mjs dist/js/khien.js",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
     "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+    "react-dom": "^19.3.1",
+    "@laban/web-shield": "*"
   },
   "devDependencies": {
     "vite": "^8.3.5",

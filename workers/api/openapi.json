@@ -55,6 +55,112 @@
           }
         }
       }
+    },
+    "/v1/web/signals": {
+      "post": {
+        "summary": "Tín hiệu khiên web (công cụ nhà phát triển) từ landing / admin -> Threat Engine theo IP",
+        "responses": {
+          "202": {
+            "description": "Thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "const": true
+                    }
+                  },
+                  "required": [
+                    "ok"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Lỗi RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VanDe"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "trang": {
+                    "type": "string",
+                    "enum": [
+                      "landing",
+                      "admin"
+                    ]
+                  },
+                  "loai": {
+                    "type": "string",
+                    "enum": [
+                      "devtools"
+                    ]
+                  },
+                  "duongDan": {
+                    "type": "string",
+                    "maxLength": 128,
+                    "pattern": "^\\/[A-Za-z0-9/._-]*$"
+                  },
+                  "tinHieu": {
+                    "type": "object",
+                    "properties": {
+                      "kich_thuoc": {
+                        "type": "boolean"
+                      },
+                      "diem": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 1000
+                      },
+                      "phim": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 10000
+                      },
+                      "menu": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 10000
+                      }
+                    },
+                    "required": [
+                      "kich_thuoc",
+                      "diem",
+                      "phim",
+                      "menu"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "trang",
+                  "loai",
+                  "duongDan",
+                  "tinHieu"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {

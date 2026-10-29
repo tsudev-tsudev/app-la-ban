@@ -2,13 +2,19 @@
   "name": "@laban/web-shield",
   "private": true,
   "type": "module",
-  "main": "src/index.ts",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "build": "node dong-goi.mjs dist/khien.js"
   },
   "devDependencies": {
-    "vitest": "^5.0.5",
-    "typescript": "~6.0.0"
+    "esbuild": "0.28.2",
+    "terser": "^5.40.0",
+    "typescript": "~6.0.0",
+    "vitest": "^5.0.5"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./khien.css": "./src/khien.css"
   }
 }

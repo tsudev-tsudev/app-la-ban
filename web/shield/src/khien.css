@@ -1,0 +1,53 @@
+/* Lớp khiên (SH-01 / SH-02 / SH-03). Thuộc tính `data-khien` do /js/khien.js đặt; ô nhập liệu + [data-cho-chon] luôn chọn được. */
+html[data-khien='chat'] body {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+html[data-khien='chat'] :is(input, textarea, select, [contenteditable]:not([contenteditable='false']), [data-cho-chon]),
+html[data-khien='chat'] :is([contenteditable]:not([contenteditable='false']), [data-cho-chon]) * {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
+
+html[data-khien]:not([data-khien='tat']) img {
+  -webkit-user-drag: none;
+}
+
+html[data-khien-nghi] [data-nhay-cam] {
+  visibility: hidden;
+}
+
+.khien-phu {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  display: grid;
+  place-content: center;
+  gap: var(--lb-space-sm, 12px);
+  padding: var(--lb-space-lg, 24px);
+  text-align: center;
+  background: #0b1220;
+  color: #e8eef7;
+  font: var(--lb-type-body, 400 1rem/1.5rem system-ui, sans-serif);
+}
+
+.khien-phu h2 {
+  margin: 0;
+  font: var(--lb-type-headline, 700 1.75rem/2.25rem system-ui, sans-serif);
+  color: #00e5ff;
+}
+
+.khien-phu p {
+  margin: 0;
+  max-width: 36rem;
+}
+
+/* In / lưu PDF: ẩn nội dung kể cả khi JS chưa chạy, trừ khi cấu hình ký số đặt mức `tat`. */
+@media print {
+  html:not([data-khien='tat']) body {
+    display: none !important;
+  }
+}

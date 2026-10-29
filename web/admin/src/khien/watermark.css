@@ -1,0 +1,33 @@
+.vung-du-lieu {
+  position: relative;
+  min-height: 280px;
+  isolation: isolate;
+}
+
+.watermark {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 320px);
+  grid-auto-rows: 140px;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+
+.watermark span {
+  align-self: center;
+  justify-self: center;
+  transform: rotate(-24deg);
+  white-space: nowrap;
+  font: var(--lb-type-caption);
+  color: var(--lb-color-text);
+  opacity: 0.12;
+}
+
+@media print {
+  .watermark span {
+    opacity: 0.3;
+  }
+}

@@ -14,8 +14,8 @@ export default tseslint.config(
     },
   },
   {
-    files: ['tools/**/*.mjs', 'eslint.config.mjs', 'web/status/build.mjs'],
-    languageOptions: { globals: { process: 'readonly', console: 'readonly', fetch: 'readonly', structuredClone: 'readonly' } },
+    files: ['tools/**/*.mjs', 'eslint.config.mjs', 'web/status/build.mjs', 'web/shield/dong-goi.mjs'],
+    languageOptions: { globals: { process: 'readonly', console: 'readonly', fetch: 'readonly', structuredClone: 'readonly', Buffer: 'readonly' } },
     rules: { 'no-console': 'off' },
   },
   {

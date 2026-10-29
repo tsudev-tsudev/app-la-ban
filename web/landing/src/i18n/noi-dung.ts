@@ -225,7 +225,7 @@ const vi: NoiDung = {
     ],
   },
   rieng: {
-    capNhat: 'Cập nhật: 28/10/2026 · Bản dành cho giai đoạn thử nghiệm',
+    capNhat: 'Cập nhật: 29/10/2026 · Bản dành cho giai đoạn thử nghiệm',
     moTa: 'Chính sách này giải thích cách ứng dụng La bàn và website compass.tsudev.com (do TsuDev vận hành) xử lý dữ liệu cá nhân theo Nghị định 13/2023/NĐ-CP.',
     muc: [
       { tieuDe: '1. Dữ liệu trên máy của bạn', noiDung: 'Điểm mốc, cài đặt và lịch sử được lưu trong cơ sở dữ liệu mã hoá trên máy, khoá bảo vệ bởi Android Keystore. Dữ liệu này không gửi về máy chủ và không nằm trong bản sao lưu đám mây.' },
@@ -234,7 +234,7 @@ const vi: NoiDung = {
       { tieuDe: '4. Thời hạn lưu', noiDung: 'Sự kiện bảo mật chi tiết lưu 180 ngày; địa chỉ IP chi tiết được rút gọn sau 90 ngày nếu không liên quan vi phạm; nhật ký kiểm toán lưu 24 tháng.' },
       { tieuDe: '5. Không bán, không quảng cáo theo dõi', noiDung: 'Chúng tôi không bán dữ liệu và không dùng dữ liệu để quảng cáo theo dõi. Nhà cung cấp hạ tầng: Cloudflare (máy chủ, lưu trữ), Google (xác thực thiết bị).' },
       { tieuDe: '6. Quyền của bạn', noiDung: 'Bạn có quyền được biết, truy cập, chỉnh sửa, xoá, hạn chế xử lý, rút lại đồng ý và khiếu nại. Xoá ứng dụng sẽ xoá toàn bộ dữ liệu trên máy. Gửi yêu cầu tới privacy@tsudev.com - chúng tôi phản hồi trong 72 giờ làm việc.' },
-      { tieuDe: '7. Website', noiDung: 'compass.tsudev.com là trang tĩnh: không cookie theo dõi, không công cụ phân tích bên thứ ba. Cloudflare có thể ghi nhật ký kỹ thuật (IP, thời điểm) để chống tấn công.' },
+      { tieuDe: '7. Website', noiDung: 'compass.tsudev.com là trang tĩnh: không cookie theo dõi, không công cụ phân tích bên thứ ba. Cloudflare có thể ghi nhật ký kỹ thuật (IP, thời điểm) để chống tấn công. Trang có lớp chống sao chép nội dung; khi phát hiện công cụ nhà phát triển, trang gửi một tín hiệu bảo mật gồm địa chỉ IP, đường dẫn trang và thời điểm, lưu như sự kiện bảo mật ở mục 4.' },
       { tieuDe: '8. Trẻ em', noiDung: 'Ứng dụng dành cho người từ 13 tuổi trở lên.' },
       { tieuDe: '9. Liên hệ', noiDung: 'TsuDev - privacy@tsudev.com. Báo lỗ hổng bảo mật: security@tsudev.com.' },
     ],
@@ -404,7 +404,7 @@ const en: NoiDung = {
     ],
   },
   rieng: {
-    capNhat: 'Updated: 28 October 2026 · Beta-stage policy',
+    capNhat: 'Updated: 29 October 2026 · Beta-stage policy',
     moTa: 'This policy explains how the La bàn app and compass.tsudev.com (operated by TsuDev) process personal data under Vietnam Decree 13/2023/ND-CP.',
     muc: [
       { tieuDe: '1. Data on your device', noiDung: 'Waypoints, settings and history are stored in an encrypted database on your device with a key protected by Android Keystore. This data is not sent to our servers and is excluded from cloud backups.' },
@@ -413,7 +413,7 @@ const en: NoiDung = {
       { tieuDe: '4. Retention', noiDung: 'Detailed security events are kept for 180 days; detailed IP addresses are truncated after 90 days unless tied to a violation; audit logs are kept for 24 months.' },
       { tieuDe: '5. No selling, no tracking ads', noiDung: 'We do not sell data or use it for tracking ads. Infrastructure providers: Cloudflare (servers, storage), Google (device attestation).' },
       { tieuDe: '6. Your rights', noiDung: 'You may know, access, correct, delete, restrict processing, withdraw consent and complain. Uninstalling the app deletes all on-device data. Email privacy@tsudev.com - we reply within 72 business hours.' },
-      { tieuDe: '7. Website', noiDung: 'compass.tsudev.com is a static site: no tracking cookies and no third-party analytics. Cloudflare may log technical data (IP, time) to stop attacks.' },
+      { tieuDe: '7. Website', noiDung: 'compass.tsudev.com is a static site: no tracking cookies and no third-party analytics. Cloudflare may log technical data (IP, time) to stop attacks. The site has a content-copy protection layer; when developer tools are detected it sends one security signal containing your IP address, the page path and time, kept as a security event under section 4.' },
       { tieuDe: '8. Children', noiDung: 'The app is intended for users aged 13 and over.' },
       { tieuDe: '9. Contact', noiDung: 'TsuDev - privacy@tsudev.com. Report security issues: security@tsudev.com.' },
     ],

@@ -2,6 +2,7 @@
 // Khung mọi trang: meta SEO + OG + hreflang vi/en, header (menu di động bằng <details>, không JS), footer.
 import '../../../../design/gen/tokens.css';
 import '../styles/global.css';
+import '@laban/web-shield/khien.css';
 import Logo from '../components/Logo.astro';
 import { DUONG_DAN, NOI_DUNG, type NgonNgu, type TrangId } from '../i18n/noi-dung';
 
@@ -74,6 +75,7 @@ const jsonLd =
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     {jsonLd && <script type="application/ld+json" set:html={jsonLd} />}
+    <script is:inline src="/js/khien.js" data-trang="landing" defer></script>
   </head>
   <body>
     <a class="bo-qua" href="#noi-dung">{t.boQua}</a>
