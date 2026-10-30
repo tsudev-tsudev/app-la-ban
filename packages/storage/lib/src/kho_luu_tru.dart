@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:storage/src/domain/canh_gac_crash.dart';
 import 'package:storage/src/domain/co_tinh_nang.dart';
 import 'package:storage/src/du_lieu/csdl.dart';
+import 'package:storage/src/du_lieu/doc_tho.dart';
 import 'package:storage/src/du_lieu/kho_khoa.dart';
 import 'package:storage/src/du_lieu/mo_csdl.dart';
 import 'package:storage/src/du_lieu/tep_json.dart';
@@ -17,6 +18,7 @@ final class KhoLuuTru {
     required this._co,
     required this.ketQuaCsdl,
     required this.anToan,
+    required this._khoKhoa,
   });
 
   /// Thứ tự: canh gác crash (ghi đồng bộ, TRƯỚC mọi thứ có thể crash) ->
@@ -64,6 +66,7 @@ final class KhoLuuTru {
       co: TepJson.mo('$thuMuc/co_tinh_nang.json'),
       ketQuaCsdl: kq,
       anToan: anToan,
+      khoKhoa: khoKhoa,
     );
   }
 
@@ -81,6 +84,7 @@ final class KhoLuuTru {
 
   final TepJson _trangThai;
   final TepJson _co;
+  final KhoKhoa _khoKhoa;
 
   /// Kết quả mở CSDL (lỗi -> [csdl] null).
   final KetQuaMoCsdl ketQuaCsdl;
@@ -106,6 +110,11 @@ final class KhoLuuTru {
   void thoatCheDoAnToan() => _trangThai.ghiDongBo(
     thoatAnToan(TrangThaiKhoiDong.tuJson(_trangThai.duLieu)).toJson(),
   );
+
+  /// Đọc thô điểm đã lưu để xuất khi [csdl] null (chế độ an toàn). Chạy được
+  /// cả khi CSDL đang mở (đọc song song an toàn ở WAL).
+  Future<List<DiemTho>> docDiemAnToan() async =>
+      docDiemTho(thuMuc: thuMuc, khoa: await _khoKhoa.layKhoaCsdl());
 
   /// Đóng CSDL (test / khi app bị huỷ).
   Future<void> dong() async {
