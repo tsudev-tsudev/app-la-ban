@@ -114,3 +114,7 @@ Kế thừa từ repo anh em (ban-do-3d / ubnd) - áp dụng vì cùng hạ tầ
   -> "log-only trước" thay bằng: rule chỉ chặn thứ đã qua Threat Engine (IP list) + admin ngoài VN. (S8)
 - AP-DUNG BI CHAN AUTO MODE: `node tools/cloudflare/ap-dung.mjs --apply` bị auto mode của Claude Code từ chối -> nhờ người dùng
   chạy `! node tools/cloudflare/ap-dung.mjs --apply` (dry-run trước để họ thấy danh sách). (N2, S8)
+- WRANGLER OAUTH SAI TAI KHOAN: `wrangler` trên máy dùng chung có thể đang đăng nhập OAuth vào tài khoản Cloudflare của repo
+  KHÁC (31/10: tài khoản xanuicam) -> `d1 migrations apply` báo không thấy D1, còn `wrangler secret put` thì lặng lẽ TẠO
+  Worker rỗng cùng tên ở tài khoản kia. MỌI lệnh wrangler của repo này phải nạp `set -a; . ~/.config/la-ban/cf.env; set +a`
+  trước (như `deploy-web.sh`), kiểm `npx wrangler whoami` ra Account ID `9541f44e...`. (S7c1)
