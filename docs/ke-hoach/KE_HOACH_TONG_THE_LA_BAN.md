@@ -65,7 +65,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 14 | S6 | Admin SOC 1 | S5 | ✅ 30/10 · e2e staging qua Access thật: realtime 587-722 ms, danh sách D1 45 ms |
 | 15 | S7 | Admin SOC 2 (chia S7a / S7b / S7c) | S6 | 🟨 S7a ✅ 30/10 (4ae38f9, PR #29: giao diện SOC mới + thuỷ vân + Alert Center + Telegram + passkey; staging + prod) · S7b, S7c chưa |
 | 16 | A6 | Waypoint, chia sẻ, deep link | A5, S3 | ✅ 30/10 (53e946b + cf74304, v0.1.0-beta.8) · máy thật M32: App Links `verified`, link /w/ mở thẳng app (cold 1,5 s) |
-| 17 | A7 | Bản đồ offline + Camera AR (chia A7a / A7b / A7c) | A6 | 🟨 A7a ✅ 30/10 (a0e1d1b: tile VN trên R2 + Worker /ban-do); A7b màn bản đồ + vùng offline, A7c Camera AR chưa |
+| 17 | A7 | Bản đồ offline + Camera AR (chia A7a / A7b / A7c) | A6 | 🟨 A7a ✅ 30/10 (a0e1d1b: tile VN trên R2 + Worker /ban-do); A7b ✅ 30/10 (d6de6a2: màn bản đồ + vùng offline); A7c Camera AR chưa |
 | 18 | R1 | Landing hoàn chỉnh (kéo lên làm cùng R0 theo yêu cầu người dùng) | N2 | ✅ 28/10 |
 | 19 | S8 | Bảo vệ edge web (CSP, header, WAF as code) | R1 | ✅ 29/10 (CSP nghiêm Report-Only tới 05/11; Access ở S6, Turnstile ở S7) |
 | 20 | S9 | Lớp bảo vệ nội dung web + build sạch | S8 | ✅ 29/10 (bdbd740; CSV audit ở S6) |
@@ -466,6 +466,13 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   Noto Sans; Worker `/ban-do/{z}/{x}/{y}.mvt` (cache edge 1 năm), `kieu/<sang|toi>-<vi|en>.json`, `phong/<font>/<dai>.pbf`,
   rate limit `RL_BAN_DO` 3000/phút/IP. Bẫy: deploy Worker bằng `npm run deploy` / `deploy:staging` (gắn BAN_BUILD).
 - Phát sinh (từ A7a) -> A7b / R2: APK đã 28,6 MB (> 25 MB do freeRASP), đo thêm MapLibre rồi ghi lại ở R2.
+- Kết quả A7b (30/10, d6de6a2 PR #31, QUYET_DINH Q40): tab Bản đồ `maplibre_gl` 0.27.1 + style Worker (sáng / tối x vi / en,
+  dev dùng staging); lớp điểm (chạm mở chi tiết), chấm vị trí + vòng sai số theo mét từ location_feature (không GPS thứ hai),
+  xoay theo bắc thực (bỏ lệch < 3°); màn Vùng offline: "Tổng quan Việt Nam" z0-8 + vùng đang xem tới z14, trần 6000 tile,
+  lưu kèm 3 style còn lại, dung lượng / xoá; ghi công OSM / Protomaps / Noto ở Giấy phép. Build Android cần JDK 21
+  (`~/tools/java/jdk21`, phat-hanh-apk.sh đã đổi). APK arm64 release 33,0 MB (+4,4 MB `libmaplibre.so`), kiem-apk đạt.
+- Phát sinh A7b: (1) nghiệm thu chế độ máy bay trên máy thật CHƯA (không có thiết bị adb 30/10) - cài bản kế, tải vùng,
+  bật máy bay, mở tab Bản đồ + đổi sáng / tối; (2) chưa phát hành APK mới - gộp với A7c; (3) kích thước -> R2.
 
 ### R1 - Landing
 - Làm: Astro vi/en: giới thiệu, nút tải store, hướng dẫn hiệu chuẩn, `/privacy`, `/terms`, `/appeal` (Turnstile, gửi Worker),
