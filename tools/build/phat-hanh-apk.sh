@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Phát hành APK thử nghiệm (QUYET_DINH Q34): ./tools/build/phat-hanh-apk.sh [--khong-github] [--thu]
 #   1. kiểm: đang ở main sạch, trùng origin/main, có khoá upload ngoài repo, tag chưa tồn tại
-#   2. build prod release --obfuscate --split-debug-info: bản arm64-v8a (máy đời mới, nhẹ) + bản universal (mọi máy)
+#   2. build prod release --obfuscate --split-debug-info: một APK cho mỗi ABI - arm64-v8a (gần như mọi máy) + armeabi-v7a (máy 32-bit) - KHÔNG universal (QUYET_DINH Q36)
 #   3. apksigner verify + so chứng chỉ với khoá upload, SHA-256
 #   4. R2 la-ban-cdn/android/ (tên có phiên bản, bất biến) + latest.json -> compass-cdn.tsudev.com/android/
 #   5. GitHub Release pre-release v<phiên bản> kèm SHA256SUMS
@@ -47,7 +47,7 @@ build() { # $1 = hậu tố tệp, $2 = target-platform
   cp "$APK_DIR/app-prod-release.apk" "$RA/la-ban-$TEN-$1.apk"
 }
 build arm64 android-arm64
-build universal android-arm,android-arm64,android-x64
+build armv7 android-arm
 
 # Chứng chỉ mong đợi = chứng chỉ khoá upload.
 STORE=$(grep '^storeFile=' "$KEY_PROPS" | cut -d= -f2-)
@@ -62,7 +62,7 @@ done
 # SEC-APP APP-02 / APP-06: không debuggable, exported tối thiểu, có libla_ban_kt.so sạch chuỗi.
 node "$GOC/tools/build/kiem-apk.mjs" "$RA"/*.apk
 (cd "$RA" && sha256sum ./*.apk | sed 's| \./| |' > SHA256SUMS)
-MIN_SDK=$("$BT/aapt2" dump badging "$RA/la-ban-$TEN-universal.apk" | sed -n "s/^minSdkVersion:'\([0-9]*\)'.*/\1/p")
+MIN_SDK=$("$BT/aapt2" dump badging "$RA/la-ban-$TEN-arm64.apk" | sed -n "s/^minSdkVersion:'\([0-9]*\)'.*/\1/p")
 cat "$RA/SHA256SUMS"
 
 node - "$RA" "$TEN" "$MA" "$MIN_SDK" "$CERT" "$TAG" <<'EOF' > "$RA/latest.json"
@@ -75,7 +75,7 @@ const tep = (loai) => {
 };
 process.stdout.write(JSON.stringify({
   phienBan: ten, maPhienBan: Number(ma), ngay: new Date().toISOString(), minSdk: Number(minSdk), chungChiSha256: cert,
-  github: `https://github.com/tsudev-tsudev/app-la-ban/releases/tag/${tag}`, tep: [tep('arm64'), tep('universal')],
+  github: `https://github.com/tsudev-tsudev/app-la-ban/releases/tag/${tag}`, tep: [tep('arm64'), tep('armv7')],
 }, null, 2) + '\n');
 EOF
 cat "$RA/latest.json"
@@ -108,7 +108,7 @@ if [ "$GITHUB" = 1 ]; then
     echo "Bản thử nghiệm Android (APK ký bằng khoá upload TsuDev, chưa qua Google Play)."
     echo
     echo "- \`la-ban-$TEN-arm64.apk\`: điện thoại Android 64-bit đời mới (khuyên dùng)"
-    echo "- \`la-ban-$TEN-universal.apk\`: mọi máy (Android $MIN_SDK+), dung lượng lớn hơn"
+    echo "- \`la-ban-$TEN-armv7.apk\`: máy Android 32-bit đời cũ (Android $MIN_SDK+) - chỉ dùng khi bản arm64 không cài được"
     echo
     echo "Kiểm toàn vẹn: \`sha256sum -c SHA256SUMS\`. Chứng chỉ ký SHA-256: \`$CERT\`."
     echo "Tải công khai + hướng dẫn cài: https://compass.tsudev.com/tai-ve"
