@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Phát hành APK thử nghiệm (QUYET_DINH Q34): ./tools/build/phat-hanh-apk.sh [--khong-github] [--thu]
-#   1. kiểm: đang ở main sạch, trùng origin/main, có khoá upload ngoài repo, tag chưa tồn tại
+#   1. kiểm: đang ở main (hoặc HEAD tách rời) sạch, trùng origin/main, có khoá upload ngoài repo, tag chưa tồn tại
 #   2. build prod release --obfuscate --split-debug-info: một APK cho mỗi ABI - arm64-v8a (gần như mọi máy) + armeabi-v7a (máy 32-bit) - KHÔNG universal (QUYET_DINH Q36)
 #   3. apksigner verify + so chứng chỉ với khoá upload, SHA-256
 #   4. R2 la-ban-cdn/android/ (tên có phiên bản, bất biến) + latest.json -> compass-cdn.tsudev.com/android/
@@ -29,7 +29,9 @@ TEN="${DONG%%+*}"; MA="${DONG##*+}"
 TAG="v$TEN"
 
 if [ "$THU" = 0 ]; then
-  [ "$(git rev-parse --abbrev-ref HEAD)" = main ] || { echo "Chỉ phát hành từ main" >&2; exit 1; }
+  # Worktree song song không giữ được nhánh main (đã checkout ở cây chính) -> chấp nhận HEAD tách rời, vẫn phải trùng origin/main.
+  NHANH=$(git rev-parse --abbrev-ref HEAD)
+  [ "$NHANH" = main ] || [ "$NHANH" = HEAD ] || { echo "Chỉ phát hành từ main (hoặc HEAD tách rời ở origin/main)" >&2; exit 1; }
   [ -z "$(git status --porcelain)" ] || { echo "Cây git chưa sạch" >&2; exit 1; }
   git fetch -q origin main
   [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" ] || { echo "main chưa trùng origin/main" >&2; exit 1; }
