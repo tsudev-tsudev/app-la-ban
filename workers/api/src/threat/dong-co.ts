@@ -7,6 +7,7 @@ import { taoUlid } from '../thuan/dinh-danh';
 import { cauDem, khoaNhom, luatQuanTam, nenKichHoat, phanTichHanhDong, type Luat } from '../thuan/luat';
 import { congDiem, diemSuKien, diemTheoLo, trangThaiHieuLuc, ttlLeoThang, type CauHinhNguyCo, type TrangThai } from '../thuan/nguy-co';
 import { canDuyet, khopQuyTac, type LoaiDich } from '../thuan/thuc-thi';
+import { phatSoc } from '../do/phong-soc';
 import { lienKetThietBi } from './lien-ket';
 import { napCauHinh, napChoPhep, napLuat, xoaDem } from './nap';
 
@@ -80,6 +81,18 @@ export async function xuLySuKien(env: Env, n: NguCanhSuKien, ds: readonly SuKien
   }
   await ctx.chayLuat(dsLuat, [...new Set(moi.map((e) => e.type))]);
   await ctx.ketThuc(dsLuat);
+  if (moi.length > 0) {
+    await phatSoc(env, {
+      loai: 'su-kien',
+      nhanLuc: bayGio,
+      thietBi: n.thietBi,
+      ip: n.ip,
+      quocGia: n.country ?? null,
+      ds: moi.map((e) => ({ type: e.type, severity: e.severity })),
+      kichHoat: ctx.kichHoat,
+      trangThai: ctx.trangThai,
+    });
+  }
   return { nhan: moi.length, trung: ds.length - moi.length, diem: ctx.diem, trangThai: ctx.trangThai, kichHoat: ctx.kichHoat, canDongBo: ctx.canDongBo };
 }
 

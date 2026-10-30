@@ -12,6 +12,8 @@ export const coBan: MiddlewareHandler<MoiTruongHono> = async (c, next) => {
   c.set('ip', c.req.header('cf-connecting-ip') ?? '');
   const batDau = Date.now();
   await next();
+  // Nâng cấp WebSocket (SOC realtime): giữ nguyên Response gốc - dựng lại sẽ mất thuộc tính webSocket.
+  if (c.res.status === 101) return;
   const headers = ganTieuDe(c.res.headers);
   headers.set('x-request-id', c.get('requestId'));
   c.res = new Response(c.res.body, { status: c.res.status, statusText: c.res.statusText, headers });

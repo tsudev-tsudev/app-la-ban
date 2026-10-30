@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { z } from 'zod';
+import { taoAdmin } from './admin';
 import { donDep } from './d1/don-dep';
 import { dangKyDinhDanh } from './dinh-danh';
 import { dangKyKenh } from './kenh';
@@ -70,6 +71,8 @@ app.post(
 dangKyKhienWeb(app, boTuyen);
 dangKyDinhDanh(app, boTuyen);
 dangKyKenh(app, boTuyen);
+// Admin SOC (S6): Access JWT + vai trò + phiên passkey - xem src/admin/.
+app.route('/admin/v1', taoAdmin());
 
 // API không cần được lập chỉ mục.
 app.get('/robots.txt', (c) => c.text('User-agent: *\nDisallow: /\n'));

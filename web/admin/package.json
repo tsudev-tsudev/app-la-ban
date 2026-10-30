@@ -4,8 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 3030 --strictPort",
-    "build": "tsc --noEmit && vite build && node ../shield/dong-goi.mjs dist/js/khien.js",
-    "typecheck": "tsc --noEmit",
+    "build": "tsc --noEmit && tsc --noEmit -p tsconfig.worker.json && vite build && node ../shield/dong-goi.mjs dist/js/khien.js && esbuild worker/index.ts --bundle --format=esm --platform=neutral --target=es2022 --minify --legal-comments=none --outfile=dist/_worker.js",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.worker.json",
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
@@ -20,6 +20,8 @@
     "@types/react-dom": "^19.0.0",
     "typescript": "~6.0.0",
     "terser": "^5.40.0",
-    "vitest": "^5.0.5"
+    "vitest": "^5.0.5",
+    "esbuild": "0.28.2",
+    "@cloudflare/workers-types": "^5.20261028.1"
   }
 }
