@@ -1081,6 +1081,492 @@ abstract class LbL10n {
   /// In vi, this message translates to:
   /// **'Không mở được trình duyệt. Hãy vào compass.tsudev.com/khieu-nai để gửi khiếu nại.'**
   String get securityAppealOpenFailed;
+
+  /// Nút nổi: lưu vị trí hiện tại thành điểm
+  ///
+  /// In vi, this message translates to:
+  /// **'Lưu vị trí'**
+  String get wpSaveHere;
+
+  /// Mục menu: tạo điểm bằng toạ độ gõ tay
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập toạ độ'**
+  String get wpAddManual;
+
+  /// Tiêu đề màn tạo điểm
+  ///
+  /// In vi, this message translates to:
+  /// **'Điểm mới'**
+  String get wpNewTitle;
+
+  /// Tiêu đề màn sửa điểm
+  ///
+  /// In vi, this message translates to:
+  /// **'Sửa điểm'**
+  String get wpEditTitle;
+
+  /// Nhãn ô tên điểm
+  ///
+  /// In vi, this message translates to:
+  /// **'Tên'**
+  String get wpName;
+
+  /// Nhãn ô vĩ độ
+  ///
+  /// In vi, this message translates to:
+  /// **'Vĩ độ'**
+  String get wpLat;
+
+  /// Nhãn ô kinh độ
+  ///
+  /// In vi, this message translates to:
+  /// **'Kinh độ'**
+  String get wpLon;
+
+  /// Nhãn ô cao độ
+  ///
+  /// In vi, this message translates to:
+  /// **'Cao độ (m, tuỳ chọn)'**
+  String get wpAlt;
+
+  /// Nhãn ô ghi chú
+  ///
+  /// In vi, this message translates to:
+  /// **'Ghi chú'**
+  String get wpNote;
+
+  /// Tiêu đề phần ảnh
+  ///
+  /// In vi, this message translates to:
+  /// **'Ảnh'**
+  String get wpPhotos;
+
+  /// Nút thêm ảnh
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm ảnh'**
+  String get wpAddPhoto;
+
+  /// Nhãn nút xoá ảnh (trình đọc màn hình)
+  ///
+  /// In vi, this message translates to:
+  /// **'Xoá ảnh'**
+  String get wpRemovePhoto;
+
+  /// Nhãn trình đọc màn hình cho ảnh
+  ///
+  /// In vi, this message translates to:
+  /// **'Ảnh {index} của điểm'**
+  String wpPhotoSemantics(int index);
+
+  /// Ghi chú quyền riêng tư dưới phần ảnh
+  ///
+  /// In vi, this message translates to:
+  /// **'Ảnh được thu nhỏ và xoá thông tin vị trí / máy chụp trước khi lưu.'**
+  String get wpPhotoHint;
+
+  /// Lỗi khi chọn ảnh
+  ///
+  /// In vi, this message translates to:
+  /// **'Không đọc được ảnh này.'**
+  String get wpPhotoError;
+
+  /// Nút lưu
+  ///
+  /// In vi, this message translates to:
+  /// **'Lưu'**
+  String get wpSave;
+
+  /// Nút huỷ
+  ///
+  /// In vi, this message translates to:
+  /// **'Huỷ'**
+  String get wpCancel;
+
+  /// Nút / menu xoá điểm
+  ///
+  /// In vi, this message translates to:
+  /// **'Xoá'**
+  String get wpDelete;
+
+  /// Hộp thoại xác nhận xoá
+  ///
+  /// In vi, this message translates to:
+  /// **'Xoá \"{name}\" cùng ảnh của điểm? Không hoàn tác được.'**
+  String wpDeleteConfirm(String name);
+
+  /// Nút điền toạ độ từ GPS
+  ///
+  /// In vi, this message translates to:
+  /// **'Dùng vị trí hiện tại'**
+  String get wpUseCurrent;
+
+  /// Đang chờ GPS
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang lấy vị trí...'**
+  String get wpLocating;
+
+  /// Chưa có quyền vị trí
+  ///
+  /// In vi, this message translates to:
+  /// **'Cần quyền vị trí để lưu chỗ bạn đang đứng.'**
+  String get wpLocationNeeded;
+
+  /// Nút xin quyền vị trí
+  ///
+  /// In vi, this message translates to:
+  /// **'Cho phép vị trí'**
+  String get wpGrant;
+
+  /// Lỗi tên trống
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập tên điểm'**
+  String get wpErrNameEmpty;
+
+  /// Lỗi tên dài
+  ///
+  /// In vi, this message translates to:
+  /// **'Tên tối đa {max} ký tự'**
+  String wpErrNameLong(int max);
+
+  /// Lỗi vĩ độ
+  ///
+  /// In vi, this message translates to:
+  /// **'Vĩ độ từ -90 đến 90'**
+  String get wpErrLat;
+
+  /// Lỗi kinh độ
+  ///
+  /// In vi, this message translates to:
+  /// **'Kinh độ từ -180 đến 180'**
+  String get wpErrLon;
+
+  /// Lỗi cao độ
+  ///
+  /// In vi, this message translates to:
+  /// **'Cao độ không hợp lệ'**
+  String get wpErrAlt;
+
+  /// Lỗi ghi chú dài
+  ///
+  /// In vi, this message translates to:
+  /// **'Ghi chú tối đa {max} ký tự'**
+  String wpErrNoteLong(int max);
+
+  /// Nút dẫn đường tới điểm
+  ///
+  /// In vi, this message translates to:
+  /// **'Dẫn đường'**
+  String get wpNavigate;
+
+  /// Nút chia sẻ điểm
+  ///
+  /// In vi, this message translates to:
+  /// **'Chia sẻ'**
+  String get wpShare;
+
+  /// Nút sửa điểm
+  ///
+  /// In vi, this message translates to:
+  /// **'Sửa'**
+  String get wpEdit;
+
+  /// Khoảng cách theo mét
+  ///
+  /// In vi, this message translates to:
+  /// **'{value} m'**
+  String wpMeters(int value);
+
+  /// Khoảng cách theo km
+  ///
+  /// In vi, this message translates to:
+  /// **'{value} km'**
+  String wpKilometers(double value);
+
+  /// Khoảng cách từ vị trí hiện tại
+  ///
+  /// In vi, this message translates to:
+  /// **'Cách {distance}'**
+  String wpAway(String distance);
+
+  /// Phương vị tới điểm
+  ///
+  /// In vi, this message translates to:
+  /// **'Hướng {value}° (bắc thực)'**
+  String wpBearing(int value);
+
+  /// Hướng dẫn quay người
+  ///
+  /// In vi, this message translates to:
+  /// **'Quay {value}° sang {side}'**
+  String wpTurn(int value, String side);
+
+  /// Bên trái
+  ///
+  /// In vi, this message translates to:
+  /// **'trái'**
+  String get wpLeft;
+
+  /// Bên phải
+  ///
+  /// In vi, this message translates to:
+  /// **'phải'**
+  String get wpRight;
+
+  /// Đang hướng đúng điểm
+  ///
+  /// In vi, this message translates to:
+  /// **'Đi thẳng'**
+  String get wpAhead;
+
+  /// Đã tới điểm
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã tới nơi'**
+  String get wpArrived;
+
+  /// Không có la bàn khi dẫn đường
+  ///
+  /// In vi, this message translates to:
+  /// **'Máy không có cảm biến la bàn: đi theo hướng bên dưới bằng la bàn khác.'**
+  String get wpNoCompass;
+
+  /// Đang chờ vị trí khi dẫn đường
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang chờ vị trí GPS...'**
+  String get wpWaitingGps;
+
+  /// Sai số GPS
+  ///
+  /// In vi, this message translates to:
+  /// **'Sai số vị trí ±{value} m'**
+  String wpAccuracy(int value);
+
+  /// Nhãn trình đọc màn hình cho mũi tên dẫn đường
+  ///
+  /// In vi, this message translates to:
+  /// **'Mũi tên chỉ tới {name}, {distance}'**
+  String wpArrowSemantics(String name, String distance);
+
+  /// Thời điểm tạo điểm
+  ///
+  /// In vi, this message translates to:
+  /// **'Tạo lúc {date}'**
+  String wpCreated(String date);
+
+  /// Nhãn toạ độ
+  ///
+  /// In vi, this message translates to:
+  /// **'Toạ độ'**
+  String get wpCoords;
+
+  /// Cao độ của điểm
+  ///
+  /// In vi, this message translates to:
+  /// **'Cao độ {value} m'**
+  String wpAltValue(double value);
+
+  /// Nút sao chép toạ độ
+  ///
+  /// In vi, this message translates to:
+  /// **'Sao chép toạ độ'**
+  String get wpCopyCoords;
+
+  /// Menu nhập tệp
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập GPX / KML'**
+  String get wpImport;
+
+  /// Menu xuất GPX
+  ///
+  /// In vi, this message translates to:
+  /// **'Xuất GPX'**
+  String get wpExportGpx;
+
+  /// Menu xuất KML
+  ///
+  /// In vi, this message translates to:
+  /// **'Xuất KML'**
+  String get wpExportKml;
+
+  /// Nhãn nút menu
+  ///
+  /// In vi, this message translates to:
+  /// **'Thêm tuỳ chọn'**
+  String get wpMore;
+
+  /// Kết quả nhập tệp
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã thêm {added}, cập nhật {updated}, bỏ qua {skipped} điểm.'**
+  String wpImportResult(int added, int updated, int skipped);
+
+  /// Lỗi nhập tệp
+  ///
+  /// In vi, this message translates to:
+  /// **'Không đọc được tệp: không phải GPX / KML hợp lệ.'**
+  String get wpImportError;
+
+  /// Tệp không có điểm
+  ///
+  /// In vi, this message translates to:
+  /// **'Tệp không có điểm nào.'**
+  String get wpImportEmpty;
+
+  /// Lỗi đọc ghi tệp
+  ///
+  /// In vi, this message translates to:
+  /// **'Không mở / lưu được tệp.'**
+  String get wpFileError;
+
+  /// Xuất tệp xong
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã lưu tệp.'**
+  String get wpExported;
+
+  /// Tên mặc định cho điểm nhập không có tên
+  ///
+  /// In vi, this message translates to:
+  /// **'Điểm {index}'**
+  String wpUnnamed(int index);
+
+  /// Tiêu đề màn chia sẻ
+  ///
+  /// In vi, this message translates to:
+  /// **'Chia sẻ điểm'**
+  String get wpShareTitle;
+
+  /// Nhãn chọn hạn link
+  ///
+  /// In vi, this message translates to:
+  /// **'Link hết hạn sau'**
+  String get wpShareExpiry;
+
+  /// Số ngày
+  ///
+  /// In vi, this message translates to:
+  /// **'{count, plural, =1{1 ngày} other{{count} ngày}}'**
+  String wpDays(int count);
+
+  /// Giải thích nội dung link chia sẻ
+  ///
+  /// In vi, this message translates to:
+  /// **'Link chứa tên, toạ độ, cao độ và tối đa {max} ký tự ghi chú, không kèm ảnh. Ai có link đều xem được tới khi hết hạn.'**
+  String wpShareInfo(int max);
+
+  /// Nút sao chép link
+  ///
+  /// In vi, this message translates to:
+  /// **'Sao chép link'**
+  String get wpCopyLink;
+
+  /// Thông báo đã sao chép
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã sao chép'**
+  String get wpCopied;
+
+  /// Nút mở bảng chia sẻ hệ thống
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi link'**
+  String get wpSendLink;
+
+  /// Nhãn trình đọc màn hình cho QR
+  ///
+  /// In vi, this message translates to:
+  /// **'Mã QR của link chia sẻ'**
+  String get wpQrSemantics;
+
+  /// Cờ chia sẻ bị tắt
+  ///
+  /// In vi, this message translates to:
+  /// **'Chia sẻ đang tạm tắt.'**
+  String get wpShareDisabled;
+
+  /// Tiêu đề màn mở link chia sẻ
+  ///
+  /// In vi, this message translates to:
+  /// **'Điểm được chia sẻ'**
+  String get wpReceivedTitle;
+
+  /// Hạn của link nhận được
+  ///
+  /// In vi, this message translates to:
+  /// **'Link hết hạn lúc {date}'**
+  String wpReceivedExpires(String date);
+
+  /// Nút lưu điểm nhận được
+  ///
+  /// In vi, this message translates to:
+  /// **'Lưu vào Điểm'**
+  String get wpReceivedSave;
+
+  /// Đã lưu điểm nhận được
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã lưu vào Điểm.'**
+  String get wpReceivedSaved;
+
+  /// Cảnh báo nội dung link không kiểm chứng
+  ///
+  /// In vi, this message translates to:
+  /// **'Nội dung do người gửi đặt, ứng dụng không kiểm chứng.'**
+  String get wpReceivedUntrusted;
+
+  /// Link hỏng
+  ///
+  /// In vi, this message translates to:
+  /// **'Link không hợp lệ hoặc bị cắt mất khi gửi.'**
+  String get wpLinkBroken;
+
+  /// Link hết hạn
+  ///
+  /// In vi, this message translates to:
+  /// **'Link đã hết hạn. Hãy nhờ người gửi chia sẻ lại.'**
+  String get wpLinkExpired;
+
+  /// Link của bản app mới hơn
+  ///
+  /// In vi, this message translates to:
+  /// **'Link được tạo bởi phiên bản mới hơn. Hãy cập nhật ứng dụng.'**
+  String get wpLinkNewer;
+
+  /// Nút về tab Điểm
+  ///
+  /// In vi, this message translates to:
+  /// **'Mở danh sách điểm'**
+  String get wpGoWaypoints;
+
+  /// Tiêu đề khi ở chế độ an toàn
+  ///
+  /// In vi, this message translates to:
+  /// **'Xuất điểm đã lưu'**
+  String get wpSafeTitle;
+
+  /// Giải thích xuất điểm ở chế độ an toàn
+  ///
+  /// In vi, this message translates to:
+  /// **'Ở chế độ an toàn, danh sách điểm tạm khoá. Bạn vẫn có thể xuất toàn bộ điểm ra tệp GPX để giữ an toàn.'**
+  String get wpSafeBody;
+
+  /// Lỗi đọc thô ở chế độ an toàn
+  ///
+  /// In vi, this message translates to:
+  /// **'Không đọc được điểm đã lưu.'**
+  String get wpSafeReadError;
+
+  /// Số điểm đọc được
+  ///
+  /// In vi, this message translates to:
+  /// **'{count, plural, =0{Không có điểm nào} other{{count} điểm}}'**
+  String wpSafeCount(int count);
 }
 
 class _LbL10nDelegate extends LocalizationsDelegate<LbL10n> {

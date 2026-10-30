@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// Sau `astro build`: đóng gói edge/_worker.ts -> dist/_worker.js + sinh dist/_routes.json (chỉ trang HTML gọi worker).
+// Sau `astro build`: đóng gói edge/_worker.ts -> dist/_worker.js, src/lib/diem-trang.ts -> dist/js/diem.js + sinh
+// dist/_routes.json (chỉ trang HTML gọi worker).
 import { build } from 'esbuild';
 import { readdirSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -16,6 +17,20 @@ await build({
   format: 'esm',
   target: 'es2022',
   platform: 'neutral',
+  minify: true,
+  legalComments: 'none',
+  sourcemap: false,
+  logLevel: 'warning',
+});
+
+// Trang /w/<token> (A6): giải mã token trên trình duyệt - cùng mã với test (src/lib/diem-chia-se.ts).
+await build({
+  entryPoints: [join(goc, 'src/lib/diem-trang.ts')],
+  outfile: join(dist, 'js/diem.js'),
+  bundle: true,
+  format: 'iife',
+  target: 'es2020',
+  platform: 'browser',
   minify: true,
   legalComments: 'none',
   sourcemap: false,

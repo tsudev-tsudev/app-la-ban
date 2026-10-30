@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:la_ban/src/app.dart';
+import 'package:la_ban/src/diem.dart';
 import 'package:la_ban/src/dinh_danh.dart';
 import 'package:la_ban/src/flavor.dart';
 import 'package:la_ban/src/kenh.dart';
@@ -75,6 +76,7 @@ Future<Widget> dungApp(
         ),
       ] else
         anToanProvider.overrideWithValue(LyDoAnToan.migrationLoi),
+      ...noiDiem(kho),
       ...ghiDeThem,
     ],
     child: LaBanApp(flavor: flavor),

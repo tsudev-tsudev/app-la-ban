@@ -195,7 +195,7 @@ void main() {
 
   testWidgets('tiêu đề cửa sổ theo flavor / ngôn ngữ', (tester) async {
     datHeThong(tester, oChup.first);
-    await tester.pumpWidget(appThu());
+    await tester.pumpWidget(appThu(khoDiem: false));
     await tester.pumpAndSettle();
     final t = tester.widget<Title>(find.byType(Title));
     expect(t.title, 'La bàn DEV');

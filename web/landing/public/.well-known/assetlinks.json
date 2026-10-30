@@ -1,0 +1,26 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.tsudev.laban",
+      "sha256_cert_fingerprints": ["CF:09:E7:24:3B:CA:9A:B5:D2:9D:C7:88:BB:D3:1B:A7:1E:FA:EB:AB:7D:69:58:3D:98:BB:FC:51:84:A7:F6:BD"]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.tsudev.laban.stg",
+      "sha256_cert_fingerprints": ["CF:09:E7:24:3B:CA:9A:B5:D2:9D:C7:88:BB:D3:1B:A7:1E:FA:EB:AB:7D:69:58:3D:98:BB:FC:51:84:A7:F6:BD"]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.tsudev.laban.dev",
+      "sha256_cert_fingerprints": ["CF:09:E7:24:3B:CA:9A:B5:D2:9D:C7:88:BB:D3:1B:A7:1E:FA:EB:AB:7D:69:58:3D:98:BB:FC:51:84:A7:F6:BD"]
+    }
+  }
+]

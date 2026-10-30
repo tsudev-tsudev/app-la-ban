@@ -88,6 +88,24 @@ export type NoiDung = {
   khoan: { capNhat: string; moTa: string; muc: Muc[] };
   khieu: { moTa: string; buoc: Muc[]; nutEmail: string; chuDeEmail: string; thanEmail: string; luuY: string };
   loi404: { tieuDe: string; moTa: string; veTrangChu: string };
+  /** Trang link chia sẻ điểm /w/<token>. {m}: số mét đã định dạng. */
+  diem: {
+    tieuDe: string;
+    moTa: string;
+    dangDoc: string;
+    toaDo: string;
+    caoDo: string;
+    ghiChu: string;
+    hetHan: string;
+    khongTinCay: string;
+    moApp: string;
+    taiApp: string;
+    banDo: string;
+    loiHong: string;
+    loiHetHan: string;
+    loiMoiHon: string;
+    canJs: string;
+  };
 };
 
 const vi: NoiDung = {
@@ -269,6 +287,23 @@ const vi: NoiDung = {
     luuY: 'Đừng gửi mật khẩu hay thông tin nhạy cảm. Chúng tôi không bao giờ yêu cầu bạn cài thêm ứng dụng khác.',
   },
   loi404: { tieuDe: 'Không tìm thấy trang', moTa: 'Kim la bàn chưa tìm ra đường tới trang này.', veTrangChu: 'Về trang chủ' },
+  diem: {
+    tieuDe: 'Điểm được chia sẻ',
+    moTa: 'Một điểm được chia sẻ từ ứng dụng La bàn.',
+    dangDoc: 'Đang đọc điểm...',
+    toaDo: 'Toạ độ',
+    caoDo: 'Cao độ {m} m',
+    ghiChu: 'Ghi chú',
+    hetHan: 'Link hết hạn lúc {gio}',
+    khongTinCay: 'Nội dung do người gửi đặt, không được kiểm chứng.',
+    moApp: 'Mở trong app La bàn',
+    taiApp: 'Tải app La bàn',
+    banDo: 'Xem trên OpenStreetMap',
+    loiHong: 'Link không hợp lệ hoặc bị cắt mất khi gửi.',
+    loiHetHan: 'Link đã hết hạn. Hãy nhờ người gửi chia sẻ lại.',
+    loiMoiHon: 'Link được tạo bởi phiên bản app mới hơn. Hãy cập nhật app La bàn.',
+    canJs: 'Trang cần JavaScript để đọc điểm trong link. Hoặc mở link bằng app La bàn.',
+  },
 };
 
 const en: NoiDung = {
@@ -450,6 +485,23 @@ const en: NoiDung = {
     luuY: 'Never send passwords or sensitive information. We will never ask you to install another app.',
   },
   loi404: { tieuDe: 'Page not found', moTa: 'Our compass could not find a way to this page.', veTrangChu: 'Back to home' },
+  diem: {
+    tieuDe: 'Shared waypoint',
+    moTa: 'A waypoint shared from the La bàn compass app.',
+    dangDoc: 'Reading the waypoint...',
+    toaDo: 'Coordinates',
+    caoDo: 'Altitude {m} m',
+    ghiChu: 'Note',
+    hetHan: 'Link expires {gio}',
+    khongTinCay: 'Content is set by the sender and is not verified.',
+    moApp: 'Open in the La bàn app',
+    taiApp: 'Get the La bàn app',
+    banDo: 'View on OpenStreetMap',
+    loiHong: 'This link is invalid or was cut off when sent.',
+    loiHetHan: 'This link has expired. Ask the sender to share it again.',
+    loiMoiHon: 'This link was made by a newer app version. Please update La bàn.',
+    canJs: 'This page needs JavaScript to read the waypoint. Or open the link with the La bàn app.',
+  },
 };
 
 export const NOI_DUNG: Record<NgonNgu, NoiDung> = { vi, en };

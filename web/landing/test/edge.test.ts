@@ -113,6 +113,14 @@ describe('_worker', () => {
     expect(res.headers.get('cache-control')).toBe('private, no-cache');
     expect(k.da[0]?.headers.get('if-none-match')).toBeNull();
   });
+  it('/w/<token> -> trang tĩnh /w/, noindex; đường dẫn /w/ lạ giữ nguyên', async () => {
+    const k = kho('text/html; charset=utf-8');
+    const res = await worker.fetch(new Request('https://compass.tsudev.com/w/AQ_-x9/'), k.env);
+    expect(k.da[0]?.url).toBe('https://compass.tsudev.com/w/');
+    expect(res.headers.get('x-robots-tag')).toBe('noindex');
+    await worker.fetch(new Request('https://compass.tsudev.com/w/a/b'), k.env);
+    expect(k.da[1]?.url).toBe('https://compass.tsudev.com/w/a/b');
+  });
   it('không phải HTML -> trả nguyên', async () => {
     const k = kho('image/png');
     const res = await worker.fetch(new Request('https://compass.tsudev.com/og.png'), k.env);

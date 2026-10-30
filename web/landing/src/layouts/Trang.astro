@@ -8,12 +8,18 @@ import { DUONG_DAN, NOI_DUNG, type NgonNgu, type TrangId } from '../i18n/noi-dun
 
 interface Props {
   lang: NgonNgu;
-  trang: TrangId | '404';
+  // '404' / 'diem' (link chia sẻ điểm /w/<token>): trang phụ, noindex, không canonical / hreflang.
+  trang: TrangId | '404' | 'diem';
 }
 const { lang, trang } = Astro.props;
 const t = NOI_DUNG[lang];
 const khac: NgonNgu = lang === 'vi' ? 'en' : 'vi';
-const meta = trang === '404' ? { tieuDe: `${t.loi404.tieuDe} - La bàn`, moTa: t.loi404.moTa } : t.trang[trang];
+const meta =
+  trang === '404'
+    ? { tieuDe: `${t.loi404.tieuDe} - La bàn`, moTa: t.loi404.moTa }
+    : trang === 'diem'
+      ? { tieuDe: `${t.diem.tieuDe} - La bàn`, moTa: t.diem.moTa }
+      : t.trang[trang];
 const site = Astro.site ?? new URL('https://compass.tsudev.com');
 const url = (p: string) => new URL(p, site).href;
 const duong = (id: TrangId, l: NgonNgu = lang) => DUONG_DAN[id][l];
@@ -23,7 +29,7 @@ const nav = [
   { href: `${chu}#bao-mat`, nhan: t.nav.baoMat },
   { href: duong('huong'), nhan: t.nav.huongDan },
 ];
-const linkKhac = trang === '404' ? DUONG_DAN.chu[khac] : DUONG_DAN[trang][khac];
+const linkKhac = trang === '404' || trang === 'diem' ? DUONG_DAN.chu[khac] : DUONG_DAN[trang][khac];
 const jsonLd =
   trang === 'chu'
     ? JSON.stringify({
@@ -48,9 +54,9 @@ const jsonLd =
     <meta name="description" content={meta.moTa} />
     <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0B1220" media="(prefers-color-scheme: dark)" />
-    {trang === '404' ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={url(DUONG_DAN[trang][lang])} />}
+    {trang === '404' || trang === 'diem' ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={url(DUONG_DAN[trang][lang])} />}
     {
-      trang !== '404' && (
+      trang !== '404' && trang !== 'diem' && (
         <>
           <link rel="alternate" hreflang="vi" href={url(DUONG_DAN[trang].vi)} />
           <link rel="alternate" hreflang="en" href={url(DUONG_DAN[trang].en)} />
@@ -69,7 +75,7 @@ const jsonLd =
     <meta property="og:locale" content={lang === 'vi' ? 'vi_VN' : 'en_US'} />
     <meta property="og:title" content={meta.tieuDe} />
     <meta property="og:description" content={meta.moTa} />
-    <meta property="og:url" content={trang === '404' ? site.href : url(DUONG_DAN[trang][lang])} />
+    <meta property="og:url" content={trang === '404' || trang === 'diem' ? site.href : url(DUONG_DAN[trang][lang])} />
     <meta property="og:image" content={url('/og.png')} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />

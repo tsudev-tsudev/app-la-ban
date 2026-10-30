@@ -1,0 +1,85 @@
+---
+// Link chia sẻ điểm compass.tsudev.com/w/<token> (A6). Edge worker trả trang này cho mọi /w/<token>; điểm đọc từ token
+// NGAY TRÊN TRÌNH DUYỆT (/js/diem.js, đóng gói từ src/lib/diem-trang.ts) - server không lưu, không ghi log nội dung.
+// Máy đã cài app: App Links mở thẳng app, không tới trang này.
+import Trang from '../../layouts/Trang.astro';
+import { DUONG_DAN, NOI_DUNG } from '../../i18n/noi-dung';
+
+const ban = (['vi', 'en'] as const).map((l) => ({ l, t: NOI_DUNG[l].diem }));
+---
+<Trang lang="vi" trang="diem">
+  <section class="dau-trang khung diem">
+    {
+      ban.map(({ l, t }) => (
+        <div class="ban the" data-ngon-ngu={l} lang={l} hidden={l === 'en'}>
+          <h1 data-o="ten">{t.tieuDe}</h1>
+          <p data-o="dang-doc">{t.dangDoc}</p>
+          <p class="loi" data-o="loi" role="alert" hidden data-hong={t.loiHong} data-het-han={t.loiHetHan} data-phien-ban-la={t.loiMoiHon} />
+          <div data-o="noi-dung" hidden>
+            <p class="nhan">{t.toaDo}</p>
+            <p class="so" data-o="toa-do" />
+            <p data-o="cao-do" data-mau={t.caoDo} hidden />
+            <div data-o="khoi-ghi-chu" hidden>
+              <p class="nhan">{t.ghiChu}</p>
+              <p class="ghi-chu" data-o="ghi-chu" />
+            </div>
+            <p class="phu" data-o="het-han" data-mau={t.hetHan} />
+            <p class="phu">{t.khongTinCay}</p>
+            <div class="hang">
+              <a class="nut nut-chinh" data-o="mo-app" href={DUONG_DAN.tai[l]}>{t.moApp}</a>
+              <a class="nut nut-phu" data-o="ban-do" rel="noopener noreferrer" href="https://www.openstreetmap.org/">{t.banDo}</a>
+            </div>
+          </div>
+          <p class="hang">
+            <a class="nut nut-phu" href={DUONG_DAN.tai[l]}>{t.taiApp}</a>
+          </p>
+          <noscript>
+            <p class="phu">{t.canJs}</p>
+          </noscript>
+        </div>
+      ))
+    }
+  </section>
+</Trang>
+<script is:inline src="/js/diem.js" defer></script>
+
+<style>
+  .diem .ban {
+    display: grid;
+    gap: var(--lb-space-xs);
+    max-width: 640px;
+  }
+  .diem .ban[hidden],
+  .diem [hidden] {
+    display: none;
+  }
+  .nhan {
+    font: var(--lb-type-label);
+    color: var(--lb-color-text-muted);
+    margin-top: var(--lb-space-sm);
+  }
+  .so {
+    font: var(--lb-type-telemetry);
+    overflow-wrap: anywhere;
+  }
+  .ghi-chu {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .phu {
+    color: var(--lb-color-text-muted);
+    font-size: 0.9rem;
+  }
+  .loi {
+    color: var(--lb-color-danger-strong);
+  }
+  .hang {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--lb-space-sm);
+    margin-top: var(--lb-space-md);
+  }
+  h1 {
+    overflow-wrap: anywhere;
+  }
+</style>
