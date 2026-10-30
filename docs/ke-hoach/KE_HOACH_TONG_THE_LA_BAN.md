@@ -63,9 +63,9 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 12 | S4 | Làm cứng app | S3 | ✅ 30/10 (1bd395f, v0.1.0-beta.7) · máy thật M32 release prod + staging: chỉ ADB_ENABLED / DEV_MODE / UNOFFICIAL_STORE mức info, điểm 0, không báo nhầm |
 | 13 | S5 | Threat Engine + enforcement | S1 | ✅ 28/10 |
 | 14 | S6 | Admin SOC 1 | S5 | ✅ 30/10 · e2e staging qua Access thật: realtime 587-722 ms, danh sách D1 45 ms |
-| 15 | S7 | Admin SOC 2 | S6 | ⬜ |
-| 16 | A6 | Waypoint, chia sẻ, deep link | A5, S3 | ✅ 30/10 (53e946b + cf74304, v0.1.0-beta.8; deep link máy thật chưa nghiệm thu) |
-| 17 | A7 | Bản đồ offline + Camera AR | A6 | 🟨 A7a bản đồ (phiên song song, worktree app-la-ban-a6) |
+| 15 | S7 | Admin SOC 2 (chia S7a / S7b / S7c) | S6 | 🟨 S7a ✅ 30/10 (4ae38f9, PR #29: giao diện SOC mới + thuỷ vân + Alert Center + Telegram + passkey; staging + prod) · S7b, S7c chưa |
+| 16 | A6 | Waypoint, chia sẻ, deep link | A5, S3 | ✅ 30/10 (53e946b + cf74304, v0.1.0-beta.8) · máy thật M32: App Links `verified`, link /w/ mở thẳng app (cold 1,5 s) |
+| 17 | A7 | Bản đồ offline + Camera AR (chia A7a / A7b / A7c) | A6 | 🟨 A7a ✅ 30/10 (a0e1d1b: tile VN trên R2 + Worker /ban-do); A7b màn bản đồ + vùng offline, A7c Camera AR chưa |
 | 18 | R1 | Landing hoàn chỉnh (kéo lên làm cùng R0 theo yêu cầu người dùng) | N2 | ✅ 28/10 |
 | 19 | S8 | Bảo vệ edge web (CSP, header, WAF as code) | R1 | ✅ 29/10 (CSP nghiêm Report-Only tới 05/11; Access ở S6, Turnstile ở S7) |
 | 20 | S9 | Lớp bảo vệ nội dung web + build sạch | S8 | ✅ 29/10 (bdbd740; CSV audit ở S6) |
@@ -412,6 +412,29 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   buộc; four-eyes cho hành động hàng loạt; khiếu nại; báo cáo CSV/PDF; xem + kiểm chuỗi audit; quản lý Remote Config / phiên
   bản tối thiểu / pin dự phòng (ký số, cần duyệt).
 - Cổng: kill-switch <= 5 s; audit sửa tay bị phát hiện; four-eyes không tự duyệt được.
+- Chia phiên (30/10, phase quá lớn cho một phiên): **S7a** khung SOC mới + thuỷ vân dễ đọc + trung tâm cảnh báo (trạng thái,
+  phân công, kết luận, ghi chú, hàng loạt, Telegram) + tự quản passkey. **S7b** rule UI (bật active chỉ khi
+  `coTheBatThucThi`) + mô phỏng 7 ngày trên `rule_hits` + sửa `threat_config` (phiên bản + audit) + can thiệp Spec §8.2-5
+  (lý do bắt buộc + step-up: chặn / gỡ chặn thiết bị, IP, dải; thu hồi phiên) + four-eyes (`approved_by <> created_by`
+  đã có CHECK D1) cho hàng loạt / duyệt đề xuất chặn dải `pending_approval` + bật Under Attack. **S7c** khiếu nại (form landing
+  + Turnstile + `siteverify` + duyệt ở SOC) + xem / kiểm chuỗi audit (phát hiện sửa tay) + báo cáo CSV / PDF + Remote Config /
+  phiên bản tối thiểu / pin dự phòng ký số có duyệt + đo kill-switch <= 5 s.
+- Kết quả S7a (30/10): migration 0006 (expand: cột `assignee` / `resolution` / `updated_*` / `notified_at` cho `alerts`,
+  chỉ mục gộp open + ack, bảng `alert_notes`). Thuần `thuan/canh-bao.ts` (lọc -> SQL keyset, vòng đời + thao tác hàng loạt,
+  che khoá nhóm theo vai trò - sửa lỗi S6: `ip:<ip>` không bị che cho viewer, nội dung Telegram không PII). Route
+  `admin/canh-bao.ts` (`/canh-bao` lọc + đếm, `/:id`, `/thao-tac`, `/nguoi-xu-ly`, `/thu-telegram`), Threat Engine gộp
+  bằng `ON CONFLICT ... WHERE status IN ('open','ack') RETURNING` + `threat/telegram.ts` (giành quyền gửi bằng
+  `notified_at`). Passkey: `/passkey` xem, `/passkey/doi-ten`, `/passkey/xoa` (step-up, không xoá cái cuối). Quyền mới
+  `canh-bao:xem` (viewer) / `canh-bao:xu-ly` (analyst). SPA: bố cục thanh bên + thanh trên, bảng lệnh Ctrl K, phím tắt,
+  toast, `<dialog>`, mật độ, trang Cảnh báo (bảng chọn nhiều + ngăn chi tiết), trang Tài khoản; thuỷ vân canvas + mã dấu
+  vết (QUYET_DINH Q39, runbook admin-soc). Test mới: 9 thuần Worker + 3 tích hợp Miniflare + 11 SPA.
+- Phát hành S7a (30/10): migration 0006 staging + prod, Worker build 4ae38f9 (staging + prod), Pages admin preview
+  `staging` + main (bundle mới đang phục vụ). e2e staging qua Access thật (`tools/thu/soc-e2e.mjs`, thêm `/canh-bao` +
+  `/passkey`): tất cả đạt; realtime khi ấm 734-1470 ms (< 1,5 s), 2 lần đầu ngay sau deploy (lạnh) 3,5 s / 1,8 s.
+- Phát sinh (từ S7a) -> S10: đo p95 realtime SOC theo thời gian (S6 đo 587-722 ms; S7a khi ấm tới 1,47 s - sát ngân
+  sách) - cân nhắc phát tin SOC trước khi chạy rule (`phatSoc` sớm, kích hoạt rule gửi tin thứ hai).
+- Phát sinh (từ S7a): người dùng tạo bot Telegram + đặt 2 secret (runbook admin-soc) - chưa có thì Worker bỏ qua im lặng;
+  contract chỉ mục `alerts_open` cũ ở bản migration sau S7c.
 
 ### A6 - Waypoint + chia sẻ
 - Làm: CRUD waypoint (ghi chú, ảnh), điều hướng (Vincenty), GPX/KML import/export, link `compass.tsudev.com/w/<token>` hết hạn,
@@ -428,13 +451,21 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   độ + hạn + CRC, không cần server) + QR tự sinh (`ma_qr.dart`); App Links autoVerify + `assetlinks.json` prod/stg/dev trên
   landing, trang `/w` fallback xem điểm. v0.1.0-beta.8 (arm64 28,6 MB / armv7 25,7 MB). `phat-hanh-apk.sh` chấp nhận HEAD tách
   rời trùng origin/main (worktree).
-- Phát sinh (từ A6): nghiệm thu deep link trên máy thật M32 (`adb shell pm get-app-links com.tsudev.laban` phải `verified`, mở
-  link `/w/` từ Zalo / Chrome) - lần cắm máy kế; AASA iOS -> I1.
+- Nghiệm thu máy thật (30/10, M32 Android 13): `pm get-app-links` -> compass.tsudev.com `verified`; link `/w/<token>` từ
+  trình duyệt / Zalo mở THẲNG app (cold 1,5 s, không hộp chọn), "Lưu vào Điểm" tạo điểm mới -> cổng A6 đạt. AASA iOS -> I1.
 
 ### A7 - Bản đồ + AR
 - Làm: MapLibre + PMTiles VN trên R2 (xác minh hỗ trợ PMTiles trong bản plugin; không được thì MBTiles); tải gói offline có
   quản lý dung lượng; lớp la bàn + waypoint; Camera AR bằng camera + fusion (không ARCore/ARKit để giữ dung lượng).
 - Cổng: dùng được ở chế độ máy bay; app vẫn < 25 MB (tile tải riêng).
+- Chia phiên (30/10, theo phiếu phiên song song HGLB-1030-154547): **A7a** dữ liệu bản đồ (tile + style + glyph, Worker
+  `/ban-do/*`) · **A7b** màn bản đồ MapLibre (`maplibre_gl`, Q14) + lớp điểm + vị trí / hướng + tải vùng offline (z <= 14,
+  danh sách / xoá / dung lượng) + ghi công OSM / Noto ở màn Giấy phép · **A7c** Camera AR (camera + fusion, không ARCore).
+- Kết quả A7a (30/10, a0e1d1b PR #28, QUYET_DINH Q38): tile vector VN (Protomaps 20261029, OSM ODbL) đất liền + Hoàng Sa +
+  Trường Sa trích bằng `tools/build/tile-vn.mjs`; R2 `la-ban-cdn/ban-do/20261029/` (vn-0-13 255 MB + vn-14 225 MB) + glyph
+  Noto Sans; Worker `/ban-do/{z}/{x}/{y}.mvt` (cache edge 1 năm), `kieu/<sang|toi>-<vi|en>.json`, `phong/<font>/<dai>.pbf`,
+  rate limit `RL_BAN_DO` 3000/phút/IP. Bẫy: deploy Worker bằng `npm run deploy` / `deploy:staging` (gắn BAN_BUILD).
+- Phát sinh (từ A7a) -> A7b / R2: APK đã 28,6 MB (> 25 MB do freeRASP), đo thêm MapLibre rồi ghi lại ở R2.
 
 ### R1 - Landing
 - Làm: Astro vi/en: giới thiệu, nút tải store, hướng dẫn hiệu chuẩn, `/privacy`, `/terms`, `/appeal` (Turnstile, gửi Worker),

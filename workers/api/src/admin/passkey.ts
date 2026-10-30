@@ -20,10 +20,13 @@ import {
   tuyChonXacThuc,
   type KhoaCongKhai,
 } from '../thuan/webauthn';
-import { docPhien, nguonSoc } from './xac-thuc';
+import { canStepUp, docPhien, nguonSoc } from './xac-thuc';
 
 const B64 = z.string().regex(/^[A-Za-z0-9_-]{1,8192}$/);
 const SchemaBatDau = z.strictObject({});
+const IdPasskey = z.string().regex(/^[A-Za-z0-9_-]{16,1400}$/);
+const SchemaDoiTen = z.strictObject({ id: IdPasskey, ten: z.string().trim().min(1).max(40) });
+const SchemaXoa = z.strictObject({ id: IdPasskey });
 const SchemaDangKyXong = z.strictObject({
   thachThucId: z.string().regex(/^[0-9A-Z]{26}$/),
   clientDataJSON: B64,
@@ -200,6 +203,43 @@ export function dangKyPasskey(r: Hono<MoiTruongHono>): void {
       ts: bayGio,
     });
     return c.json({ ok: true, phienHet: het });
+  });
+
+  // Tự quản lý passkey của chính mình (S7a): xem, đổi tên, xoá (step-up, không xoá passkey cuối cùng).
+  r.get('/passkey', async (c) => {
+    const { email } = c.get('quanTri') as { email: string };
+    const { results } = await db(c)
+      .prepare('SELECT id, name, alg, rp_id, created_at, last_used FROM admin_passkeys WHERE email = ? ORDER BY created_at')
+      .bind(email)
+      .all();
+    return c.json({ ds: results });
+  });
+
+  r.post('/passkey/doi-ten', async (c) => {
+    const b = await body(c, SchemaDoiTen);
+    const { email } = c.get('quanTri') as { email: string };
+    const bayGio = Date.now();
+    const kq = await db(c).prepare('UPDATE admin_passkeys SET name = ? WHERE id = ? AND email = ?').bind(b.ten, b.id, email).run();
+    if ((kq.meta.changes ?? 0) === 0) throw new LoiApi(404, 'khong-thay');
+    await ghiAudit(db(c), { id: taoUlid(bayGio), actor: email, action: 'passkey:doi-ten', target: `passkey:${b.id.slice(0, 16)}`, before: null, after: { ten: b.ten }, ip: c.get('ip') || null, ts: bayGio });
+    return c.json({ ok: true });
+  });
+
+  r.post('/passkey/xoa', canStepUp, async (c) => {
+    const b = await body(c, SchemaXoa);
+    const { email } = c.get('quanTri') as { email: string };
+    const bayGio = Date.now();
+    // Một lệnh: chỉ xoá khi còn passkey khác (tránh tự khoá mình khỏi SOC).
+    const kq = await db(c)
+      .prepare('DELETE FROM admin_passkeys WHERE id = ? AND email = ? AND (SELECT COUNT(*) FROM admin_passkeys WHERE email = ?) > 1')
+      .bind(b.id, email, email)
+      .run();
+    if ((kq.meta.changes ?? 0) === 0) {
+      const co = await db(c).prepare('SELECT 1 AS x FROM admin_passkeys WHERE id = ? AND email = ?').bind(b.id, email).first();
+      throw co ? new LoiApi(409, 'passkey-cuoi') : new LoiApi(404, 'khong-thay');
+    }
+    await ghiAudit(db(c), { id: taoUlid(bayGio), actor: email, action: 'passkey:xoa', target: `passkey:${b.id.slice(0, 16)}`, before: null, after: null, ip: c.get('ip') || null, ts: bayGio });
+    return c.json({ ok: true });
   });
 
   r.post('/phien/ket-thuc', async (c) => {

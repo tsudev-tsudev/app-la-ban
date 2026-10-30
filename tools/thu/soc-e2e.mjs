@@ -125,6 +125,12 @@ kiem('/tong-quan', tq.status === 200, tq.du ? `thiết bị ${tq.du.thietBi.tong
 const t0 = Date.now();
 const ds = await goi('/thiet-bi?limit=100');
 kiem('/thiet-bi (< 500 ms server)', ds.status === 200 && ds.du.ms < 500, ds.du ? `${ds.du.ds.length} dòng, D1 ${ds.du.ms} ms, khứ hồi ${Date.now() - t0} ms` : '');
+
+// S7a: trung tâm cảnh báo (lọc + đếm) + passkey của chính mình.
+const cb = await goi('/canh-bao?trangThai=tat-ca&limit=20');
+kiem('/canh-bao (S7a)', cb.status === 200 && Array.isArray(cb.du?.ds) && typeof cb.du?.dem === 'object', cb.du ? `${cb.du.ds.length} cảnh báo, D1 ${cb.du.ms} ms` : String(cb.status));
+const pk = await goi('/passkey');
+kiem('/passkey (S7a)', pk.status === 200 && (pk.du?.ds?.length ?? 0) >= 1, pk.du ? `${pk.du.ds.length} passkey` : String(pk.status));
 kiem('CSRF: thiếu x-soc -> 403', (await fetch(`${GOC}/api/phien/bat-dau`, { method: 'POST', headers: tieuDe({ 'content-type': 'application/json' }), body: '{}' })).status === 403);
 
 const ws = new WebSocket(`${GOC.replace('https', 'wss')}/api/ws`, { headers: tieuDe() });

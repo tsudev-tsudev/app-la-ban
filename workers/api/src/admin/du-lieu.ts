@@ -1,4 +1,4 @@
-// Dữ liệu SOC (S6, Spec §8.2 mục 1-2): tổng quan, cảnh báo gần đây, danh sách + chi tiết thiết bị, kênh realtime.
+// Dữ liệu SOC (S6, Spec §8.2 mục 1-2): tổng quan, danh sách + chi tiết thiết bị, kênh realtime (cảnh báo: canh-bao.ts).
 // Che PII theo vai trò ở ĐÂY (server) - viewer không bao giờ nhận IP đầy đủ, kể cả khi giao diện bị sửa.
 import type { Hono } from 'hono';
 import { ghiAudit } from '../d1/audit';
@@ -70,17 +70,6 @@ export function dangKyDuLieu(r: Hono<MoiTruongHono>): void {
       dem: kq[9]?.results[0] ?? {},
       haTang: { moiTruong: c.env.MOI_TRUONG, build: c.env.BAN_BUILD ?? 'dev', d1Ms: Date.now() - batDau },
     });
-  });
-
-  r.get('/canh-bao', canQuyen('tong-quan'), async (c) => {
-    const { results } = await db(c)
-      .prepare(
-        "SELECT a.id, a.rule_id, r.name AS rule_name, a.severity, a.group_key, a.count, a.shadow, a.first_ts, a.last_ts, a.status FROM alerts a LEFT JOIN rules r ON r.id = a.rule_id ORDER BY (a.status = 'open') DESC, a.last_ts DESC LIMIT 50",
-      )
-      .all<Record<string, unknown> & { group_key: string }>();
-    const vt = vaiTro(c);
-    // group_key có thể là IP (rule gom theo ip) -> che theo vai trò như mọi IP khác.
-    return c.json({ ds: results.map((a) => ({ ...a, group_key: /^[0-9a-fA-F:.]+$/.test(a.group_key) ? cheIp(a.group_key, vt) : a.group_key })) });
   });
 
   r.get('/thiet-bi', canQuyen('thiet-bi:ds'), async (c) => {

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { CanhBao, TinSoc, TongQuan as DuLieuTongQuan } from '../api';
 import { useSoc } from '../ngu-canh';
 import { MucDo, NhanTrangThai, OSo, ThanhXepHang, ThongBaoLoi, useTai } from '../dung-chung';
-import { dinhDangLuc, dinhDangSo } from '../i18n';
+import { dinhDangLuc, dinhDangSo, truocDay } from '../i18n';
 
 const TRANG_THAI = ['clean', 'suspicious', 'restricted', 'banned'] as const;
 const TOI_DA_TIN = 50;
@@ -119,7 +119,7 @@ function PhanBoTrangThai({ ds }: { ds: { k: string | number | null; n: number }[
 export function TongQuan() {
   const { t, nn } = useSoc();
   const tq = useTai<DuLieuTongQuan>('/tong-quan', 30_000);
-  const cb = useTai<{ ds: CanhBao[] }>('/canh-bao', 30_000);
+  const cb = useTai<{ ds: CanhBao[] }>('/canh-bao?limit=12', 30_000);
   const luong = useLuongSoc();
   const soTinTruoc = useRef(0);
   const { napLai: napTq } = tq;
@@ -213,26 +213,45 @@ export function TongQuan() {
       </section>
 
       <section className="the rong-3">
-        <h2>{t.canhBaoGanDay}</h2>
+        <div className="tieu-de-the">
+          <h2>{t.canhBaoGanDay}</h2>
+          <a href="#/canh-bao">{t.moTrungTamCb}</a>
+        </div>
         {!cb.duLieu || cb.duLieu.ds.length === 0 ? (
           <p className="trong">{t.khongCo}</p>
         ) : (
           <div className="cuon-ngang">
             <table className="bang">
+              <thead>
+                <tr>
+                  <th>{t.cotCb.muc}</th>
+                  <th>{t.cotCb.rule}</th>
+                  <th>{t.cotCb.nhom}</th>
+                  <th className="so">{t.cotCb.lan}</th>
+                  <th>{t.cotCb.trangThai}</th>
+                  <th>{t.cotCb.nguoi}</th>
+                  <th>{t.cotCb.cuoi}</th>
+                </tr>
+              </thead>
               <tbody>
-                {cb.duLieu.ds.slice(0, 12).map((a) => (
+                {cb.duLieu.ds.map((a) => (
                   <tr key={a.id}>
                     <td>
                       <MucDo muc={a.severity} />
                     </td>
                     <td>
-                      {a.rule_id} {a.rule_name}
+                      <a href={`#/canh-bao/${a.id}`}>
+                        <strong>{a.rule_id}</strong> {a.rule_name}
+                      </a>
                       {a.shadow ? <span className="nhan-phu"> {t.shadow}</span> : null}
                     </td>
                     <td className="ma">{a.group_key}</td>
-                    <td>{t.lan(a.count)}</td>
-                    <td>{a.status}</td>
-                    <td>{dinhDangLuc(a.last_ts, nn)}</td>
+                    <td className="so">{t.lan(a.count)}</td>
+                    <td>
+                      <span className={`trang-thai cb-${a.status}`}>{t.ttCb[a.status] ?? a.status}</span>
+                    </td>
+                    <td>{a.assignee ?? '-'}</td>
+                    <td title={dinhDangLuc(a.last_ts, nn)}>{truocDay(a.last_ts, nn)}</td>
                   </tr>
                 ))}
               </tbody>

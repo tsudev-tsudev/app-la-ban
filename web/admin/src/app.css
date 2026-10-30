@@ -106,68 +106,270 @@ h2 {
   justify-content: center;
 }
 
-/* khung */
-.khung {
-  min-block-size: 100vh;
-  display: flex;
-  flex-direction: column;
+/* khung (S7a): thanh bên theo nhóm + cột chính (thanh trên dính + vùng dữ liệu có thuỷ vân) */
+:root {
+  --rong-thanh-ben: 248px;
+  --dem-o: var(--lb-space-sm);
+  --dem-the: var(--lb-space-md);
+  --cao-dong: 44px;
 }
 
-.dau-trang {
-  position: sticky;
-  inset-block-start: 0;
-  z-index: 5;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--lb-space-sm) var(--lb-space-lg);
-  padding: var(--lb-space-sm) var(--lb-space-md);
+:root[data-mat-do='gon'] {
+  --dem-o: 6px;
+  --dem-the: var(--lb-space-sm);
+  --cao-dong: 34px;
+}
+
+.khung {
+  min-block-size: 100vh;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.bo-qua {
+  position: absolute;
+  inset-inline-start: var(--lb-space-sm);
+  inset-block-start: -100px;
+  z-index: 50;
+  padding: var(--lb-space-xs) var(--lb-space-sm);
   background: var(--lb-color-surface-raised);
-  border-block-end: 1px solid var(--lb-color-outline);
+  border-radius: var(--lb-radius-sm);
+}
+
+.bo-qua:focus {
+  inset-block-start: var(--lb-space-sm);
+}
+
+.thanh-ben {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-start: 0;
+  z-index: 20;
+  inline-size: var(--rong-thanh-ben);
+  display: flex;
+  flex-direction: column;
+  gap: var(--lb-space-md);
+  padding: var(--lb-space-md) var(--lb-space-sm);
+  background: var(--lb-color-surface-raised);
+  border-inline-end: 1px solid var(--lb-color-outline);
+  overflow-y: auto;
+  transform: translateX(-100%);
+  transition: transform var(--lb-motion-normal, 200ms) ease;
+}
+
+.khung[data-menu-mo] .thanh-ben {
+  transform: none;
+  box-shadow: var(--lb-shadow-lg);
 }
 
 .thuong-hieu {
   display: flex;
   align-items: center;
   gap: var(--lb-space-xs);
+  padding-inline: var(--lb-space-xs);
   font: var(--lb-type-title);
   color: var(--lb-color-text);
   text-decoration: none;
 }
 
 .dieu-huong {
-  display: flex;
-  gap: var(--lb-space-xxs);
-  flex-wrap: wrap;
+  display: grid;
+  gap: var(--lb-space-md);
+}
+
+.nhom-dieu-huong {
+  display: grid;
+  gap: 2px;
+}
+
+.nhom-nhan {
+  margin: 0 0 var(--lb-space-xxs);
+  padding-inline: var(--lb-space-sm);
+  font: var(--lb-type-caption);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lb-color-text-muted);
 }
 
 .dieu-huong a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--lb-space-sm);
+  min-block-size: 40px;
+  padding: 0 var(--lb-space-sm);
+  border-radius: var(--lb-radius-sm);
   font: var(--lb-type-label);
   color: var(--lb-color-text-muted);
   text-decoration: none;
-  padding: var(--lb-space-xs) var(--lb-space-sm);
-  border-radius: var(--lb-radius-sm);
+}
+
+.dieu-huong a:hover {
+  background: var(--lb-color-surface);
+  color: var(--lb-color-text);
 }
 
 .dieu-huong a[aria-current='page'] {
-  color: var(--lb-color-on-primary-deep);
+  color: var(--lb-color-primary-deep);
+  background: color-mix(in srgb, var(--lb-color-primary-deep) 12%, transparent);
+}
+
+.dieu-huong a[aria-current='page']::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: -8px;
+  inset-block: 8px;
+  inline-size: 3px;
+  border-radius: 2px;
   background: var(--lb-color-primary-deep);
 }
 
-.nguoi-dung {
+.huy-hieu {
   margin-inline-start: auto;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: var(--lb-space-xs);
-  min-inline-size: 0;
+  min-inline-size: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  text-align: center;
+  font: var(--lb-type-caption);
+  font-variant-numeric: tabular-nums;
+  background: var(--lb-color-danger-strong);
+  color: var(--lb-color-on-danger);
 }
 
-.nguoi-dung .email {
-  max-inline-size: 220px;
+.chan-thanh-ben {
+  margin-block-start: auto;
+  display: grid;
+  gap: var(--lb-space-xxs);
+  justify-items: start;
+  padding: var(--lb-space-sm);
+  border-block-start: 1px solid var(--lb-color-outline);
+}
+
+.chan-thanh-ben .email {
+  max-inline-size: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.cot-chinh {
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.thanh-tren {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: var(--lb-space-sm);
+  min-block-size: 56px;
+  padding: var(--lb-space-xs) var(--lb-space-md);
+  background: color-mix(in srgb, var(--lb-color-surface-raised) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-block-end: 1px solid var(--lb-color-outline);
+}
+
+.tieu-de-thanh {
+  font: var(--lb-type-title);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-inline-size: 0;
+}
+
+.moi-truong {
+  font: var(--lb-type-caption);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 2px var(--lb-space-xs);
+  border-radius: var(--lb-radius-sm);
+  background: var(--lb-color-warning);
+  color: var(--lb-color-on-warning);
+}
+
+.moi-truong.mt-prod {
+  background: var(--lb-color-danger-strong);
+  color: var(--lb-color-on-danger);
+}
+
+.o-tim-lenh {
+  margin-inline-start: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lb-space-xs);
+  min-block-size: 38px;
+  min-inline-size: 0;
+  inline-size: min(360px, 40vw);
+  padding: 0 var(--lb-space-sm);
+  border: 1px solid var(--lb-color-outline);
+  border-radius: var(--lb-radius-sm);
+  background: var(--lb-color-surface);
+  color: var(--lb-color-text-muted);
+  font: var(--lb-type-body-small);
+  cursor: pointer;
+}
+
+.o-tim-lenh span {
+  flex: 1;
+  text-align: start;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+kbd {
+  font: 600 0.72rem/1 ui-monospace, Menlo, Consolas, monospace;
+  padding: 3px 6px;
+  border: 1px solid var(--lb-color-outline);
+  border-block-end-width: 2px;
+  border-radius: 4px;
+  background: var(--lb-color-surface-raised);
+  color: var(--lb-color-text-muted);
+  white-space: nowrap;
+}
+
+.nhom-nut {
+  display: flex;
+  align-items: center;
+  gap: var(--lb-space-xxs);
+}
+
+.dem-phien {
+  font: var(--lb-type-caption);
+  font-variant-numeric: tabular-nums;
+  color: var(--lb-color-text-muted);
+  padding-inline: var(--lb-space-xs);
+  white-space: nowrap;
+}
+
+.dem-phien.sap-het {
+  color: var(--lb-color-warning-strong);
+}
+
+.nut-bieu-tuong {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 38px;
+  block-size: 38px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--lb-radius-sm);
+  background: transparent;
+  color: var(--lb-color-text-muted);
+  font: var(--lb-type-title);
+  cursor: pointer;
+}
+
+.nut-bieu-tuong:hover {
+  background: var(--lb-color-surface);
+  color: var(--lb-color-text);
+}
+
+.bieu-tuong {
+  flex: none;
 }
 
 .the-vai-tro,
@@ -178,17 +380,64 @@ h2 {
   background: var(--lb-color-surface);
   border: 1px solid var(--lb-color-outline);
   color: var(--lb-color-text-muted);
+  white-space: nowrap;
 }
 
 .noi-dung {
   padding: var(--lb-space-md);
-  max-inline-size: 1600px;
+  max-inline-size: 1680px;
   margin-inline: auto;
   inline-size: 100%;
 }
 
-.khung > .vung-du-lieu {
+.noi-dung:focus {
+  outline: none;
+}
+
+.cot-chinh > .vung-du-lieu {
   flex: 1;
+}
+
+@media (max-width: 599px) {
+  .o-tim-lenh span,
+  .o-tim-lenh kbd,
+  .dem-phien,
+  .moi-truong {
+    display: none;
+  }
+  .o-tim-lenh {
+    inline-size: 38px;
+    justify-content: center;
+    padding: 0;
+  }
+  .thanh-tren {
+    padding-inline: var(--lb-space-xs);
+  }
+}
+
+@media (min-width: 1024px) {
+  .khung {
+    grid-template-columns: var(--rong-thanh-ben) minmax(0, 1fr);
+  }
+  .thanh-ben {
+    position: sticky;
+    inset-block-start: 0;
+    block-size: 100vh;
+    transform: none;
+    transition: none;
+  }
+  .khung[data-menu-mo] .thanh-ben {
+    box-shadow: none;
+  }
+  .chi-hep {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .thanh-ben {
+    transition: none;
+  }
 }
 
 /* thẻ + lưới */
@@ -196,7 +445,8 @@ h2 {
   background: var(--lb-color-surface-raised);
   border: 1px solid var(--lb-color-outline);
   border-radius: var(--lb-radius-md);
-  padding: var(--lb-space-md);
+  box-shadow: var(--lb-shadow-sm);
+  padding: var(--dem-the);
   min-inline-size: 0;
 }
 
@@ -490,9 +740,14 @@ h2 {
 .bang th,
 .bang td {
   text-align: start;
-  padding: var(--lb-space-xs);
+  padding: var(--dem-o) var(--lb-space-sm);
   border-block-end: 1px solid var(--lb-color-outline);
   white-space: nowrap;
+  vertical-align: middle;
+}
+
+.bang tbody tr:hover {
+  background: var(--lb-color-surface);
 }
 
 .bang th {
@@ -673,10 +928,553 @@ h2 {
 }
 
 @media (max-width: 599px) {
-  .nguoi-dung {
-    margin-inline-start: 0;
-  }
   .xep-hang li {
     grid-template-columns: minmax(0, 6rem) minmax(0, 1fr) auto;
+  }
+}
+
+/* ------------------------------------------------------------ S7a: thành phần chung */
+.an-nhan {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.nut-nguy {
+  border-color: var(--lb-color-danger-strong);
+  color: var(--lb-color-danger-strong);
+}
+
+.nut-chu {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.nut-chu:hover {
+  color: var(--lb-color-primary-deep);
+  text-decoration: underline;
+}
+
+.hang-nut {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--lb-space-xs);
+}
+
+.hang-nut.trai {
+  justify-content: flex-start;
+}
+
+.tieu-de-phu {
+  margin: var(--lb-space-md) 0 var(--lb-space-xs);
+  font: var(--lb-type-label);
+  color: var(--lb-color-text-muted);
+}
+
+.ds-the {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lb-space-xxs);
+}
+
+textarea {
+  font: var(--lb-type-body-small);
+  padding: var(--lb-space-xs) var(--lb-space-sm);
+  border-radius: var(--lb-radius-sm);
+  border: 1px solid var(--lb-color-outline-strong);
+  background: var(--lb-color-surface-raised);
+  color: var(--lb-color-text);
+  resize: vertical;
+  min-inline-size: 0;
+}
+
+.nhom-chon {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: grid;
+  gap: var(--lb-space-xs);
+  min-inline-size: 0;
+}
+
+.nhom-chon legend {
+  padding: 0;
+  margin-block-end: var(--lb-space-xs);
+  font: var(--lb-type-label);
+}
+
+.nhom-chon label.hang {
+  display: flex;
+  align-items: center;
+  gap: var(--lb-space-xs);
+  font: var(--lb-type-body-small);
+  color: var(--lb-color-text);
+}
+
+.luoi-tuy-chon {
+  display: grid;
+  gap: var(--lb-space-lg);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+}
+
+/* trạng thái cảnh báo: nền nhạt + chữ đậm, phân biệt được cả khi không thấy màu (nhãn chữ) */
+.cb-open {
+  color: var(--lb-color-danger-strong);
+  background: color-mix(in srgb, var(--lb-color-danger) 10%, transparent);
+}
+.cb-ack {
+  color: var(--lb-color-warning-strong);
+  background: color-mix(in srgb, var(--lb-color-warning) 14%, transparent);
+}
+.cb-closed {
+  color: var(--lb-color-text-muted);
+}
+.md-critical {
+  background: var(--lb-color-danger-strong);
+  border-color: var(--lb-color-danger-strong);
+  color: var(--lb-color-on-danger);
+}
+
+/* hộp thoại */
+.hop-thoai {
+  inline-size: min(480px, calc(100vw - 32px));
+  max-block-size: calc(100vh - 64px);
+  padding: 0;
+  border: 1px solid var(--lb-color-outline);
+  border-radius: var(--lb-radius-lg);
+  background: var(--lb-color-surface-raised);
+  color: var(--lb-color-text);
+  box-shadow: var(--lb-shadow-lg);
+}
+
+.hop-thoai.rong {
+  inline-size: min(640px, calc(100vw - 32px));
+  margin-block-start: 12vh;
+}
+
+.hop-thoai::backdrop {
+  background: var(--lb-color-scrim);
+}
+
+.hop-thoai-khung {
+  display: grid;
+  gap: var(--lb-space-md);
+  padding: var(--lb-space-lg);
+}
+
+.hop-thoai-tieu-de {
+  font: var(--lb-type-title);
+  color: var(--lb-color-text);
+  margin: 0;
+}
+
+.hop-thoai.rong .hop-thoai-tieu-de {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.hop-thoai.rong .hop-thoai-khung {
+  padding: var(--lb-space-sm);
+}
+
+.phim-tat {
+  grid-template-columns: 7rem minmax(0, 1fr);
+  row-gap: var(--lb-space-sm);
+}
+
+/* bảng lệnh */
+.bang-lenh {
+  display: grid;
+  gap: var(--lb-space-xs);
+}
+
+.bang-lenh-o {
+  display: flex;
+  align-items: center;
+  gap: var(--lb-space-sm);
+  padding: 0 var(--lb-space-sm);
+  border-block-end: 1px solid var(--lb-color-outline);
+  color: var(--lb-color-text-muted);
+}
+
+.bang-lenh-o input {
+  flex: 1;
+  min-inline-size: 0;
+  min-block-size: 48px;
+  border: 0;
+  background: transparent;
+  color: var(--lb-color-text);
+  font: var(--lb-type-body);
+}
+
+.bang-lenh-o input:focus-visible {
+  outline: none;
+}
+
+.bang-lenh-ds {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-block-size: min(420px, 55vh);
+  overflow-y: auto;
+}
+
+.bang-lenh-ds li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lb-space-sm);
+  min-block-size: 40px;
+  padding: 0 var(--lb-space-sm);
+  border-radius: var(--lb-radius-sm);
+  font: var(--lb-type-body-small);
+  cursor: pointer;
+}
+
+.bang-lenh-ds li[aria-selected='true'] {
+  background: color-mix(in srgb, var(--lb-color-primary-deep) 14%, transparent);
+  color: var(--lb-color-text);
+}
+
+/* thông báo nổi */
+.vung-thong-bao {
+  position: fixed;
+  inset-block-end: var(--lb-space-md);
+  inset-inline-end: var(--lb-space-md);
+  z-index: 60;
+  display: grid;
+  gap: var(--lb-space-xs);
+  inline-size: min(380px, calc(100vw - 32px));
+}
+
+.thong-bao {
+  display: flex;
+  align-items: center;
+  gap: var(--lb-space-sm);
+  padding: var(--lb-space-sm) var(--lb-space-sm) var(--lb-space-sm) var(--lb-space-md);
+  border-radius: var(--lb-radius-md);
+  border: 1px solid var(--lb-color-outline);
+  border-inline-start-width: 4px;
+  background: var(--lb-color-surface-raised);
+  box-shadow: var(--lb-shadow-md);
+  font: var(--lb-type-body-small);
+}
+
+.thong-bao span {
+  flex: 1;
+}
+
+.tb-ok {
+  border-inline-start-color: var(--lb-color-success-strong);
+}
+.tb-tin {
+  border-inline-start-color: var(--lb-color-primary-deep);
+}
+.tb-loi {
+  border-inline-start-color: var(--lb-color-danger-strong);
+}
+
+/* ------------------------------------------------------------ S7a: trung tâm cảnh báo */
+.trang-co-ngan {
+  display: grid;
+  gap: var(--lb-space-md);
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+}
+
+.trang-chinh {
+  display: grid;
+  gap: var(--lb-space-sm);
+  min-inline-size: 0;
+}
+
+.hang-o-dem {
+  display: grid;
+  gap: var(--lb-space-sm);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 128px), 1fr));
+}
+
+.o-dem {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--lb-space-xxs);
+  padding: var(--dem-the);
+  background: var(--lb-color-surface-raised);
+  border: 1px solid var(--lb-color-outline);
+  border-radius: var(--lb-radius-md);
+  box-shadow: var(--lb-shadow-sm);
+  color: var(--lb-color-text);
+  font: inherit;
+  text-align: start;
+}
+
+button.o-dem {
+  cursor: pointer;
+}
+
+button.o-dem:hover {
+  border-color: var(--lb-color-primary-deep);
+}
+
+.o-dem.nong .o-so-gia-tri {
+  color: var(--lb-color-danger-strong);
+}
+
+.thanh-loc {
+  padding: var(--dem-the);
+  margin: 0;
+  background: var(--lb-color-surface-raised);
+  border: 1px solid var(--lb-color-outline);
+  border-radius: var(--lb-radius-md);
+}
+
+@media (max-width: 599px) {
+  .thanh-loc {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .thanh-loc .bo-loc-nut {
+    grid-column: 1 / -1;
+  }
+}
+
+.ghi-chu-vai-tro {
+  margin: 0;
+  font: var(--lb-type-body-small);
+  color: var(--lb-color-text-muted);
+}
+
+.thanh-hang-loat {
+  position: sticky;
+  inset-block-start: 64px;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lb-space-xs);
+  padding: var(--lb-space-xs) var(--lb-space-sm);
+  border: 1px solid var(--lb-color-primary-deep);
+  border-radius: var(--lb-radius-md);
+  background: color-mix(in srgb, var(--lb-color-primary-deep) 10%, var(--lb-color-surface-raised));
+  box-shadow: var(--lb-shadow-md);
+}
+
+.thanh-hang-loat strong {
+  margin-inline-end: var(--lb-space-sm);
+  font: var(--lb-type-label);
+}
+
+.bang-khung {
+  border: 1px solid var(--lb-color-outline);
+  border-radius: var(--lb-radius-md);
+  background: var(--lb-color-surface-raised);
+  overflow: auto;
+  max-block-size: calc(100vh - 220px);
+}
+
+.bang-khung[aria-busy='true'] {
+  opacity: 0.7;
+}
+
+.bang-khung .bang thead th {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 1;
+  background: var(--lb-color-surface);
+}
+
+.bang-cb td {
+  block-size: var(--cao-dong);
+}
+
+.bang-cb .o-rule {
+  white-space: normal;
+  min-inline-size: 14rem;
+}
+
+.bang-cb .o-rule .nhan-phu,
+.bang-cb td .nhan-phu {
+  margin-inline-start: var(--lb-space-xxs);
+}
+
+.bang-cb .o-nguoi {
+  max-inline-size: 14rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cot-chon {
+  inline-size: 40px;
+}
+
+.cot-chon input {
+  inline-size: 18px;
+  block-size: 18px;
+}
+
+.bang tr[aria-selected='true'],
+.bang tr.dang-chon {
+  background: color-mix(in srgb, var(--lb-color-primary-deep) 8%, transparent);
+}
+
+.o-trong {
+  padding: var(--lb-space-lg);
+  text-align: center;
+}
+
+.chan-bang {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lb-space-sm);
+}
+
+/* ngăn chi tiết */
+.ngan-chi-tiet {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  background: var(--lb-color-surface-raised);
+  overflow-y: auto;
+}
+
+.ngan-dau {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lb-space-sm);
+  padding: var(--lb-space-sm) var(--lb-space-md);
+  background: var(--lb-color-surface-raised);
+  border-block-end: 1px solid var(--lb-color-outline);
+}
+
+.ngan-dau h2 {
+  margin: 0;
+  font: var(--lb-type-title);
+  color: var(--lb-color-text);
+}
+
+.ngan-dau h2:focus {
+  outline: none;
+}
+
+.ngan-than {
+  display: grid;
+  gap: var(--lb-space-md);
+  padding: var(--lb-space-md);
+}
+
+.ngan-tom-tat {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lb-space-xs);
+  align-items: center;
+}
+
+.ngan-rule {
+  margin: 0;
+  font: var(--lb-type-body);
+}
+
+.ngan-muc {
+  display: grid;
+  gap: var(--lb-space-xs);
+  padding-block-start: var(--lb-space-sm);
+  border-block-start: 1px solid var(--lb-color-outline);
+}
+
+.ngan-muc h3 {
+  margin: 0;
+  font: var(--lb-type-label);
+  color: var(--lb-color-text-muted);
+}
+
+.ngan-muc p {
+  margin: 0;
+}
+
+.form-ghi-chu {
+  display: grid;
+  gap: var(--lb-space-xs);
+  justify-items: end;
+}
+
+.form-ghi-chu textarea {
+  inline-size: 100%;
+}
+
+.dong-tg {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 var(--lb-space-md);
+  border-inline-start: 2px solid var(--lb-color-outline);
+  display: grid;
+  gap: var(--lb-space-sm);
+}
+
+.dong-tg li {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  font: var(--lb-type-body-small);
+}
+
+.dong-tg li::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: calc(-1 * var(--lb-space-md) - 6px);
+  inset-block-start: 5px;
+  inline-size: 10px;
+  block-size: 10px;
+  border-radius: 50%;
+  background: var(--lb-color-surface-raised);
+  border: 2px solid var(--lb-color-outline-strong);
+}
+
+.dong-tg .dtg-status::before {
+  border-color: var(--lb-color-primary-deep);
+}
+
+.dong-tg .dtg-note .dtg-chu {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  padding: var(--lb-space-xs) var(--lb-space-sm);
+  border-radius: var(--lb-radius-sm);
+  background: var(--lb-color-surface);
+}
+
+@media (min-width: 1200px) {
+  .trang-co-ngan.mo {
+    grid-template-columns: minmax(0, 1fr) minmax(380px, 440px);
+  }
+  .ngan-chi-tiet {
+    position: sticky;
+    inset: auto;
+    inset-block-start: 72px;
+    z-index: auto;
+    max-block-size: calc(100vh - 88px);
+    border: 1px solid var(--lb-color-outline);
+    border-radius: var(--lb-radius-md);
+    box-shadow: var(--lb-shadow-md);
   }
 }
