@@ -59,3 +59,21 @@ Lần đăng nhập sau người đó được tạo passkey mới (chỉ cần 
 Header `CF-Access-Client-Id` / `CF-Access-Client-Secret` từ `access-svc-e2e.json`; danh tính trong SOC là
 `svc:<client_id>` - chỉ staging nhận (`ACCESS_DICH_VU`), cần dòng `admin_users` ở D1 staging. Passkey được giả lập
 bằng khoá phần mềm trong script thử (`tools/thu/soc-e2e.mjs`). Prod KHÔNG bao giờ đặt `ACCESS_DICH_VU`.
+
+## Trung tâm cảnh báo + Telegram (S7a)
+
+- Vòng đời: `open` -> `ack` (Nhận xử lý / Đã nhận) -> `closed` (bắt buộc kết luận: vi phạm thật / báo nhầm / vô hại) ->
+  có thể `Mở lại`. Cảnh báo mới cùng (rule, nhóm) khi đang open / ack được GỘP (tăng số lần), không sinh dòng mới.
+- Thao tác hàng loạt tối đa 100 / lần; mọi thay đổi vào `alert_notes` (dòng thời gian) + audit chuỗi băm.
+- Bật Telegram: tạo bot với @BotFather -> lấy token; thêm bot vào nhóm SOC -> lấy chat id (số âm của nhóm). Rồi:
+  `cd workers/api && npx wrangler secret put TELEGRAM_BOT_TOKEN [--env staging]` và `... TELEGRAM_CHAT_ID`. Thử ở
+  Tài khoản -> "Gửi tin thử Telegram" (Super Admin, cần passkey). Chỉ cảnh báo THẬT (không shadow) mức high / critical, một
+  lần mỗi cảnh báo; tin chỉ có rule, mức, dải IP / 8 ký tự device id và liên kết `#/canh-bao/<id>`.
+
+## Thuỷ vân + mã dấu vết (S7a, QUYET_DINH Q39)
+
+- Mọi màn dữ liệu có thuỷ vân: email · giờ VN · `#<mã 8 hex>`; người xem chỉ chọn Nhẹ / Chuẩn (Tài khoản -> Hiển thị),
+  không tắt được. Rời cửa sổ / ẩn tab / in -> tự đậm lên; tuỳ chọn che mờ dữ liệu khi rời cửa sổ.
+- Ảnh chụp lọt ra ngoài: đọc mã ở nhãn (hoặc tăng tương phản để thấy lưới chấm 6 x 6 cạnh nhãn: chấm to = 1, chấm nhỏ = 0,
+  đọc theo hàng, 4 chấm góc là mốc; 32 bit đầu = mã, 4 bit cuối = chẵn lẻ từng byte). Dò ngược: với mỗi quản trị viên và
+  mỗi giờ quanh thời điểm nghi ngờ, tính `sha256("soc|<email>|<floor(ms / 3600000)>")` lấy 8 hex đầu, so với mã.

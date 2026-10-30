@@ -10,6 +10,7 @@ const GOC = 'https://compass-api.tsudev.com/admin/v1';
 let mf: Miniflare;
 let db: D1Database;
 let access: AccessGia;
+const tinTelegram: { chat_id: string; text: string }[] = [];
 
 type Kq = { status: number; json: Record<string, unknown>; cookie: string | null };
 
@@ -58,8 +59,22 @@ async function dangNhap(jwt: string, pk: PasskeyGia, cookie: string | null = nul
 beforeAll(async () => {
   access = await AccessGia.tao();
   mf = await taoMf(undefined, {
-    bindings: { ACCESS_TEAM: access.team, ACCESS_AUD: `khac,${access.aud}`, SOC_NGUON: NGUON, ACCESS_DICH_VU: 'svc-thu.access' },
-    outboundService: (req) => (new URL(req.url).pathname === '/cdn-cgi/access/certs' ? access.jwks() : new Response('x', { status: 404 })),
+    bindings: {
+      ACCESS_TEAM: access.team,
+      ACCESS_AUD: `khac,${access.aud}`,
+      SOC_NGUON: NGUON,
+      ACCESS_DICH_VU: 'svc-thu.access',
+      TELEGRAM_BOT_TOKEN: '1:thu',
+      TELEGRAM_CHAT_ID: '-100',
+    },
+    outboundService: async (req) => {
+      const u = new URL(req.url);
+      if (u.hostname === 'api.telegram.org') {
+        tinTelegram.push((await req.json()) as { chat_id: string; text: string });
+        return Response.json({ ok: true });
+      }
+      return u.pathname === '/cdn-cgi/access/certs' ? access.jwks() : new Response('x', { status: 404 });
+    },
   });
   db = (await mf.getD1Database('DB')) as unknown as D1Database;
   await db
@@ -234,5 +249,94 @@ describe('realtime', () => {
     // Thiếu Origin đúng -> không nâng cấp được.
     const sai = await mf.dispatchFetch(`${GOC}/ws`, { headers: { upgrade: 'websocket', origin: 'https://evil.test', 'cf-access-jwt-assertion': jwt, cookie } });
     expect(sai.status).toBe(403);
+  });
+});
+
+describe('trung tâm cảnh báo (S7a)', () => {
+  const TB = '01JTB0000000000000000000AA';
+  const guiSuKien = (type: string) =>
+    mf.dispatchFetch('https://compass-api.tsudev.com/thu/su-kien', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ n: { thietBi: TB, ip: '203.0.113.77' }, ds: [{ id: crypto.randomUUID(), type, severity: 'high', signals: {} }] }),
+    });
+
+  it('alert thật mức cao -> Telegram MỘT lần, không lộ device id / IP đầy đủ; ack rồi kích hoạt lại -> gộp vào dòng cũ', async () => {
+    await db.prepare("UPDATE rules SET mode = 'active' WHERE id = 'R-004'").run();
+    await mf.dispatchFetch('https://compass-api.tsudev.com/thu/xoa-dem', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' });
+    expect((await guiSuKien('HOOK_FRIDA')).status).toBe(200);
+    expect((await guiSuKien('APP_REPACKAGED')).status).toBe(200);
+    const a = await db.prepare("SELECT id, status, count, notified_at FROM alerts WHERE rule_id = 'R-004'").all<{ id: string; status: string; count: number; notified_at: number | null }>();
+    expect(a.results).toHaveLength(1);
+    expect(a.results[0]?.notified_at).toBeGreaterThan(0);
+    expect(tinTelegram).toHaveLength(1);
+    expect(tinTelegram[0]?.chat_id).toBe('-100');
+    expect(tinTelegram[0]?.text).toContain('R-004');
+    expect(tinTelegram[0]?.text).toContain(`device:${TB.slice(0, 8)}`);
+    expect(tinTelegram[0]?.text).not.toContain(TB);
+
+    await themQt('an1@thu.vn', 'analyst');
+    const { jwt, cookie } = await vaoSoc('an1@thu.vn');
+    const id = a.results[0]?.id as string;
+    expect((await goi('/canh-bao/thao-tac', { jwt, cookie, body: { ids: [id], hanhDong: 'nhan' } })).json).toEqual({ capNhat: 1, boQua: 0 });
+    await db.prepare("DELETE FROM rule_hits WHERE rule_id = 'R-004'").run();
+    expect((await guiSuKien('HOOK_XPOSED')).status).toBe(200);
+    const sau = await db.prepare("SELECT status, count, assignee FROM alerts WHERE rule_id = 'R-004'").all();
+    expect(sau.results).toEqual([{ status: 'ack', count: 2, assignee: 'an1@thu.vn' }]);
+    expect(tinTelegram).toHaveLength(1);
+  });
+
+  it('lọc + thao tác: viewer chỉ xem (IP che), analyst đóng cần kết luận, mở lại, phân công hợp lệ, dòng thời gian + audit', async () => {
+    const bayGio = Date.now();
+    await db.batch([
+      db.prepare("INSERT INTO alerts (id, rule_id, severity, group_key, first_ts, last_ts) VALUES ('01JALERT00000000000000000A', 'R-001', 'medium', 'ip:198.51.100.9', ?, ?)").bind(bayGio, bayGio),
+      db.prepare("INSERT INTO alerts (id, rule_id, severity, group_key, shadow, first_ts, last_ts) VALUES ('01JALERT00000000000000000B', 'R-003', 'low', 'cidr24:198.51.100.0/24', 1, ?, ?)").bind(bayGio - 1, bayGio - 1),
+    ]);
+    await themQt('v9@thu.vn', 'viewer');
+    const v = await vaoSoc('v9@thu.vn');
+    const dsV = await goi('/canh-bao?rule=R-001', { jwt: v.jwt, cookie: v.cookie });
+    expect(dsV.status).toBe(200);
+    expect((dsV.json.ds as { group_key: string }[])[0]?.group_key).toBe('ip:198.51.100.0/24');
+    expect((await goi('/canh-bao/thao-tac', { jwt: v.jwt, cookie: v.cookie, body: { ids: ['01JALERT00000000000000000A'], hanhDong: 'ack' } })).status).toBe(403);
+
+    await themQt('an2@thu.vn', 'analyst');
+    const { jwt, cookie } = await vaoSoc('an2@thu.vn');
+    const ds = await goi('/canh-bao?shadow=an&q=198.51', { jwt, cookie });
+    expect((ds.json.ds as { id: string; group_key: string }[]).map((x) => [x.id, x.group_key])).toEqual([['01JALERT00000000000000000A', 'ip:198.51.100.9']]);
+    expect((await goi('/canh-bao?trangThai=sai', { jwt, cookie })).status).toBe(400);
+    const ids = ['01JALERT00000000000000000A', '01JALERT00000000000000000B'];
+    expect((await goi('/canh-bao/thao-tac', { jwt, cookie, body: { ids, hanhDong: 'dong' } })).status).toBe(422);
+    expect((await goi('/canh-bao/thao-tac', { jwt, cookie, body: { ids, hanhDong: 'phan-cong', nguoi: 'v9@thu.vn' } })).json.code).toBe('nguoi-xu-ly-loi');
+    expect((await goi('/canh-bao/thao-tac', { jwt, cookie, body: { ids, hanhDong: 'phan-cong', nguoi: 'an1@thu.vn' } })).json).toEqual({ capNhat: 2, boQua: 0 });
+    expect((await goi('/canh-bao?nguoi=an1@thu.vn&trangThai=tat-ca', { jwt, cookie })).json.dem).toMatchObject({ mo: expect.any(Number) });
+    expect((await goi('/canh-bao/thao-tac', { jwt, cookie, body: { ids, hanhDong: 'dong', ketLuan: 'false_positive', ghiChu: 'IP văn phòng' } })).json).toEqual({ capNhat: 2, boQua: 0 });
+    expect((await goi('/canh-bao/thao-tac', { jwt, cookie, body: { ids, hanhDong: 'ack' } })).json).toEqual({ capNhat: 0, boQua: 2 });
+    expect((await goi('/canh-bao/thao-tac', { jwt, cookie, body: { ids: [ids[0]], hanhDong: 'mo-lai' } })).json).toEqual({ capNhat: 1, boQua: 0 });
+
+    const ct = await goi(`/canh-bao/${ids[0]}`, { jwt, cookie });
+    expect(ct.status).toBe(200);
+    expect(ct.json.canhBao).toMatchObject({ status: 'open', resolution: null, assignee: 'an1@thu.vn' });
+    expect(ct.json.dich).toEqual({ loai: 'ip', giaTri: '198.51.100.9' });
+    expect((ct.json.dongThoiGian as { kind: string; body: string }[]).map((g) => g.kind).sort()).toEqual(['assign', 'note', 'status', 'status']);
+    const audit = await db.prepare("SELECT action, target FROM audit_logs WHERE actor = 'an2@thu.vn' AND action LIKE 'canh-bao:%' ORDER BY rowid").all();
+    expect(audit.results).toEqual([
+      { action: 'canh-bao:phan-cong', target: 'alerts:2' },
+      { action: 'canh-bao:dong', target: 'alerts:2' },
+      { action: 'canh-bao:mo-lai', target: `alert:${ids[0]}` },
+    ]);
+    expect((await goi('/canh-bao/nguoi-xu-ly', { jwt, cookie })).json.ds).toContain('an1@thu.vn');
+  });
+
+  it('passkey: xem, đổi tên, xoá cần step-up, không xoá passkey cuối', async () => {
+    await themQt('pk@thu.vn', 'viewer');
+    const { jwt, cookie } = await vaoSoc('pk@thu.vn');
+    const ds = await goi('/passkey', { jwt, cookie });
+    const pk = (ds.json.ds as { id: string }[])[0] as { id: string };
+    expect((await goi('/passkey/doi-ten', { jwt, cookie, body: { id: pk.id, ten: 'Laptop' } })).status).toBe(200);
+    expect((await goi('/passkey', { jwt, cookie })).json.ds).toMatchObject([{ name: 'Laptop' }]);
+    expect((await goi('/passkey/xoa', { jwt, cookie, body: { id: pk.id } })).json.code).toBe('passkey-cuoi');
+    await db.prepare("UPDATE admin_sessions SET step_up_at = ? WHERE email = 'pk@thu.vn'").bind(Date.now() - 6 * 60_000).run();
+    expect((await goi('/passkey/xoa', { jwt, cookie, body: { id: pk.id } })).json.code).toBe('can-step-up');
+    expect((await goi('/passkey/doi-ten', { jwt, cookie, body: { id: 'khong-co-khoa-nay-0000', ten: 'x' } })).status).toBe(404);
   });
 });

@@ -63,7 +63,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 12 | S4 | Làm cứng app | S3 | ✅ 30/10 (1bd395f, v0.1.0-beta.7) · máy thật M32 release prod + staging: chỉ ADB_ENABLED / DEV_MODE / UNOFFICIAL_STORE mức info, điểm 0, không báo nhầm |
 | 13 | S5 | Threat Engine + enforcement | S1 | ✅ 28/10 |
 | 14 | S6 | Admin SOC 1 | S5 | ✅ 30/10 · e2e staging qua Access thật: realtime 587-722 ms, danh sách D1 45 ms |
-| 15 | S7 | Admin SOC 2 | S6 | ⬜ |
+| 15 | S7 | Admin SOC 2 (chia S7a / S7b / S7c) | S6 | 🟨 S7a xong 30/10 (giao diện SOC mới + thuỷ vân + Alert Center + Telegram + passkey); S7b, S7c chưa |
 | 16 | A6 | Waypoint, chia sẻ, deep link | A5, S3 | ✅ 30/10 (53e946b + cf74304, v0.1.0-beta.8; deep link máy thật chưa nghiệm thu) |
 | 17 | A7 | Bản đồ offline + Camera AR | A6 | 🟨 A7a bản đồ (phiên song song, worktree app-la-ban-a6) |
 | 18 | R1 | Landing hoàn chỉnh (kéo lên làm cùng R0 theo yêu cầu người dùng) | N2 | ✅ 28/10 |
@@ -412,6 +412,24 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   buộc; four-eyes cho hành động hàng loạt; khiếu nại; báo cáo CSV/PDF; xem + kiểm chuỗi audit; quản lý Remote Config / phiên
   bản tối thiểu / pin dự phòng (ký số, cần duyệt).
 - Cổng: kill-switch <= 5 s; audit sửa tay bị phát hiện; four-eyes không tự duyệt được.
+- Chia phiên (30/10, phase quá lớn cho một phiên): **S7a** khung SOC mới + thuỷ vân dễ đọc + trung tâm cảnh báo (trạng thái,
+  phân công, kết luận, ghi chú, hàng loạt, Telegram) + tự quản passkey. **S7b** rule UI (bật active chỉ khi
+  `coTheBatThucThi`) + mô phỏng 7 ngày trên `rule_hits` + sửa `threat_config` (phiên bản + audit) + can thiệp Spec §8.2-5
+  (lý do bắt buộc + step-up: chặn / gỡ chặn thiết bị, IP, dải; thu hồi phiên) + four-eyes (`approved_by <> created_by`
+  đã có CHECK D1) cho hàng loạt / duyệt đề xuất chặn dải `pending_approval` + bật Under Attack. **S7c** khiếu nại (form landing
+  + Turnstile + `siteverify` + duyệt ở SOC) + xem / kiểm chuỗi audit (phát hiện sửa tay) + báo cáo CSV / PDF + Remote Config /
+  phiên bản tối thiểu / pin dự phòng ký số có duyệt + đo kill-switch <= 5 s.
+- Kết quả S7a (30/10): migration 0006 (expand: cột `assignee` / `resolution` / `updated_*` / `notified_at` cho `alerts`,
+  chỉ mục gộp open + ack, bảng `alert_notes`). Thuần `thuan/canh-bao.ts` (lọc -> SQL keyset, vòng đời + thao tác hàng loạt,
+  che khoá nhóm theo vai trò - sửa lỗi S6: `ip:<ip>` không bị che cho viewer, nội dung Telegram không PII). Route
+  `admin/canh-bao.ts` (`/canh-bao` lọc + đếm, `/:id`, `/thao-tac`, `/nguoi-xu-ly`, `/thu-telegram`), Threat Engine gộp
+  bằng `ON CONFLICT ... WHERE status IN ('open','ack') RETURNING` + `threat/telegram.ts` (giành quyền gửi bằng
+  `notified_at`). Passkey: `/passkey` xem, `/passkey/doi-ten`, `/passkey/xoa` (step-up, không xoá cái cuối). Quyền mới
+  `canh-bao:xem` (viewer) / `canh-bao:xu-ly` (analyst). SPA: bố cục thanh bên + thanh trên, bảng lệnh Ctrl K, phím tắt,
+  toast, `<dialog>`, mật độ, trang Cảnh báo (bảng chọn nhiều + ngăn chi tiết), trang Tài khoản; thuỷ vân canvas + mã dấu
+  vết (QUYET_DINH Q39, runbook admin-soc). Test mới: 9 thuần Worker + 3 tích hợp Miniflare + 11 SPA.
+- Phát sinh (từ S7a): người dùng tạo bot Telegram + đặt 2 secret (runbook admin-soc) - chưa có thì Worker bỏ qua im lặng;
+  contract chỉ mục `alerts_open` cũ ở bản migration sau S7c.
 
 ### A6 - Waypoint + chia sẻ
 - Làm: CRUD waypoint (ghi chú, ảnh), điều hướng (Vincenty), GPX/KML import/export, link `compass.tsudev.com/w/<token>` hết hạn,

@@ -1,9 +1,18 @@
 // Ngữ cảnh SOC dùng chung giữa khung và các trang (tách riêng để không nhập vòng App <-> trang).
 import { createContext, useContext } from 'react';
 import type { Toi } from './api';
+import type { TuyChon } from './giao-dien/tuy-chon';
 import type { ChuoiSoc, NgonNgu } from './i18n';
 
-export type NguCanh = { t: ChuoiSoc; nn: NgonNgu; toi: Toi; coQuyen: (q: string) => boolean; hetPhien: () => void };
+export type NguCanh = {
+  t: ChuoiSoc;
+  nn: NgonNgu;
+  toi: Toi;
+  coQuyen: (q: string) => boolean;
+  hetPhien: () => void;
+  tuyChon: TuyChon;
+  doiTuyChon: (p: Partial<TuyChon>) => void;
+};
 export const Ctx = createContext<NguCanh | null>(null);
 
 export function useSoc(): NguCanh {

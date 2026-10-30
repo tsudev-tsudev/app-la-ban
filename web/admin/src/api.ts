@@ -106,6 +106,21 @@ export async function xacThucPasskey(): Promise<void> {
   });
 }
 
+/**
+ * Ghi cần step-up (S7a): server trả 401 `can-step-up` -> hỏi passkey (báo trước qua [truocPasskey]) rồi gửi lại ĐÚNG một
+ * lần. Lỗi khác ném nguyên trạng.
+ */
+export async function goiStepUp<T>(duong: string, body: unknown, truocPasskey?: () => void): Promise<T> {
+  try {
+    return await goi<T>(duong, { body });
+  } catch (loi) {
+    if (!(loi instanceof LoiSoc && loi.ma === 'can-step-up')) throw loi;
+    truocPasskey?.();
+    await xacThucPasskey();
+    return goi<T>(duong, { body });
+  }
+}
+
 /** Lỗi passkey của trình duyệt (huỷ / hết giờ) -> mã ngắn cho thông báo. */
 export function maLoiPasskey(e: unknown): 'huy' | 'loi' {
   if (e instanceof DOMException && (e.name === 'NotAllowedError' || e.name === 'AbortError')) return 'huy';
@@ -117,6 +132,7 @@ export function maLoiPasskey(e: unknown): 'huy' | 'loi' {
 export type Toi = {
   email: string;
   vaiTro: string;
+  moiTruong?: string;
   quyen: string[];
   soPasskey: number;
   phien: { het: number; stepUpLuc: number; hoatDongLuc: number } | null;
@@ -144,8 +160,25 @@ export type CanhBao = {
   shadow: number;
   first_ts: number;
   last_ts: number;
-  status: string;
+  status: 'open' | 'ack' | 'closed';
+  assignee: string | null;
+  resolution: string | null;
+  updated_at: number | null;
+  updated_by: string | null;
 };
+export type DemCanhBao = { mo?: number | null; ack?: number | null; chuaGiao?: number | null; cuaToi?: number | null; cao?: number | null };
+export type DsCanhBao = { ds: CanhBao[]; tiepTheo: string | null; dem: DemCanhBao; ms: number };
+export type GhiCanhBao = { id: string; actor: string; kind: 'note' | 'status' | 'assign'; body: string; ts: number };
+export type ChiTietCanhBao = {
+  canhBao: CanhBao & { notified_at: number | null };
+  dich: { loai: 'device' | 'ip' | 'cidr' | 'khac'; giaTri: string | null };
+  rule: { id: string; name: string; condition: unknown; window: number; threshold: number; action: string; enabled: number; version: number } | null;
+  lanKichHoat: { ts: number; shadow: number; rule_version: number; actions: string }[];
+  dongThoiGian: GhiCanhBao[];
+  thietBi: { id: string; status: string; risk_score: number; model: string | null; app_version: string | null; last_seen: number } | null;
+  telegram: boolean;
+};
+export type Passkey = { id: string; name: string | null; alg: number; rp_id: string; created_at: number; last_used: number | null };
 export type DongThietBi = {
   id: string;
   platform: string;

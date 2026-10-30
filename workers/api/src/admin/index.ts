@@ -4,6 +4,7 @@ import { Hono } from 'hono';
 import type { MoiTruongHono } from '../moi-truong';
 import { gioiHanRoute } from '../mw/gioi-han';
 import { dsQuyen, type VaiTro } from '../thuan/soc';
+import { dangKyCanhBao } from './canh-bao';
 import { dangKyDuLieu } from './du-lieu';
 import { dangKyPasskey } from './passkey';
 import { dangKyQuanTriVien } from './quan-tri-vien';
@@ -14,7 +15,7 @@ const KHONG_CAN_PHIEN = /^\/admin\/v1\/(toi|passkey\/dang-ky\/(bat-dau|xong)|phi
 export function taoAdmin(): Hono<MoiTruongHono> {
   const r = new Hono<MoiTruongHono>();
   r.use('*', async (c, next) => {
-    c.set('tuyen', c.req.path.replace(/\/thiet-bi\/[^/]+$/, '/thiet-bi/:id').slice(0, 64));
+    c.set('tuyen', c.req.path.replace(/\/thiet-bi\/[^/]+$/, '/thiet-bi/:id').replace(/\/canh-bao\/[0-9A-Za-z]{20,}$/, '/canh-bao/:id').slice(0, 64));
     await next();
   });
   r.use('*', gioiHanRoute([{ chieu: 'ip', gioiHan: 300, cuaSoMs: 60_000 }]));
@@ -32,6 +33,7 @@ export function taoAdmin(): Hono<MoiTruongHono> {
     return c.json({
       email: qt.email,
       vaiTro: qt.vaiTro,
+      moiTruong: c.env.MOI_TRUONG,
       quyen: dsQuyen(qt.vaiTro),
       soPasskey: pk?.n ?? 0,
       phien: p ? { het: p.dong.expires_at, stepUpLuc: p.dong.step_up_at, hoatDongLuc: p.dong.last_active } : null,
@@ -40,6 +42,7 @@ export function taoAdmin(): Hono<MoiTruongHono> {
 
   dangKyPasskey(r);
   dangKyDuLieu(r);
+  dangKyCanhBao(r);
   dangKyQuanTriVien(r);
   return r;
 }
