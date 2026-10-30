@@ -24,7 +24,7 @@ PI_GOI = "com.tsudev.laban"
 PI_CHUNG_CHI = "cf09e7243bca9ab5d29dc788bbd31ba71efaebab7d69583d98bbfc5184a7f6bd"
 # S6 Admin SOC: team Zero Trust + AUD ứng dụng Access "la-ban-admin" (tools/cloudflare/access.mjs in ra). AUD rỗng -> /admin 503.
 ACCESS_TEAM = "purple-cake-8f2a.cloudflareaccess.com"
-ACCESS_AUD = ""
+ACCESS_AUD = "f1dec48a71e9b10406ae9534bea272e055a6bcf58a302e8d9324286976641ed3"
 SOC_NGUON = "https://compass-admin.tsudev.com"
 
 [[d1_databases]]
@@ -93,9 +93,9 @@ PI_GOI = "com.tsudev.laban.stg,com.tsudev.laban.dev,com.tsudev.laban"
 PI_CHUNG_CHI = ""
 # SOC staging = Pages preview nhánh "staging" (binding API -> worker này). Service token e2e chỉ được nhận ở đây.
 ACCESS_TEAM = "purple-cake-8f2a.cloudflareaccess.com"
-ACCESS_AUD = ""
+ACCESS_AUD = "f1dec48a71e9b10406ae9534bea272e055a6bcf58a302e8d9324286976641ed3"
 SOC_NGUON = "https://staging.la-ban-admin.pages.dev"
-ACCESS_DICH_VU = ""
+ACCESS_DICH_VU = "961951549f4f1b1786ccdfe3d53212bb.access"
 
 [[env.staging.d1_databases]]
 binding = "DB"

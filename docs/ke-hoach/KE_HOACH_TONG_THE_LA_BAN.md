@@ -62,7 +62,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 11 | S3 | Ký request, pinning, Remote Config ký số | S2 | ✅ 30/10 · e2e staging + prod đạt; máy thật M32 30/10: xoay pin staging chỉ ISRG -> chỉ /v1/config tới Worker, về mặc định -> /v1/status 200, không build lại |
 | 12 | S4 | Làm cứng app | S3 | ✅ 30/10 (1bd395f, v0.1.0-beta.7) · máy thật M32 release prod + staging: chỉ ADB_ENABLED / DEV_MODE / UNOFFICIAL_STORE mức info, điểm 0, không báo nhầm |
 | 13 | S5 | Threat Engine + enforcement | S1 | ✅ 28/10 |
-| 14 | S6 | Admin SOC 1 | S5 | ⬜ |
+| 14 | S6 | Admin SOC 1 | S5 | ✅ 30/10 · e2e staging qua Access thật: realtime 587-722 ms, danh sách D1 45 ms |
 | 15 | S7 | Admin SOC 2 | S6 | ⬜ |
 | 16 | A6 | Waypoint, chia sẻ, deep link | A5, S3 | ⬜ |
 | 17 | A7 | Bản đồ offline + Camera AR | A6 | ⬜ |
@@ -392,6 +392,20 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   tổng quan realtime qua DO WebSocket; danh sách thiết bị ảo hóa + lọc + chi tiết (timeline, IP/ASN, liên quan); ẩn PII cho
   Viewer; vi/en, light/dark.
 - Cổng: người không có vai trò bị 403; cảnh báo hiện < 1,5 s.
+- Kết quả (30/10, QUYET_DINH Q37, runbook `docs/runbook/admin-soc.md`): Access (IdP One-time PIN email, app `la-ban-admin`
+  phủ compass-admin + `*.la-ban-admin.pages.dev`, phiên 8 giờ, cấu hình dạng mã `tools/cloudflare/access.mjs`, email ngoài
+  repo). Worker `/admin/v1` (`src/admin/`): JWT Access kiểm lại (iss / aud / JWKS xoay khoá) -> vai trò D1 -> phiên passkey
+  WebAuthn tự kiểm (`thuan/webauthn.ts` + `thuan/cbor.ts`, ES256 / EdDSA / RS256, bắt buộc UV, bộ đếm chống sao chép) ->
+  cookie `__Host-soc` (nhàn rỗi 15 phút, request nền không gia hạn, tuyệt đối 8 giờ, step-up 5 phút); chống CSRF; Viewer
+  nhận IP /24 và không xem chi tiết; audit chuỗi băm cho đăng nhập / passkey / xem chi tiết / quản trị viên. Migration 0005.
+  DO `PhongSoc` WebSocket hibernation, Threat Engine phát sau mỗi lô. Pages `_worker` (esbuild) kiểm JWT trước khi trả
+  SPA, `/api/*` -> service binding (prod `la-ban-api`, preview `la-ban-api-staging`), CSP 'self' không unsafe-*. SPA: tổng
+  quan realtime, danh sách thiết bị ảo hoá + lọc (ID / IP / dải / ASN / phiên bản / loại sự kiện / trạng thái) + cursor,
+  chi tiết (timeline, IP/ASN, liên quan, chặn, khiếu nại), quản trị viên (Super Admin). 33 test mới (thuần + Miniflare +
+  _worker); e2e `tools/thu/soc-e2e.mjs` trên staging thật (service token chỉ staging nhận).
+- Phát sinh (từ S6) -> S7: xoá / đổi tên passkey trên giao diện (hiện qua wrangler d1); bảng alerts trong Tổng quan chỉ
+  xem - trạng thái / phân công ở Alert Center; heatmap tỉnh (cần geo IP cấp tỉnh). -> người dùng: thêm IdP Google (OAuth
+  client) khi muốn bỏ OTP email.
 
 ### S7 - Admin SOC 2
 - Làm: trung tâm cảnh báo (dedup, trạng thái, Telegram); rule UI + mô phỏng 7 ngày; can thiệp (Spec §8.2-5) với lý do bắt
