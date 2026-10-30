@@ -82,6 +82,9 @@ class CameraArPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityA
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
             "mo" -> xinQuyenRoiMo(result)
+            "coQuyen" -> result.success(
+                ungDung.checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED,
+            )
             "dong" -> {
                 dong()
                 result.success(null)
@@ -130,6 +133,9 @@ class CameraArPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityA
         choQuyen = null
         if (grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) {
             mo(r)
+        } else if (grantResults.isEmpty()) {
+            // Hộp thoại bị hệ thống huỷ (đổi cấu hình...) - không phải người dùng từ chối.
+            r.error("camera.tuChoi", null, null)
         } else {
             // Không còn được hỏi lại (đã chọn "Không cho phép" hẳn) -> chỉ bật được trong Cài đặt.
             val act: Activity? = hoatDong?.activity
@@ -272,7 +278,7 @@ class CameraArPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityA
     companion object {
         private const val YC_QUYEN = 0x4152
 
-        /** Xem trước tối đa ~1,2 MP: đủ nét cho màn điện thoại, nhẹ pin và băng thông GPU. */
+        /** Xem trước tối đa ~1,5 MP: đủ nét cho màn điện thoại, nhẹ pin và băng thông GPU. */
         private const val DIEN_TICH_TOI_DA = 1440 * 1080
 
         /** Cùng tỉ lệ vùng cảm biến (thường 4:3) để giữ trọn trường nhìn, lớn nhất trong trần. */

@@ -43,6 +43,9 @@ abstract interface class CameraAr {
 
   Future<void> dong();
 
+  /// Đã có quyền camera chưa (không hỏi).
+  Future<bool> coQuyen();
+
   /// Mở trang cài đặt của app (bật lại quyền bị từ chối hẳn).
   Future<void> moCaiDat();
 }
@@ -82,6 +85,15 @@ final class CameraArKenh implements CameraAr {
       await _kenh.invokeMethod<void>('dong');
     } on MissingPluginException {
       return;
+    }
+  }
+
+  @override
+  Future<bool> coQuyen() async {
+    try {
+      return await _kenh.invokeMethod<bool>('coQuyen') ?? false;
+    } on MissingPluginException {
+      return false;
     }
   }
 

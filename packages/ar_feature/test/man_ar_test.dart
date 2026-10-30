@@ -30,6 +30,9 @@ final class CameraGia implements CameraAr {
   Future<void> dong() async => soLanDong++;
 
   @override
+  Future<bool> coQuyen() async => false;
+
+  @override
   Future<void> moCaiDat() async => daMoCaiDat = true;
 }
 
@@ -114,6 +117,20 @@ void main() {
     expect(cam.soLanMo, 2);
     expect(find.text('Cho phép camera'), findsNothing);
     expect(find.byType(Texture), findsOneWidget);
+  });
+
+  testWidgets('từ chối rồi quay lại app: không tự hỏi quyền lặp lại', (
+    tester,
+  ) async {
+    final cam = CameraGia([LoiCamera.tuChoi]);
+    await tester.pumpWidget(arThu(o: oChup.first, camera: cam));
+    await tester.pumpAndSettle();
+    tester.binding
+      ..handleAppLifecycleStateChanged(AppLifecycleState.inactive)
+      ..handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await tester.pumpAndSettle();
+    expect(cam.soLanMo, 1);
+    expect(find.text('Cho phép camera'), findsOneWidget);
   });
 
   testWidgets('từ chối hẳn -> mở Cài đặt', (tester) async {

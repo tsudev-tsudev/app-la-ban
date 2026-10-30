@@ -29,16 +29,23 @@ class _ManArState extends ConsumerState<ManAr> {
   @override
   void initState() {
     super.initState();
+    _vongDoi = AppLifecycleListener(
+      onPause: () => unawaited(_dong()),
+      onResume: () => unawaited(_moLai()),
+    );
     // Lớp phủ giả định màn hình dọc (hệ trục cảm biến + camera); máy ảnh hệ
     // thống cũng khoá như vậy.
     unawaited(
       SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]),
     );
-    _vongDoi = AppLifecycleListener(
-      onPause: () => unawaited(_dong()),
-      onResume: () => unawaited(_mo()),
-    );
     unawaited(_mo());
+  }
+
+  /// Quay lại app (sau hộp thoại quyền / Cài đặt / xuống nền): chỉ mở lại
+  /// camera khi đã có quyền - KHÔNG tự hỏi lại (đo trên Galaxy M32: hộp thoại
+  /// bị hệ thống huỷ trả kết quả rỗng, hỏi lại khi resume thành vòng lặp).
+  Future<void> _moLai() async {
+    if (_loi == null || await _camera.coQuyen()) await _mo();
   }
 
   @override
@@ -326,10 +333,19 @@ class _PhuHuong extends StatelessWidget {
           child: ExcludeSemantics(
             child: CustomPaint(
               painter: _VeChanTroi(
-                cacVach: [
-                  for (final g in vachChanTroi(doc.camera.phuongVi, nuaNgang))
-                    if (_chieu(g) case final d?) (g: g, d: d),
-                ],
+                cacVach:
+                    [
+                      for (final g in vachChanTroi(
+                        doc.camera.phuongVi,
+                        nuaNgang,
+                      ))
+                        if (_chieu(g) case final d?) (g: g, d: d),
+                    ]..sort(
+                      (a, b) => gocLechAr(
+                        doc.camera.phuongVi,
+                        a.g,
+                      ).compareTo(gocLechAr(doc.camera.phuongVi, b.g)),
+                    ),
                 diemDiem: [
                   for (final p in diem)
                     if (gocLechAr(doc.camera.phuongVi, p.phuongVi).abs() <
@@ -381,10 +397,13 @@ class _VeChanTroi extends CustomPainter {
       ..strokeWidth = 2
       ..strokeCap = StrokeCap.round;
     if (cacVach.length >= 2) {
-      final dau = cacVach.first.d;
-      final cuoi = cacVach.last.d;
+      // Nối các vạch theo thứ tự trái -> phải (đã sắp theo góc lệch).
+      final duong = Path()..moveTo(cacVach.first.d.x, cacVach.first.d.y);
+      for (final v in cacVach.skip(1)) {
+        duong.lineTo(v.d.x, v.d.y);
+      }
       for (final p in [bong, net]) {
-        canvas.drawLine(Offset(dau.x, dau.y), Offset(cuoi.x, cuoi.y), p);
+        canvas.drawPath(duong, Paint.from(p)..style = PaintingStyle.stroke);
       }
     }
     for (final v in cacVach) {
