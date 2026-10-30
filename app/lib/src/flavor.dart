@@ -21,6 +21,19 @@ enum Flavor {
   /// Console chỉ cần liên kết đúng dự án này (App integrity), không đổi mã.
   static const soDuAnCloud = 930761930572;
 
+  /// SHA-256 chứng chỉ khoá upload (QUYET_DINH Q34) - công khai, giống
+  /// `PI_CHUNG_CHI` của Worker. Bản release ký khoá khác = đóng gói lại
+  /// (SEC-APP APP-03, chỉ là tín hiệu gửi server).
+  static const chungChiUpload =
+      'cf09e7243bca9ab5d29dc788bbd31ba71efaebab7d69583d98bbfc5184a7f6bd';
+
+  /// applicationId (android/app/build.gradle.kts: hậu tố theo flavor).
+  String get goi => switch (this) {
+    Flavor.dev => 'com.tsudev.laban.dev',
+    Flavor.staging => 'com.tsudev.laban.stg',
+    Flavor.prod => 'com.tsudev.laban',
+  };
+
   /// Tên hiển thị trên launcher.
   String get appName => switch (this) {
     Flavor.dev => 'La bàn DEV',

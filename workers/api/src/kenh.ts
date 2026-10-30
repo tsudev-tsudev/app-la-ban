@@ -10,7 +10,7 @@ import { nen } from './mw/dich-vu';
 import { gioiHanRoute } from './mw/gioi-han';
 import { dongBoLists } from './threat/dong-bo-lists';
 import { xuLySuKien } from './threat/dong-co';
-import { docLatest, GOI_APP_TOI_DA, KHOA_KV_APP, LOAI_CHI_SERVER, refChoTrangThai, type BanMoi } from './thuan/kenh';
+import { docLatest, GOI_APP_TOI_DA, GOP_LOAI_MS, KHOA_KV_APP, LOAI_CHI_SERVER, refChoTrangThai, type BanMoi } from './thuan/kenh';
 import { goiCauHinhHopLe } from './thuan/khien-web';
 import { LoiApi } from './thuan/loi';
 import { schemaLoSuKien, tinHieuLuu, LO_TOI_DA } from './thuan/su-kien';
@@ -96,7 +96,12 @@ export function dangKyKenh(app: Hono<MoiTruongHono>, boTuyen: BoTuyen): void {
       const bayGio = Date.now();
       const kq = await xuLySuKien(
         c.env,
-        { thietBi: c.get('thietBi') as string, ip: c.get('ip') || null, country: c.req.header('cf-ipcountry') ?? null },
+        {
+          thietBi: c.get('thietBi') as string,
+          ip: c.get('ip') || null,
+          country: c.req.header('cf-ipcountry') ?? null,
+          gopLoaiMs: GOP_LOAI_MS,
+        },
         body.events.map((e) => ({ id: e.event_id, type: e.type, severity: e.severity, signals: tinHieuLuu(e, bayGio) })),
         bayGio,
       );

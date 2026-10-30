@@ -16,6 +16,7 @@ import {
   CAU_HINH_MAC_DINH as CFG,
   congDiem,
   diemSuKien,
+  diemTheoLo,
   hoiPhuc,
   nangHon,
   phanTichCauHinh,
@@ -39,6 +40,12 @@ describe('bảng điểm + ngưỡng (Spec §7.6c)', () => {
     expect([0, 29, 30, 59, 60, 89, 90, 500].map((d) => trangThaiTuDiem(CFG, d))).toEqual([
       'clean', 'clean', 'suspicious', 'suspicious', 'restricted', 'restricted', 'banned', 'banned',
     ]);
+  });
+  it('lô từ app: mỗi loại tính điểm một lần, bỏ loại đã tính gần đây (máy root mở app nhiều lần không bị cấm)', () => {
+    expect(diemTheoLo(CFG, ['ROOT', 'ROOT', 'HOOK_FRIDA', 'DEV_MODE'], new Set())).toEqual([25, 0, 50, 0]);
+    expect(diemTheoLo(CFG, ['ROOT', 'EMULATOR'], new Set(['ROOT']))).toEqual([0, 30]);
+    // Loại 0 điểm không chiếm chỗ: không ảnh hưởng gì.
+    expect(diemTheoLo(CFG, ['DEV_MODE', 'DEV_MODE'], new Set())).toEqual([0, 0]);
   });
   it('cộng điểm kẹp [0, diemToiDa]', () => {
     expect(congDiem(CFG, 990, 50)).toBe(1000);

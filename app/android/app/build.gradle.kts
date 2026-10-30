@@ -53,6 +53,13 @@ android {
     packaging {
         jniLibs {
             useLegacyPackaging = true
+            // --target-platform chỉ lọc libflutter/libapp; thư viện native của plugin (freeRASP libts.so ~13 MB nén mỗi ABI)
+            // vẫn đủ 3 ABI. Flutter ghi đè ndk.abiFilters nên loại ABI thừa ở bước đóng gói.
+            (project.findProperty("target-platform") as String?)?.let { tp ->
+                val abi = mapOf("android-arm" to "armeabi-v7a", "android-arm64" to "arm64-v8a", "android-x64" to "x86_64")
+                val giu = tp.split(",").mapNotNull { abi[it.trim()] }.toSet()
+                if (giu.isNotEmpty()) (abi.values - giu).forEach { excludes += "lib/$it/**" }
+            }
         }
     }
 
@@ -74,6 +81,10 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs.findByName("upload") ?: signingConfigs.getByName("debug")
+            // SEC-APP APP-01 / APP-06: R8 (AGP 9 mặc định full mode) + thu gọn tài nguyên; release không debuggable.
+            isMinifyEnabled = true
+            isShrinkResources = true
+            isDebuggable = false
         }
     }
 }

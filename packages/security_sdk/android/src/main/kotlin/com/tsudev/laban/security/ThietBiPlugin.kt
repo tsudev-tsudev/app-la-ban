@@ -1,5 +1,6 @@
 package com.tsudev.laban.security
 
+import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -11,6 +12,7 @@ import android.os.Looper
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyInfo
 import android.security.keystore.KeyProperties
+import android.view.WindowManager
 import com.google.android.play.core.integrity.IntegrityManagerFactory
 import com.google.android.play.core.integrity.StandardIntegrityException
 import com.google.android.play.core.integrity.StandardIntegrityManager.PrepareIntegrityTokenRequest
@@ -18,6 +20,8 @@ import com.google.android.play.core.integrity.StandardIntegrityManager.StandardI
 import com.google.android.play.core.integrity.StandardIntegrityManager.StandardIntegrityTokenRequest
 import com.google.android.play.core.integrity.model.StandardIntegrityErrorCode
 import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.embedding.engine.plugins.activity.ActivityAware
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.security.KeyFactory
@@ -34,14 +38,17 @@ import java.util.concurrent.Executors
  *   khoá công khai (SPKI DER); mọi chữ ký làm trong Keystore.
  * - Play Integrity Standard API: chuẩn bị provider một lần (theo số dự án Cloud), mỗi yêu cầu gắn requestHash do app
  *   tính từ thách thức của server. Kết quả CHỈ server giải mã + đánh giá.
+ * - Kiểm tra môi trường (S4, [MoiTruong]) + FLAG_SECURE cho màn nhạy cảm.
  */
-class ThietBiPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
+class ThietBiPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware {
     private lateinit var kenh: MethodChannel
     private lateinit var ngucanh: Context
     private val luong = Executors.newSingleThreadExecutor()
     private val chinh = Handler(Looper.getMainLooper())
     private var provider: StandardIntegrityTokenProvider? = null
     private var soDuAnProvider: Long = 0
+    private var activity: Activity? = null
+    private var cheBat = false
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         ngucanh = binding.applicationContext
@@ -51,6 +58,26 @@ class ThietBiPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         kenh.setMethodCallHandler(null)
+    }
+
+    override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+        activity = binding.activity
+        apCheManHinh()
+    }
+
+    override fun onDetachedFromActivityForConfigChanges() {
+        activity = null
+    }
+
+    override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) = onAttachedToActivity(binding)
+
+    override fun onDetachedFromActivity() {
+        activity = null
+    }
+
+    private fun apCheManHinh() {
+        val w = activity?.window ?: return
+        if (cheBat) w.addFlags(WindowManager.LayoutParams.FLAG_SECURE) else w.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
@@ -87,6 +114,13 @@ class ThietBiPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
                         result.success(false)
                     }
                 }
+            }
+            // Đọc /proc, thử cổng frida (<= 120 ms) -> ngoài luồng UI.
+            "moiTruong" -> ngoaiLuong(result, "moiTruong.loi") { MoiTruong.kiemTra(ngucanh) }
+            "cheManHinh" -> {
+                cheBat = call.argument<Boolean>("bat") == true
+                apCheManHinh()
+                result.success(null)
             }
             else -> result.notImplemented()
         }

@@ -154,5 +154,14 @@
   "updateAvailableBodyGeneric": "A new version is ready with fixes and improvements.",
   "updateNow": "Update",
   "updateLater": "Later",
-  "updateOpenFailed": "Couldn't open the browser. Visit compass.tsudev.com/en/download to get the new version."
+  "updateOpenFailed": "Couldn't open the browser. Visit compass.tsudev.com/en/download to get the new version.",
+  "securityRef": "Reference code: {ref}",
+  "securityCopyRef": "Copy code",
+  "securityRefCopied": "Reference code copied",
+  "securityRestrictedTitle": "Some features are restricted",
+  "securityRestrictedBody": "Online features are temporarily unavailable on this device. The compass keeps working as usual.",
+  "securityLockedTitle": "The app is locked on this device",
+  "securityLockedBody": "For security reasons, the app can't continue on this device. If you think this is a mistake, send an appeal with the reference code below.",
+  "securityAppeal": "Send an appeal",
+  "securityAppealOpenFailed": "Couldn't open the browser. Visit compass.tsudev.com/en/appeal to send an appeal."
 }

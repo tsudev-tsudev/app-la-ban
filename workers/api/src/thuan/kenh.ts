@@ -20,6 +20,9 @@ export const LOAI_CHI_SERVER: ReadonlySet<string> = new Set([
   'WEB_DEVTOOLS',
 ]);
 
+/** Lô sự kiện từ app: mỗi loại tính điểm tối đa một lần / thiết bị / 24 giờ (`diemTheoLo`). */
+export const GOP_LOAI_MS = 24 * 60 * 60 * 1000;
+
 const CROCKFORD = /^[0-9A-HJKMNP-TV-Z]{26}$/;
 
 /** Mã REF hiện trên màn khoá / khiếu nại: 10 ký tự cuối (phần ngẫu nhiên) của id thiết bị, SOC tra theo hậu tố. */

@@ -137,6 +137,15 @@ final class NenTangGia implements NenTangThietBi {
 
   @override
   Future<void> xoaKhoa() async {}
+
+  KetQuaNative moiTruong = const KetQuaNative(coNative: true);
+  bool? che;
+
+  @override
+  Future<KetQuaNative> kiemTraMoiTruong() async => moiTruong;
+
+  @override
+  Future<void> cheManHinh({required bool bat}) async => che = bat;
 }
 
 void main() {

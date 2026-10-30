@@ -1,0 +1,65 @@
+import assert from 'node:assert/strict';
+import { test } from 'node:test';
+import { kiemApk, phanTichManifest } from './kiem-apk-luat.mjs';
+
+const ANDROID = 'http://schemas.android.com/apk/res/android';
+const manifest = ({ debuggable = false, them = '' } = {}) => `N: android=${ANDROID} (line=2)
+  E: manifest (line=2)
+    A: package="com.tsudev.laban" (Raw: "com.tsudev.laban")
+    E: application (line=10)
+      A: ${ANDROID}:label(0x01010001)="La bàn" (Raw: "La bàn")
+${debuggable ? `      A: ${ANDROID}:debuggable(0x0101000f)=true\n` : ''}      E: activity (line=20)
+        A: ${ANDROID}:name(0x01010003)="com.tsudev.laban.MainActivity" (Raw: "com.tsudev.laban.MainActivity")
+        A: ${ANDROID}:exported(0x01010010)=true
+        E: intent-filter (line=30)
+          E: action (line=31)
+            A: ${ANDROID}:name(0x01010003)="android.intent.action.MAIN" (Raw: "android.intent.action.MAIN")
+      E: activity (line=40)
+        A: ${ANDROID}:name(0x01010003)="com.google.android.play.core.common.PlayCoreDialogWrapperActivity" (Raw: "x")
+        A: ${ANDROID}:exported(0x01010010)=false
+${them}`;
+
+const tep = ['AndroidManifest.xml', 'classes.dex', 'lib/arm64-v8a/libla_ban_kt.so', 'lib/arm64-v8a/libflutter.so'];
+const sach = [{ ten: 'lib/arm64-v8a/libla_ban_kt.so', noiDung: '\u0000JNI_OnLoad\u0000' }];
+
+test('phân tích manifest: tên, exported, intent-filter của đúng thành phần', () => {
+  const m = phanTichManifest(manifest());
+  assert.equal(m.debuggable, false);
+  assert.deepEqual(
+    m.thanhPhan.map((t) => [t.ten, t.exported, t.coIntentFilter]),
+    [
+      ['com.tsudev.laban.MainActivity', true, true],
+      ['com.google.android.play.core.common.PlayCoreDialogWrapperActivity', false, false],
+    ],
+  );
+});
+
+test('APK sạch -> không lỗi', () => {
+  assert.deepEqual(kiemApk({ xmltree: manifest(), tep, thuVienKiemTra: sach }), []);
+});
+
+test('debuggable / thành phần lạ exported / thiếu thư viện native / lộ chuỗi -> lỗi', () => {
+  const them = `      E: receiver (line=50)
+        A: ${ANDROID}:name(0x01010003)="com.vi.du.Nhan" (Raw: "com.vi.du.Nhan")
+        A: ${ANDROID}:exported(0x01010010)=true
+`;
+  const loi = kiemApk({
+    xmltree: manifest({ debuggable: true, them }),
+    tep: ['classes.dex'],
+    thuVienKiemTra: [{ ten: 'lib/x86_64/libla_ban_kt.so', noiDung: 'abc/system/xbin/su\u0000frida' }],
+  });
+  assert.equal(loi.length, 5);
+  assert.match(loi.join('\n'), /debuggable/);
+  assert.match(loi.join('\n'), /com\.vi\.du\.Nhan/);
+  assert.match(loi.join('\n'), /thiếu lib/);
+  assert.match(loi.join('\n'), /"frida"/);
+});
+
+test('receiver exported nhưng giữ bằng quyền hệ thống DUMP (ProfileInstaller) -> đạt', () => {
+  const them = `      E: receiver (line=50)
+        A: ${ANDROID}:name(0x01010003)="androidx.profileinstaller.ProfileInstallReceiver" (Raw: "x")
+        A: ${ANDROID}:permission(0x01010006)="android.permission.DUMP" (Raw: "android.permission.DUMP")
+        A: ${ANDROID}:exported(0x01010010)=true
+`;
+  assert.deepEqual(kiemApk({ xmltree: manifest({ them }), tep, thuVienKiemTra: sach }), []);
+});

@@ -94,6 +94,13 @@ final class _NenTang implements NenTangThietBi {
 
   @override
   Future<void> xoaKhoa() async {}
+
+  @override
+  Future<KetQuaNative> kiemTraMoiTruong() async =>
+      const KetQuaNative(coNative: true);
+
+  @override
+  Future<void> cheManHinh({required bool bat}) async {}
 }
 
 void _testThuLai() {

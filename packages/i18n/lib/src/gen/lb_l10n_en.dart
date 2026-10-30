@@ -582,6 +582,38 @@ class LbL10nEn extends LbL10n {
   @override
   String get updateOpenFailed =>
       'Couldn\'t open the browser. Visit compass.tsudev.com/en/download to get the new version.';
+
+  @override
+  String securityRef(String ref) {
+    return 'Reference code: $ref';
+  }
+
+  @override
+  String get securityCopyRef => 'Copy code';
+
+  @override
+  String get securityRefCopied => 'Reference code copied';
+
+  @override
+  String get securityRestrictedTitle => 'Some features are restricted';
+
+  @override
+  String get securityRestrictedBody =>
+      'Online features are temporarily unavailable on this device. The compass keeps working as usual.';
+
+  @override
+  String get securityLockedTitle => 'The app is locked on this device';
+
+  @override
+  String get securityLockedBody =>
+      'For security reasons, the app can\'t continue on this device. If you think this is a mistake, send an appeal with the reference code below.';
+
+  @override
+  String get securityAppeal => 'Send an appeal';
+
+  @override
+  String get securityAppealOpenFailed =>
+      'Couldn\'t open the browser. Visit compass.tsudev.com/en/appeal to send an appeal.';
 }
 
 /// The translations for English (`en_XA`).
@@ -1166,4 +1198,38 @@ class LbL10nEnXa extends LbL10nEn {
   @override
   String get updateOpenFailed =>
       '[Çởữłđñ\'ť ởpẽñ ťhẽ břởŵšẽř. Vỉšỉť çởmpảšš.ťšữđẽv.çởm/ẽñ/đởŵñłởảđ ťở ğẽť ťhẽ ñẽŵ vẽřšỉởñ. ···································]';
+
+  @override
+  String securityRef(String ref) {
+    return '[Řẽfẽřẽñçẽ çởđẽ: $ref ·······]';
+  }
+
+  @override
+  String get securityCopyRef => '[Çởpỹ çởđẽ ····]';
+
+  @override
+  String get securityRefCopied => '[Řẽfẽřẽñçẽ çởđẽ çởpỉẽđ ·········]';
+
+  @override
+  String get securityRestrictedTitle =>
+      '[Šởmẽ fẽảťữřẽš ảřẽ řẽšťřỉçťẽđ ············]';
+
+  @override
+  String get securityRestrictedBody =>
+      '[Ởñłỉñẽ fẽảťữřẽš ảřẽ ťẽmpởřảřỉłỹ ữñảvảỉłảbłẽ ởñ ťhỉš đẽvỉçẽ. Ťhẽ çởmpảšš kẽẽpš ŵởřkỉñğ ảš ữšữảł. ······································]';
+
+  @override
+  String get securityLockedTitle =>
+      '[Ťhẽ ảpp ỉš łởçkẽđ ởñ ťhỉš đẽvỉçẽ ·············]';
+
+  @override
+  String get securityLockedBody =>
+      '[Fởř šẽçữřỉťỹ řẽảšởñš, ťhẽ ảpp çảñ\'ť çởñťỉñữẽ ởñ ťhỉš đẽvỉçẽ. Ỉf ỹởữ ťhỉñk ťhỉš ỉš ả mỉšťảkẽ, šẽñđ ảñ ảppẽảł ŵỉťh ťhẽ řẽfẽřẽñçẽ çởđẽ bẽłởŵ. ························································]';
+
+  @override
+  String get securityAppeal => '[Šẽñđ ảñ ảppẽảł ······]';
+
+  @override
+  String get securityAppealOpenFailed =>
+      '[Çởữłđñ\'ť ởpẽñ ťhẽ břởŵšẽř. Vỉšỉť çởmpảšš.ťšữđẽv.çởm/ẽñ/ảppẽảł ťở šẽñđ ảñ ảppẽảł. ································]';
 }
