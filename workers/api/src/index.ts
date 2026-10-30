@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { z } from 'zod';
 import { taoAdmin } from './admin';
+import { phucVuBanDo } from './ban-do';
 import { donDep } from './d1/don-dep';
 import { dangKyDinhDanh } from './dinh-danh';
 import { dangKyKenh } from './kenh';
@@ -82,7 +83,11 @@ app.onError(xuLyLoi);
 app.notFound((c) => traVanDe(c, 404));
 
 export default {
-  fetch: app.fetch,
+  // /ban-do/* (A7a) đi đường nhẹ, ngoài middleware API - xem src/ban-do.ts.
+  fetch(req: Request, env: Env, ctx: ExecutionContext): Response | Promise<Response> {
+    if (new URL(req.url).pathname.startsWith('/ban-do/')) return phucVuBanDo(req, env, ctx);
+    return app.fetch(req, env, ctx);
+  },
   async scheduled(su: ScheduledController, env: Env, ctx: ExecutionContext): Promise<void> {
     if (!env.DB) return;
     const viec: [string, () => Promise<unknown>][] = [
