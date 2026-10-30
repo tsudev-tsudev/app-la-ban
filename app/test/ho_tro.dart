@@ -7,6 +7,7 @@ import 'package:la_ban/src/app.dart';
 import 'package:la_ban/src/flavor.dart';
 import 'package:settings_feature/settings_feature.dart';
 import 'package:test_kit/test_kit.dart';
+import 'package:waypoint_feature/waypoint_feature.dart';
 
 /// Cài đặt ban đầu đã qua màn giới thiệu.
 class CaiDatDaXem extends CaiDatNotifier {
@@ -44,13 +45,18 @@ final Override huongThu = huongProvider.overrideWith(
   ),
 );
 
-/// App đầy đủ trong ProviderScope mới.
-Widget appThu({bool daXem = true, List<Override> them = const []}) =>
-    ProviderScope(
-      overrides: [
-        if (daXem) caiDatProvider.overrideWith(CaiDatDaXem.new),
-        huongThu,
-        ...them,
-      ],
-      child: const LaBanApp(flavor: Flavor.dev),
-    );
+/// App đầy đủ trong ProviderScope mới (kho điểm trong bộ nhớ trừ khi
+/// [khoDiem] = false).
+Widget appThu({
+  bool daXem = true,
+  bool khoDiem = true,
+  List<Override> them = const [],
+}) => ProviderScope(
+  overrides: [
+    if (daXem) caiDatProvider.overrideWith(CaiDatDaXem.new),
+    if (khoDiem) khoDiemProvider.overrideWithValue(KhoDiemBoNho()),
+    huongThu,
+    ...them,
+  ],
+  child: const LaBanApp(flavor: Flavor.dev),
+);

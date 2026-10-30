@@ -1,17 +1,37 @@
 import 'dart:io';
 
 import 'package:drift/drift.dart' hide isNotNull, isNull;
+import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:storage/storage.dart';
 
-/// Giả lập bản app có schema v2 (bản phát hành thật thêm bước vào
+/// Phiên bản schema của bản app hiện tại.
+final int hienTai = CsdlLaBan(NativeDatabase.memory()).schemaVersion;
+
+/// Giả lập bản app KẾ TIẾP (bản phát hành thật thêm bước vào
 /// `buocMigration` và tăng `schemaVersion`).
-class CsdlV2 extends CsdlLaBan {
+class CsdlKe extends CsdlLaBan {
   new(super.e, {super.buoc});
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => hienTai + 1;
+}
+
+/// Bản app v1 (A5): chỉ có bảng của v1 - để thử migration thật v1 -> hiện tại.
+class CsdlV1 extends CsdlLaBan {
+  new(super.e);
+
+  @override
+  int get schemaVersion => 1;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (m) async {
+      await m.createTable(diem);
+      await m.createTable(lichSuMigration);
+    },
+  );
 }
 
 const soDiem = 10000;
@@ -56,14 +76,14 @@ void main() {
   });
   tearDown(() => tm.deleteSync(recursive: true));
 
-  Future<CsdlLaBan> moV1() async {
+  Future<CsdlLaBan> moHienTai() async {
     final kq = await moCsdl(thuMuc: tm.path, khoa: khoa, nen: false);
     expect(kq.loi, isNull);
     return kq.csdl!;
   }
 
   test('tệp trên đĩa được mã hoá; sai khoá không đọc được', () async {
-    final db = await moV1();
+    final db = await moHienTai();
     await themDiem(db, 10);
     await db.close();
     final dau = File(tep).readAsBytesSync().sublist(0, 16);
@@ -77,11 +97,11 @@ void main() {
   });
 
   test('mở lại giữ nguyên dữ liệu, không tạo snapshot', () async {
-    var db = await moV1();
+    var db = await moHienTai();
     await themDiem(db, 100);
     final truoc = await tongKiemDiem(db);
     await db.close();
-    db = await moV1();
+    db = await moHienTai();
     expect(await tongKiemDiem(db), truoc);
     await db.close();
     expect(File('$tep.v1.bak').existsSync(), isFalse);
@@ -95,7 +115,7 @@ void main() {
   });
 
   test('mất khoá -> dời tệp sang .hong, tạo CSDL mới', () async {
-    final db = await moV1();
+    final db = await moHienTai();
     await themDiem(db, 5);
     await db.close();
     File('$tep.hong').writeAsStringSync('cũ');
@@ -107,10 +127,10 @@ void main() {
     expect(File('$tep.hong').lengthSync(), greaterThan(100));
   });
 
-  group('migration v1 -> v2 với $soDiem điểm', () {
+  group('migration hiện tại -> kế tiếp với $soDiem điểm', () {
     test('thành công: dữ liệu không đổi (checksum), có snapshot, '
         'ghi lịch sử', () async {
-      var db = await moV1();
+      var db = await moHienTai();
       await themDiem(db, soDiem);
       final truoc = await tongKiemDiem(db);
       await db.close();
@@ -119,10 +139,10 @@ void main() {
         thuMuc: tm.path,
         khoa: khoa,
         nen: false,
-        tao: (e) => CsdlV2(
+        tao: (e) => CsdlKe(
           e,
           buoc: {
-            2: (m, db) => db.customStatement(
+            hienTai + 1: (m, db) => db.customStatement(
               "ALTER TABLE diem ADD COLUMN mau TEXT NOT NULL DEFAULT ''",
             ),
           },
@@ -132,15 +152,15 @@ void main() {
       db = kq.csdl!;
       expect(await tongKiemDiem(db), truoc);
       final ls = await db.select(db.lichSuMigration).getSingle();
-      expect((ls.tu, ls.den), (1, 2));
+      expect((ls.tu, ls.den), (hienTai, hienTai + 1));
       final v = await db.customSelect('PRAGMA user_version').getSingle();
-      expect(v.data.values.first, 2);
+      expect(v.data.values.first, hienTai + 1);
       await db.close();
-      expect(File('$tep.v1.bak').existsSync(), isTrue);
+      expect(File('$tep.v$hienTai.bak').existsSync(), isTrue);
     });
 
     test('lỗi giữa chừng: khôi phục snapshot, dữ liệu v1 nguyên vẹn', () async {
-      var db = await moV1();
+      var db = await moHienTai();
       await themDiem(db, soDiem);
       final truoc = await tongKiemDiem(db);
       await db.close();
@@ -151,10 +171,10 @@ void main() {
         thuMuc: tm.path,
         khoa: khoa,
         nen: false,
-        tao: (e) => CsdlV2(
+        tao: (e) => CsdlKe(
           e,
           buoc: {
-            2: (m, db) async {
+            hienTai + 1: (m, db) async {
               await db.customStatement('ALTER TABLE diem ADD COLUMN mau TEXT');
               await db.customStatement('DELETE FROM diem');
               throw StateError('bước lỗi');
@@ -166,7 +186,7 @@ void main() {
       expect(kq.loi?.code, 'storage.migration');
       expect(File('$tep.v0.bak').existsSync(), isFalse);
 
-      db = await moV1();
+      db = await moHienTai();
       expect(await tongKiemDiem(db), truoc);
       final cot = await db.customSelect('PRAGMA table_info(diem)').get();
       expect(cot.map((c) => c.data['name']), isNot(contains('mau')));
@@ -174,20 +194,55 @@ void main() {
     });
 
     test('thiếu bước migration -> lỗi, dữ liệu giữ nguyên', () async {
-      final db = await moV1();
+      final db = await moHienTai();
       await themDiem(db, 3);
       await db.close();
       final kq = await moCsdl(
         thuMuc: tm.path,
         khoa: khoa,
         nen: false,
-        tao: (e) => CsdlV2(e, buoc: {}),
+        tao: (e) => CsdlKe(e, buoc: {}),
       );
       expect(kq.loi?.code, 'storage.migration');
-      final lai = await moV1();
+      final lai = await moHienTai();
       expect(await lai.select(lai.diem).get(), hasLength(3));
       await lai.close();
     });
+  });
+
+  test('migration thật v1 (A5) -> hiện tại với $soDiem điểm: dữ liệu v1 '
+      'không đổi, có bảng anh_diem, snapshot v1', () async {
+    final v1 = await moCsdl(
+      thuMuc: tm.path,
+      khoa: khoa,
+      nen: false,
+      tao: CsdlV1.new,
+    );
+    var db = v1.csdl!;
+    await themDiem(db, soDiem);
+    final truoc = await tongKiemDiem(db);
+    await db.close();
+
+    final kq = await moCsdl(thuMuc: tm.path, khoa: khoa, nen: false);
+    expect(kq.loi, isNull);
+    db = kq.csdl!;
+    expect(await tongKiemDiem(db), truoc);
+    await db
+        .into(db.anhDiem)
+        .insert(
+          AnhDiemCompanion.insert(
+            diemId: 'd00001',
+            duLieu: Uint8List.fromList([1, 2, 3]),
+            rong: 1,
+            cao: 1,
+            taoLuc: 1,
+          ),
+        );
+    // Xoá điểm -> ảnh đi theo (khoá ngoại cascade, foreign_keys = ON).
+    await (db.delete(db.diem)..where((d) => d.id.equals('d00001'))).go();
+    expect(await db.select(db.anhDiem).get(), isEmpty);
+    await db.close();
+    expect(File('$tep.v1.bak').existsSync(), isTrue);
   });
 
   test('CSDL của bản mới hơn -> không mở, không đụng tệp', () async {
@@ -195,7 +250,7 @@ void main() {
       thuMuc: tm.path,
       khoa: khoa,
       nen: false,
-      tao: (e) => CsdlV2(e, buoc: {}),
+      tao: (e) => CsdlKe(e, buoc: {}),
     );
     await v2.csdl!.close();
     final byte = File(tep).readAsBytesSync();
@@ -212,7 +267,7 @@ void main() {
   });
 
   test('ràng buộc vĩ độ / kinh độ', () async {
-    final db = await moV1();
+    final db = await moHienTai();
     addTearDown(db.close);
     await expectLater(
       db

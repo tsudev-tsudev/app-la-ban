@@ -1,6 +1,7 @@
 // Pages advanced mode cho landing (S8): mọi trang HTML (lọc bởi `_routes.json`) qua đây để gắn nonce CSP mới mỗi lượt;
 // tài sản tĩnh (ảnh, font, _astro) không gọi worker - giữ hạn mức 100.000 lượt / ngày của gói Free.
 // Đóng gói bằng `edge/dong-goi.mjs` -> `dist/_worker.js` (minify, không comment - qua được ve-sinh-ban-build).
+import { tokenTuDuongDan } from '../src/lib/diem-chia-se';
 import { HEADER_DIEU_KIEN, laHtml, taoNonce, themNonce } from './csp';
 
 type Moi = { ASSETS: { fetch(req: Request): Promise<Response> } };
@@ -15,7 +16,11 @@ export default {
   async fetch(req: Request, env: Moi): Promise<Response> {
     const h = new Headers(req.headers);
     for (const t of HEADER_DIEU_KIEN) h.delete(t);
-    const res = await env.ASSETS.fetch(new Request(req, { headers: h }));
+    // Link chia sẻ điểm (A6): mọi /w/<token> dùng chung trang tĩnh /w/ - token đọc ở trình duyệt, server không lưu gì.
+    const laDiem = tokenTuDuongDan(new URL(req.url).pathname) !== null;
+    const res = await env.ASSETS.fetch(
+      laDiem ? new Request(new URL('/w/', req.url), { method: req.method, headers: h }) : new Request(req, { headers: h }),
+    );
     const csp = res.headers.get('content-security-policy');
     if (!csp || !laHtml(res.headers.get('content-type'))) return res;
 
@@ -28,6 +33,7 @@ export default {
     tieuDe.delete('etag');
     tieuDe.delete('last-modified');
     tieuDe.delete('access-control-allow-origin');
+    if (laDiem) tieuDe.set('x-robots-tag', 'noindex');
 
     const moi = new Response(res.body, { status: res.status, statusText: res.statusText, headers: tieuDe });
     return new HTMLRewriter()

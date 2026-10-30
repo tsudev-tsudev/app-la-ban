@@ -16,6 +16,11 @@ void main() {
       expect(d(daXem: false, viTri: duongDanGioiThieu), isNull);
     });
 
+    test('link chia sẻ điểm mở được cả khi chưa xem giới thiệu', () {
+      expect(d(daXem: false, viTri: '/w/AQ'), isNull);
+      expect(d(daXem: true, viTri: '/w/AQ'), isNull);
+    });
+
     test('đã xem: rời /chao về tab đầu, các đường khác giữ nguyên', () {
       expect(d(daXem: true, viTri: duongDanGioiThieu), '/la-ban');
       expect(d(daXem: true, viTri: '/diem'), isNull);

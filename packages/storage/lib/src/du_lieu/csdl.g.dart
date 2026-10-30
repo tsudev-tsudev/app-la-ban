@@ -787,6 +787,397 @@ class LichSuMigrationCompanion extends UpdateCompanion<DongLichSuMigration> {
   }
 }
 
+class $AnhDiemTable extends AnhDiem with TableInfo<$AnhDiemTable, DongAnhDiem> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AnhDiemTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _diemIdMeta = const VerificationMeta('diemId');
+  @override
+  late final GeneratedColumn<String> diemId = GeneratedColumn<String>(
+    'diem_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES diem (id) ON DELETE CASCADE',
+    ),
+  );
+  static const VerificationMeta _duLieuMeta = const VerificationMeta('duLieu');
+  @override
+  late final GeneratedColumn<Uint8List> duLieu = GeneratedColumn<Uint8List>(
+    'du_lieu',
+    aliasedName,
+    false,
+    type: DriftSqlType.blob,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _rongMeta = const VerificationMeta('rong');
+  @override
+  late final GeneratedColumn<int> rong = GeneratedColumn<int>(
+    'rong',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _caoMeta = const VerificationMeta('cao');
+  @override
+  late final GeneratedColumn<int> cao = GeneratedColumn<int>(
+    'cao',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _taoLucMeta = const VerificationMeta('taoLuc');
+  @override
+  late final GeneratedColumn<int> taoLuc = GeneratedColumn<int>(
+    'tao_luc',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, diemId, duLieu, rong, cao, taoLuc];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'anh_diem';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DongAnhDiem> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('diem_id')) {
+      context.handle(
+        _diemIdMeta,
+        diemId.isAcceptableOrUnknown(data['diem_id']!, _diemIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_diemIdMeta);
+    }
+    if (data.containsKey('du_lieu')) {
+      context.handle(
+        _duLieuMeta,
+        duLieu.isAcceptableOrUnknown(data['du_lieu']!, _duLieuMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_duLieuMeta);
+    }
+    if (data.containsKey('rong')) {
+      context.handle(
+        _rongMeta,
+        rong.isAcceptableOrUnknown(data['rong']!, _rongMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_rongMeta);
+    }
+    if (data.containsKey('cao')) {
+      context.handle(
+        _caoMeta,
+        cao.isAcceptableOrUnknown(data['cao']!, _caoMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_caoMeta);
+    }
+    if (data.containsKey('tao_luc')) {
+      context.handle(
+        _taoLucMeta,
+        taoLuc.isAcceptableOrUnknown(data['tao_luc']!, _taoLucMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_taoLucMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DongAnhDiem map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DongAnhDiem(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      diemId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}diem_id'],
+      )!,
+      duLieu: attachedDatabase.typeMapping.read(
+        DriftSqlType.blob,
+        data['${effectivePrefix}du_lieu'],
+      )!,
+      rong: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}rong'],
+      )!,
+      cao: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}cao'],
+      )!,
+      taoLuc: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}tao_luc'],
+      )!,
+    );
+  }
+
+  @override
+  $AnhDiemTable createAlias(String alias) {
+    return $AnhDiemTable(attachedDatabase, alias);
+  }
+}
+
+class DongAnhDiem extends DataClass implements Insertable<DongAnhDiem> {
+  final int id;
+  final String diemId;
+  final Uint8List duLieu;
+  final int rong;
+  final int cao;
+  final int taoLuc;
+  const DongAnhDiem({
+    required this.id,
+    required this.diemId,
+    required this.duLieu,
+    required this.rong,
+    required this.cao,
+    required this.taoLuc,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['diem_id'] = Variable<String>(diemId);
+    map['du_lieu'] = Variable<Uint8List>(duLieu);
+    map['rong'] = Variable<int>(rong);
+    map['cao'] = Variable<int>(cao);
+    map['tao_luc'] = Variable<int>(taoLuc);
+    return map;
+  }
+
+  AnhDiemCompanion toCompanion(bool nullToAbsent) {
+    return AnhDiemCompanion(
+      id: Value(id),
+      diemId: Value(diemId),
+      duLieu: Value(duLieu),
+      rong: Value(rong),
+      cao: Value(cao),
+      taoLuc: Value(taoLuc),
+    );
+  }
+
+  factory DongAnhDiem.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DongAnhDiem(
+      id: serializer.fromJson<int>(json['id']),
+      diemId: serializer.fromJson<String>(json['diemId']),
+      duLieu: serializer.fromJson<Uint8List>(json['duLieu']),
+      rong: serializer.fromJson<int>(json['rong']),
+      cao: serializer.fromJson<int>(json['cao']),
+      taoLuc: serializer.fromJson<int>(json['taoLuc']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'diemId': serializer.toJson<String>(diemId),
+      'duLieu': serializer.toJson<Uint8List>(duLieu),
+      'rong': serializer.toJson<int>(rong),
+      'cao': serializer.toJson<int>(cao),
+      'taoLuc': serializer.toJson<int>(taoLuc),
+    };
+  }
+
+  DongAnhDiem copyWith({
+    int? id,
+    String? diemId,
+    Uint8List? duLieu,
+    int? rong,
+    int? cao,
+    int? taoLuc,
+  }) => DongAnhDiem(
+    id: id ?? this.id,
+    diemId: diemId ?? this.diemId,
+    duLieu: duLieu ?? this.duLieu,
+    rong: rong ?? this.rong,
+    cao: cao ?? this.cao,
+    taoLuc: taoLuc ?? this.taoLuc,
+  );
+  DongAnhDiem copyWithCompanion(AnhDiemCompanion data) {
+    return DongAnhDiem(
+      id: data.id.present ? data.id.value : this.id,
+      diemId: data.diemId.present ? data.diemId.value : this.diemId,
+      duLieu: data.duLieu.present ? data.duLieu.value : this.duLieu,
+      rong: data.rong.present ? data.rong.value : this.rong,
+      cao: data.cao.present ? data.cao.value : this.cao,
+      taoLuc: data.taoLuc.present ? data.taoLuc.value : this.taoLuc,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DongAnhDiem(')
+          ..write('id: $id, ')
+          ..write('diemId: $diemId, ')
+          ..write('duLieu: $duLieu, ')
+          ..write('rong: $rong, ')
+          ..write('cao: $cao, ')
+          ..write('taoLuc: $taoLuc')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    diemId,
+    $driftBlobEquality.hash(duLieu),
+    rong,
+    cao,
+    taoLuc,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DongAnhDiem &&
+          other.id == this.id &&
+          other.diemId == this.diemId &&
+          $driftBlobEquality.equals(other.duLieu, this.duLieu) &&
+          other.rong == this.rong &&
+          other.cao == this.cao &&
+          other.taoLuc == this.taoLuc);
+}
+
+class AnhDiemCompanion extends UpdateCompanion<DongAnhDiem> {
+  final Value<int> id;
+  final Value<String> diemId;
+  final Value<Uint8List> duLieu;
+  final Value<int> rong;
+  final Value<int> cao;
+  final Value<int> taoLuc;
+  const AnhDiemCompanion({
+    this.id = const Value.absent(),
+    this.diemId = const Value.absent(),
+    this.duLieu = const Value.absent(),
+    this.rong = const Value.absent(),
+    this.cao = const Value.absent(),
+    this.taoLuc = const Value.absent(),
+  });
+  AnhDiemCompanion.insert({
+    this.id = const Value.absent(),
+    required String diemId,
+    required Uint8List duLieu,
+    required int rong,
+    required int cao,
+    required int taoLuc,
+  }) : diemId = Value(diemId),
+       duLieu = Value(duLieu),
+       rong = Value(rong),
+       cao = Value(cao),
+       taoLuc = Value(taoLuc);
+  static Insertable<DongAnhDiem> custom({
+    Expression<int>? id,
+    Expression<String>? diemId,
+    Expression<Uint8List>? duLieu,
+    Expression<int>? rong,
+    Expression<int>? cao,
+    Expression<int>? taoLuc,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (diemId != null) 'diem_id': diemId,
+      if (duLieu != null) 'du_lieu': duLieu,
+      if (rong != null) 'rong': rong,
+      if (cao != null) 'cao': cao,
+      if (taoLuc != null) 'tao_luc': taoLuc,
+    });
+  }
+
+  AnhDiemCompanion copyWith({
+    Value<int>? id,
+    Value<String>? diemId,
+    Value<Uint8List>? duLieu,
+    Value<int>? rong,
+    Value<int>? cao,
+    Value<int>? taoLuc,
+  }) {
+    return AnhDiemCompanion(
+      id: id ?? this.id,
+      diemId: diemId ?? this.diemId,
+      duLieu: duLieu ?? this.duLieu,
+      rong: rong ?? this.rong,
+      cao: cao ?? this.cao,
+      taoLuc: taoLuc ?? this.taoLuc,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (diemId.present) {
+      map['diem_id'] = Variable<String>(diemId.value);
+    }
+    if (duLieu.present) {
+      map['du_lieu'] = Variable<Uint8List>(duLieu.value);
+    }
+    if (rong.present) {
+      map['rong'] = Variable<int>(rong.value);
+    }
+    if (cao.present) {
+      map['cao'] = Variable<int>(cao.value);
+    }
+    if (taoLuc.present) {
+      map['tao_luc'] = Variable<int>(taoLuc.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AnhDiemCompanion(')
+          ..write('id: $id, ')
+          ..write('diemId: $diemId, ')
+          ..write('duLieu: $duLieu, ')
+          ..write('rong: $rong, ')
+          ..write('cao: $cao, ')
+          ..write('taoLuc: $taoLuc')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$CsdlLaBan extends GeneratedDatabase {
   _$CsdlLaBan(QueryExecutor e) : super(e);
   $CsdlLaBanManager get managers => $CsdlLaBanManager(this);
@@ -794,11 +1185,26 @@ abstract class _$CsdlLaBan extends GeneratedDatabase {
   late final $LichSuMigrationTable lichSuMigration = $LichSuMigrationTable(
     this,
   );
+  late final $AnhDiemTable anhDiem = $AnhDiemTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [diem, lichSuMigration];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    diem,
+    lichSuMigration,
+    anhDiem,
+  ];
+  @override
+  StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'diem',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('anh_diem', kind: UpdateKind.delete)],
+    ),
+  ]);
 }
 
 typedef $$DiemTableCreateCompanionBuilder = DiemCompanion Function({
@@ -823,6 +1229,29 @@ typedef $$DiemTableUpdateCompanionBuilder = DiemCompanion Function({
   Value<int> suaLuc,
   Value<int> rowid,
 });
+
+final class $$DiemTableReferences
+    extends BaseReferences<_$CsdlLaBan, $DiemTable, DongDiem> {
+  $$DiemTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$AnhDiemTable, List<DongAnhDiem>>
+  _anhDiemRefsTable(_$CsdlLaBan db) => MultiTypedResultKey.fromTable(
+    db.anhDiem,
+    aliasName: 'diem__id__anh_diem__diem_id',
+  );
+
+  $$AnhDiemTableProcessedTableManager get anhDiemRefs {
+    final manager = $$AnhDiemTableTableManager(
+      $_db,
+      $_db.anhDiem,
+    ).filter((f) => f.diemId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_anhDiemRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
 
 class $$DiemTableFilterComposer extends Composer<_$CsdlLaBan, $DiemTable> {
   $$DiemTableFilterComposer({
@@ -871,6 +1300,31 @@ class $$DiemTableFilterComposer extends Composer<_$CsdlLaBan, $DiemTable> {
     column: $table.suaLuc,
     builder: (column) => ColumnFilters(column),
   );
+
+  Expression<bool> anhDiemRefs(
+    Expression<bool> Function($$AnhDiemTableFilterComposer f) f,
+  ) {
+    final $$AnhDiemTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.anhDiem,
+      getReferencedColumn: (t) => t.diemId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AnhDiemTableFilterComposer(
+            $db: $db,
+            $table: $db.anhDiem,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$DiemTableOrderingComposer extends Composer<_$CsdlLaBan, $DiemTable> {
@@ -953,6 +1407,31 @@ class $$DiemTableAnnotationComposer extends Composer<_$CsdlLaBan, $DiemTable> {
 
   GeneratedColumn<int> get suaLuc =>
       $composableBuilder(column: $table.suaLuc, builder: (column) => column);
+
+  Expression<T> anhDiemRefs<T extends Object>(
+    Expression<T> Function($$AnhDiemTableAnnotationComposer a) f,
+  ) {
+    final $$AnhDiemTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.anhDiem,
+      getReferencedColumn: (t) => t.diemId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$AnhDiemTableAnnotationComposer(
+            $db: $db,
+            $table: $db.anhDiem,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$DiemTableTableManager
@@ -966,9 +1445,9 @@ class $$DiemTableTableManager
           $$DiemTableAnnotationComposer,
           $$DiemTableCreateCompanionBuilder,
           $$DiemTableUpdateCompanionBuilder,
-          (DongDiem, BaseReferences<_$CsdlLaBan, $DiemTable, DongDiem>),
+          (DongDiem, $$DiemTableReferences),
           DongDiem,
-          PrefetchHooks Function()
+          PrefetchHooks Function({bool anhDiemRefs})
         > {
   $$DiemTableTableManager(_$CsdlLaBan db, $DiemTable table)
     : super(
@@ -1029,15 +1508,38 @@ class $$DiemTableTableManager
               .map(
                 (e) => (
                   e.readTable<$DiemTable, DongDiem>(table),
-                  BaseReferences<_$CsdlLaBan, $DiemTable, DongDiem>(
-                    db,
-                    table,
-                    e,
-                  ),
+                  $$DiemTableReferences(db, table, e),
                 ),
               )
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({anhDiemRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (anhDiemRefs) db.anhDiem],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (anhDiemRefs)
+                    await $_getPrefetchedDataByColumns<
+                      DongDiem,
+                      $DiemTable,
+                      DongAnhDiem,
+                      $AnhDiemTable
+                    >(
+                      currentTable: table,
+                      referencedTable: $$DiemTableReferences._anhDiemRefsTable(
+                        db,
+                      ),
+                      managerFromTypedResult: (p0) =>
+                          $$DiemTableReferences(db, table, p0).anhDiemRefs,
+                      currentColumn: 'id',
+                      referencedColumn: 'diem_id',
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
         ),
       );
 }
@@ -1052,9 +1554,9 @@ typedef $$DiemTableProcessedTableManager =
       $$DiemTableAnnotationComposer,
       $$DiemTableCreateCompanionBuilder,
       $$DiemTableUpdateCompanionBuilder,
-      (DongDiem, BaseReferences<_$CsdlLaBan, $DiemTable, DongDiem>),
+      (DongDiem, $$DiemTableReferences),
       DongDiem,
-      PrefetchHooks Function()
+      PrefetchHooks Function({bool anhDiemRefs})
     >;
 typedef $$LichSuMigrationTableCreateCompanionBuilder =
     LichSuMigrationCompanion Function({
@@ -1242,6 +1744,333 @@ typedef $$LichSuMigrationTableProcessedTableManager =
       DongLichSuMigration,
       PrefetchHooks Function()
     >;
+typedef $$AnhDiemTableCreateCompanionBuilder = AnhDiemCompanion Function({
+  Value<int> id,
+  required String diemId,
+  required Uint8List duLieu,
+  required int rong,
+  required int cao,
+  required int taoLuc,
+});
+typedef $$AnhDiemTableUpdateCompanionBuilder = AnhDiemCompanion Function({
+  Value<int> id,
+  Value<String> diemId,
+  Value<Uint8List> duLieu,
+  Value<int> rong,
+  Value<int> cao,
+  Value<int> taoLuc,
+});
+
+final class $$AnhDiemTableReferences
+    extends BaseReferences<_$CsdlLaBan, $AnhDiemTable, DongAnhDiem> {
+  $$AnhDiemTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $DiemTable _diemIdTable(_$CsdlLaBan db) =>
+      db.diem.createAlias('anh_diem__diem_id__diem__id');
+
+  $$DiemTableProcessedTableManager get diemId {
+    final $_column = $_itemColumn<String>('diem_id')!;
+
+    final manager = $$DiemTableTableManager(
+      $_db,
+      $_db.diem,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_diemIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$AnhDiemTableFilterComposer
+    extends Composer<_$CsdlLaBan, $AnhDiemTable> {
+  $$AnhDiemTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<Uint8List> get duLieu => $composableBuilder(
+    column: $table.duLieu,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rong => $composableBuilder(
+    column: $table.rong,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get cao => $composableBuilder(
+    column: $table.cao,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get taoLuc => $composableBuilder(
+    column: $table.taoLuc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$DiemTableFilterComposer get diemId {
+    final $$DiemTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.diemId,
+      referencedTable: $db.diem,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DiemTableFilterComposer(
+            $db: $db,
+            $table: $db.diem,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$AnhDiemTableOrderingComposer
+    extends Composer<_$CsdlLaBan, $AnhDiemTable> {
+  $$AnhDiemTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<Uint8List> get duLieu => $composableBuilder(
+    column: $table.duLieu,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rong => $composableBuilder(
+    column: $table.rong,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get cao => $composableBuilder(
+    column: $table.cao,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get taoLuc => $composableBuilder(
+    column: $table.taoLuc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$DiemTableOrderingComposer get diemId {
+    final $$DiemTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.diemId,
+      referencedTable: $db.diem,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DiemTableOrderingComposer(
+            $db: $db,
+            $table: $db.diem,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$AnhDiemTableAnnotationComposer
+    extends Composer<_$CsdlLaBan, $AnhDiemTable> {
+  $$AnhDiemTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<Uint8List> get duLieu =>
+      $composableBuilder(column: $table.duLieu, builder: (column) => column);
+
+  GeneratedColumn<int> get rong =>
+      $composableBuilder(column: $table.rong, builder: (column) => column);
+
+  GeneratedColumn<int> get cao =>
+      $composableBuilder(column: $table.cao, builder: (column) => column);
+
+  GeneratedColumn<int> get taoLuc =>
+      $composableBuilder(column: $table.taoLuc, builder: (column) => column);
+
+  $$DiemTableAnnotationComposer get diemId {
+    final $$DiemTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.diemId,
+      referencedTable: $db.diem,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$DiemTableAnnotationComposer(
+            $db: $db,
+            $table: $db.diem,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$AnhDiemTableTableManager
+    extends
+        RootTableManager<
+          _$CsdlLaBan,
+          $AnhDiemTable,
+          DongAnhDiem,
+          $$AnhDiemTableFilterComposer,
+          $$AnhDiemTableOrderingComposer,
+          $$AnhDiemTableAnnotationComposer,
+          $$AnhDiemTableCreateCompanionBuilder,
+          $$AnhDiemTableUpdateCompanionBuilder,
+          (DongAnhDiem, $$AnhDiemTableReferences),
+          DongAnhDiem,
+          PrefetchHooks Function({bool diemId})
+        > {
+  $$AnhDiemTableTableManager(_$CsdlLaBan db, $AnhDiemTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AnhDiemTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AnhDiemTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AnhDiemTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> diemId = const Value.absent(),
+                Value<Uint8List> duLieu = const Value.absent(),
+                Value<int> rong = const Value.absent(),
+                Value<int> cao = const Value.absent(),
+                Value<int> taoLuc = const Value.absent(),
+              }) => AnhDiemCompanion(
+                id: id,
+                diemId: diemId,
+                duLieu: duLieu,
+                rong: rong,
+                cao: cao,
+                taoLuc: taoLuc,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String diemId,
+                required Uint8List duLieu,
+                required int rong,
+                required int cao,
+                required int taoLuc,
+              }) => AnhDiemCompanion.insert(
+                id: id,
+                diemId: diemId,
+                duLieu: duLieu,
+                rong: rong,
+                cao: cao,
+                taoLuc: taoLuc,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$AnhDiemTable, DongAnhDiem>(table),
+                  $$AnhDiemTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({diemId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (diemId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.diemId,
+                        referencedTable: $$AnhDiemTableReferences._diemIdTable(
+                          db,
+                        ),
+                        referencedColumn: $$AnhDiemTableReferences
+                            ._diemIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$AnhDiemTableProcessedTableManager =
+    ProcessedTableManager<
+      _$CsdlLaBan,
+      $AnhDiemTable,
+      DongAnhDiem,
+      $$AnhDiemTableFilterComposer,
+      $$AnhDiemTableOrderingComposer,
+      $$AnhDiemTableAnnotationComposer,
+      $$AnhDiemTableCreateCompanionBuilder,
+      $$AnhDiemTableUpdateCompanionBuilder,
+      (DongAnhDiem, $$AnhDiemTableReferences),
+      DongAnhDiem,
+      PrefetchHooks Function({bool diemId})
+    >;
 
 class $CsdlLaBanManager {
   final _$CsdlLaBan _db;
@@ -1249,4 +2078,6 @@ class $CsdlLaBanManager {
   $$DiemTableTableManager get diem => $$DiemTableTableManager(_db, _db.diem);
   $$LichSuMigrationTableTableManager get lichSuMigration =>
       $$LichSuMigrationTableTableManager(_db, _db.lichSuMigration);
+  $$AnhDiemTableTableManager get anhDiem =>
+      $$AnhDiemTableTableManager(_db, _db.anhDiem);
 }

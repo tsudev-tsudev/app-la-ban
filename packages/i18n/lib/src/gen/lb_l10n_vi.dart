@@ -613,4 +613,317 @@ class LbL10nVi extends LbL10n {
   @override
   String get securityAppealOpenFailed =>
       'Không mở được trình duyệt. Hãy vào compass.tsudev.com/khieu-nai để gửi khiếu nại.';
+
+  @override
+  String get wpSaveHere => 'Lưu vị trí';
+
+  @override
+  String get wpAddManual => 'Nhập toạ độ';
+
+  @override
+  String get wpNewTitle => 'Điểm mới';
+
+  @override
+  String get wpEditTitle => 'Sửa điểm';
+
+  @override
+  String get wpName => 'Tên';
+
+  @override
+  String get wpLat => 'Vĩ độ';
+
+  @override
+  String get wpLon => 'Kinh độ';
+
+  @override
+  String get wpAlt => 'Cao độ (m, tuỳ chọn)';
+
+  @override
+  String get wpNote => 'Ghi chú';
+
+  @override
+  String get wpPhotos => 'Ảnh';
+
+  @override
+  String get wpAddPhoto => 'Thêm ảnh';
+
+  @override
+  String get wpRemovePhoto => 'Xoá ảnh';
+
+  @override
+  String wpPhotoSemantics(int index) {
+    return 'Ảnh $index của điểm';
+  }
+
+  @override
+  String get wpPhotoHint =>
+      'Ảnh được thu nhỏ và xoá thông tin vị trí / máy chụp trước khi lưu.';
+
+  @override
+  String get wpPhotoError => 'Không đọc được ảnh này.';
+
+  @override
+  String get wpSave => 'Lưu';
+
+  @override
+  String get wpCancel => 'Huỷ';
+
+  @override
+  String get wpDelete => 'Xoá';
+
+  @override
+  String wpDeleteConfirm(String name) {
+    return 'Xoá \"$name\" cùng ảnh của điểm? Không hoàn tác được.';
+  }
+
+  @override
+  String get wpUseCurrent => 'Dùng vị trí hiện tại';
+
+  @override
+  String get wpLocating => 'Đang lấy vị trí...';
+
+  @override
+  String get wpLocationNeeded => 'Cần quyền vị trí để lưu chỗ bạn đang đứng.';
+
+  @override
+  String get wpGrant => 'Cho phép vị trí';
+
+  @override
+  String get wpErrNameEmpty => 'Nhập tên điểm';
+
+  @override
+  String wpErrNameLong(int max) {
+    return 'Tên tối đa $max ký tự';
+  }
+
+  @override
+  String get wpErrLat => 'Vĩ độ từ -90 đến 90';
+
+  @override
+  String get wpErrLon => 'Kinh độ từ -180 đến 180';
+
+  @override
+  String get wpErrAlt => 'Cao độ không hợp lệ';
+
+  @override
+  String wpErrNoteLong(int max) {
+    return 'Ghi chú tối đa $max ký tự';
+  }
+
+  @override
+  String get wpNavigate => 'Dẫn đường';
+
+  @override
+  String get wpShare => 'Chia sẻ';
+
+  @override
+  String get wpEdit => 'Sửa';
+
+  @override
+  String wpMeters(int value) {
+    return '$value m';
+  }
+
+  @override
+  String wpKilometers(double value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPatternDigits(
+          locale: localeName,
+          decimalDigits: 1,
+        );
+    final String valueString = valueNumberFormat.format(value);
+
+    return '$valueString km';
+  }
+
+  @override
+  String wpAway(String distance) {
+    return 'Cách $distance';
+  }
+
+  @override
+  String wpBearing(int value) {
+    return 'Hướng $value° (bắc thực)';
+  }
+
+  @override
+  String wpTurn(int value, String side) {
+    return 'Quay $value° sang $side';
+  }
+
+  @override
+  String get wpLeft => 'trái';
+
+  @override
+  String get wpRight => 'phải';
+
+  @override
+  String get wpAhead => 'Đi thẳng';
+
+  @override
+  String get wpArrived => 'Đã tới nơi';
+
+  @override
+  String get wpNoCompass =>
+      'Máy không có cảm biến la bàn: đi theo hướng bên dưới bằng la bàn khác.';
+
+  @override
+  String get wpWaitingGps => 'Đang chờ vị trí GPS...';
+
+  @override
+  String wpAccuracy(int value) {
+    return 'Sai số vị trí ±$value m';
+  }
+
+  @override
+  String wpArrowSemantics(String name, String distance) {
+    return 'Mũi tên chỉ tới $name, $distance';
+  }
+
+  @override
+  String wpCreated(String date) {
+    return 'Tạo lúc $date';
+  }
+
+  @override
+  String get wpCoords => 'Toạ độ';
+
+  @override
+  String wpAltValue(double value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPatternDigits(
+          locale: localeName,
+          decimalDigits: 1,
+        );
+    final String valueString = valueNumberFormat.format(value);
+
+    return 'Cao độ $valueString m';
+  }
+
+  @override
+  String get wpCopyCoords => 'Sao chép toạ độ';
+
+  @override
+  String get wpImport => 'Nhập GPX / KML';
+
+  @override
+  String get wpExportGpx => 'Xuất GPX';
+
+  @override
+  String get wpExportKml => 'Xuất KML';
+
+  @override
+  String get wpMore => 'Thêm tuỳ chọn';
+
+  @override
+  String wpImportResult(int added, int updated, int skipped) {
+    return 'Đã thêm $added, cập nhật $updated, bỏ qua $skipped điểm.';
+  }
+
+  @override
+  String get wpImportError =>
+      'Không đọc được tệp: không phải GPX / KML hợp lệ.';
+
+  @override
+  String get wpImportEmpty => 'Tệp không có điểm nào.';
+
+  @override
+  String get wpFileError => 'Không mở / lưu được tệp.';
+
+  @override
+  String get wpExported => 'Đã lưu tệp.';
+
+  @override
+  String wpUnnamed(int index) {
+    return 'Điểm $index';
+  }
+
+  @override
+  String get wpShareTitle => 'Chia sẻ điểm';
+
+  @override
+  String get wpShareExpiry => 'Link hết hạn sau';
+
+  @override
+  String wpDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ngày',
+      one: '1 ngày',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String wpShareInfo(int max) {
+    return 'Link chứa tên, toạ độ, cao độ và tối đa $max ký tự ghi chú, không kèm ảnh. Ai có link đều xem được tới khi hết hạn.';
+  }
+
+  @override
+  String get wpCopyLink => 'Sao chép link';
+
+  @override
+  String get wpCopied => 'Đã sao chép';
+
+  @override
+  String get wpSendLink => 'Gửi link';
+
+  @override
+  String get wpQrSemantics => 'Mã QR của link chia sẻ';
+
+  @override
+  String get wpShareDisabled => 'Chia sẻ đang tạm tắt.';
+
+  @override
+  String get wpReceivedTitle => 'Điểm được chia sẻ';
+
+  @override
+  String wpReceivedExpires(String date) {
+    return 'Link hết hạn lúc $date';
+  }
+
+  @override
+  String get wpReceivedSave => 'Lưu vào Điểm';
+
+  @override
+  String get wpReceivedSaved => 'Đã lưu vào Điểm.';
+
+  @override
+  String get wpReceivedUntrusted =>
+      'Nội dung do người gửi đặt, ứng dụng không kiểm chứng.';
+
+  @override
+  String get wpLinkBroken => 'Link không hợp lệ hoặc bị cắt mất khi gửi.';
+
+  @override
+  String get wpLinkExpired => 'Link đã hết hạn. Hãy nhờ người gửi chia sẻ lại.';
+
+  @override
+  String get wpLinkNewer =>
+      'Link được tạo bởi phiên bản mới hơn. Hãy cập nhật ứng dụng.';
+
+  @override
+  String get wpGoWaypoints => 'Mở danh sách điểm';
+
+  @override
+  String get wpSafeTitle => 'Xuất điểm đã lưu';
+
+  @override
+  String get wpSafeBody =>
+      'Ở chế độ an toàn, danh sách điểm tạm khoá. Bạn vẫn có thể xuất toàn bộ điểm ra tệp GPX để giữ an toàn.';
+
+  @override
+  String get wpSafeReadError => 'Không đọc được điểm đã lưu.';
+
+  @override
+  String wpSafeCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count điểm',
+      zero: 'Không có điểm nào',
+    );
+    return '$_temp0';
+  }
 }

@@ -26,6 +26,19 @@ class Diem extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
+/// Ảnh của điểm (v2, A6): JPEG đã thu nhỏ + bỏ EXIF ở native, lưu trong CSDL
+/// mã hoá (không để tệp ảnh rời ngoài SQLCipher).
+@DataClassName('DongAnhDiem')
+class AnhDiem extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get diemId =>
+      text().references(Diem, #id, onDelete: KeyAction.cascade)();
+  BlobColumn get duLieu => blob()();
+  IntColumn get rong => integer()();
+  IntColumn get cao => integer()();
+  IntColumn get taoLuc => integer()();
+}
+
 /// Nhật ký migration đã chạy trên máy (báo lỗi về server ở S5).
 @DataClassName('DongLichSuMigration')
 class LichSuMigration extends Table {
@@ -43,9 +56,12 @@ typedef BuocMigration = Future<void> Function(Migrator m, CsdlLaBan db);
 /// Các bước của bản phát hành. Thêm phiên bản: tăng `schemaVersion` (số
 /// trực tiếp - drift_dev đọc literal), thêm `v: (m, db) async {...}`, chạy
 /// `dart run drift_dev make-migrations` rồi `build_runner build`.
-final Map<int, BuocMigration> buocMigration = {};
+final Map<int, BuocMigration> buocMigration = {
+  // A6: bảng ảnh điểm (chỉ thêm).
+  2: (m, db) => m.createTable(db.anhDiem),
+};
 
-@DriftDatabase(tables: [Diem, LichSuMigration])
+@DriftDatabase(tables: [Diem, LichSuMigration, AnhDiem])
 class CsdlLaBan extends _$CsdlLaBan {
   new(super.e, {@visibleForTesting Map<int, BuocMigration>? buoc})
     : _buoc = buoc ?? buocMigration;
@@ -53,7 +69,7 @@ class CsdlLaBan extends _$CsdlLaBan {
   final Map<int, BuocMigration> _buoc;
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(

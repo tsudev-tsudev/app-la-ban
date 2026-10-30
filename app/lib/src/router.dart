@@ -6,12 +6,18 @@ import 'package:la_ban/src/gioi_thieu.dart';
 import 'package:la_ban/src/khung_dieu_huong.dart';
 import 'package:la_ban/src/tab_app.dart';
 import 'package:settings_feature/settings_feature.dart';
+import 'package:waypoint_feature/waypoint_feature.dart';
 
 /// Đường dẫn màn giới thiệu lần đầu.
 const duongDanGioiThieu = '/chao';
 
-/// Đích chuyển hướng: chưa xem giới thiệu -> [duongDanGioiThieu]; đã xem mà
-/// còn ở màn đó -> tab đầu; còn lại giữ nguyên (null).
+/// Link chia sẻ điểm `https://compass.tsudev.com/w/<token>` (App Links) -
+/// Flutter chuyển phần đường dẫn cho router.
+const duongDanNhanDiem = '/w/:token';
+
+/// Đích chuyển hướng: chưa xem giới thiệu -> [duongDanGioiThieu] (trừ link
+/// chia sẻ điểm: xem được ngay, không mất link); đã xem mà còn ở màn đó ->
+/// tab đầu; còn lại giữ nguyên (null).
 @visibleForTesting
 String? dichChuyenHuong({
   required bool daXemGioiThieu,
@@ -19,7 +25,9 @@ String? dichChuyenHuong({
   required String tabDau,
 }) {
   final oGioiThieu = viTri == duongDanGioiThieu;
-  if (!daXemGioiThieu) return oGioiThieu ? null : duongDanGioiThieu;
+  if (!daXemGioiThieu) {
+    return oGioiThieu || viTri.startsWith('/w/') ? null : duongDanGioiThieu;
+  }
   return oGioiThieu ? tabDau : null;
 }
 
@@ -37,6 +45,9 @@ final routerProvider = Provider<GoRouter>((ref) {
   final router = GoRouter(
     initialLocation: tabs.first.duongDan,
     refreshListenable: daXem,
+    // Link lạ (đường dẫn khác của compass.tsudev.com) -> về tab đầu thay vì
+    // trang lỗi tiếng Anh mặc định.
+    onException: (_, _, r) => r.go(tabs.first.duongDan),
     redirect: (context, state) => dichChuyenHuong(
       daXemGioiThieu: daXem.value,
       viTri: state.matchedLocation,
@@ -46,6 +57,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: duongDanGioiThieu,
         builder: (context, state) => const ManGioiThieu(),
+      ),
+      GoRoute(
+        path: duongDanNhanDiem,
+        builder: (context, state) => ManNhanDiem(
+          token: state.pathParameters['token']!,
+          moDanhSach: () => context.go('/diem'),
+        ),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, shell) => KhungDieuHuong(shell: shell),

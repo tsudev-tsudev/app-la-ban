@@ -614,6 +614,321 @@ class LbL10nEn extends LbL10n {
   @override
   String get securityAppealOpenFailed =>
       'Couldn\'t open the browser. Visit compass.tsudev.com/en/appeal to send an appeal.';
+
+  @override
+  String get wpSaveHere => 'Save location';
+
+  @override
+  String get wpAddManual => 'Enter coordinates';
+
+  @override
+  String get wpNewTitle => 'New waypoint';
+
+  @override
+  String get wpEditTitle => 'Edit waypoint';
+
+  @override
+  String get wpName => 'Name';
+
+  @override
+  String get wpLat => 'Latitude';
+
+  @override
+  String get wpLon => 'Longitude';
+
+  @override
+  String get wpAlt => 'Altitude (m, optional)';
+
+  @override
+  String get wpNote => 'Note';
+
+  @override
+  String get wpPhotos => 'Photos';
+
+  @override
+  String get wpAddPhoto => 'Add photo';
+
+  @override
+  String get wpRemovePhoto => 'Remove photo';
+
+  @override
+  String wpPhotoSemantics(int index) {
+    return 'Waypoint photo $index';
+  }
+
+  @override
+  String get wpPhotoHint =>
+      'Photos are resized and stripped of location / camera data before saving.';
+
+  @override
+  String get wpPhotoError => 'Couldn\'t read this photo.';
+
+  @override
+  String get wpSave => 'Save';
+
+  @override
+  String get wpCancel => 'Cancel';
+
+  @override
+  String get wpDelete => 'Delete';
+
+  @override
+  String wpDeleteConfirm(String name) {
+    return 'Delete \"$name\" and its photos? This can\'t be undone.';
+  }
+
+  @override
+  String get wpUseCurrent => 'Use current location';
+
+  @override
+  String get wpLocating => 'Getting location...';
+
+  @override
+  String get wpLocationNeeded =>
+      'Location permission is needed to save where you are.';
+
+  @override
+  String get wpGrant => 'Allow location';
+
+  @override
+  String get wpErrNameEmpty => 'Enter a name';
+
+  @override
+  String wpErrNameLong(int max) {
+    return 'Name can be at most $max characters';
+  }
+
+  @override
+  String get wpErrLat => 'Latitude must be between -90 and 90';
+
+  @override
+  String get wpErrLon => 'Longitude must be between -180 and 180';
+
+  @override
+  String get wpErrAlt => 'Invalid altitude';
+
+  @override
+  String wpErrNoteLong(int max) {
+    return 'Note can be at most $max characters';
+  }
+
+  @override
+  String get wpNavigate => 'Navigate';
+
+  @override
+  String get wpShare => 'Share';
+
+  @override
+  String get wpEdit => 'Edit';
+
+  @override
+  String wpMeters(int value) {
+    return '$value m';
+  }
+
+  @override
+  String wpKilometers(double value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPatternDigits(
+          locale: localeName,
+          decimalDigits: 1,
+        );
+    final String valueString = valueNumberFormat.format(value);
+
+    return '$valueString km';
+  }
+
+  @override
+  String wpAway(String distance) {
+    return '$distance away';
+  }
+
+  @override
+  String wpBearing(int value) {
+    return 'Bearing $value° (true north)';
+  }
+
+  @override
+  String wpTurn(int value, String side) {
+    return 'Turn $value° $side';
+  }
+
+  @override
+  String get wpLeft => 'left';
+
+  @override
+  String get wpRight => 'right';
+
+  @override
+  String get wpAhead => 'Straight ahead';
+
+  @override
+  String get wpArrived => 'You have arrived';
+
+  @override
+  String get wpNoCompass =>
+      'No compass sensor: follow the bearing below with another compass.';
+
+  @override
+  String get wpWaitingGps => 'Waiting for GPS...';
+
+  @override
+  String wpAccuracy(int value) {
+    return 'Location accuracy ±$value m';
+  }
+
+  @override
+  String wpArrowSemantics(String name, String distance) {
+    return 'Arrow pointing to $name, $distance';
+  }
+
+  @override
+  String wpCreated(String date) {
+    return 'Created $date';
+  }
+
+  @override
+  String get wpCoords => 'Coordinates';
+
+  @override
+  String wpAltValue(double value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPatternDigits(
+          locale: localeName,
+          decimalDigits: 1,
+        );
+    final String valueString = valueNumberFormat.format(value);
+
+    return 'Altitude $valueString m';
+  }
+
+  @override
+  String get wpCopyCoords => 'Copy coordinates';
+
+  @override
+  String get wpImport => 'Import GPX / KML';
+
+  @override
+  String get wpExportGpx => 'Export GPX';
+
+  @override
+  String get wpExportKml => 'Export KML';
+
+  @override
+  String get wpMore => 'More options';
+
+  @override
+  String wpImportResult(int added, int updated, int skipped) {
+    return 'Added $added, updated $updated, skipped $skipped waypoints.';
+  }
+
+  @override
+  String get wpImportError => 'Couldn\'t read the file: not valid GPX / KML.';
+
+  @override
+  String get wpImportEmpty => 'The file has no waypoints.';
+
+  @override
+  String get wpFileError => 'Couldn\'t open or save the file.';
+
+  @override
+  String get wpExported => 'File saved.';
+
+  @override
+  String wpUnnamed(int index) {
+    return 'Waypoint $index';
+  }
+
+  @override
+  String get wpShareTitle => 'Share waypoint';
+
+  @override
+  String get wpShareExpiry => 'Link expires after';
+
+  @override
+  String wpDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '1 day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String wpShareInfo(int max) {
+    return 'The link contains the name, coordinates, altitude and up to $max characters of the note, without photos. Anyone with the link can see it until it expires.';
+  }
+
+  @override
+  String get wpCopyLink => 'Copy link';
+
+  @override
+  String get wpCopied => 'Copied';
+
+  @override
+  String get wpSendLink => 'Send link';
+
+  @override
+  String get wpQrSemantics => 'QR code of the share link';
+
+  @override
+  String get wpShareDisabled => 'Sharing is temporarily turned off.';
+
+  @override
+  String get wpReceivedTitle => 'Shared waypoint';
+
+  @override
+  String wpReceivedExpires(String date) {
+    return 'Link expires $date';
+  }
+
+  @override
+  String get wpReceivedSave => 'Save to Waypoints';
+
+  @override
+  String get wpReceivedSaved => 'Saved to Waypoints.';
+
+  @override
+  String get wpReceivedUntrusted =>
+      'Content is set by the sender and isn\'t verified by the app.';
+
+  @override
+  String get wpLinkBroken => 'This link is invalid or was cut off when sent.';
+
+  @override
+  String get wpLinkExpired =>
+      'This link has expired. Ask the sender to share it again.';
+
+  @override
+  String get wpLinkNewer =>
+      'This link was made by a newer version. Please update the app.';
+
+  @override
+  String get wpGoWaypoints => 'Open waypoints';
+
+  @override
+  String get wpSafeTitle => 'Export saved waypoints';
+
+  @override
+  String get wpSafeBody =>
+      'In safe mode the waypoint list is locked. You can still export all waypoints to a GPX file to keep them safe.';
+
+  @override
+  String get wpSafeReadError => 'Couldn\'t read saved waypoints.';
+
+  @override
+  String wpSafeCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count waypoints',
+      one: '1 waypoint',
+      zero: 'No waypoints',
+    );
+    return '$_temp0';
+  }
 }
 
 /// The translations for English (`en_XA`).
@@ -1232,4 +1547,324 @@ class LbL10nEnXa extends LbL10nEn {
   @override
   String get securityAppealOpenFailed =>
       '[Çởữłđñ\'ť ởpẽñ ťhẽ břởŵšẽř. Vỉšỉť çởmpảšš.ťšữđẽv.çởm/ẽñ/ảppẽảł ťở šẽñđ ảñ ảppẽảł. ································]';
+
+  @override
+  String get wpSaveHere => '[Šảvẽ łởçảťỉởñ ······]';
+
+  @override
+  String get wpAddManual => '[Ẽñťẽř çởởřđỉñảťẽš ·······]';
+
+  @override
+  String get wpNewTitle => '[Ñẽŵ ŵảỹpởỉñť ·····]';
+
+  @override
+  String get wpEditTitle => '[Ẽđỉť ŵảỹpởỉñť ······]';
+
+  @override
+  String get wpName => '[Ñảmẽ ··]';
+
+  @override
+  String get wpLat => '[Łảťỉťữđẽ ····]';
+
+  @override
+  String get wpLon => '[Łởñğỉťữđẽ ····]';
+
+  @override
+  String get wpAlt => '[Ảłťỉťữđẽ (m, ởpťỉởñảł) ·········]';
+
+  @override
+  String get wpNote => '[Ñởťẽ ··]';
+
+  @override
+  String get wpPhotos => '[Phởťởš ···]';
+
+  @override
+  String get wpAddPhoto => '[Ảđđ phởťở ····]';
+
+  @override
+  String get wpRemovePhoto => '[Řẽmởvẽ phởťở ·····]';
+
+  @override
+  String wpPhotoSemantics(int index) {
+    return '[Ŵảỹpởỉñť phởťở $index ······]';
+  }
+
+  @override
+  String get wpPhotoHint =>
+      '[Phởťởš ảřẽ řẽšỉžẽđ ảñđ šťřỉppẽđ ởf łởçảťỉởñ / çảmẽřả đảťả bẽfởřẽ šảvỉñğ. ·····························]';
+
+  @override
+  String get wpPhotoError => '[Çởữłđñ\'ť řẽảđ ťhỉš phởťở. ··········]';
+
+  @override
+  String get wpSave => '[Šảvẽ ··]';
+
+  @override
+  String get wpCancel => '[Çảñçẽł ···]';
+
+  @override
+  String get wpDelete => '[Đẽłẽťẽ ···]';
+
+  @override
+  String wpDeleteConfirm(String name) {
+    return '[Đẽłẽťẽ \"$name\" ảñđ ỉťš phởťởš? Ťhỉš çảñ\'ť bẽ ữñđởñẽ. ···················]';
+  }
+
+  @override
+  String get wpUseCurrent => '[Ữšẽ çữřřẽñť łởçảťỉởñ ········]';
+
+  @override
+  String get wpLocating => '[Ğẽťťỉñğ łởçảťỉởñ... ········]';
+
+  @override
+  String get wpLocationNeeded =>
+      '[Łởçảťỉởñ pẽřmỉššỉởñ ỉš ñẽẽđẽđ ťở šảvẽ ŵhẽřẽ ỹởữ ảřẽ. ·····················]';
+
+  @override
+  String get wpGrant => '[Ảłłởŵ łởçảťỉởñ ······]';
+
+  @override
+  String get wpErrNameEmpty => '[Ẽñťẽř ả ñảmẽ ·····]';
+
+  @override
+  String wpErrNameLong(int max) {
+    return '[Ñảmẽ çảñ bẽ ảť mởšť $max çhảřảçťẽřš ·············]';
+  }
+
+  @override
+  String get wpErrLat => '[Łảťỉťữđẽ mữšť bẽ bẽťŵẽẽñ -90 ảñđ 90 ··············]';
+
+  @override
+  String get wpErrLon =>
+      '[Łởñğỉťữđẽ mữšť bẽ bẽťŵẽẽñ -180 ảñđ 180 ················]';
+
+  @override
+  String get wpErrAlt => '[Ỉñvảłỉđ ảłťỉťữđẽ ·······]';
+
+  @override
+  String wpErrNoteLong(int max) {
+    return '[Ñởťẽ çảñ bẽ ảť mởšť $max çhảřảçťẽřš ·············]';
+  }
+
+  @override
+  String get wpNavigate => '[Ñảvỉğảťẽ ····]';
+
+  @override
+  String get wpShare => '[Šhảřẽ ··]';
+
+  @override
+  String get wpEdit => '[Ẽđỉť ··]';
+
+  @override
+  String wpMeters(int value) {
+    return '[$value m ··]';
+  }
+
+  @override
+  String wpKilometers(double value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPatternDigits(
+          locale: localeName,
+          decimalDigits: 1,
+        );
+    final String valueString = valueNumberFormat.format(value);
+
+    return '[$valueString km ··]';
+  }
+
+  @override
+  String wpAway(String distance) {
+    return '[$distance ảŵảỹ ··]';
+  }
+
+  @override
+  String wpBearing(int value) {
+    return '[Bẽảřỉñğ $value° (ťřữẽ ñởřťh) ·········]';
+  }
+
+  @override
+  String wpTurn(int value, String side) {
+    return '[Ťữřñ $value° $side ···]';
+  }
+
+  @override
+  String get wpLeft => '[łẽfť ··]';
+
+  @override
+  String get wpRight => '[řỉğhť ··]';
+
+  @override
+  String get wpAhead => '[Šťřảỉğhť ảhẽảđ ······]';
+
+  @override
+  String get wpArrived => '[Ỹởữ hảvẽ ảřřỉvẽđ ·······]';
+
+  @override
+  String get wpNoCompass =>
+      '[Ñở çởmpảšš šẽñšởř: fởłłởŵ ťhẽ bẽảřỉñğ bẽłởŵ ŵỉťh ảñởťhẽř çởmpảšš. ··························]';
+
+  @override
+  String get wpWaitingGps => '[Ŵảỉťỉñğ fởř ĞPŠ... ········]';
+
+  @override
+  String wpAccuracy(int value) {
+    return '[Łởçảťỉởñ ảççữřảçỹ ±$value m ·········]';
+  }
+
+  @override
+  String wpArrowSemantics(String name, String distance) {
+    return '[Ảřřởŵ pởỉñťỉñğ ťở $name, $distance ········]';
+  }
+
+  @override
+  String wpCreated(String date) {
+    return '[Çřẽảťẽđ $date ····]';
+  }
+
+  @override
+  String get wpCoords => '[Çởởřđỉñảťẽš ·····]';
+
+  @override
+  String wpAltValue(double value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPatternDigits(
+          locale: localeName,
+          decimalDigits: 1,
+        );
+    final String valueString = valueNumberFormat.format(value);
+
+    return '[Ảłťỉťữđẽ $valueString m ·····]';
+  }
+
+  @override
+  String get wpCopyCoords => '[Çởpỹ çởởřđỉñảťẽš ·······]';
+
+  @override
+  String get wpImport => '[Ỉmpởřť ĞPX / KMŁ ·······]';
+
+  @override
+  String get wpExportGpx => '[Ẽxpởřť ĞPX ····]';
+
+  @override
+  String get wpExportKml => '[Ẽxpởřť KMŁ ····]';
+
+  @override
+  String get wpMore => '[Mởřẽ ởpťỉởñš ·····]';
+
+  @override
+  String wpImportResult(int added, int updated, int skipped) {
+    return '[Ảđđẽđ $added, ữpđảťẽđ $updated, škỉppẽđ $skipped ŵảỹpởỉñťš. ···············]';
+  }
+
+  @override
+  String get wpImportError =>
+      '[Çởữłđñ\'ť řẽảđ ťhẽ fỉłẽ: ñởť vảłỉđ ĞPX / KMŁ. ··················]';
+
+  @override
+  String get wpImportEmpty => '[Ťhẽ fỉłẽ hảš ñở ŵảỹpởỉñťš. ···········]';
+
+  @override
+  String get wpFileError => '[Çởữłđñ\'ť ởpẽñ ởř šảvẽ ťhẽ fỉłẽ. ·············]';
+
+  @override
+  String get wpExported => '[Fỉłẽ šảvẽđ. ·····]';
+
+  @override
+  String wpUnnamed(int index) {
+    return '[Ŵảỹpởỉñť $index ····]';
+  }
+
+  @override
+  String get wpShareTitle => '[Šhảřẽ ŵảỹpởỉñť ······]';
+
+  @override
+  String get wpShareExpiry => '[Łỉñk ẽxpỉřẽš ảfťẽř ········]';
+
+  @override
+  String wpDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count đảỹš',
+      one: '1 đảỹ',
+    );
+    return '[$_temp0 ·············]';
+  }
+
+  @override
+  String wpShareInfo(int max) {
+    return '[Ťhẽ łỉñk çởñťảỉñš ťhẽ ñảmẽ, çởởřđỉñảťẽš, ảłťỉťữđẽ ảñđ ữp ťở $max çhảřảçťẽřš ởf ťhẽ ñởťẽ, ŵỉťhởữť phởťởš. Ảñỹởñẽ ŵỉťh ťhẽ łỉñk çảñ šẽẽ ỉť ữñťỉł ỉť ẽxpỉřẽš. ····························································]';
+  }
+
+  @override
+  String get wpCopyLink => '[Çởpỹ łỉñk ····]';
+
+  @override
+  String get wpCopied => '[Çởpỉẽđ ···]';
+
+  @override
+  String get wpSendLink => '[Šẽñđ łỉñk ····]';
+
+  @override
+  String get wpQrSemantics => '[QŘ çởđẽ ởf ťhẽ šhảřẽ łỉñk ··········]';
+
+  @override
+  String get wpShareDisabled =>
+      '[Šhảřỉñğ ỉš ťẽmpởřảřỉłỹ ťữřñẽđ ởff. ··············]';
+
+  @override
+  String get wpReceivedTitle => '[Šhảřẽđ ŵảỹpởỉñť ······]';
+
+  @override
+  String wpReceivedExpires(String date) {
+    return '[Łỉñk ẽxpỉřẽš $date ······]';
+  }
+
+  @override
+  String get wpReceivedSave => '[Šảvẽ ťở Ŵảỹpởỉñťš ·······]';
+
+  @override
+  String get wpReceivedSaved => '[Šảvẽđ ťở Ŵảỹpởỉñťš. ········]';
+
+  @override
+  String get wpReceivedUntrusted =>
+      '[Çởñťẽñť ỉš šẽť bỹ ťhẽ šẽñđẽř ảñđ ỉšñ\'ť vẽřỉfỉẽđ bỹ ťhẽ ảpp. ························]';
+
+  @override
+  String get wpLinkBroken =>
+      '[Ťhỉš łỉñk ỉš ỉñvảłỉđ ởř ŵảš çữť ởff ŵhẽñ šẽñť. ···················]';
+
+  @override
+  String get wpLinkExpired =>
+      '[Ťhỉš łỉñk hảš ẽxpỉřẽđ. Ảšk ťhẽ šẽñđẽř ťở šhảřẽ ỉť ảğảỉñ. ·······················]';
+
+  @override
+  String get wpLinkNewer =>
+      '[Ťhỉš łỉñk ŵảš mảđẽ bỹ ả ñẽŵẽř vẽřšỉởñ. Płẽảšẽ ữpđảťẽ ťhẽ ảpp. ·························]';
+
+  @override
+  String get wpGoWaypoints => '[Ởpẽñ ŵảỹpởỉñťš ······]';
+
+  @override
+  String get wpSafeTitle => '[Ẽxpởřť šảvẽđ ŵảỹpởỉñťš ·········]';
+
+  @override
+  String get wpSafeBody =>
+      '[Ỉñ šảfẽ mởđẽ ťhẽ ŵảỹpởỉñť łỉšť ỉš łởçkẽđ. Ỹởữ çảñ šťỉłł ẽxpởřť ảłł ŵảỹpởỉñťš ťở ả ĞPX fỉłẽ ťở kẽẽp ťhẽm šảfẽ. ············································]';
+
+  @override
+  String get wpSafeReadError =>
+      '[Çởữłđñ\'ť řẽảđ šảvẽđ ŵảỹpởỉñťš. ············]';
+
+  @override
+  String wpSafeCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ŵảỹpởỉñťš',
+      one: '1 ŵảỹpởỉñť',
+      zero: 'Ñở ŵảỹpởỉñťš',
+    );
+    return '[$_temp0 ················]';
+  }
 }

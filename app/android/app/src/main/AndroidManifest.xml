@@ -31,6 +31,16 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <!-- A6: App Links cho link chia sẻ điểm. autoVerify -> hệ thống kiểm
+                 compass.tsudev.com/.well-known/assetlinks.json (gói + SHA-256 chứng chỉ ký) rồi mở
+                 thẳng app, không hỏi chọn trình duyệt. Flutter chuyển "/w/<token>" cho go_router. -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="https" android:host="compass.tsudev.com" android:pathPrefix="/w/"/>
+            </intent-filter>
+            <meta-data android:name="flutter_deeplinking_enabled" android:value="true"/>
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
