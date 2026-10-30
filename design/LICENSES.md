@@ -7,6 +7,8 @@
 | Font Be Vietnam Pro (Regular, Medium, SemiBold, Bold, ExtraBold) `design/fonts/*.ttf` | github.com/google/fonts `ofl/bevietnampro` (The Be Vietnam Pro Project Authors) | SIL Open Font License 1.1 - `design/fonts/OFL.txt` | Đóng gói vào app từ A1 (bản sao `packages/design_system/fonts/`, cổng kiểm trùng `design/fonts`); văn bản OFL đăng ký vào `LicenseRegistry` (`dangKyGiayPhepFont`), hiện ở Cài đặt -> Giấy phép mã nguồn mở |
 | Design tokens `design/tokens.json` | Spec §2.1 + chỉnh tương phản | Độc quyền | |
 | Địa giới hành chính VN `packages/location_feature/assets/dia_gioi_vn.bin` | OpenStreetMap (bản trích Geofabrik), sinh bằng `tools/build/dia-gioi.py` | ODbL 1.0 - © OpenStreetMap contributors | Ghi công ở màn vị trí + `GIAY_PHEP_DU_LIEU.txt` đăng ký vào `LicenseRegistry` (`dangKyGiayPhepDuLieu`). Vùng bao Hoàng Sa / Trường Sa do TsuDev bổ sung |
+| Tile bản đồ vector (R2 `ban-do/`, A7a) | Protomaps basemap (bản PMTiles hành tinh `build.protomaps.com`), trích bằng `tools/build/tile-vn.mjs` | Dữ liệu ODbL 1.0 - © OpenStreetMap contributors; lược đồ Protomaps BSD-3 | Ghi công trong style (`attribution` của nguồn `vn`) + nút thông tin bản đồ (A7b) + `GIAY_PHEP_DU_LIEU.txt` |
+| Glyph bản đồ Noto Sans Regular / Medium / Italic (R2 `ban-do/phong/`) | github.com/protomaps/basemaps-assets | SIL OFL 1.1 | Thêm vào màn Giấy phép (A7b) |
 | Lưới geoid EGM96 1° `packages/location_feature/assets/geoid_egm96_1do.bin` | NGA qua lưới `us_nga_egm96_15` của PROJ, sinh bằng `tools/build/geoid.py` | Phạm vi công cộng | |
 
 Công cụ chỉ dùng lúc build (devDependencies, không vào app / web): `@resvg/resvg-js` (MPL-2.0) dựng PNG từ SVG,

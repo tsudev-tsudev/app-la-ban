@@ -50,6 +50,15 @@ binding = "SU_KIEN"
 dataset = "la_ban_su_kien"
 
 # Lớp giới hạn thô theo IP (SEC-API API-01). Rộng tay vì CGNAT ở VN (QUYET_DINH Q12); giới hạn chặt theo route ở DO GioiHanToc.
+[[r2_buckets]]
+binding = "BAN_DO"
+bucket_name = "la-ban-cdn"
+
+[[ratelimits]]
+name = "RL_BAN_DO"
+namespace_id = "1011"
+simple = { limit = 3000, period = 60 }
+
 [[ratelimits]]
 name = "RL_IP"
 namespace_id = "1001"
@@ -119,6 +128,15 @@ bucket_name = "la-ban-nhat-ky-staging"
 binding = "SU_KIEN"
 dataset = "la_ban_su_kien_staging"
 
+[[env.staging.r2_buckets]]
+binding = "BAN_DO"
+bucket_name = "la-ban-cdn"
+
+[[env.staging.ratelimits]]
+name = "RL_BAN_DO"
+namespace_id = "1012"
+simple = { limit = 3000, period = 60 }
+
 [[env.staging.ratelimits]]
 name = "RL_IP"
 namespace_id = "1002"
@@ -166,6 +184,15 @@ bucket_name = "la-ban-cdn-dev"
 [[env.dev.r2_buckets]]
 binding = "NHAT_KY"
 bucket_name = "la-ban-nhat-ky-dev"
+
+[[env.dev.r2_buckets]]
+binding = "BAN_DO"
+bucket_name = "la-ban-cdn"
+
+[[env.dev.ratelimits]]
+name = "RL_BAN_DO"
+namespace_id = "1013"
+simple = { limit = 3000, period = 60 }
 
 [[env.dev.ratelimits]]
 name = "RL_IP"
