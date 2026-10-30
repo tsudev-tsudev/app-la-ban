@@ -1,7 +1,6 @@
 # Trạng thái SỐNG - quy trình: AGENTS_KICKOFF.md · lệnh: `./agents.sh help`
 
 ## LOCKS (chỉ tệp ĐANG sửa - xoá ngay khi xong)
-- agent-laban-app · app/, packages/, native/ · A8a quyen rieng tu (phien song song, worktree ~/projects/app-la-ban-a6, nhanh phase/a8a-rieng-tu)
 
 ## Lưu ý đang hiệu lực (<= 8 dòng)
 - GITLEAKS CHUA CAI: cong.sh bo qua gitleaks khi khong co lenh; secretlint khong bat JWT -> cong co buoc git grep JWT rieng. Test can token thi ghep luc chay. find GITGUARDIAN
