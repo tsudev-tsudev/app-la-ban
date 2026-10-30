@@ -52,3 +52,9 @@ final class KhoKhoaBoNho implements KhoKhoa {
   @override
   Future<String> thuMucDuLieu() async => _thuMuc;
 }
+
+/// Xoá MỌI dữ liệu của app (tệp, CSDL, bản đồ offline, khoá Keystore) như
+/// "Xoá dữ liệu" của hệ thống, rồi hệ thống đóng app (màn Quyền riêng tư).
+/// Thành công thì không trả về; lỗi -> [PlatformException].
+Future<void> xoaToanBoDuLieuApp() =>
+    const MethodChannel('la_ban/luu_tru').invokeMethod<void>('xoaToanBo');

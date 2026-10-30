@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:i18n/i18n.dart';
+import 'package:la_ban/src/cong_truc_tuyen.dart';
 import 'package:la_ban/src/dinh_danh.dart';
 import 'package:la_ban/src/flavor.dart';
 import 'package:la_ban/src/kenh.dart';
@@ -69,9 +70,12 @@ String? docKhoaDaLuu(KhoLuuTru kho) =>
 /// kỳ [khoang] +- ngẫu nhiên (không một điểm kiểm cố định dễ vá), mỗi lần
 /// quay lại foreground (cách nhau >= 5 phút). freeRASP chạy song song, tự
 /// báo khi phát hiện. Bị cấm (CRITICAL) -> gửi nốt sự kiện rồi huỷ phiên.
+/// Mọi lượt chỉ chạy khi [cong] mở (Q43); freeRASP khởi chạy lúc cổng mở lần
+/// đầu.
 void batDauRasp(
   DichVuRasp rasp,
-  Flavor flavor, {
+  Flavor flavor,
+  CongTrucTuyen cong, {
   DichVuDinhDanh? dinhDanh,
   KenhApp? kenh,
   Random? ngauNhien,
@@ -83,6 +87,7 @@ void batDauRasp(
   Timer? hen;
 
   void kiem() {
+    if (!cong.value) return;
     lanCuoi = DateTime.now();
     unawaited(rasp.kiemTra());
   }
@@ -97,28 +102,33 @@ void batDauRasp(
   }
 
   WidgetsBinding.instance.addPostFrameCallback(
-    (_) => Timer(cho + Duration(milliseconds: r.nextInt(6000)), () {
-      kiem();
-      henDinhKy();
-      if (!kIsWeb && Platform.isAndroid) {
-        nguonFreeRasp(
-          cauHinhFreeRasp(
-            goi: flavor.goi,
-            chungChi: const [Flavor.chungChiUpload],
-            banThat: kReleaseMode,
-          ),
-        ).listen(rasp.nhan);
-      }
-      AppLifecycleListener(
-        onResume: () {
-          final lc = lanCuoi;
-          if (lc == null ||
-              DateTime.now().difference(lc) >= const Duration(minutes: 5)) {
-            kiem();
-          }
-        },
-      );
-    }),
+    (_) => Timer(
+      cho + Duration(milliseconds: r.nextInt(6000)),
+      () => cong.khiMo(() {
+        kiem();
+        henDinhKy();
+        if (!kIsWeb && Platform.isAndroid) {
+          nguonFreeRasp(
+            cauHinhFreeRasp(
+              goi: flavor.goi,
+              chungChi: const [Flavor.chungChiUpload],
+              banThat: kReleaseMode,
+            ),
+          ).listen((e) {
+            if (cong.value) rasp.nhan(e);
+          });
+        }
+        AppLifecycleListener(
+          onResume: () {
+            final lc = lanCuoi;
+            if (lc == null ||
+                DateTime.now().difference(lc) >= const Duration(minutes: 5)) {
+              kiem();
+            }
+          },
+        );
+      }),
+    ),
   );
 
   if (kenh != null && dinhDanh != null) {

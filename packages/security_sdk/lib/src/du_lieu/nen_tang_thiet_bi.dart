@@ -101,8 +101,9 @@ final class NenTangThietBiKenh implements NenTangThietBi {
   }
 }
 
-/// Mở trang của La bàn (`https://compass.tsudev.com/...`) bằng trình duyệt -
-/// trang tải bản mới. false khi máy không có trình duyệt / URL ngoài trang.
+/// Mở trang của La bàn (`https://compass.tsudev.com/...`) bằng trình duyệt
+/// (trang tải bản mới, chính sách) hoặc thư tới `privacy@tsudev.com`. false
+/// khi máy không có ứng dụng phù hợp / URL ngoài danh sách.
 Future<bool> moTrangLaBan(Uri url) async {
   try {
     return await const MethodChannel('la_ban/thiet_bi')

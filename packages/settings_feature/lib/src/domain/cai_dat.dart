@@ -1,4 +1,5 @@
 import 'package:meta/meta.dart';
+import 'package:settings_feature/src/domain/dong_y.dart';
 
 /// Ngôn ngữ người dùng chọn trong Cài đặt.
 enum LuaChonNgonNgu {
@@ -25,6 +26,7 @@ final class CaiDat {
     this.ngonNgu = LuaChonNgonNgu.heThong,
     this.cheDo = CheDoGiaoDien.heThong,
     this.daXemGioiThieu = false,
+    this.dongY,
   });
 
   /// Đọc từ JSON đã lưu; khoá thiếu / giá trị lạ (bản cũ, tệp hỏng) -> mặc
@@ -39,12 +41,14 @@ final class CaiDat {
         CheDoGiaoDien.values.where((v) => v.name == j['cheDo']).firstOrNull ??
         CheDoGiaoDien.heThong,
     daXemGioiThieu: j['daXemGioiThieu'] == true,
+    dongY: DongYXuLy.tuJson(j['dongY']),
   );
 
   Map<String, Object?> toJson() => {
     'ngonNgu': ngonNgu.name,
     'cheDo': cheDo.name,
     'daXemGioiThieu': daXemGioiThieu,
+    'dongY': ?dongY?.toJson(),
   };
 
   final LuaChonNgonNgu ngonNgu;
@@ -53,14 +57,25 @@ final class CaiDat {
   /// Đã qua màn giới thiệu lần đầu.
   final bool daXemGioiThieu;
 
+  /// Lựa chọn với thông báo xử lý dữ liệu (null = chưa trả lời).
+  final DongYXuLy? dongY;
+
+  /// Phải qua màn giới thiệu: lần đầu, hoặc thông báo dữ liệu có bản mới.
+  bool get canGioiThieu => !daXemGioiThieu || canHoiDongY(dongY);
+
+  /// Được gửi dữ liệu bảo mật kỹ thuật lên máy chủ.
+  bool get trucTuyen => choPhepTrucTuyen(dongY);
+
   CaiDat copyWith({
     LuaChonNgonNgu? ngonNgu,
     CheDoGiaoDien? cheDo,
     bool? daXemGioiThieu,
+    DongYXuLy? dongY,
   }) => CaiDat(
     ngonNgu: ngonNgu ?? this.ngonNgu,
     cheDo: cheDo ?? this.cheDo,
     daXemGioiThieu: daXemGioiThieu ?? this.daXemGioiThieu,
+    dongY: dongY ?? this.dongY,
   );
 
   @override
@@ -68,13 +83,14 @@ final class CaiDat {
       other is CaiDat &&
       other.ngonNgu == ngonNgu &&
       other.cheDo == cheDo &&
-      other.daXemGioiThieu == daXemGioiThieu;
+      other.daXemGioiThieu == daXemGioiThieu &&
+      other.dongY == dongY;
 
   @override
-  int get hashCode => Object.hash(ngonNgu, cheDo, daXemGioiThieu);
+  int get hashCode => Object.hash(ngonNgu, cheDo, daXemGioiThieu, dongY);
 
   @override
   String toString() =>
       'CaiDat(ngonNgu: ${ngonNgu.name}, cheDo: ${cheDo.name}, '
-      'daXemGioiThieu: $daXemGioiThieu)';
+      'daXemGioiThieu: $daXemGioiThieu, dongY: $dongY)';
 }

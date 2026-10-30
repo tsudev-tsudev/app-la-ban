@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:i18n/i18n.dart';
 import 'package:la_ban/src/cap_nhat.dart';
+import 'package:la_ban/src/cong_truc_tuyen.dart';
 import 'package:la_ban/src/flavor.dart';
 import 'package:la_ban/src/lam_cung.dart';
 import 'package:la_ban/src/router.dart';
@@ -22,6 +23,12 @@ class LaBanApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final ma = ref.watch(caiDatProvider.select((c) => c.ngonNgu.maNgonNgu));
     final cheDo = ref.watch(caiDatProvider.select((c) => c.cheDo));
+    // Đồng ý / rút đồng ý (màn giới thiệu, Quyền riêng tư) -> mở / đóng cổng
+    // dịch vụ trực tuyến ngay, không dựng lại cây.
+    ref.listen(
+      caiDatProvider.select((c) => c.trucTuyen),
+      (_, v) => ref.read(congTrucTuyenProvider)?.value = v,
+    );
     return MaterialApp.router(
       onGenerateTitle: (c) =>
           flavor == Flavor.prod ? c.l10n.appTitle : flavor.appName,

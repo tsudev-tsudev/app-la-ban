@@ -1079,4 +1079,135 @@ class LbL10nVi extends LbL10n {
   String arHeadingLabel(int degrees) {
     return 'Camera đang hướng $degrees độ';
   }
+
+  @override
+  String get settingsPrivacy => 'Quyền riêng tư';
+
+  @override
+  String get noticeTitle => 'Dữ liệu của bạn';
+
+  @override
+  String get noticeDevice =>
+      'Điểm mốc, cài đặt và vị trí gần nhất được lưu mã hoá trên máy, không gửi về máy chủ.';
+
+  @override
+  String get noticeSensors =>
+      'Vị trí, camera và cảm biến chỉ xử lý trên máy. Quyền chỉ được hỏi khi bạn dùng tính năng cần đến.';
+
+  @override
+  String get noticeSecurity =>
+      'Nếu bạn đồng ý, ứng dụng gửi dữ liệu bảo mật kỹ thuật để chống gian lận và bản bị sửa đổi: mã cài đặt ngẫu nhiên, loại máy, phiên bản Android và ứng dụng, kết quả xác thực thiết bị của Google, tín hiệu môi trường (root, trình gỡ lỗi) và địa chỉ IP. Thư viện bảo mật freeRASP (Talsec) gửi thông tin môi trường tương tự.';
+
+  @override
+  String get noticeRetention =>
+      'Sự kiện bảo mật lưu 180 ngày, địa chỉ IP được rút gọn sau 90 ngày. Không bán dữ liệu, không quảng cáo theo dõi.';
+
+  @override
+  String get noticeRights =>
+      'Bạn có thể xem, xuất, xoá dữ liệu và rút lại đồng ý bất cứ lúc nào trong Cài đặt > Quyền riêng tư.';
+
+  @override
+  String get noticePolicy => 'Đọc chính sách quyền riêng tư đầy đủ';
+
+  @override
+  String get consentAccept => 'Đồng ý và bắt đầu';
+
+  @override
+  String get consentOffline => 'Chỉ dùng ngoại tuyến';
+
+  @override
+  String get consentOfflineHint =>
+      'Ngoại tuyến: la bàn, bản đồ đã tải và điểm mốc vẫn dùng đủ, nhưng không nhận cấu hình và cảnh báo bảo mật từ máy chủ.';
+
+  @override
+  String get privacyOnline => 'Kết nối bảo mật trực tuyến';
+
+  @override
+  String get privacyOnlineHint =>
+      'Gửi dữ liệu bảo mật kỹ thuật và nhận cấu hình ký số. Tắt là rút lại đồng ý; thư viện bảo mật dừng hẳn từ lần mở ứng dụng sau.';
+
+  @override
+  String privacyChoiceAt(String date) {
+    return 'Lựa chọn ghi lúc $date';
+  }
+
+  @override
+  String get privacyOnDevice => 'Dữ liệu trên máy';
+
+  @override
+  String privacyWaypoints(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count điểm mốc đã lưu',
+      zero: 'Chưa có điểm mốc',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get privacyExport => 'Xuất dữ liệu (JSON)';
+
+  @override
+  String get privacyExportDone => 'Đã lưu tệp dữ liệu';
+
+  @override
+  String get privacyExportFailed => 'Chưa lưu tệp dữ liệu';
+
+  @override
+  String get privacyDeleteAll => 'Xoá toàn bộ dữ liệu trên máy';
+
+  @override
+  String get privacyDeleteTitle => 'Xoá toàn bộ dữ liệu?';
+
+  @override
+  String get privacyDeleteBody =>
+      'Điểm mốc, bản đồ offline, cài đặt và khoá thiết bị bị xoá vĩnh viễn, rồi ứng dụng đóng lại. Hãy xuất dữ liệu trước nếu cần giữ.';
+
+  @override
+  String get privacyDeleteConfirm => 'Xoá vĩnh viễn';
+
+  @override
+  String get privacyOnServer => 'Dữ liệu trên máy chủ';
+
+  @override
+  String get privacyServerBody =>
+      'Máy chủ chỉ giữ dữ liệu bảo mật kỹ thuật gắn với mã thiết bị dưới đây, theo thời hạn trong chính sách.';
+
+  @override
+  String privacyDeviceId(String id) {
+    return 'Mã thiết bị: $id';
+  }
+
+  @override
+  String get privacyNoDeviceId => 'Thiết bị chưa đăng ký với máy chủ';
+
+  @override
+  String get privacyCopied => 'Đã chép mã thiết bị';
+
+  @override
+  String get privacyRequestDelete => 'Yêu cầu xoá dữ liệu trên máy chủ';
+
+  @override
+  String get privacyRequestSubject => 'Yêu cầu xoá dữ liệu La bàn';
+
+  @override
+  String privacyRequestBody(String id) {
+    return 'Mã thiết bị: $id\nTôi yêu cầu xoá dữ liệu gắn với thiết bị này.\n';
+  }
+
+  @override
+  String privacyMailFailed(String email) {
+    return 'Không mở được ứng dụng thư - hãy gửi tới $email';
+  }
+
+  @override
+  String get privacyPermissions => 'Quyền hệ thống';
+
+  @override
+  String get privacyPermissionsBody =>
+      'Vị trí và camera do hệ điều hành quản lý - thu hồi bất cứ lúc nào trong cài đặt ứng dụng.';
+
+  @override
+  String get privacyOpenSettings => 'Mở cài đặt ứng dụng';
 }

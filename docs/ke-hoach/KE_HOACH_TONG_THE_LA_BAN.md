@@ -69,7 +69,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 18 | R1 | Landing hoàn chỉnh (kéo lên làm cùng R0 theo yêu cầu người dùng) | N2 | ✅ 28/10 |
 | 19 | S8 | Bảo vệ edge web (CSP, header, WAF as code) | R1 | ✅ 29/10 (CSP nghiêm Report-Only tới 05/11; Access ở S6, Turnstile ở S7) |
 | 20 | S9 | Lớp bảo vệ nội dung web + build sạch | S8 | ✅ 29/10 (bdbd740; CSV audit ở S6) |
-| 21 | A8 | Cài đặt, quyền riêng tư, trợ năng, hiệu năng (chia A8a / A8b) | A7, S4 | 🟨 A8a đang (quyền riêng tư + đồng ý NĐ 13) · A8b chưa |
+| 21 | A8 | Cài đặt, quyền riêng tư, trợ năng, hiệu năng (chia A8a / A8b) | A7, S4 | 🟨 A8a ✅ 31/10 (quyền riêng tư + đồng ý NĐ 13, Q43; chưa phát hành APK - gộp A8b) · A8b chưa |
 | 22 | S10 | Giám sát, log bất biến, backup, ứng phó sự cố | S7 | ⬜ |
 | 23 | R2 | Sẵn sàng store | A8, S4 | ⬜ |
 | 24 | R3 | QA tổng + kiểm thử bảo mật | R2, S9, S10 | ⬜ |
@@ -555,6 +555,14 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   giới thiệu (NĐ 13/2023, có phiên bản thông báo), cổng đồng ý chặn đăng ký thiết bị / kênh / RASP, màn Quyền riêng tư
   (xem / xuất JSON / xoá toàn bộ dữ liệu app, rút đồng ý, mã thiết bị + yêu cầu xoá phía máy chủ), giấy phép lưu trữ ·
   **A8b** trợ năng (TalkBack semantics, tap target, Reduce motion) + hiệu năng (cold start lazy SDK, dung lượng, pin - đo máy thật).
+- Kết quả A8a (31/10, QUYET_DINH Q43): màn giới thiệu kèm thông báo xử lý dữ liệu + "Đồng ý và bắt đầu" / "Chỉ dùng ngoại
+  tuyến" (`dongY {ban, trucTuyen, luc}`, `banThongBaoDuLieu` = 1, người dùng bản cũ được hỏi một lần); `CongTrucTuyen` chặn
+  định danh / kênh / RASP khi chưa đồng ý hoặc đã rút, đồng ý muộn chạy ngay; màn Quyền riêng tư (Cài đặt): công tắc đồng ý,
+  số điểm, xuất JSON qua SAF, xoá toàn bộ (`clearApplicationUserData` + xoá khoá Keystore), mã thiết bị + thư
+  privacy@tsudev.com điền sẵn, mở cài đặt app; giấy phép SQLCipher + OpenSSL. Hook pre-commit bỏ qua tệp nhị phân (`grep -I`).
+- Phát sinh A8a: (1) thử trên máy thật: xoá toàn bộ, mở thư, lưu tệp JSON, rút đồng ý rồi mở lại app (freeRASP không chạy);
+  (2) landing `/quyen-rieng-tu` mục 6 nên nêu Cài đặt > Quyền riêng tư trong app + lựa chọn ngoại tuyến (vùng web - phiên chính);
+  (3) phát hành APK gộp A8b (tăng version beta.10).
 - Phát sinh (từ A5): màn Giấy phép thêm SQLCipher (BSD, Zetetic) + OpenSSL (Apache 2, bản Android) + drift / sqlite3 (MIT)
   vào `LicenseRegistry`; đo cold start gồm `KhoLuuTru.mo` (mở CSDL ở isolate nền, khoá Keystore) trên máy thật.
 

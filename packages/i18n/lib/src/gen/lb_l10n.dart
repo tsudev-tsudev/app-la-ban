@@ -1789,6 +1789,216 @@ abstract class LbL10n {
   /// In vi, this message translates to:
   /// **'Camera đang hướng {degrees} độ'**
   String arHeadingLabel(int degrees);
+
+  /// Mục mở màn Quyền riêng tư trong Cài đặt
+  ///
+  /// In vi, this message translates to:
+  /// **'Quyền riêng tư'**
+  String get settingsPrivacy;
+
+  /// Tiêu đề thông báo xử lý dữ liệu (NĐ 13/2023)
+  ///
+  /// In vi, this message translates to:
+  /// **'Dữ liệu của bạn'**
+  String get noticeTitle;
+
+  /// Thông báo dữ liệu: dữ liệu trên máy
+  ///
+  /// In vi, this message translates to:
+  /// **'Điểm mốc, cài đặt và vị trí gần nhất được lưu mã hoá trên máy, không gửi về máy chủ.'**
+  String get noticeDevice;
+
+  /// Thông báo dữ liệu: cảm biến, quyền
+  ///
+  /// In vi, this message translates to:
+  /// **'Vị trí, camera và cảm biến chỉ xử lý trên máy. Quyền chỉ được hỏi khi bạn dùng tính năng cần đến.'**
+  String get noticeSensors;
+
+  /// Thông báo dữ liệu: dữ liệu bảo mật gửi máy chủ
+  ///
+  /// In vi, this message translates to:
+  /// **'Nếu bạn đồng ý, ứng dụng gửi dữ liệu bảo mật kỹ thuật để chống gian lận và bản bị sửa đổi: mã cài đặt ngẫu nhiên, loại máy, phiên bản Android và ứng dụng, kết quả xác thực thiết bị của Google, tín hiệu môi trường (root, trình gỡ lỗi) và địa chỉ IP. Thư viện bảo mật freeRASP (Talsec) gửi thông tin môi trường tương tự.'**
+  String get noticeSecurity;
+
+  /// Thông báo dữ liệu: thời hạn lưu
+  ///
+  /// In vi, this message translates to:
+  /// **'Sự kiện bảo mật lưu 180 ngày, địa chỉ IP được rút gọn sau 90 ngày. Không bán dữ liệu, không quảng cáo theo dõi.'**
+  String get noticeRetention;
+
+  /// Thông báo dữ liệu: quyền của người dùng
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn có thể xem, xuất, xoá dữ liệu và rút lại đồng ý bất cứ lúc nào trong Cài đặt > Quyền riêng tư.'**
+  String get noticeRights;
+
+  /// Liên kết mở chính sách quyền riêng tư trên web
+  ///
+  /// In vi, this message translates to:
+  /// **'Đọc chính sách quyền riêng tư đầy đủ'**
+  String get noticePolicy;
+
+  /// Nút đồng ý xử lý dữ liệu ở màn giới thiệu
+  ///
+  /// In vi, this message translates to:
+  /// **'Đồng ý và bắt đầu'**
+  String get consentAccept;
+
+  /// Nút từ chối gửi dữ liệu, dùng ngoại tuyến
+  ///
+  /// In vi, this message translates to:
+  /// **'Chỉ dùng ngoại tuyến'**
+  String get consentOffline;
+
+  /// Giải thích chế độ chỉ ngoại tuyến
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngoại tuyến: la bàn, bản đồ đã tải và điểm mốc vẫn dùng đủ, nhưng không nhận cấu hình và cảnh báo bảo mật từ máy chủ.'**
+  String get consentOfflineHint;
+
+  /// Công tắc đồng ý gửi dữ liệu bảo mật kỹ thuật
+  ///
+  /// In vi, this message translates to:
+  /// **'Kết nối bảo mật trực tuyến'**
+  String get privacyOnline;
+
+  /// Mô tả công tắc kết nối trực tuyến
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi dữ liệu bảo mật kỹ thuật và nhận cấu hình ký số. Tắt là rút lại đồng ý; thư viện bảo mật dừng hẳn từ lần mở ứng dụng sau.'**
+  String get privacyOnlineHint;
+
+  /// Thời điểm người dùng chọn đồng ý / từ chối
+  ///
+  /// In vi, this message translates to:
+  /// **'Lựa chọn ghi lúc {date}'**
+  String privacyChoiceAt(String date);
+
+  /// Tiêu đề mục dữ liệu trên máy
+  ///
+  /// In vi, this message translates to:
+  /// **'Dữ liệu trên máy'**
+  String get privacyOnDevice;
+
+  /// Số điểm mốc đang lưu
+  ///
+  /// In vi, this message translates to:
+  /// **'{count, plural, =0{Chưa có điểm mốc} other{{count} điểm mốc đã lưu}}'**
+  String privacyWaypoints(int count);
+
+  /// Nút xuất toàn bộ dữ liệu cá nhân ra tệp
+  ///
+  /// In vi, this message translates to:
+  /// **'Xuất dữ liệu (JSON)'**
+  String get privacyExport;
+
+  /// Thông báo xuất dữ liệu thành công
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã lưu tệp dữ liệu'**
+  String get privacyExportDone;
+
+  /// Thông báo xuất dữ liệu không thành công / bị huỷ
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa lưu tệp dữ liệu'**
+  String get privacyExportFailed;
+
+  /// Nút xoá toàn bộ dữ liệu ứng dụng
+  ///
+  /// In vi, this message translates to:
+  /// **'Xoá toàn bộ dữ liệu trên máy'**
+  String get privacyDeleteAll;
+
+  /// Tiêu đề hộp thoại xác nhận xoá
+  ///
+  /// In vi, this message translates to:
+  /// **'Xoá toàn bộ dữ liệu?'**
+  String get privacyDeleteTitle;
+
+  /// Nội dung hộp thoại xác nhận xoá
+  ///
+  /// In vi, this message translates to:
+  /// **'Điểm mốc, bản đồ offline, cài đặt và khoá thiết bị bị xoá vĩnh viễn, rồi ứng dụng đóng lại. Hãy xuất dữ liệu trước nếu cần giữ.'**
+  String get privacyDeleteBody;
+
+  /// Nút xác nhận xoá
+  ///
+  /// In vi, this message translates to:
+  /// **'Xoá vĩnh viễn'**
+  String get privacyDeleteConfirm;
+
+  /// Tiêu đề mục dữ liệu máy chủ
+  ///
+  /// In vi, this message translates to:
+  /// **'Dữ liệu trên máy chủ'**
+  String get privacyOnServer;
+
+  /// Mô tả dữ liệu phía máy chủ
+  ///
+  /// In vi, this message translates to:
+  /// **'Máy chủ chỉ giữ dữ liệu bảo mật kỹ thuật gắn với mã thiết bị dưới đây, theo thời hạn trong chính sách.'**
+  String get privacyServerBody;
+
+  /// Mã thiết bị máy chủ cấp
+  ///
+  /// In vi, this message translates to:
+  /// **'Mã thiết bị: {id}'**
+  String privacyDeviceId(String id);
+
+  /// Khi chưa có mã thiết bị
+  ///
+  /// In vi, this message translates to:
+  /// **'Thiết bị chưa đăng ký với máy chủ'**
+  String get privacyNoDeviceId;
+
+  /// Thông báo đã chép mã thiết bị
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã chép mã thiết bị'**
+  String get privacyCopied;
+
+  /// Nút gửi thư yêu cầu xoá dữ liệu máy chủ
+  ///
+  /// In vi, this message translates to:
+  /// **'Yêu cầu xoá dữ liệu trên máy chủ'**
+  String get privacyRequestDelete;
+
+  /// Tiêu đề thư yêu cầu xoá
+  ///
+  /// In vi, this message translates to:
+  /// **'Yêu cầu xoá dữ liệu La bàn'**
+  String get privacyRequestSubject;
+
+  /// Nội dung thư yêu cầu xoá
+  ///
+  /// In vi, this message translates to:
+  /// **'Mã thiết bị: {id}\nTôi yêu cầu xoá dữ liệu gắn với thiết bị này.\n'**
+  String privacyRequestBody(String id);
+
+  /// Lỗi mở ứng dụng thư
+  ///
+  /// In vi, this message translates to:
+  /// **'Không mở được ứng dụng thư - hãy gửi tới {email}'**
+  String privacyMailFailed(String email);
+
+  /// Tiêu đề mục quyền hệ thống
+  ///
+  /// In vi, this message translates to:
+  /// **'Quyền hệ thống'**
+  String get privacyPermissions;
+
+  /// Mô tả quyền hệ thống
+  ///
+  /// In vi, this message translates to:
+  /// **'Vị trí và camera do hệ điều hành quản lý - thu hồi bất cứ lúc nào trong cài đặt ứng dụng.'**
+  String get privacyPermissionsBody;
+
+  /// Nút mở trang cài đặt ứng dụng của hệ thống
+  ///
+  /// In vi, this message translates to:
+  /// **'Mở cài đặt ứng dụng'**
+  String get privacyOpenSettings;
 }
 
 class _LbL10nDelegate extends LocalizationsDelegate<LbL10n> {

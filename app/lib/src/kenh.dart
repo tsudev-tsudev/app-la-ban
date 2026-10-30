@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:core/core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:la_ban/src/cong_truc_tuyen.dart';
 import 'package:la_ban/src/flavor.dart';
 import 'package:network/network.dart';
 import 'package:security_sdk/security_sdk.dart';
@@ -103,15 +104,17 @@ final tinhTrangProvider = Provider<TinhTrangThietBi?>(
 );
 
 /// Tải Remote Config + tình trạng ở nền sau khung đầu, và mỗi lần app quay
-/// lại foreground (cách nhau >= [khoang]).
+/// lại foreground (cách nhau >= [khoang]) - chỉ khi [cong] mở.
 void batDauKenh(
   KenhApp k,
-  DichVuDinhDanh? dinhDanh, {
+  DichVuDinhDanh? dinhDanh,
+  CongTrucTuyen cong, {
   Duration cho = const Duration(seconds: 3),
   Duration khoang = const Duration(minutes: 15),
 }) {
   DateTime? lanCuoi;
   void chay() {
+    if (!cong.value) return;
     final bayGio = DateTime.now();
     if (lanCuoi != null && bayGio.difference(lanCuoi!) < khoang) return;
     lanCuoi = bayGio;
@@ -119,9 +122,12 @@ void batDauKenh(
   }
 
   WidgetsBinding.instance.addPostFrameCallback(
-    (_) => Timer(cho, () {
-      chay();
-      AppLifecycleListener(onResume: chay);
-    }),
+    (_) => Timer(
+      cho,
+      () => cong.khiMo(() {
+        chay();
+        AppLifecycleListener(onResume: chay);
+      }),
+    ),
   );
 }

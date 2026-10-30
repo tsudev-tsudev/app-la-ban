@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:la_ban/src/app.dart';
 import 'package:la_ban/src/ar.dart';
 import 'package:la_ban/src/ban_do.dart';
+import 'package:la_ban/src/cong_truc_tuyen.dart';
 import 'package:la_ban/src/diem.dart';
 import 'package:la_ban/src/dinh_danh.dart';
 import 'package:la_ban/src/flavor.dart';
@@ -13,6 +14,7 @@ import 'package:la_ban/src/kenh.dart';
 import 'package:la_ban/src/lam_cung.dart';
 import 'package:la_ban/src/luu_tru.dart';
 import 'package:la_ban/src/phien_ban.dart';
+import 'package:la_ban/src/rieng_tu.dart';
 import 'package:location_feature/location_feature.dart';
 import 'package:map_feature/map_feature.dart';
 import 'package:settings_feature/settings_feature.dart';
@@ -25,6 +27,7 @@ Future<void> khoiDong(Flavor flavor) async {
   dangKyGiayPhepFont();
   dangKyGiayPhepDuLieu();
   dangKyGiayPhepBanDo();
+  dangKyGiayPhepLuuTru();
   runApp(await dungApp(flavor, dinhDanh: true));
 }
 
@@ -55,17 +58,23 @@ Future<Widget> dungApp(
   final dv = kho != null && kenh != null
       ? taoDichVuDinhDanh(kho, kenh.apiGhim)
       : null;
-  if (dv != null) batDauDinhDanh(dv);
-  if (kenh != null) batDauKenh(kenh, dv);
+  // A8a: chỉ gọi máy chủ khi người dùng đồng ý (Q43) - app.dart đồng bộ cổng
+  // theo cài đặt, đồng ý muộn ở màn giới thiệu thì dịch vụ chạy lúc đó.
+  final cong = kenh == null
+      ? null
+      : CongTrucTuyen(mo: KhoCaiDatTep(kho!.caiDat).doc().trucTuyen);
+  if (dv != null) batDauDinhDanh(dv, cong!);
+  if (kenh != null) batDauKenh(kenh, dv, cong!);
   // S4: kiểm tra môi trường + freeRASP, chỉ báo server (SEC-APP).
   final rasp = kho != null && dv != null ? taoDichVuRasp(kho, dv) : null;
-  if (rasp != null) batDauRasp(rasp, flavor, dinhDanh: dv, kenh: kenh);
+  if (rasp != null) batDauRasp(rasp, flavor, cong!, dinhDanh: dv, kenh: kenh);
   return ProviderScope(
     overrides: [
       khoLuuTruProvider.overrideWithValue(kho),
       dichVuDinhDanhProvider.overrideWithValue(dv),
       kenhProvider.overrideWithValue(kenh),
       dichVuRaspProvider.overrideWithValue(rasp),
+      congTrucTuyenProvider.overrideWithValue(cong),
       if (kho != null && dinhDanh)
         khoaDaLuuProvider.overrideWithValue(docKhoaDaLuu(kho)),
       if (kho != null) ...[
@@ -83,6 +92,7 @@ Future<Widget> dungApp(
       ...noiDiem(kho),
       ...noiBanDo(flavor),
       ...noiAr(),
+      ...noiRiengTu(kho),
       ...ghiDeThem,
     ],
     child: LaBanApp(flavor: flavor),
