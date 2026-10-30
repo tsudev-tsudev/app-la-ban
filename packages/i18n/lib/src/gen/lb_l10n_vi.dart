@@ -581,4 +581,36 @@ class LbL10nVi extends LbL10n {
   @override
   String get updateOpenFailed =>
       'Không mở được trình duyệt. Hãy vào compass.tsudev.com/tai-ve để tải bản mới.';
+
+  @override
+  String securityRef(String ref) {
+    return 'Mã tham chiếu: $ref';
+  }
+
+  @override
+  String get securityCopyRef => 'Chép mã';
+
+  @override
+  String get securityRefCopied => 'Đã chép mã tham chiếu';
+
+  @override
+  String get securityRestrictedTitle => 'Một số tính năng đang bị hạn chế';
+
+  @override
+  String get securityRestrictedBody =>
+      'Thiết bị này tạm thời không dùng được các tính năng trực tuyến. La bàn vẫn hoạt động bình thường.';
+
+  @override
+  String get securityLockedTitle => 'Ứng dụng tạm khoá trên thiết bị này';
+
+  @override
+  String get securityLockedBody =>
+      'Vì lý do an toàn, ứng dụng không thể tiếp tục trên thiết bị này. Nếu bạn cho rằng đây là nhầm lẫn, hãy gửi khiếu nại kèm mã tham chiếu bên dưới.';
+
+  @override
+  String get securityAppeal => 'Gửi khiếu nại';
+
+  @override
+  String get securityAppealOpenFailed =>
+      'Không mở được trình duyệt. Hãy vào compass.tsudev.com/khieu-nai để gửi khiếu nại.';
 }

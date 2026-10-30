@@ -176,6 +176,18 @@ describe('/v1/events', () => {
     expect(await goiKy(t, '/v1/events', lai)).toMatchObject({ status: 202, du: { trung: 1 } });
   });
 
+  it('cùng loại từ app chỉ tính điểm một lần / 24 giờ (sự kiện vẫn lưu đủ)', async () => {
+    const t = await dangKy();
+    const diem = async () => (await db.prepare('SELECT risk_score FROM devices WHERE id = ?').bind(t.id).first<{ risk_score: number }>())?.risk_score;
+    const lo = () => JSON.stringify({ events: [suKien('', 'ROOT'), suKien('', 'ROOT')] });
+    expect(await goiKy(t, '/v1/events', lo())).toMatchObject({ status: 202, du: { nhan: 2 } });
+    expect(await diem()).toBe(25);
+    expect(await goiKy(t, '/v1/events', lo())).toMatchObject({ status: 202, du: { nhan: 2 } });
+    expect(await diem()).toBe(25);
+    const { results } = await db.prepare('SELECT risk_delta FROM security_events WHERE device_id = ? AND type = ? ORDER BY risk_delta DESC').bind(t.id, 'ROOT').all<{ risk_delta: number }>();
+    expect(results.map((r) => r.risk_delta)).toEqual([25, 0, 0, 0]);
+  });
+
   it('loại chỉ server sinh -> 422; trường lạ -> 422; không ký -> 401', async () => {
     const t = await dangKy();
     expect((await goiKy(t, '/v1/events', JSON.stringify({ events: [suKien('', 'TOKEN_REUSE')] }))).du).toMatchObject({ status: 422, code: 'loai-chi-server' });

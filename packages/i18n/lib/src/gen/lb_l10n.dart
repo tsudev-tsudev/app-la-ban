@@ -1027,6 +1027,60 @@ abstract class LbL10n {
   /// In vi, this message translates to:
   /// **'Không mở được trình duyệt. Hãy vào compass.tsudev.com/tai-ve để tải bản mới.'**
   String get updateOpenFailed;
+
+  /// Mã REF hiện trên màn khoá / băng hạn chế (không lộ nguyên nhân kỹ thuật)
+  ///
+  /// In vi, this message translates to:
+  /// **'Mã tham chiếu: {ref}'**
+  String securityRef(String ref);
+
+  /// Tooltip nút chép mã tham chiếu
+  ///
+  /// In vi, this message translates to:
+  /// **'Chép mã'**
+  String get securityCopyRef;
+
+  /// SnackBar sau khi chép mã REF
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã chép mã tham chiếu'**
+  String get securityRefCopied;
+
+  /// Tiêu đề băng khi thiết bị bị hạn chế (Risk Level HIGH)
+  ///
+  /// In vi, this message translates to:
+  /// **'Một số tính năng đang bị hạn chế'**
+  String get securityRestrictedTitle;
+
+  /// Nội dung băng hạn chế
+  ///
+  /// In vi, this message translates to:
+  /// **'Thiết bị này tạm thời không dùng được các tính năng trực tuyến. La bàn vẫn hoạt động bình thường.'**
+  String get securityRestrictedBody;
+
+  /// Tiêu đề màn khoá (Risk Level CRITICAL)
+  ///
+  /// In vi, this message translates to:
+  /// **'Ứng dụng tạm khoá trên thiết bị này'**
+  String get securityLockedTitle;
+
+  /// Nội dung màn khoá
+  ///
+  /// In vi, this message translates to:
+  /// **'Vì lý do an toàn, ứng dụng không thể tiếp tục trên thiết bị này. Nếu bạn cho rằng đây là nhầm lẫn, hãy gửi khiếu nại kèm mã tham chiếu bên dưới.'**
+  String get securityLockedBody;
+
+  /// Nút mở trang khiếu nại
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi khiếu nại'**
+  String get securityAppeal;
+
+  /// Lỗi khi không mở được trang khiếu nại
+  ///
+  /// In vi, this message translates to:
+  /// **'Không mở được trình duyệt. Hãy vào compass.tsudev.com/khieu-nai để gửi khiếu nại.'**
+  String get securityAppealOpenFailed;
 }
 
 class _LbL10nDelegate extends LocalizationsDelegate<LbL10n> {

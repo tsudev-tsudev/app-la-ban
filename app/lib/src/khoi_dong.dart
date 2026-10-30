@@ -7,6 +7,7 @@ import 'package:la_ban/src/app.dart';
 import 'package:la_ban/src/dinh_danh.dart';
 import 'package:la_ban/src/flavor.dart';
 import 'package:la_ban/src/kenh.dart';
+import 'package:la_ban/src/lam_cung.dart';
 import 'package:la_ban/src/luu_tru.dart';
 import 'package:la_ban/src/phien_ban.dart';
 import 'package:location_feature/location_feature.dart';
@@ -51,11 +52,17 @@ Future<Widget> dungApp(
       : null;
   if (dv != null) batDauDinhDanh(dv);
   if (kenh != null) batDauKenh(kenh, dv);
+  // S4: kiểm tra môi trường + freeRASP, chỉ báo server (SEC-APP).
+  final rasp = kho != null && dv != null ? taoDichVuRasp(kho, dv) : null;
+  if (rasp != null) batDauRasp(rasp, flavor, dinhDanh: dv, kenh: kenh);
   return ProviderScope(
     overrides: [
       khoLuuTruProvider.overrideWithValue(kho),
       dichVuDinhDanhProvider.overrideWithValue(dv),
       kenhProvider.overrideWithValue(kenh),
+      dichVuRaspProvider.overrideWithValue(rasp),
+      if (kho != null && dinhDanh)
+        khoaDaLuuProvider.overrideWithValue(docKhoaDaLuu(kho)),
       if (kho != null) ...[
         khoCaiDatProvider.overrideWithValue(KhoCaiDatTep(kho.caiDat)),
         khoTuyChonLaBanProvider.overrideWithValue(

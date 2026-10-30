@@ -59,6 +59,8 @@ for f in "$RA"/*.apk; do
   CO=$("$BT/apksigner" verify --print-certs "$f" | sed -n 's/.*certificate SHA-256 digest: //p' | head -1)
   [ "$CO" = "$CERT" ] || { echo "Chứng chỉ $f không khớp khoá upload" >&2; exit 1; }
 done
+# SEC-APP APP-02 / APP-06: không debuggable, exported tối thiểu, có libla_ban_kt.so sạch chuỗi.
+node "$GOC/tools/build/kiem-apk.mjs" "$RA"/*.apk
 (cd "$RA" && sha256sum ./*.apk | sed 's| \./| |' > SHA256SUMS)
 MIN_SDK=$("$BT/aapt2" dump badging "$RA/la-ban-$TEN-universal.apk" | sed -n "s/^minSdkVersion:'\([0-9]*\)'.*/\1/p")
 cat "$RA/SHA256SUMS"

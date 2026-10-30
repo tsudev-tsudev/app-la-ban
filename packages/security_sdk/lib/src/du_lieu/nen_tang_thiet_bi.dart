@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:security_sdk/src/domain/rasp.dart';
 
 /// Thông tin máy gửi khi đăng ký (không định danh phần cứng).
 typedef ThongTinMay = ({String model, String heDieuHanh, String goi});
@@ -20,6 +21,13 @@ abstract interface class NenTangThietBi {
   Future<ThongTinMay> thongTin();
 
   Future<void> xoaKhoa();
+
+  /// Kiểm tra môi trường native (Kotlin + NDK, SEC-APP APP-02 / APP-03).
+  Future<KetQuaNative> kiemTraMoiTruong();
+
+  /// FLAG_SECURE: chặn chụp / quay màn hình + che ảnh xem trước ở app
+  /// switcher khi đang ở màn nhạy cảm (SEC-APP-STORAGE).
+  Future<void> cheManHinh({required bool bat});
 }
 
 /// Kênh tới ThietBiPlugin (android/ của gói này).
@@ -69,6 +77,28 @@ final class NenTangThietBiKenh implements NenTangThietBi {
 
   @override
   Future<void> xoaKhoa() => _kenh.invokeMethod<void>('xoaKhoa');
+
+  @override
+  Future<KetQuaNative> kiemTraMoiTruong() async {
+    try {
+      return KetQuaNative.tuMap(
+        await _kenh.invokeMapMethod<Object?, Object?>('moiTruong'),
+      );
+    } on PlatformException {
+      return const KetQuaNative(coNative: false);
+    }
+  }
+
+  @override
+  Future<void> cheManHinh({required bool bat}) async {
+    try {
+      await _kenh.invokeMethod<void>('cheManHinh', {'bat': bat});
+    } on PlatformException {
+      // Không có Activity (đang nền) - lần hiện màn sau gọi lại.
+    } on MissingPluginException {
+      // Test / nền tảng chưa hỗ trợ.
+    }
+  }
 }
 
 /// Mở trang của La bàn (`https://compass.tsudev.com/...`) bằng trình duyệt -

@@ -157,6 +157,12 @@ final class DichVuDinhDanh {
     return Ok(muc);
   });
 
+  /// Huỷ phiên cục bộ (Risk Level CRITICAL - Spec §7.3): xoá access +
+  /// refresh token. Installation ID + khoá thiết bị giữ nguyên để server vẫn
+  /// nhận ra máy (cấm không "rửa" được bằng cách xoá phiên); lần sau cần
+  /// phiên sẽ đăng ký lại - server từ chối nếu vẫn bị cấm.
+  Future<void> huyPhien() => tep.ghi({...tep.duLieu}..remove('phien'));
+
   /// Trạng thái thiết bị + mã REF + bản APK mới nhất (`/v1/status`).
   Future<Result<TinhTrangThietBi>> tinhTrang() => _boc(() async {
     final kq = await goiKy('GET', '/v1/status');

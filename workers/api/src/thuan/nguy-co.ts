@@ -48,6 +48,12 @@ export const CAU_HINH_MAC_DINH: CauHinhNguyCo = Object.freeze({
     MULTI_ACCOUNT_SAME_IP: 10,
     HONEYPOT_HIT: 15,
     WEB_DEVTOOLS: 5,
+    // S4 - tín hiệu RASP phụ (freeRASP + kiểm tra native). Bản tải ngoài Play (R0) luôn là 'cửa hàng không chính thức',
+    // máy bật chế độ nhà phát triển / ADB / VPN là người dùng hợp lệ -> lưu để tương quan, 0 điểm.
+    CLONE_APP: 15,
+    AUTOMATION: 10,
+    BOOTLOADER_UNLOCKED: 10,
+    TIME_SPOOFING: 5,
   }),
   nguong: Object.freeze({ suspicious: 30, restricted: 60, banned: 90 }),
   hoiPhuc: Object.freeze({ diemMoiTuan: 5, san: 0 }),
@@ -69,6 +75,21 @@ export function phanTichCauHinh(json: string | null | undefined): CauHinhNguyCo 
 
 export function diemSuKien(cfg: CauHinhNguyCo, loai: string): number {
   return cfg.diem[loai] ?? 0;
+}
+
+/**
+ * Điểm từng sự kiện của một lô do APP gửi: mỗi loại chỉ tính điểm MỘT lần trong cửa sổ (lần đầu trong lô, và chỉ khi
+ * chưa tính trong [daTinh] - các loại đã có điểm của thiết bị này gần đây). App báo lại tín hiệu mỗi lần mở / định kỳ;
+ * không gộp thì máy root hợp lệ (Spec §7.6c: +25) mở app 4 lần là bị cấm. Sự kiện vẫn được lưu đủ để tương quan.
+ */
+export function diemTheoLo(cfg: CauHinhNguyCo, dsLoai: readonly string[], daTinh: ReadonlySet<string>): number[] {
+  const thay = new Set(daTinh);
+  return dsLoai.map((loai) => {
+    if (thay.has(loai)) return 0;
+    const d = diemSuKien(cfg, loai);
+    if (d > 0) thay.add(loai);
+    return d;
+  });
 }
 
 export function congDiem(cfg: CauHinhNguyCo, diem: number, them: number): number {

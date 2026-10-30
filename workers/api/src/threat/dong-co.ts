@@ -5,14 +5,21 @@ import type { Env } from '../moi-truong';
 import { rutGonIp } from '../thuan/che-pii';
 import { taoUlid } from '../thuan/dinh-danh';
 import { cauDem, khoaNhom, luatQuanTam, nenKichHoat, phanTichHanhDong, type Luat } from '../thuan/luat';
-import { congDiem, diemSuKien, trangThaiHieuLuc, ttlLeoThang, type CauHinhNguyCo, type TrangThai } from '../thuan/nguy-co';
+import { congDiem, diemSuKien, diemTheoLo, trangThaiHieuLuc, ttlLeoThang, type CauHinhNguyCo, type TrangThai } from '../thuan/nguy-co';
 import { canDuyet, khopQuyTac, type LoaiDich } from '../thuan/thuc-thi';
 import { lienKetThietBi } from './lien-ket';
 import { napCauHinh, napChoPhep, napLuat, xoaDem } from './nap';
 
 export const TAC_NHAN = 'he-thong:threat-engine';
 
-export type NguCanhSuKien = { thietBi: string | null; ip: string | null; asn?: number | null; country?: string | null };
+export type NguCanhSuKien = {
+  thietBi: string | null;
+  ip: string | null;
+  asn?: number | null;
+  country?: string | null;
+  /** Lô do app gửi (S4): mỗi loại chỉ tính điểm một lần / thiết bị trong cửa sổ này (ms) - xem `diemTheoLo`. */
+  gopLoaiMs?: number;
+};
 export type SuKienVao = { id: string; type: string; severity: string; signals: Record<string, unknown> };
 
 export type KetQuaXuLy = {
@@ -44,28 +51,49 @@ export async function xuLySuKien(env: Env, n: NguCanhSuKien, ds: readonly SuKien
   if (n.thietBi && !tb) throw new Error('thiết bị không tồn tại');
 
   const ipPrefix = n.ip ? rutGonIp(n.ip) : null;
+  const dsLoai = ds.map((e) => e.type);
+  const diem = mien
+    ? ds.map(() => 0)
+    : n.gopLoaiMs && n.thietBi
+      ? diemTheoLo(cfg, dsLoai, await loaiDaTinh(db, n.thietBi, dsLoai, bayGio - n.gopLoaiMs))
+      : dsLoai.map((l) => diemSuKien(cfg, l));
   const kqChen = await db.batch(
-    ds.map((e) =>
+    ds.map((e, i) =>
       db
         .prepare(
           'INSERT OR IGNORE INTO security_events (id, device_id, type, severity, signals, ip, ip_prefix, ts, risk_delta) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
         )
-        .bind(e.id, n.thietBi, e.type, e.severity, JSON.stringify(e.signals), n.ip, ipPrefix, bayGio, mien ? 0 : diemSuKien(cfg, e.type)),
+        .bind(e.id, n.thietBi, e.type, e.severity, JSON.stringify(e.signals), n.ip, ipPrefix, bayGio, diem[i] ?? 0),
     ),
   );
-  const moi = ds.filter((_, i) => (kqChen[i]?.meta.changes ?? 0) > 0);
+  const moiChiSo = ds.flatMap((_, i) => ((kqChen[i]?.meta.changes ?? 0) > 0 ? [i] : []));
+  const moi = moiChiSo.map((i) => ds[i] as SuKienVao);
   const ctx = new PhienXuLy(env, db, cfg, n, tb, mien, bayGio);
-  for (const e of moi) ctx.themDiem(mien ? 0 : diemSuKien(cfg, e.type));
-  for (const e of moi) {
+  for (const i of moiChiSo) ctx.themDiem(diem[i] ?? 0);
+  for (const i of moiChiSo) {
+    const e = ds[i] as SuKienVao;
     env.SU_KIEN?.writeDataPoint({
       indexes: [e.type],
       blobs: ['su-kien', e.type, e.severity, tb?.platform ?? '', n.country ?? ''],
-      doubles: [mien ? 0 : diemSuKien(cfg, e.type)],
+      doubles: [diem[i] ?? 0],
     });
   }
   await ctx.chayLuat(dsLuat, [...new Set(moi.map((e) => e.type))]);
   await ctx.ketThuc(dsLuat);
   return { nhan: moi.length, trung: ds.length - moi.length, diem: ctx.diem, trangThai: ctx.trangThai, kichHoat: ctx.kichHoat, canDongBo: ctx.canDongBo };
+}
+
+/** Loại (trong [dsLoai]) đã có điểm cho thiết bị từ mốc [tu]. */
+async function loaiDaTinh(db: D1Database, thietBi: string, dsLoai: readonly string[], tu: number): Promise<Set<string>> {
+  const loai = [...new Set(dsLoai)];
+  if (loai.length === 0) return new Set();
+  const { results } = await db
+    .prepare(
+      `SELECT DISTINCT type FROM security_events WHERE device_id = ? AND ts >= ? AND risk_delta > 0 AND type IN (${loai.map(() => '?').join(', ')})`,
+    )
+    .bind(thietBi, tu, ...loai)
+    .all<{ type: string }>();
+  return new Set(results.map((r) => r.type));
 }
 
 class PhienXuLy {

@@ -42,6 +42,21 @@ android {
 
     defaultConfig {
         minSdk = 24
+        consumerProguardFiles("consumer-rules.pro")
+        externalNativeBuild {
+            cmake {
+                arguments += listOf("-DANDROID_STL=none")
+            }
+        }
+    }
+
+    // Kiểm tra môi trường bằng C++ (S4, Spec §7.3a) - mã ở native/android/cpp (QUYET_DINH Q32).
+    ndkVersion = "28.2.13676358"
+    externalNativeBuild {
+        cmake {
+            path = file("../../../native/android/cpp/CMakeLists.txt")
+            version = "3.22.1"
+        }
     }
 }
 
