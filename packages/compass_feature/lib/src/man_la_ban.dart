@@ -15,11 +15,14 @@ import 'package:sensors/sensors.dart';
 /// Tab La bàn: mặt la bàn CustomPainter, số độ 0,1°, 8 hướng, bắc thực /
 /// bắc từ (WMM2025 ngoại tuyến), độ tin cậy, cảnh báo nhiễu từ, hiệu chuẩn.
 class ManLaBan extends ConsumerStatefulWidget {
-  const new({this.theDuoi, super.key});
+  const new({this.theDuoi, this.hanhDong = const [], super.key});
 
   /// Thẻ app gắn dưới phần thông tin (thẻ vị trí của location_feature - tính
   /// năng không gọi nhau, app nối). Chỉ dựng khi tab đang thấy.
   final Widget? theDuoi;
+
+  /// Nút thêm trên thanh tiêu đề do app gắn (Camera AR của ar_feature).
+  final List<Widget> hanhDong;
 
   @override
   ConsumerState<ManLaBan> createState() => _ManLaBanState();
@@ -98,6 +101,7 @@ class _ManLaBanState extends ConsumerState<ManLaBan> {
       appBar: AppBar(
         title: Text(l10n.tabCompass),
         actions: [
+          ...widget.hanhDong,
           IconButton(
             tooltip: l10n.compassCalibrateAction,
             icon: const LbIcon(LbIcons.hieuChuanSo8),

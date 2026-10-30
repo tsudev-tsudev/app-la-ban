@@ -86,6 +86,15 @@ void main() {
     });
   });
 
+  test('góc ngóc camera sau: ngửa ra sau là nhìn lên, có dấu', () {
+    for (final (doc, ngoc) in [(90.0, 0.0), (100.0, 10.0), (75.0, -15.0)]) {
+      final t = tuTheTuQuat(tuGoc(30, doc, 0));
+      expect(t.theoCamera, isTrue);
+      expect(t.ngocCamera, closeTo(ngoc, 1e-6));
+      expect(saiSo(t.phuongVi, 30), lessThan(1e-6));
+    }
+  });
+
   group('quatTuGiaTocTu (bù nghiêng)', () {
     test('máy nghiêng vẫn ra đúng phương vị', () {
       for (final (pv, doc, lan) in [

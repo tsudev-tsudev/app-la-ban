@@ -1019,4 +1019,64 @@ class LbL10nVi extends LbL10n {
   String mapOfflineZoom(int from, int to) {
     return 'Mức chi tiết $from-$to';
   }
+
+  @override
+  String get arOpen => 'Xem hướng qua camera';
+
+  @override
+  String get arTitle => 'Camera AR';
+
+  @override
+  String get arPermission =>
+      'Cần quyền camera để phủ hướng và điểm đã lưu lên khung hình. Hình ảnh chỉ hiện trên máy: không chụp, không lưu, không gửi đi.';
+
+  @override
+  String get arPermissionBlocked =>
+      'Quyền camera đang tắt. Bật lại trong Cài đặt của máy để dùng Camera AR.';
+
+  @override
+  String get arGrant => 'Cho phép camera';
+
+  @override
+  String get arOpenSettings => 'Mở Cài đặt';
+
+  @override
+  String get arNoCamera =>
+      'Không mở được camera sau - máy không có hoặc ứng dụng khác đang dùng.';
+
+  @override
+  String get arRetry => 'Thử lại';
+
+  @override
+  String get arHoldUpright => 'Giữ máy thẳng đứng, camera hướng ra phía trước.';
+
+  @override
+  String get arCalibrate =>
+      'Độ chính xác la bàn thấp - hãy hiệu chuẩn hình số 8.';
+
+  @override
+  String get arNoLocation => 'Chưa có vị trí - điểm đã lưu sẽ hiện khi có GPS.';
+
+  @override
+  String arDistanceM(int value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String valueString = valueNumberFormat.format(value);
+
+    return '$valueString m';
+  }
+
+  @override
+  String arDistanceKm(double value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String valueString = valueNumberFormat.format(value);
+
+    return '$valueString km';
+  }
+
+  @override
+  String arHeadingLabel(int degrees) {
+    return 'Camera đang hướng $degrees độ';
+  }
 }
