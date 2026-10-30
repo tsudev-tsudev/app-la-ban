@@ -8,7 +8,7 @@ tep=$(git diff --cached --name-only --diff-filter=ACM)
 # Tài liệu gốc không được commit.
 if printf '%s\n' "$tep" | grep -qE '^2026.*\.md$'; then echo "Không commit tài liệu gốc 2026*.md" >&2; exit 1; fi
 # Chỉ dùng gạch nối ASCII.
-dash=$(printf '%s\n' "$tep" | while read -r f; do [ -f "$f" ] && grep -lP '[\x{2013}\x{2014}]' "$f" || true; done)
+dash=$(printf '%s\n' "$tep" | while read -r f; do [ -f "$f" ] && grep -lIP '[\x{2013}\x{2014}]' "$f" || true; done)
 [ -z "$dash" ] || { echo "Có em/en dash:"; echo "$dash"; exit 1; } >&2
 # Quét bí mật trên tệp đã stage.
 if [ -s "$HOME/.nvm/nvm.sh" ]; then set +u; . "$HOME/.nvm/nvm.sh"; nvm use >/dev/null; set -u; fi

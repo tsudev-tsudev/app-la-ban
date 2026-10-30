@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:core/core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:la_ban/src/cong_truc_tuyen.dart';
 import 'package:la_ban/src/flavor.dart';
 import 'package:la_ban/src/phien_ban.dart';
 import 'package:network/network.dart';
@@ -104,24 +105,35 @@ DichVuDinhDanh taoDichVuDinhDanh(KhoLuuTru kho, ApiClient api) {
 /// đầu, lỗi (offline, Google lỗi) không làm phiền người dùng: la bàn chạy đủ
 /// khi không có mạng. Lỗi -> thử lại theo [LichThuLai]; mỗi lần app quay lại
 /// foreground chạy lại (rẻ: phiên còn hạn thì không gọi mạng).
+/// Chỉ chạy khi [cong] mở (người dùng đồng ý - Q43); đồng ý muộn -> chạy lúc
+/// đó.
 void batDauDinhDanh(
-  DichVuDinhDanh dv, {
+  DichVuDinhDanh dv,
+  CongTrucTuyen cong, {
   Duration cho = const Duration(seconds: 3),
 }) {
-  final c = ChayDinhDanh(dv);
+  final c = ChayDinhDanh(dv, duocChay: () => cong.value);
   WidgetsBinding.instance.addPostFrameCallback(
-    (_) => Timer(cho, () {
-      c.chay();
-      AppLifecycleListener(onResume: c.chay);
-    }),
+    (_) => Timer(
+      cho,
+      () => cong.khiMo(() {
+        c.chay();
+        AppLifecycleListener(onResume: c.chay);
+      }),
+    ),
   );
 }
 
 /// Một lượt chạy + hẹn thử lại. Tách khỏi [batDauDinhDanh] để test được.
 final class ChayDinhDanh {
-  new(this._dv, {this._hen = Timer.new});
+  new(this._dv, {this._hen = Timer.new, this._duocChay = _luon});
+
+  static bool _luon() => true;
 
   final DichVuDinhDanh _dv;
+
+  /// false -> bỏ lượt (đã rút đồng ý), kể cả lượt thử lại đã hẹn.
+  final bool Function() _duocChay;
   final Timer Function(Duration, void Function()) _hen;
   Timer? _cho;
   int _lan = 0;
@@ -134,6 +146,10 @@ final class ChayDinhDanh {
   Future<void> _chay() async {
     _cho?.cancel();
     _cho = null;
+    if (!_duocChay()) {
+      _lan = 0;
+      return;
+    }
     final kq = await _dv.damBaoPhien();
     switch (kq) {
       case Ok():

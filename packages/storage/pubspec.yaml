@@ -18,6 +18,9 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 flutter:
+  assets:
+    - assets/GIAY_PHEP_SQLCIPHER.txt
+    - assets/GIAY_PHEP_OPENSSL.txt
   plugin:
     platforms:
       android:

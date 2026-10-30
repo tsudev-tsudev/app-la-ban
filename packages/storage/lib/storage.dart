@@ -11,4 +11,5 @@ export 'src/du_lieu/doc_tho.dart';
 export 'src/du_lieu/kho_khoa.dart';
 export 'src/du_lieu/mo_csdl.dart';
 export 'src/du_lieu/tep_json.dart';
+export 'src/giay_phep_luu_tru.dart';
 export 'src/kho_luu_tru.dart';

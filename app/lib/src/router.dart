@@ -15,7 +15,8 @@ const duongDanGioiThieu = '/chao';
 /// Flutter chuyển phần đường dẫn cho router.
 const duongDanNhanDiem = '/w/:token';
 
-/// Đích chuyển hướng: chưa xem giới thiệu -> [duongDanGioiThieu] (trừ link
+/// Đích chuyển hướng: chưa xem giới thiệu / chưa trả lời bản thông báo dữ
+/// liệu hiện hành -> [duongDanGioiThieu] (trừ link
 /// chia sẻ điểm: xem được ngay, không mất link); đã xem mà còn ở màn đó ->
 /// tab đầu; còn lại giữ nguyên (null).
 @visibleForTesting
@@ -36,10 +37,10 @@ String? dichChuyenHuong({
 final routerProvider = Provider<GoRouter>((ref) {
   final tabs = ref.read(dsTabProvider);
   final daXem = ValueNotifier<bool>(
-    ref.read(caiDatProvider.select((c) => c.daXemGioiThieu)),
+    !ref.read(caiDatProvider.select((c) => c.canGioiThieu)),
   );
   ref.listen(
-    caiDatProvider.select((c) => c.daXemGioiThieu),
+    caiDatProvider.select((c) => !c.canGioiThieu),
     (_, v) => daXem.value = v,
   );
   final router = GoRouter(

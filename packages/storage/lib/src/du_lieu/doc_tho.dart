@@ -23,10 +23,7 @@ typedef DiemTho = ({
 /// [SqliteException] hoặc [StateError].
 List<DiemTho> docDiemTho({required String thuMuc, required Uint8List khoa}) {
   // readWrite (không create): CSDL ở chế độ WAL cần ghi tệp -shm để đọc.
-  final db = sqlite3.open(
-    '$thuMuc/$tenTepCsdl',
-    mode: OpenMode.readWrite,
-  );
+  final db = sqlite3.open('$thuMuc/$tenTepCsdl', mode: OpenMode.readWrite);
   try {
     db.execute(pragmaKhoa(khoa));
     final kq = db.select(

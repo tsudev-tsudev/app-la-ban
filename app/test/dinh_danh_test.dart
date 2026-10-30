@@ -104,6 +104,33 @@ final class _NenTang implements NenTangThietBi {
 }
 
 void _testThuLai() {
+  test('đã rút đồng ý (Q43): bỏ lượt, không gọi mạng, không hẹn lại', () async {
+    final api = _ApiTat()..mang = true;
+    var hen = 0;
+    final c = ChayDinhDanh(
+      DichVuDinhDanh(
+        api: api,
+        nenTang: _NenTang(),
+        tep: _Kho(),
+        cauHinh: CauHinhDinhDanh(
+          soDuAnCloud: 1,
+          phienBanApp: '0.1.0',
+          build: 1,
+          ngonNgu: () => 'vi',
+        ),
+      ),
+      hen: (d, f) {
+        hen++;
+        return Timer(const Duration(days: 1), () {});
+      },
+      duocChay: () => false,
+    )..chay();
+    await pumpEventQueue();
+    expect(api.goi, 0);
+    expect(hen, 0);
+    expect(c.lanThuLai, 0);
+  });
+
   test(
     'mất mạng lúc mở app -> hẹn thử lại 30 s / 2 phút, có mạng -> đăng ký',
     () async {

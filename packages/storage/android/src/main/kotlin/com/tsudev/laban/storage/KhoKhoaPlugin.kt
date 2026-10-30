@@ -1,5 +1,6 @@
 package com.tsudev.laban.storage
 
+import android.app.ActivityManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -52,6 +53,18 @@ class KhoKhoaPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
                 }
             }
             "thuMucDuLieu" -> result.success(ngucanh.noBackupFilesDir.absolutePath)
+            // Màn Quyền riêng tư (A8a): xoá MỌI dữ liệu của app như "Xoá dữ liệu" trong Cài đặt hệ thống -
+            // tệp, CSDL, bản đồ offline, bộ nhớ đệm - rồi hệ thống đóng app. Khoá Keystore của app xoá
+            // trước cho chắc (không phụ thuộc bản Android). Thành công thì không có kết quả trả về.
+            "xoaToanBo" -> luong.execute {
+                try {
+                    val ks = KeyStore.getInstance(KEYSTORE).apply { load(null) }
+                    ks.aliases().toList().forEach { ks.deleteEntry(it) }
+                } catch (_: Exception) {
+                }
+                val am = ngucanh.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+                if (!am.clearApplicationUserData()) chinh.post { result.error("xoa.loi", null, null) }
+            }
             else -> result.notImplemented()
         }
     }

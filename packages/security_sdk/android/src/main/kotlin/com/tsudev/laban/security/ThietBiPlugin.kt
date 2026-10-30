@@ -101,10 +101,11 @@ class ThietBiPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAw
                 val bam = call.argument<String>("requestHash")
                 if (soDuAn == null || bam == null) result.error("integrity.thieu", null, null) else integrity(soDuAn, bam, result, thuLai = true)
             }
-            // Trang tải bản mới (S3 force / soft update). Chỉ mở trang của chính mình - kênh này không phải trình mở URL chung.
+            // Trang tải bản mới (S3 force / soft update), chính sách quyền riêng tư, thư yêu cầu về dữ liệu (A8a).
+            // Chỉ mở trang / hộp thư của chính mình - kênh này không phải trình mở URL chung.
             "moTrang" -> {
                 val url = call.argument<String>("url")
-                if (url == null || !url.startsWith(TRANG_CHO_PHEP)) {
+                if (url == null || !(url.startsWith(TRANG_CHO_PHEP) || url.startsWith(THU_CHO_PHEP))) {
                     result.error("moTrang.url", null, null)
                 } else {
                     try {
@@ -225,5 +226,6 @@ class ThietBiPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAw
         const val KEYSTORE = "AndroidKeyStore"
         const val BI_DANH = "la_ban_thiet_bi_v1"
         const val TRANG_CHO_PHEP = "https://compass.tsudev.com/"
+        const val THU_CHO_PHEP = "mailto:privacy@tsudev.com?"
     }
 }

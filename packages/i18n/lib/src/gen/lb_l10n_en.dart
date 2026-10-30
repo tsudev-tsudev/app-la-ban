@@ -1084,6 +1084,139 @@ class LbL10nEn extends LbL10n {
   String arHeadingLabel(int degrees) {
     return 'Camera heading $degrees degrees';
   }
+
+  @override
+  String get settingsPrivacy => 'Privacy';
+
+  @override
+  String get noticeTitle => 'Your data';
+
+  @override
+  String get noticeDevice =>
+      'Waypoints, settings and your last location are stored encrypted on this device and never sent to our servers.';
+
+  @override
+  String get noticeSensors =>
+      'Location, camera and sensors are processed only on this device. Permissions are asked only when you use a feature that needs them.';
+
+  @override
+  String get noticeSecurity =>
+      'If you agree, the app sends technical security data to fight fraud and tampered copies: a random installation ID, device model, Android and app version, Google\'s device verification result, environment signals (root, debugger) and your IP address. The freeRASP security library (Talsec) sends similar environment information.';
+
+  @override
+  String get noticeRetention =>
+      'Security events are kept for 180 days and IP addresses are truncated after 90 days. We never sell data or use tracking ads.';
+
+  @override
+  String get noticeRights =>
+      'You can view, export or delete your data and withdraw consent at any time in Settings > Privacy.';
+
+  @override
+  String get noticePolicy => 'Read the full privacy policy';
+
+  @override
+  String get consentAccept => 'Agree and start';
+
+  @override
+  String get consentOffline => 'Use offline only';
+
+  @override
+  String get consentOfflineHint =>
+      'Offline: the compass, downloaded maps and waypoints still work fully, but you won\'t receive configuration or security alerts from the server.';
+
+  @override
+  String get privacyOnline => 'Online security connection';
+
+  @override
+  String get privacyOnlineHint =>
+      'Sends technical security data and receives signed configuration. Turning it off withdraws consent; the security library stops completely from the next app launch.';
+
+  @override
+  String privacyChoiceAt(String date) {
+    return 'Choice recorded on $date';
+  }
+
+  @override
+  String get privacyOnDevice => 'Data on this device';
+
+  @override
+  String privacyWaypoints(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count saved waypoints',
+      one: '1 saved waypoint',
+      zero: 'No saved waypoints',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get privacyExport => 'Export data (JSON)';
+
+  @override
+  String get privacyExportDone => 'Data file saved';
+
+  @override
+  String get privacyExportFailed => 'Data file not saved';
+
+  @override
+  String get privacyDeleteAll => 'Delete all data on this device';
+
+  @override
+  String get privacyDeleteTitle => 'Delete all data?';
+
+  @override
+  String get privacyDeleteBody =>
+      'Waypoints, offline maps, settings and device keys will be permanently deleted and the app will close. Export your data first if you want to keep it.';
+
+  @override
+  String get privacyDeleteConfirm => 'Delete permanently';
+
+  @override
+  String get privacyOnServer => 'Data on our servers';
+
+  @override
+  String get privacyServerBody =>
+      'Our servers only keep technical security data linked to the device ID below, for the periods stated in the policy.';
+
+  @override
+  String privacyDeviceId(String id) {
+    return 'Device ID: $id';
+  }
+
+  @override
+  String get privacyNoDeviceId =>
+      'This device is not registered with our servers';
+
+  @override
+  String get privacyCopied => 'Device ID copied';
+
+  @override
+  String get privacyRequestDelete => 'Request deletion of server data';
+
+  @override
+  String get privacyRequestSubject => 'La bàn data deletion request';
+
+  @override
+  String privacyRequestBody(String id) {
+    return 'Device ID: $id\nPlease delete the data linked to this device.\n';
+  }
+
+  @override
+  String privacyMailFailed(String email) {
+    return 'Couldn\'t open a mail app - please write to $email';
+  }
+
+  @override
+  String get privacyPermissions => 'System permissions';
+
+  @override
+  String get privacyPermissionsBody =>
+      'Location and camera are managed by the system - revoke them any time in the app settings.';
+
+  @override
+  String get privacyOpenSettings => 'Open app settings';
 }
 
 /// The translations for English (`en_XA`).
@@ -2179,4 +2312,140 @@ class LbL10nEnXa extends LbL10nEn {
   String arHeadingLabel(int degrees) {
     return '[Çảmẽřả hẽảđỉñğ $degrees đẽğřẽẽš ··········]';
   }
+
+  @override
+  String get settingsPrivacy => '[Přỉvảçỹ ···]';
+
+  @override
+  String get noticeTitle => '[Ỹởữř đảťả ····]';
+
+  @override
+  String get noticeDevice =>
+      '[Ŵảỹpởỉñťš, šẽťťỉñğš ảñđ ỹởữř łảšť łởçảťỉởñ ảřẽ šťởřẽđ ẽñçřỹpťẽđ ởñ ťhỉš đẽvỉçẽ ảñđ ñẽvẽř šẽñť ťở ởữř šẽřvẽřš. ············································]';
+
+  @override
+  String get noticeSensors =>
+      '[Łởçảťỉởñ, çảmẽřả ảñđ šẽñšởřš ảřẽ přởçẽššẽđ ởñłỹ ởñ ťhỉš đẽvỉçẽ. Pẽřmỉššỉởñš ảřẽ ảškẽđ ởñłỹ ŵhẽñ ỹởữ ữšẽ ả fẽảťữřẽ ťhảť ñẽẽđš ťhẽm. ····················································]';
+
+  @override
+  String get noticeSecurity =>
+      '[Ỉf ỹởữ ảğřẽẽ, ťhẽ ảpp šẽñđš ťẽçhñỉçảł šẽçữřỉťỹ đảťả ťở fỉğhť fřảữđ ảñđ ťảmpẽřẽđ çởpỉẽš: ả řảñđởm ỉñšťảłłảťỉởñ ỈĐ, đẽvỉçẽ mởđẽł, Ảñđřởỉđ ảñđ ảpp vẽřšỉởñ, Ğởởğłẽ\'š đẽvỉçẽ vẽřỉfỉçảťỉởñ řẽšữłť, ẽñvỉřởñmẽñť šỉğñảłš (řởởť, đẽbữğğẽř) ảñđ ỹởữř ỈP ảđđřẽšš. Ťhẽ fřẽẽŘẢŠP šẽçữřỉťỹ łỉbřảřỹ (Ťảłšẽç) šẽñđš šỉmỉłảř ẽñvỉřởñmẽñť ỉñfởřmảťỉởñ. ··································································································································]';
+
+  @override
+  String get noticeRetention =>
+      '[Šẽçữřỉťỹ ẽvẽñťš ảřẽ kẽpť fởř 180 đảỹš ảñđ ỈP ảđđřẽššẽš ảřẽ ťřữñçảťẽđ ảfťẽř 90 đảỹš. Ŵẽ ñẽvẽř šẽłł đảťả ởř ữšẽ ťřảçkỉñğ ảđš. ··················································]';
+
+  @override
+  String get noticeRights =>
+      '[Ỹởữ çảñ vỉẽŵ, ẽxpởřť ởř đẽłẽťẽ ỹởữř đảťả ảñđ ŵỉťhđřảŵ çởñšẽñť ảť ảñỹ ťỉmẽ ỉñ Šẽťťỉñğš > Přỉvảçỹ. ·······································]';
+
+  @override
+  String get noticePolicy => '[Řẽảđ ťhẽ fữłł přỉvảçỹ pởłỉçỹ ············]';
+
+  @override
+  String get consentAccept => '[Ảğřẽẽ ảñđ šťảřť ······]';
+
+  @override
+  String get consentOffline => '[Ữšẽ ởffłỉñẽ ởñłỹ ·······]';
+
+  @override
+  String get consentOfflineHint =>
+      '[Ởffłỉñẽ: ťhẽ çởmpảšš, đởŵñłởảđẽđ mảpš ảñđ ŵảỹpởỉñťš šťỉłł ŵởřk fữłłỹ, bữť ỹởữ ŵởñ\'ť řẽçẽỉvẽ çởñfỉğữřảťỉởñ ởř šẽçữřỉťỹ ảłẽřťš fřởm ťhẽ šẽřvẽř. ·························································]';
+
+  @override
+  String get privacyOnline => '[Ởñłỉñẽ šẽçữřỉťỹ çởññẽçťỉởñ ···········]';
+
+  @override
+  String get privacyOnlineHint =>
+      '[Šẽñđš ťẽçhñỉçảł šẽçữřỉťỹ đảťả ảñđ řẽçẽỉvẽš šỉğñẽđ çởñfỉğữřảťỉởñ. Ťữřñỉñğ ỉť ởff ŵỉťhđřảŵš çởñšẽñť; ťhẽ šẽçữřỉťỹ łỉbřảřỹ šťởpš çởmpłẽťẽłỹ fřởm ťhẽ ñẽxť ảpp łảữñçh. ·································································]';
+
+  @override
+  String privacyChoiceAt(String date) {
+    return '[Çhởỉçẽ řẽçởřđẽđ ởñ $date ········]';
+  }
+
+  @override
+  String get privacyOnDevice => '[Đảťả ởñ ťhỉš đẽvỉçẽ ········]';
+
+  @override
+  String privacyWaypoints(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count šảvẽđ ŵảỹpởỉñťš',
+      one: '1 šảvẽđ ŵảỹpởỉñť',
+      zero: 'Ñở šảvẽđ ŵảỹpởỉñťš',
+    );
+    return '[$_temp0 ···················]';
+  }
+
+  @override
+  String get privacyExport => '[Ẽxpởřť đảťả (JŠỞÑ) ········]';
+
+  @override
+  String get privacyExportDone => '[Đảťả fỉłẽ šảvẽđ ······]';
+
+  @override
+  String get privacyExportFailed => '[Đảťả fỉłẽ ñởť šảvẽđ ········]';
+
+  @override
+  String get privacyDeleteAll =>
+      '[Đẽłẽťẽ ảłł đảťả ởñ ťhỉš đẽvỉçẽ ············]';
+
+  @override
+  String get privacyDeleteTitle => '[Đẽłẽťẽ ảłł đảťả? ·······]';
+
+  @override
+  String get privacyDeleteBody =>
+      '[Ŵảỹpởỉñťš, ởffłỉñẽ mảpš, šẽťťỉñğš ảñđ đẽvỉçẽ kẽỹš ŵỉłł bẽ pẽřmảñẽñťłỹ đẽłẽťẽđ ảñđ ťhẽ ảpp ŵỉłł çłởšẽ. Ẽxpởřť ỹởữř đảťả fỉřšť ỉf ỹởữ ŵảñť ťở kẽẽp ỉť. ····························································]';
+
+  @override
+  String get privacyDeleteConfirm => '[Đẽłẽťẽ pẽřmảñẽñťłỹ ········]';
+
+  @override
+  String get privacyOnServer => '[Đảťả ởñ ởữř šẽřvẽřš ········]';
+
+  @override
+  String get privacyServerBody =>
+      '[Ởữř šẽřvẽřš ởñłỹ kẽẽp ťẽçhñỉçảł šẽçữřỉťỹ đảťả łỉñkẽđ ťở ťhẽ đẽvỉçẽ ỈĐ bẽłởŵ, fởř ťhẽ pẽřỉởđš šťảťẽđ ỉñ ťhẽ pởłỉçỹ. ··············································]';
+
+  @override
+  String privacyDeviceId(String id) {
+    return '[Đẽvỉçẽ ỈĐ: $id ·····]';
+  }
+
+  @override
+  String get privacyNoDeviceId =>
+      '[Ťhỉš đẽvỉçẽ ỉš ñởť řẽğỉšťẽřẽđ ŵỉťh ởữř šẽřvẽřš ···················]';
+
+  @override
+  String get privacyCopied => '[Đẽvỉçẽ ỈĐ çởpỉẽđ ·······]';
+
+  @override
+  String get privacyRequestDelete =>
+      '[Řẽqữẽšť đẽłẽťỉởñ ởf šẽřvẽř đảťả ·············]';
+
+  @override
+  String get privacyRequestSubject =>
+      '[Łả bàñ đảťả đẽłẽťỉởñ řẽqữẽšť ············]';
+
+  @override
+  String privacyRequestBody(String id) {
+    return '[Đẽvỉçẽ ỈĐ: $id\nPłẽảšẽ đẽłẽťẽ ťhẽ đảťả łỉñkẽđ ťở ťhỉš đẽvỉçẽ.\n ························]';
+  }
+
+  @override
+  String privacyMailFailed(String email) {
+    return '[Çởữłđñ\'ť ởpẽñ ả mảỉł ảpp - płẽảšẽ ŵřỉťẽ ťở $email ··················]';
+  }
+
+  @override
+  String get privacyPermissions => '[Šỹšťẽm pẽřmỉššỉởñš ········]';
+
+  @override
+  String get privacyPermissionsBody =>
+      '[Łởçảťỉởñ ảñđ çảmẽřả ảřẽ mảñảğẽđ bỹ ťhẽ šỹšťẽm - řẽvởkẽ ťhẽm ảñỹ ťỉmẽ ỉñ ťhẽ ảpp šẽťťỉñğš. ····································]';
+
+  @override
+  String get privacyOpenSettings => '[Ởpẽñ ảpp šẽťťỉñğš ·······]';
 }

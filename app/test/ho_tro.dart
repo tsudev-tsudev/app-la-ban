@@ -10,10 +10,22 @@ import 'package:settings_feature/settings_feature.dart';
 import 'package:test_kit/test_kit.dart';
 import 'package:waypoint_feature/waypoint_feature.dart';
 
+/// Lựa chọn thông báo dữ liệu đã trả lời (bản hiện hành, ngoại tuyến - test
+/// không mạng).
+final dongYThu = DongYXuLy(
+  ban: banThongBaoDuLieu,
+  trucTuyen: false,
+  luc: DateTime.utc(2026, 10, 30),
+);
+
+/// `cai_dat.json` đã qua màn giới thiệu + trả lời thông báo dữ liệu.
+Map<String, Object?> caiDatDaXemJson([Map<String, Object?> them = const {}]) =>
+    {'daXemGioiThieu': true, 'dongY': dongYThu.toJson(), ...them};
+
 /// Cài đặt ban đầu đã qua màn giới thiệu.
 class CaiDatDaXem extends CaiDatNotifier {
   @override
-  CaiDat build() => const CaiDat(daXemGioiThieu: true);
+  CaiDat build() => CaiDat(daXemGioiThieu: true, dongY: dongYThu);
 }
 
 /// Đặt ngôn ngữ / sáng tối / cỡ chữ của HỆ THỐNG theo ô [o] (app để "Theo

@@ -94,7 +94,7 @@ void main() {
       'sau 5 s', (tester) async {
     datHeThong(tester, oChup.first);
     TepJson.mo('${tm.path}/cai_dat.json')
-        .ghiDongBo({'ngonNgu': 'en', 'daXemGioiThieu': true});
+        .ghiDongBo(caiDatDaXemJson({'ngonNgu': 'en'}));
     TepJson.mo('${tm.path}/la_ban.json').ghiDongBo({'bacThuc': false});
     final app = (await tester.runAsync(
       () => dungApp(
@@ -151,7 +151,7 @@ void main() {
         lyDo: LyDoAnToan.crashLienTiep,
       ).toJson(),
     );
-    TepJson.mo('${tm.path}/cai_dat.json').ghiDongBo({'daXemGioiThieu': true});
+    TepJson.mo('${tm.path}/cai_dat.json').ghiDongBo(caiDatDaXemJson());
     final app = (await tester.runAsync(
       () => dungApp(
         Flavor.dev,

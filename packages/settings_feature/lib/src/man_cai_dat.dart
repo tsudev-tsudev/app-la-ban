@@ -4,8 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:i18n/i18n.dart';
 import 'package:settings_feature/src/cai_dat_provider.dart';
 import 'package:settings_feature/src/domain/cai_dat.dart';
+import 'package:settings_feature/src/man_quyen_rieng_tu.dart';
 
-/// Tab Cài đặt: ngôn ngữ, giao diện, giấy phép, phiên bản.
+/// Tab Cài đặt: ngôn ngữ, giao diện, quyền riêng tư, giấy phép, phiên bản.
 class ManCaiDat extends ConsumerWidget {
   const new({required this.phienBan, super.key});
 
@@ -64,7 +65,13 @@ class ManCaiDat extends ConsumerWidget {
           ),
           const Divider(),
           ListTile(
-            leading: const LbIcon(LbIcons.khien),
+            key: const ValueKey('quyen-rieng-tu'),
+            title: Text(l10n.settingsPrivacy),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const ManQuyenRiengTu()),
+            ),
+          ),
+          ListTile(
             title: Text(l10n.settingsLicenses),
             onTap: () => showLicensePage(
               context: context,
@@ -101,9 +108,8 @@ class _TieuDeMuc extends StatelessWidget {
       header: true,
       child: Text(
         chu,
-        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-          color: Theme.of(context).colorScheme.primary,
-        ),
+        style: Theme.of(context).textTheme.titleSmall
+            ?.copyWith(color: Theme.of(context).colorScheme.primary),
       ),
     ),
   );
