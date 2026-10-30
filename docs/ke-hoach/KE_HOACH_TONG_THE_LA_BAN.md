@@ -64,8 +64,8 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 13 | S5 | Threat Engine + enforcement | S1 | ✅ 28/10 |
 | 14 | S6 | Admin SOC 1 | S5 | ✅ 30/10 · e2e staging qua Access thật: realtime 587-722 ms, danh sách D1 45 ms |
 | 15 | S7 | Admin SOC 2 | S6 | ⬜ |
-| 16 | A6 | Waypoint, chia sẻ, deep link | A5, S3 | ⬜ |
-| 17 | A7 | Bản đồ offline + Camera AR | A6 | ⬜ |
+| 16 | A6 | Waypoint, chia sẻ, deep link | A5, S3 | ✅ 30/10 (53e946b + cf74304, v0.1.0-beta.8; deep link máy thật chưa nghiệm thu) |
+| 17 | A7 | Bản đồ offline + Camera AR | A6 | 🟨 A7a bản đồ (phiên song song, worktree app-la-ban-a6) |
 | 18 | R1 | Landing hoàn chỉnh (kéo lên làm cùng R0 theo yêu cầu người dùng) | N2 | ✅ 28/10 |
 | 19 | S8 | Bảo vệ edge web (CSP, header, WAF as code) | R1 | ✅ 29/10 (CSP nghiêm Report-Only tới 05/11; Access ở S6, Turnstile ở S7) |
 | 20 | S9 | Lớp bảo vệ nội dung web + build sạch | S8 | ✅ 29/10 (bdbd740; CSV audit ở S6) |
@@ -422,6 +422,14 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   generate ... test/drift/csdl/generated/`, chạy `build_runner build`; test ma trận `test/drift` tự phủ v1 -> v2. Cần
   `csdlProvider` (app đã có `khoLuuTruProvider`, `KhoLuuTru.csdl` null ở chế độ an toàn) + màn xuất điểm ở chế độ an toàn
   (Spec §10.4 "cho phép xuất dữ liệu waypoint") - đọc thô cột v1 bằng `sqlite3` khi Drift không mở được.
+- Kết quả (30/10, phiên song song agent-laban-app, 53e946b PR #26 + cf74304 PR #27): CSDL v2 CHỈ THÊM bảng `anh_diem` + đọc
+  thô điểm ở chế độ an toàn (xuất điểm khi Drift không mở); waypoint CRUD + ảnh (plugin nội bộ `DiemPlugin` Kotlin, không SDK
+  mới); dẫn đường Vincenty; GPX/KML nhập/xuất round-trip (`xml_nho` tự viết); link `compass.tsudev.com/w/<token>` tự chứa (tọa
+  độ + hạn + CRC, không cần server) + QR tự sinh (`ma_qr.dart`); App Links autoVerify + `assetlinks.json` prod/stg/dev trên
+  landing, trang `/w` fallback xem điểm. v0.1.0-beta.8 (arm64 28,6 MB / armv7 25,7 MB). `phat-hanh-apk.sh` chấp nhận HEAD tách
+  rời trùng origin/main (worktree).
+- Phát sinh (từ A6): nghiệm thu deep link trên máy thật M32 (`adb shell pm get-app-links com.tsudev.laban` phải `verified`, mở
+  link `/w/` từ Zalo / Chrome) - lần cắm máy kế; AASA iOS -> I1.
 
 ### A7 - Bản đồ + AR
 - Làm: MapLibre + PMTiles VN trên R2 (xác minh hỗ trợ PMTiles trong bản plugin; không được thì MBTiles); tải gói offline có
