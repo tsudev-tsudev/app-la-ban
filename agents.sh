@@ -36,6 +36,8 @@ case "${1:-help}" in
   handoff)
     [ $# -ge 5 ] || { echo 'Cần: ./agents.sh handoff <từ> <đến> "<vùng>" "<việc còn lại>"' >&2; exit 2; }
     ma="HGLB-$(date '+%m%d-%H%M%S')"
+    # Hai phiếu trong cùng một giây trùng mã (đóng một phiếu = đóng cả hai) -> tăng giây tới khi chưa dùng.
+    while grep -qF "$ma" "$LOG"; do ma="HGLB-$(date -d "@$(( $(date -d "$(date '+%Y')-${ma:5:2}-${ma:7:2} ${ma:10:2}:${ma:12:2}:${ma:14:2}" +%s) + 1 ))" '+%m%d-%H%M%S')"; done
     printf '[%s] %s | BÀN GIAO %s → %s | %s | %s\n' "$(date '+%Y-%m-%d %H:%M')" "$2" "$ma" "$3" "$4" "$5" >> "$LOG"
     echo "Đã mở phiếu $ma gửi $3. Đóng: ./agents.sh handoff-done $ma" ;;
   inbox)
@@ -46,7 +48,7 @@ case "${1:-help}" in
       [ -n "$ma" ] || continue
       grep -qF "ĐÓNG $ma" "$LOG" && continue
       mo=$((mo + 1)); echo "  $dong"
-    done < <(grep -F "→ $2" "$LOG" | grep -F 'BÀN GIAO' || true)
+    done < <(grep -F "→ $2 |" "$LOG" | grep -F 'BÀN GIAO' || true)
     [ "$mo" -eq 0 ] && echo "✓ Không có phiếu nào đang mở cho $2." || true ;;
   handoff-done)
     [ -n "${2:-}" ] || { echo 'Cần: ./agents.sh handoff-done <mã>' >&2; exit 2; }
