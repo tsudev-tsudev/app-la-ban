@@ -53,6 +53,14 @@ const emails = existsSync(tepEmail)
       .map((x) => x.trim().toLowerCase())
       .filter((x) => /^[^\s@#]+@[^\s@]+$/.test(x))
   : [];
+// Access chỉ GỬI mã OTP cho email khớp policy (vẫn báo "đã gửi" để chống dò). Gmail coi a.b@gmail.com = ab@gmail.com
+// nhưng Access so khớp nguyên văn -> mỗi email Gmail đưa vào policy cả dạng ghi trong tệp lẫn dạng chuẩn (bỏ chấm, bỏ
+// +nhãn) - khớp `chuanHoaEmail` ở Worker. Dạng chấm khác (d.ev...) vẫn phải được ghi thêm vào tệp.
+const chuanGmail = (e) => {
+  const [ten, mien] = e.split('@');
+  return mien === 'gmail.com' || mien === 'googlemail.com' ? `${ten.split('+')[0].replace(/\./g, '')}@gmail.com` : e;
+};
+const dsPolicy = [...new Set(emails.flatMap((e) => [e, chuanGmail(e)]))];
 if (emails.length === 0) {
   console.error(`Chưa có email quản trị trong ${tepEmail}`);
   process.exit(2);
@@ -98,14 +106,14 @@ const muonApp = {
   same_site_cookie_attribute: 'strict',
   skip_interstitial: true,
   policies: [
-    { name: 'la-ban-admin: email quản trị', decision: 'allow', include: emails.map((email) => ({ email: { email } })), precedence: 1 },
+    { name: 'la-ban-admin: email quản trị', decision: 'allow', include: dsPolicy.map((email) => ({ email: { email } })), precedence: 1 },
     ...(st ? [{ name: 'la-ban-admin: service token e2e', decision: 'non_identity', include: [{ service_token: { token_id: st.id } }], precedence: 2 }] : []),
   ],
 };
 const dsApp = await goi('GET', `/accounts/${acc}/access/apps`);
 const cu = dsApp.find((x) => x.name === TEN_APP);
 const app = cu
-  ? await lam(`Cập nhật ứng dụng Access ${TEN_APP} (${emails.length} email)`, () => goi('PUT', `/accounts/${acc}/access/apps/${cu.id}`, muonApp))
+  ? await lam(`Cập nhật ứng dụng Access ${TEN_APP} (${dsPolicy.length} email: ${dsPolicy.join(', ')})`, () => goi('PUT', `/accounts/${acc}/access/apps/${cu.id}`, muonApp))
   : await lam(`Tạo ứng dụng Access ${TEN_APP} cho ${MIEN.join(', ')} (${emails.length} email)`, () => goi('POST', `/accounts/${acc}/access/apps`, muonApp));
 const aud = app?.aud ?? cu?.aud ?? null;
 

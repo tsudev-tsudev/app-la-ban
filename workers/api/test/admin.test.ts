@@ -1,6 +1,6 @@
 // Hàm thuần Admin SOC (S6): CBOR, WebAuthn, JWT Access, quyền, phiên, che PII, bộ lọc thiết bị.
 import { describe, expect, it } from 'vitest';
-import { kiemJwtAccess, LoiJwtAccess, tachDs } from '../src/thuan/access-jwt';
+import { chuanHoaEmail, kiemJwtAccess, LoiJwtAccess, tachDs } from '../src/thuan/access-jwt';
 import { giaiMaCbor, LoiCbor } from '../src/thuan/cbor';
 import { maHoaCursor } from '../src/thuan/cursor';
 import { LoiApi } from '../src/thuan/loi';
@@ -102,6 +102,15 @@ describe('JWT Access', () => {
     await loi('a.b', 'dinh-dang');
     await expect(kiemJwtAccess(null, [a.jwk], p)).rejects.toThrow(new LoiJwtAccess('thieu'));
     expect(tachDs(' a, ,b ')).toEqual(['a', 'b']);
+  });
+
+  it('chuẩn hoá email: Gmail bỏ dấu chấm / +nhãn / googlemail; miền khác chỉ chữ thường', async () => {
+    expect(chuanHoaEmail('Dev.Nguyen.Trang@Gmail.com')).toBe('devnguyentrang@gmail.com');
+    expect(chuanHoaEmail('dev+soc@googlemail.com')).toBe('dev@gmail.com');
+    expect(chuanHoaEmail('Dev.A@TsuDev.com')).toBe('dev.a@tsudev.com');
+    const a = await AccessGia.tao();
+    const p = { team: a.team, aud: [a.aud], bayGioGiay: Math.floor(Date.now() / 1000) };
+    expect((await kiemJwtAccess(await a.jwt({ email: 'dev.nguyen@gmail.com' }), [a.jwk], p)).email).toBe('devnguyen@gmail.com');
   });
 });
 
