@@ -3,6 +3,7 @@
 ## LOCKS (chỉ tệp ĐANG sửa - xoá ngay khi xong)
 
 ## Lưu ý đang hiệu lực (<= 8 dòng)
+- GITLEAKS CHUA CAI: cong.sh bo qua gitleaks khi khong co lenh; secretlint khong bat JWT -> cong co buoc git grep JWT rieng. Test can token thi ghep luc chay. find GITGUARDIAN
 - PHAT HANH APK: tăng version pubspec + phienBanApp -> PR -> ./tools/build/phat-hanh-apk.sh (main sạch) -> deploy-web.sh landing. Khoá upload ~/.config/la-ban/android/ NGOÀI repo. find PHAT HANH APK
 - GRADLE HOME + GH TOKEN: export GRADLE_USER_HOME=~/tools/java/gradle-home; gh: GH_TOKEN=$(gh auth token --user tsudev-tsudev) (active account khác). find GRADLE HOME
 - FLUTTER: PATH=$HOME/tools/flutter/bin (3.47.8, Dart 3.13 - constructor 'const new(...)'); JAVA_HOME=~/tools/java/jdk, ANDROID_HOME=~/tools/android-sdk. Mot 'flutter pub get' o GOC (pub workspace). find DART 3.13

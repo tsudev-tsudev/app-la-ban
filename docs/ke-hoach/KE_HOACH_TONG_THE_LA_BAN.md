@@ -59,8 +59,8 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 8 | A4 | Vị trí + telemetry | A3 | ✅ 29/10 (chưa thử GPS máy thật) |
 | 9 | A5 | Lưu trữ mã hóa, migration, safe mode | A1 | ✅ 28/10 |
 | 10 | S2 | Định danh thiết bị + attestation + phiên | S1, A5 | ✅ 30/10 · máy thật M32 staging: mức `device` khi chưa lên Play; prod + staging e2e đạt |
-| 11 | S3 | Ký request, pinning, Remote Config ký số | S2 | ✅ 30/10 · e2e staging + prod đạt; xoay pin thử trên staging (thư viện app + hạ tầng thật); chưa thử máy thật (không có adb) |
-| 12 | S4 | Làm cứng app | S3 | ⬜ |
+| 11 | S3 | Ký request, pinning, Remote Config ký số | S2 | ✅ 30/10 · e2e staging + prod đạt; máy thật M32 30/10: xoay pin staging chỉ ISRG -> chỉ /v1/config tới Worker, về mặc định -> /v1/status 200, không build lại |
+| 12 | S4 | Làm cứng app | S3 | ✅ 30/10 (1bd395f, v0.1.0-beta.7) · máy thật M32 release prod + staging: chỉ ADB_ENABLED / DEV_MODE / UNOFFICIAL_STORE mức info, điểm 0, không báo nhầm |
 | 13 | S5 | Threat Engine + enforcement | S1 | ✅ 28/10 |
 | 14 | S6 | Admin SOC 1 | S5 | ⬜ |
 | 15 | S7 | Admin SOC 2 | S6 | ⬜ |
@@ -339,6 +339,28 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   `KetQuaMoCsdl.loi` / `lamMoiDoMatKhoa` về server (đã ẩn PII) khi có kênh ký request; nối kill-switch Remote Config vào
   `tinhCo(tatTuXa:)` (`coTinhNangProvider` ở `app/lib/src/luu_tru.dart`).
 - Cổng: bản release trên máy thật sạch không báo nhầm; bản debug/giả lập sinh đúng sự kiện.
+- Kết quả (30/10, PR #21, main `1bd395f`): `security_sdk` - freeRASP 8.2 (Q13, watcher security@tsudev.com, isProd chỉ
+  release, chứng chỉ mong đợi = khoá upload) + thư viện C++ `native/android/cpp/la_ban_kt` (su / Magisk / Frida / Xposed /
+  TracerPid / giả lập; chuỗi XOR lúc biên dịch, -fvisibility=hidden, LTO, strip) qua `MoiTruong.kt`; domain `rasp.dart` gộp
+  tín hiệu -> sự kiện, `DichVuRasp` gửi qua `guiSuKien` (kênh ký S3), lưu hàng chờ offline `rasp.json`; báo `LyDoAnToan` / lỗi CSDL / mất khoá (phát sinh A5). Lịch kiểm ngẫu nhiên
+  (2-8 s sau khung đầu, 15-45 phút, khi về foreground >= 5 phút). App - `KhungRuiRo`: mức từ SERVER (`tinhTrangProvider`), HIGH
+  băng hạn chế, CRITICAL màn khoá + REF + khiếu nại + FLAG_SECURE, gửi nốt hàng chờ rồi huỷ phiên; MEDIUM+ tắt cờ nhạy cảm;
+  khoá đã lưu hiện cả khi offline. Debug: không gửi server. `core` - `NhatKy` che token / toạ độ ở release. Worker -
+  `diemTheoLo`: mỗi loại tín hiệu app chỉ tính điểm 1 lần / thiết bị / cửa sổ (lặp lịch kiểm không leo thang giả).
+  Release: R8 + shrinkResources + không debuggable; loại ABI thừa của plugin theo `target-platform` (Flutter ghi đè
+  abiFilters); `tools/build/kiem-apk.mjs` (không debuggable, exported chỉ MainActivity / quyền DUMP, có libla_ban_kt.so
+  không lộ chuỗi) chạy trong `phat-hanh-apk.sh`. Landing Quyền riêng tư khai freeRASP (Talsec). Worker staging + prod,
+  e2e đạt. Kích thước: freeRASP `libts.so` ~13 MB nén / ABI -> arm64 12,6 -> 28,3 MB (vượt ngân sách 25 MB).
+- Máy thật (30/10, Galaxy M32 Android 13, USB debugging bật, cài ngoài Play): APK release prod beta.7 + staging - kênh ký
+  hoạt động (config / refresh / status 200, events 202), server nhận đúng 3 tín hiệu info `ADB_ENABLED`, `DEV_MODE`,
+  `UNOFFICIAL_STORE` (risk_delta 0, `clean`), không root / hook / đóng gói lại; mở lại nhiều lần không sinh sự kiện trùng.
+  ~78 FPS. Bản debug không gửi server (theo thiết kế) - nhánh debug chỉ có unit test; giả lập không chạy được trên WSL.
+  GitGuardian báo JWT ở `nhat_ky_test.dart` (PR #21) - token giả, không cần xoay; PR #22 ghép token lúc chạy + cổng chặn
+  JWT nguyên văn (gitleaks chưa cài trên máy nên trước đó bị bỏ qua).
+- Phát sinh (từ S4): `devices.app_version` không cập nhật khi làm mới phiên (vẫn beta.5) và `_app` trong tín hiệu mất hậu
+  tố `-beta.N` -> S6 (SOC hiển thị) / A8; cài gitleaks vào ~/tools cho cổng -> S10; kích
+  thước APK vượt ngân sách do freeRASP -> R2 cân nhắc bỏ bản universal (Play dùng AAB tách ABI); freeRASP áp KGP - theo dõi
+  bản hỗ trợ Built-in Kotlin trước khi Flutter bỏ KGP; key attestation Keystore ở server -> S10.
 
 ### S5 - Threat Engine
 - Đọc thêm: SEC-DET.
