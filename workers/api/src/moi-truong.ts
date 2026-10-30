@@ -1,3 +1,4 @@
+import type { VaiTro } from './thuan/soc';
 import type { Context } from 'hono';
 
 // Binding khai báo ở wrangler.toml. Tuỳ chọn (?) để test đơn vị dựng được app thiếu binding; middleware xử lý khi thiếu.
@@ -28,6 +29,13 @@ export type Env = {
   PI_GOI?: string;
   /** SHA-256 chứng chỉ ký app (hex, dấu phẩy). Rỗng = không kiểm (staging nhận bản ký debug). */
   PI_CHUNG_CHI?: string;
+  /** Admin SOC (S6): team Zero Trust (`<team>.cloudflareaccess.com`) + AUD của ứng dụng Access (dấu phẩy). Thiếu -> /admin 503. */
+  ACCESS_TEAM?: string;
+  ACCESS_AUD?: string;
+  /** Origin của giao diện SOC (dấu phẩy) - kiểm CSRF + rpId passkey. */
+  SOC_NGUON?: string;
+  /** Common name service token Access được coi là danh tính `svc:<cn>` (CHỈ staging, thử e2e). Rỗng = không nhận. */
+  ACCESS_DICH_VU?: string;
 };
 
 export type BienYeuCau = {
@@ -44,6 +52,9 @@ export type BienYeuCau = {
   mucTin?: string;
   /** Trạng thái thiết bị (clean / suspicious / restricted / banned), đặt bởi xacThuc. */
   trangThai?: string;
+  /** Admin SOC (S6), đặt bởi middleware src/admin/xac-thuc.ts. */
+  quanTri?: { email: string; vaiTro: VaiTro };
+  phienSoc?: { idHash: string; stepUpAt: number; expiresAt: number };
 };
 
 export type MoiTruongHono = { Bindings: Env; Variables: BienYeuCau };

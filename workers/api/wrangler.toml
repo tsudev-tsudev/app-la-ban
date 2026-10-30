@@ -22,6 +22,10 @@ CF_LIST_ID = "18b0a1e4506942969aad36e04ce95f46"
 # S2 Play Integrity: gói + SHA-256 chứng chỉ khoá upload (R0, Q34 - Play App Signing dùng lại chính khoá này).
 PI_GOI = "com.tsudev.laban"
 PI_CHUNG_CHI = "cf09e7243bca9ab5d29dc788bbd31ba71efaebab7d69583d98bbfc5184a7f6bd"
+# S6 Admin SOC: team Zero Trust + AUD ứng dụng Access "la-ban-admin" (tools/cloudflare/access.mjs in ra). AUD rỗng -> /admin 503.
+ACCESS_TEAM = "purple-cake-8f2a.cloudflareaccess.com"
+ACCESS_AUD = "f1dec48a71e9b10406ae9534bea272e055a6bcf58a302e8d9324286976641ed3"
+SOC_NGUON = "https://compass-admin.tsudev.com"
 
 [[d1_databases]]
 binding = "DB"
@@ -87,6 +91,11 @@ MOI_TRUONG = "staging"
 # Staging nhận cả bản dev / stg (ký khoá debug -> không kiểm chứng chỉ).
 PI_GOI = "com.tsudev.laban.stg,com.tsudev.laban.dev,com.tsudev.laban"
 PI_CHUNG_CHI = ""
+# SOC staging = Pages preview nhánh "staging" (binding API -> worker này). Service token e2e chỉ được nhận ở đây.
+ACCESS_TEAM = "purple-cake-8f2a.cloudflareaccess.com"
+ACCESS_AUD = "f1dec48a71e9b10406ae9534bea272e055a6bcf58a302e8d9324286976641ed3"
+SOC_NGUON = "https://staging.la-ban-admin.pages.dev"
+ACCESS_DICH_VU = "961951549f4f1b1786ccdfe3d53212bb.access"
 
 [[env.staging.d1_databases]]
 binding = "DB"

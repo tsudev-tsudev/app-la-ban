@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { app, PhongSoc } from '../src/index';
+import { app } from '../src/index';
 import { sucKhoe } from '../src/thuan/suc-khoe';
 
 const env = { MOI_TRUONG: 'test' };
@@ -33,12 +33,5 @@ describe('/v1/health', () => {
   it('robots.txt chặn lập chỉ mục', async () => {
     const res = await app.request('/robots.txt', {}, env);
     expect(await res.text()).toContain('Disallow: /');
-  });
-});
-
-describe('Durable Object PhongSoc', () => {
-  it('trả 501 tới S6', async () => {
-    const res = await new PhongSoc().fetch();
-    expect(res.status).toBe(501);
   });
 });
