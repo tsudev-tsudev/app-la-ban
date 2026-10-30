@@ -62,6 +62,8 @@ export type NoiDung = {
     dungLuong: string;
     banArm64: string;
     banArm64MoTa: string;
+    banArmv7: string;
+    banArmv7MoTa: string;
     banUniversal: string;
     banUniversalMoTa: string;
     nutTai: string;
@@ -175,6 +177,8 @@ const vi: NoiDung = {
     dungLuong: 'Dung lượng',
     banArm64: 'Bản khuyên dùng (arm64)',
     banArm64MoTa: 'Cho hầu hết điện thoại Android từ 2017 trở lại đây. Nhẹ hơn.',
+    banArmv7: 'Máy 32-bit đời cũ (armv7)',
+    banArmv7MoTa: 'Chỉ dùng khi bản khuyên dùng báo không cài được (máy 32-bit). Tính năng như nhau.',
     banUniversal: 'Bản đầy đủ (universal)',
     banUniversalMoTa: 'Chạy trên mọi máy, kể cả máy 32-bit đời cũ. Dung lượng lớn hơn.',
     nutTai: 'Tải xuống',
@@ -354,6 +358,8 @@ const en: NoiDung = {
     dungLuong: 'Size',
     banArm64: 'Recommended (arm64)',
     banArm64MoTa: 'For most Android phones from 2017 onwards. Smaller download.',
+    banArmv7: 'Older 32-bit phones (armv7)',
+    banArmv7MoTa: 'Only if the recommended build will not install (32-bit phones). Same features.',
     banUniversal: 'Full build (universal)',
     banUniversalMoTa: 'Runs on every device, including older 32-bit phones. Larger download.',
     nutTai: 'Download',

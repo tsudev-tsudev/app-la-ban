@@ -22,9 +22,16 @@ const qr = (await QRCode.toString(urlTrang, { type: 'svg', margin: 1, errorCorre
 const intentChrome = `intent://${urlTrang.replace(/^https:\/\//, '')}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(urlTrang)};end`;
 const ngay = ban ? new Intl.DateTimeFormat(lang === 'vi' ? 'vi-VN' : 'en-GB', { dateStyle: 'long' }).format(new Date(ban.ngay)) : '';
 const tep = ban
-  ? (['arm64', 'universal'] as const).flatMap((loai) => {
+  ? // Từ beta.8 mỗi ABI một APK (QUYET_DINH Q36); 'universal' còn để đọc latest.json của bản cũ hơn.
+    (
+      [
+        ['arm64', d.banArm64, d.banArm64MoTa],
+        ['armv7', d.banArmv7, d.banArmv7MoTa],
+        ['universal', d.banUniversal, d.banUniversalMoTa],
+      ] as const
+    ).flatMap(([loai, tieuDe, moTa]) => {
       const f = ban.tep.find((x) => x.loai === loai);
-      return f ? [{ ...f, tieuDe: loai === 'arm64' ? d.banArm64 : d.banUniversal, moTa: loai === 'arm64' ? d.banArm64MoTa : d.banUniversalMoTa }] : [];
+      return f ? [{ ...f, tieuDe, moTa }] : [];
     })
   : [];
 ---

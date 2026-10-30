@@ -2,7 +2,7 @@
 // không gọi mạng ở trình duyệt. Mạng lỗi / chưa phát hành -> null, trang hiện "đang chuẩn bị" (build không hỏng).
 import { readFileSync } from 'node:fs';
 
-export type TepApk = { loai: 'arm64' | 'universal'; ten: string; url: string; co: number; sha256: string };
+export type TepApk = { loai: 'arm64' | 'armv7' | 'universal'; ten: string; url: string; co: number; sha256: string };
 export type BanApk = {
   phienBan: string;
   maPhienBan: number;
