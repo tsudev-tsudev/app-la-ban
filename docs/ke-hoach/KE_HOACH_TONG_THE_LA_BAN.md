@@ -65,11 +65,11 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 14 | S6 | Admin SOC 1 | S5 | ✅ 30/10 · e2e staging qua Access thật: realtime 587-722 ms, danh sách D1 45 ms |
 | 15 | S7 | Admin SOC 2 (chia S7a / S7b / S7c) | S6 | 🟨 S7a ✅ 30/10 (4ae38f9, PR #29) · S7b ✅ 30/10 (f1a6d3c, PR #32: rule + mô phỏng 7 ngày, can thiệp, four-eyes, Under Attack, Super Admin bật / tắt thuỷ vân; staging + prod) · S7c chưa |
 | 16 | A6 | Waypoint, chia sẻ, deep link | A5, S3 | ✅ 30/10 (53e946b + cf74304, v0.1.0-beta.8) · máy thật M32: App Links `verified`, link /w/ mở thẳng app (cold 1,5 s) |
-| 17 | A7 | Bản đồ offline + Camera AR (chia A7a / A7b / A7c) | A6 | 🟨 A7a ✅ 30/10 (a0e1d1b: tile VN trên R2 + Worker /ban-do); A7b ✅ 30/10 (d6de6a2: màn bản đồ + vùng offline); A7c Camera AR chưa |
+| 17 | A7 | Bản đồ offline + Camera AR (chia A7a / A7b / A7c) | A6 | ✅ 30/10 · A7a (a0e1d1b: tile VN trên R2 + Worker /ban-do) · A7b (d6de6a2: màn bản đồ + vùng offline) · A7c (62e4cab PR #33: Camera AR Camera2 nội bộ, v0.1.0-beta.9 đã phát hành) · nghiệm thu chế độ máy bay máy thật ⛔ (chờ thiết bị adb) |
 | 18 | R1 | Landing hoàn chỉnh (kéo lên làm cùng R0 theo yêu cầu người dùng) | N2 | ✅ 28/10 |
 | 19 | S8 | Bảo vệ edge web (CSP, header, WAF as code) | R1 | ✅ 29/10 (CSP nghiêm Report-Only tới 05/11; Access ở S6, Turnstile ở S7) |
 | 20 | S9 | Lớp bảo vệ nội dung web + build sạch | S8 | ✅ 29/10 (bdbd740; CSV audit ở S6) |
-| 21 | A8 | Cài đặt, quyền riêng tư, trợ năng, hiệu năng | A7, S4 | ⬜ |
+| 21 | A8 | Cài đặt, quyền riêng tư, trợ năng, hiệu năng (chia A8a / A8b) | A7, S4 | 🟨 A8a đang (quyền riêng tư + đồng ý NĐ 13) · A8b chưa |
 | 22 | S10 | Giám sát, log bất biến, backup, ứng phó sự cố | S7 | ⬜ |
 | 23 | R2 | Sẵn sàng store | A8, S4 | ⬜ |
 | 24 | R3 | QA tổng + kiểm thử bảo mật | R2, S9, S10 | ⬜ |
@@ -485,6 +485,10 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   (`~/tools/java/jdk21`, phat-hanh-apk.sh đã đổi). APK arm64 release 33,0 MB (+4,4 MB `libmaplibre.so`), kiem-apk đạt.
 - Phát sinh A7b: (1) nghiệm thu chế độ máy bay trên máy thật CHƯA (không có thiết bị adb 30/10) - cài bản kế, tải vùng,
   bật máy bay, mở tab Bản đồ + đổi sáng / tối; (2) chưa phát hành APK mới - gộp với A7c; (3) kích thước -> R2.
+- Kết quả A7c (30/10, 62e4cab PR #33, QUYET_DINH Q42): Camera AR bằng plugin Camera2 nội bộ (`packages/ar_feature`,
+  không ARCore / gói `camera`), chiếu lỗ kim từ tư thế cảm biến + WMM: đường chân trời, phương vị, điểm đã lưu; quyền CAMERA
+  just-in-time. Máy thật M32: ảnh đúng chiều / tỉ lệ, lớp phủ khớp kim; APK arm64 +28 KB. Phát hành v0.1.0-beta.9
+  (arm64 33,0 MB / armv7 29,6 MB, GitHub Release + CDN + /tai-ve). Còn treo: nghiệm thu chế độ máy bay (A7b) trên máy thật.
 
 ### R1 - Landing
 - Làm: Astro vi/en: giới thiệu, nút tải store, hướng dẫn hiệu chuẩn, `/privacy`, `/terms`, `/appeal` (Turnstile, gửi Worker),
@@ -547,6 +551,10 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
 - Làm: màn Quyền riêng tư (xem/xuất/xóa, rút đồng ý); onboarding + thông báo xử lý dữ liệu (NĐ 13/2023); VoiceOver/TalkBack;
   Reduce motion; tối ưu cold start (lazy SDK), dung lượng, pin.
 - Cổng: ngân sách mục 2 đạt trên máy tham chiếu; audit trợ năng.
+- Chia phiên (30/10, phiên song song agent-laban-app): **A8a** quyền riêng tư - thông báo xử lý dữ liệu + đồng ý ở màn
+  giới thiệu (NĐ 13/2023, có phiên bản thông báo), cổng đồng ý chặn đăng ký thiết bị / kênh / RASP, màn Quyền riêng tư
+  (xem / xuất JSON / xoá toàn bộ dữ liệu app, rút đồng ý, mã thiết bị + yêu cầu xoá phía máy chủ), giấy phép lưu trữ ·
+  **A8b** trợ năng (TalkBack semantics, tap target, Reduce motion) + hiệu năng (cold start lazy SDK, dung lượng, pin - đo máy thật).
 - Phát sinh (từ A5): màn Giấy phép thêm SQLCipher (BSD, Zetetic) + OpenSSL (Apache 2, bản Android) + drift / sqlite3 (MIT)
   vào `LicenseRegistry`; đo cold start gồm `KhoLuuTru.mo` (mở CSDL ở isolate nền, khoá Keystore) trên máy thật.
 
