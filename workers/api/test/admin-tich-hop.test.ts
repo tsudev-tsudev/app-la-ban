@@ -340,3 +340,146 @@ describe('trung tâm cảnh báo (S7a)', () => {
     expect((await goi('/passkey/doi-ten', { jwt, cookie, body: { id: 'khong-co-khoa-nay-0000', ten: 'x' } })).status).toBe(404);
   });
 });
+
+describe('S7b: rule + can thiệp + four-eyes + cài đặt SOC', () => {
+  const TB = '01JTB0000000000000000000AA';
+  const TB2 = '01JTB0000000000000000000S7';
+
+  it('rule: analyst xem + mô phỏng, không sửa; security_admin sửa -> phiên bản mới + về shadow; active trước 7 ngày bị chặn', async () => {
+    await themQt('an7@thu.vn', 'analyst');
+    const an = await vaoSoc('an7@thu.vn');
+    const ds = await goi('/luat', { jwt: an.jwt, cookie: an.cookie });
+    expect(ds.status).toBe(200);
+    const r3 = (ds.json.ds as { id: string; phienBan: number; cheDo: string; coTheBat: boolean }[]).find((x) => x.id === 'R-003');
+    expect(r3).toMatchObject({ phienBan: 1, cheDo: 'shadow' });
+
+    const bayGio = Date.now();
+    await db.batch(
+      [0, 1, 2].map((i) =>
+        db
+          .prepare("INSERT INTO security_events (id, device_id, type, severity, signals, ip, ip_prefix, ts, risk_delta) VALUES (?, ?, 'SIGNATURE_MISMATCH', 'high', '{}', '203.0.113.77', '203.0.113.0/24', ?, 0)")
+          .bind(crypto.randomUUID(), TB, bayGio - 60_000 + i),
+      ),
+    );
+    const than = { ten: 'Sai chữ ký liên tiếp', dieuKien: { event: ['SIGNATURE_MISMATCH'], group_by: 'device', count: 'events' }, cuaSo: 600, nguong: 3, hanhDong: ['add_risk_40', 'restrict_device'] };
+    const mp = await goi('/luat/mo-phong', { jwt: an.jwt, cookie: an.cookie, body: { id: 'R-003', than } });
+    expect(mp.status).toBe(200);
+    expect(mp.json).toMatchObject({ soLanKichHoat: 1, soNhom: 1, catBot: false, topNhom: [{ khoa: `device:${TB}`, n: 1 }] });
+    expect((await goi('/luat/mo-phong', { jwt: an.jwt, cookie: an.cookie, body: { than: { ...than, nguong: 4 } } })).json.soLanKichHoat).toBe(0);
+    const sua = { id: 'R-003', phienBan: 1, than: { ...than, nguong: 4 }, ghiChu: 'Giảm báo động giả' };
+    expect((await goi('/luat/sua', { jwt: an.jwt, cookie: an.cookie, body: sua })).status).toBe(403);
+
+    await themQt('sec@thu.vn', 'security_admin');
+    const sec = await vaoSoc('sec@thu.vn');
+    await db.prepare("UPDATE rules SET mode = 'active' WHERE id = 'R-003'").run();
+    const kq = await goi('/luat/sua', { jwt: sec.jwt, cookie: sec.cookie, body: sua });
+    expect(kq.json).toEqual({ ok: true, phienBan: 2, veShadow: true });
+    expect((await goi('/luat/sua', { jwt: sec.jwt, cookie: sec.cookie, body: sua })).json.code).toBe('phien-ban-cu');
+    const ct = await goi('/luat/R-003', { jwt: an.jwt, cookie: an.cookie });
+    expect(ct.json.luat).toMatchObject({ phienBan: 2, nguong: 4, cheDo: 'shadow', coTheBat: false });
+    expect((ct.json.phienBan as { version: number; note: string }[]).map((p) => [p.version, p.note])).toEqual([[2, 'Giảm báo động giả'], [1, 'ban dau']]);
+    const bat = await goi('/luat/che-do', { jwt: sec.jwt, cookie: sec.cookie, body: { id: 'R-003', phienBan: 2, cheDo: 'active', ghiChu: 'Bật thực thi thử' } });
+    expect(bat.json.code).toBe('chua-du-shadow');
+    await db.prepare('UPDATE rules SET shadow_since = ? WHERE id = ?').bind(Date.now() - 8 * 24 * 3600_000, 'R-003').run();
+    expect((await goi('/luat/che-do', { jwt: sec.jwt, cookie: sec.cookie, body: { id: 'R-003', phienBan: 2, cheDo: 'active', ghiChu: 'Đủ 7 ngày shadow' } })).json).toEqual({ ok: true });
+    const audit = await db.prepare("SELECT action FROM audit_logs WHERE actor = 'sec@thu.vn' AND action LIKE 'luat:%' ORDER BY rowid").all();
+    expect(audit.results).toEqual([{ action: 'luat:sua' }, { action: 'luat:che-do' }]);
+  });
+
+  it('Under Attack + cấu hình điểm: phiên bản mới, sai schema 400, cần step-up', async () => {
+    await themQt('sec3@thu.vn', 'security_admin');
+    const s = await vaoSoc('sec3@thu.vn');
+    expect((await goi('/under-attack', { jwt: s.jwt, cookie: s.cookie, body: { bat: true, ghiChu: 'Bị quét diện rộng' } })).json).toEqual({ ok: true, phienBan: 1 });
+    const ch = await goi('/cau-hinh-nguy-co', { jwt: s.jwt, cookie: s.cookie });
+    expect(ch.json).toMatchObject({ phienBan: 1, cauHinh: { underAttack: true } });
+    const cfg = { ...(ch.json.cauHinh as Record<string, unknown>), underAttack: false, nguong: { suspicious: 90, restricted: 60, banned: 30 } };
+    expect((await goi('/cau-hinh-nguy-co', { jwt: s.jwt, cookie: s.cookie, body: { phienBan: 1, cauHinh: cfg, ghiChu: 'Thử ngưỡng sai' } })).json.code).toBe('cau-hinh-loi');
+    expect((await goi('/cau-hinh-nguy-co', { jwt: s.jwt, cookie: s.cookie, body: { phienBan: 0, cauHinh: { ...cfg, nguong: { suspicious: 30, restricted: 60, banned: 90 } }, ghiChu: 'Bản cũ ghi đè' } })).json.code).toBe('phien-ban-cu');
+    await db.prepare("UPDATE admin_sessions SET step_up_at = ? WHERE email = 'sec3@thu.vn'").bind(Date.now() - 6 * 60_000).run();
+    expect((await goi('/under-attack', { jwt: s.jwt, cookie: s.cookie, body: { bat: false, ghiChu: 'Hết đợt tấn công' } })).json.code).toBe('can-step-up');
+    await db.prepare("UPDATE admin_sessions SET step_up_at = ? WHERE email = 'sec3@thu.vn'").bind(Date.now()).run();
+    expect((await goi('/under-attack', { jwt: s.jwt, cookie: s.cookie, body: { bat: false, ghiChu: 'Hết đợt tấn công' } })).json).toEqual({ ok: true, phienBan: 2 });
+  });
+
+  it('can thiệp: cấm thiết bị -> banned + thu hồi phiên; gỡ -> hạ trạng thái; dải -> đề xuất, người tạo không tự duyệt', async () => {
+    const bayGio = Date.now();
+    await db
+      .prepare("INSERT INTO devices (id, installation_id_hash, platform, first_seen, last_seen) VALUES (?, 'h-s7b', 'android', 1, ?)")
+      .bind(TB2, bayGio)
+      .run();
+    await db.prepare("INSERT INTO sessions (id, device_id, issued_at, expires_at, refresh_hash) VALUES ('p-s7b', ?, ?, ?, 'rh-s7b')").bind(TB2, bayGio, bayGio + 3600_000).run();
+    await themQt('re@thu.vn', 'responder');
+    const re = await vaoSoc('re@thu.vn');
+    const thieuLyDo = await goi('/thuc-thi/chan', { jwt: re.jwt, cookie: re.cookie, body: { dich: [{ loai: 'device', giaTri: TB2 }], hanhDong: 'ban', thoiHan: '24h', lyDo: 'ngắn' } });
+    expect(thieuLyDo.status).toBe(422);
+    const cam = await goi('/thuc-thi/chan', { jwt: re.jwt, cookie: re.cookie, body: { dich: [{ loai: 'device', giaTri: TB2 }], hanhDong: 'ban', thoiHan: '24h', lyDo: 'Hook Frida xác nhận tay' } });
+    expect(cam.status).toBe(201);
+    expect(cam.json).toMatchObject({ loai: 'ngay', boQua: [] });
+    expect(await db.prepare('SELECT status FROM devices WHERE id = ?').bind(TB2).first()).toEqual({ status: 'banned' });
+    expect((await db.prepare("SELECT revoked_at FROM sessions WHERE id = 'p-s7b'").first<{ revoked_at: number | null }>())?.revoked_at).toBeGreaterThan(0);
+    const lap = await goi('/thuc-thi/chan', { jwt: re.jwt, cookie: re.cookie, body: { dich: [{ loai: 'device', giaTri: TB2 }], hanhDong: 'ban', thoiHan: '24h', lyDo: 'Hook Frida xác nhận tay' } });
+    expect(lap.json).toMatchObject({ tao: [], boQua: [`device:${TB2}`] });
+
+    const id = (cam.json.tao as string[])[0] as string;
+    expect((await goi('/thuc-thi/go', { jwt: re.jwt, cookie: re.cookie, body: { ids: [id], lyDo: 'Khiếu nại hợp lệ' } })).json).toMatchObject({ loai: 'ngay', go: 1 });
+    expect((await db.prepare('SELECT status FROM devices WHERE id = ?').bind(TB2).first<{ status: string }>())?.status).not.toBe('banned');
+
+    const dai = await goi('/thuc-thi/chan', { jwt: re.jwt, cookie: re.cookie, body: { dich: [{ loai: 'cidr', giaTri: '198.51.100.9/24' }], hanhDong: 'block', thoiHan: '7d', lyDo: 'Dải botnet quét API' } });
+    expect(dai.json).toMatchObject({ loai: 'de-xuat' });
+    const daiId = (dai.json.tao as string[])[0] as string;
+    const ds = await goi('/thuc-thi?trangThai=cho-duyet', { jwt: re.jwt, cookie: re.cookie });
+    expect((ds.json.ds as { id: string; target_value: string }[]).map((x) => [x.id, x.target_value])).toEqual([[daiId, '198.51.100.0/24']]);
+    expect((await goi('/thuc-thi/duyet', { jwt: re.jwt, cookie: re.cookie, body: { id: daiId, dongY: true } })).status).toBe(403);
+    await themQt('sa7@thu.vn', 'super_admin');
+    const sa = await vaoSoc('sa7@thu.vn');
+    expect((await goi('/thuc-thi/duyet', { jwt: sa.jwt, cookie: sa.cookie, body: { id: daiId, dongY: true } })).json).toEqual({ ok: true });
+    expect(await db.prepare('SELECT approved_by FROM enforcements WHERE id = ?').bind(daiId).first()).toEqual({ approved_by: 'sa7@thu.vn' });
+
+    const thu = await goi('/thiet-bi/thu-hoi-phien', { jwt: re.jwt, cookie: re.cookie, body: { thietBi: TB2, lyDo: 'Nghi lộ token phiên' } });
+    expect(thu.json).toEqual({ ok: true, soPhien: 0 });
+  });
+
+  it('four-eyes hàng loạt: 202 yêu cầu; người tạo không tự duyệt; người khác duyệt -> có hiệu lực, approved_by khác created_by', async () => {
+    await themQt('re2@thu.vn', 'security_admin');
+    const re = await vaoSoc('re2@thu.vn');
+    const yc = await goi('/thuc-thi/chan', {
+      jwt: re.jwt,
+      cookie: re.cookie,
+      body: { dich: [{ loai: 'ip', giaTri: '192.0.2.10' }, { loai: 'ip', giaTri: '192.0.2.11' }], hanhDong: 'block', thoiHan: '1h', lyDo: 'Hai IP dò mật khẩu' },
+    });
+    expect(yc.status).toBe(202);
+    const ycId = yc.json.yeuCau as string;
+    expect((await goi('/yeu-cau-duyet/quyet', { jwt: re.jwt, cookie: re.cookie, body: { id: ycId, dongY: true } })).json.code).toBe('khong-tu-duyet');
+    expect((await db.prepare("SELECT COUNT(*) AS n FROM enforcements WHERE target_value LIKE '192.0.2.%'").first<{ n: number }>())?.n).toBe(0);
+    await themQt('sa8@thu.vn', 'super_admin');
+    const s8 = await vaoSoc('sa8@thu.vn');
+    const ds = await goi('/yeu-cau-duyet', { jwt: s8.jwt, cookie: s8.cookie });
+    expect((ds.json.ds as { id: string }[]).map((x) => x.id)).toContain(ycId);
+    const q = await goi('/yeu-cau-duyet/quyet', { jwt: s8.jwt, cookie: s8.cookie, body: { id: ycId, dongY: true, ghiChu: 'Đồng ý' } });
+    expect(q.json).toMatchObject({ ok: true, ketQua: { boQua: [] } });
+    const e = await db.prepare("SELECT created_by, approved_by, pending_approval FROM enforcements WHERE target_value LIKE '192.0.2.%' ORDER BY target_value").all();
+    expect(e.results).toEqual([
+      { created_by: 're2@thu.vn', approved_by: 'sa8@thu.vn', pending_approval: 0 },
+      { created_by: 're2@thu.vn', approved_by: 'sa8@thu.vn', pending_approval: 0 },
+    ]);
+    expect((await goi('/yeu-cau-duyet/quyet', { jwt: s8.jwt, cookie: s8.cookie, body: { id: ycId, dongY: true } })).json.code).toBe('da-quyet');
+    expect(
+      (await db.prepare("SELECT action FROM audit_logs WHERE action LIKE 'four-eyes:%' ORDER BY rowid").all()).results.map((x) => (x as { action: string }).action),
+    ).toEqual(['four-eyes:tao', 'four-eyes:duyet']);
+  });
+
+  it('cài đặt SOC: chỉ super_admin; tắt thuỷ vân -> /toi của mọi người phản ánh; audit có lý do', async () => {
+    await themQt('v7@thu.vn', 'viewer');
+    const v = await vaoSoc('v7@thu.vn');
+    expect(((await goi('/toi', { jwt: v.jwt, cookie: v.cookie })).json.caiDat as { thuyVan: { bat: boolean } }).thuyVan.bat).toBe(true);
+    const caiDat = { thuyVan: { bat: false, mucToiThieu: 'nhe' }, epCheKhiRoi: false };
+    expect((await goi('/cai-dat-soc', { jwt: v.jwt, cookie: v.cookie, body: { caiDat, ghiChu: 'Muốn tắt thuỷ vân' } })).status).toBe(403);
+    await themQt('sa9@thu.vn', 'super_admin');
+    const sa = await vaoSoc('sa9@thu.vn');
+    expect((await goi('/cai-dat-soc', { jwt: sa.jwt, cookie: sa.cookie, body: { caiDat, ghiChu: 'ngắn' } })).status).toBe(422);
+    expect((await goi('/cai-dat-soc', { jwt: sa.jwt, cookie: sa.cookie, body: { caiDat, ghiChu: 'Màn hình trình chiếu nội bộ' } })).json).toEqual({ ok: true, caiDat });
+    expect((await goi('/toi', { jwt: v.jwt, cookie: v.cookie })).json.caiDat).toEqual(caiDat);
+    const doc = await goi('/cai-dat-soc', { jwt: sa.jwt, cookie: sa.cookie });
+    expect((doc.json.lichSu as { actor: string }[])[0]?.actor).toBe('sa9@thu.vn');
+  });
+});

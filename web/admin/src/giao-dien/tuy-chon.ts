@@ -49,3 +49,19 @@ export function napTuyChon(): TuyChon {
 export function luuTuyChon(t: TuyChon): void {
   ghiKho(KHOA, JSON.stringify(t));
 }
+
+export type CaiDatToChuc = { thuyVan: { bat: boolean; mucToiThieu: MucThuyVan }; epCheKhiRoi: boolean };
+export const CAI_DAT_TO_CHUC_MAC_DINH: CaiDatToChuc = { thuyVan: { bat: true, mucToiThieu: 'nhe' }, epCheKhiRoi: false };
+
+/**
+ * Tuỳ chọn hiển thị HIỆU LỰC = tuỳ chọn người xem đặt dưới cài đặt Super Admin (S7b): thuỷ vân tắt toàn hệ thống thì
+ * không vẽ; độ đậm không thấp hơn mức tối thiểu; che khi rời cửa sổ bị ép thì người xem không tắt được.
+ */
+export function tuyChonHieuLuc(tc: TuyChon, cd: CaiDatToChuc | null | undefined): { thuyVanBat: boolean; thuyVan: MucThuyVan; cheKhiRoi: boolean } {
+  const c = cd ?? CAI_DAT_TO_CHUC_MAC_DINH;
+  return {
+    thuyVanBat: c.thuyVan.bat,
+    thuyVan: c.thuyVan.mucToiThieu === 'chuan' ? 'chuan' : tc.thuyVan,
+    cheKhiRoi: c.epCheKhiRoi || tc.cheKhiRoi,
+  };
+}

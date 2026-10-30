@@ -77,3 +77,14 @@ bằng khoá phần mềm trong script thử (`tools/thu/soc-e2e.mjs`). Prod KH�
 - Ảnh chụp lọt ra ngoài: đọc mã ở nhãn (hoặc tăng tương phản để thấy lưới chấm 6 x 6 cạnh nhãn: chấm to = 1, chấm nhỏ = 0,
   đọc theo hàng, 4 chấm góc là mốc; 32 bit đầu = mã, 4 bit cuối = chẵn lẻ từng byte). Dò ngược: với mỗi quản trị viên và
   mỗi giờ quanh thời điểm nghi ngờ, tính `sha256("soc|<email>|<floor(ms / 3600000)>")` lấy 8 hex đầu, so với mã.
+
+## S7b - rule, can thiệp, four-eyes, cài đặt hệ thống (QUYET_DINH Q41)
+
+- **Thuỷ vân bật / tắt**: Super Admin -> Quản trị -> Cài đặt hệ thống (`g s`). Lưu cần passkey + lý do; mọi màn SOC đang
+  mở nhận trong <= 5 phút. Lịch sử ở cùng trang (đọc từ audit). Kiểm nhanh qua D1:
+  `npx wrangler d1 execute la-ban --remote --command "SELECT * FROM soc_settings"` (staging: `la-ban-staging --env staging`).
+- **Rule** (`g l`): mô phỏng 7 ngày trước khi lưu; đổi logic tự về shadow 7 ngày; bật thực thi chỉ khi đủ 7 ngày shadow.
+- **Can thiệp** (`g x`): chặn 1 thiết bị / IP có hiệu lực ngay; dải / ASN đơn = đề xuất chờ người khác duyệt (trừ Under
+  Attack); nhiều đích = yêu cầu four-eyes (hết hạn 24 giờ). Người tạo không tự duyệt được (Worker + CHECK D1).
+- **Under Attack** (`g n`): bật khi bị tấn công diện rộng - đề xuất chặn dải có hiệu lực ngay. Tắt ngay khi qua đợt.
+- Kẹt yêu cầu four-eyes (người duyệt vắng): người tạo huỷ yêu cầu rồi chặn từng đích (mỗi đích một thao tác có audit).

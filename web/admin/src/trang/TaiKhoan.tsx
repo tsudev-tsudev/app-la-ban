@@ -6,12 +6,14 @@ import { HopThoai } from '../giao-dien/HopThoai';
 import { useThongBao } from '../giao-dien/ThongBao';
 import { ThongBaoLoi, useTai } from '../dung-chung';
 import { dinhDangLuc, truocDay } from '../i18n';
+import { tuyChonHieuLuc } from '../giao-dien/tuy-chon';
 import { useSoc } from '../ngu-canh';
 
 const TEN_ALG: Record<number, string> = { [-7]: 'ES256', [-8]: 'EdDSA', [-257]: 'RS256' };
 
 export function TaiKhoan() {
   const { t, nn, toi, coQuyen, tuyChon, doiTuyChon } = useSoc();
+  const hieuLuc = tuyChonHieuLuc(tuyChon, toi.caiDat);
   const bao = useThongBao();
   const ds = useTai<{ ds: Passkey[] }>('/passkey');
   const [sua, datSua] = useState<Passkey | null>(null);
@@ -187,7 +189,7 @@ export function TaiKhoan() {
               </label>
             ))}
           </fieldset>
-          <fieldset className="nhom-chon">
+          <fieldset className="nhom-chon" disabled={!hieuLuc.thuyVanBat || toi.caiDat?.thuyVan.mucToiThieu === 'chuan'}>
             <legend>{t.thuyVan}</legend>
             {(
               [
@@ -196,15 +198,15 @@ export function TaiKhoan() {
               ] as const
             ).map(([v, nhan]) => (
               <label key={v} className="hang">
-                <input type="radio" name="thuyVan" checked={tuyChon.thuyVan === v} onChange={() => doiTuyChon({ thuyVan: v })} />
+                <input type="radio" name="thuyVan" checked={hieuLuc.thuyVan === v} onChange={() => doiTuyChon({ thuyVan: v })} />
                 <span>{nhan}</span>
               </label>
             ))}
             <label className="hang">
-              <input type="checkbox" checked={tuyChon.cheKhiRoi} onChange={(e) => doiTuyChon({ cheKhiRoi: e.target.checked })} />
+              <input type="checkbox" checked={hieuLuc.cheKhiRoi} disabled={toi.caiDat?.epCheKhiRoi === true} onChange={(e) => doiTuyChon({ cheKhiRoi: e.target.checked })} />
               <span>{t.cheKhiRoi}</span>
             </label>
-            <p className="o-so-phu">{t.thuyVanMoTa}</p>
+            <p className="o-so-phu">{!hieuLuc.thuyVanBat ? t.thuyVanToChucTat : toi.caiDat?.thuyVan.mucToiThieu === 'chuan' || toi.caiDat?.epCheKhiRoi ? t.thuyVanToChucEp : t.thuyVanMoTa}</p>
           </fieldset>
         </div>
       </section>

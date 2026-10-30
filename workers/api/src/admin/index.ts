@@ -4,8 +4,11 @@ import { Hono } from 'hono';
 import type { MoiTruongHono } from '../moi-truong';
 import { gioiHanRoute } from '../mw/gioi-han';
 import { dsQuyen, type VaiTro } from '../thuan/soc';
+import { dangKyCaiDat, napCaiDatSoc } from './cai-dat';
+import { dangKyCanThiep } from './can-thiep';
 import { dangKyCanhBao } from './canh-bao';
 import { dangKyDuLieu } from './du-lieu';
+import { dangKyLuat } from './luat';
 import { dangKyPasskey } from './passkey';
 import { dangKyQuanTriVien } from './quan-tri-vien';
 import { canPhien, chongCsrf, danhTinh, docPhien } from './xac-thuc';
@@ -15,7 +18,7 @@ const KHONG_CAN_PHIEN = /^\/admin\/v1\/(toi|passkey\/dang-ky\/(bat-dau|xong)|phi
 export function taoAdmin(): Hono<MoiTruongHono> {
   const r = new Hono<MoiTruongHono>();
   r.use('*', async (c, next) => {
-    c.set('tuyen', c.req.path.replace(/\/thiet-bi\/[^/]+$/, '/thiet-bi/:id').replace(/\/canh-bao\/[0-9A-Za-z]{20,}$/, '/canh-bao/:id').slice(0, 64));
+    c.set('tuyen', c.req.path.replace(/\/thiet-bi\/[^/]+$/, '/thiet-bi/:id').replace(/\/canh-bao\/[0-9A-Za-z]{20,}$/, '/canh-bao/:id').replace(/\/luat\/R-\d+$/, '/luat/:id').slice(0, 64));
     await next();
   });
   r.use('*', gioiHanRoute([{ chieu: 'ip', gioiHan: 300, cuaSoMs: 60_000 }]));
@@ -28,14 +31,18 @@ export function taoAdmin(): Hono<MoiTruongHono> {
   r.get('/toi', async (c) => {
     const qt = c.get('quanTri') as { email: string; vaiTro: VaiTro };
     const db = c.env.DB as D1Database;
-    const pk = await db.prepare('SELECT COUNT(*) AS n FROM admin_passkeys WHERE email = ?').bind(qt.email).first<{ n: number }>();
-    const p = await docPhien(c);
+    const [pk, p, caiDat] = await Promise.all([
+      db.prepare('SELECT COUNT(*) AS n FROM admin_passkeys WHERE email = ?').bind(qt.email).first<{ n: number }>(),
+      docPhien(c),
+      napCaiDatSoc(db),
+    ]);
     return c.json({
       email: qt.email,
       vaiTro: qt.vaiTro,
       moiTruong: c.env.MOI_TRUONG,
       quyen: dsQuyen(qt.vaiTro),
       soPasskey: pk?.n ?? 0,
+      caiDat,
       phien: p ? { het: p.dong.expires_at, stepUpLuc: p.dong.step_up_at, hoatDongLuc: p.dong.last_active } : null,
     });
   });
@@ -43,6 +50,9 @@ export function taoAdmin(): Hono<MoiTruongHono> {
   dangKyPasskey(r);
   dangKyDuLieu(r);
   dangKyCanhBao(r);
+  dangKyLuat(r);
+  dangKyCanThiep(r);
+  dangKyCaiDat(r);
   dangKyQuanTriVien(r);
   return r;
 }

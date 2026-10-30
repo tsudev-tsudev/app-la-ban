@@ -1,27 +1,42 @@
 // Khung SOC (S6, làm lại bố cục ở S7a): trạng thái đăng nhập (Access -> vai trò -> passkey), thanh bên theo nhóm + thanh
 // trên (môi trường, đếm ngược phiên, bảng lệnh Ctrl K), phím tắt kiểu "g c", tuỳ chọn hiển thị (giao diện, ngôn ngữ, mật
-// độ, thuỷ vân), khoá khi nhàn rỗi 15 phút (server cũng tự hết hạn - đây chỉ để màn hình không còn hiện dữ liệu).
+// độ, thuỷ vân), khoá khi nhàn rỗi 15 phút (server cũng tự hết hạn - đây chỉ để màn hình không còn hiện dữ liệu). S7b: nhóm
+// Phản ứng (can thiệp, rule, cấu hình điểm), Cài đặt hệ thống (Super Admin) và thuỷ vân theo cài đặt toàn hệ thống.
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { goi, LoiSoc, type DsCanhBao, type Toi } from './api';
+import { goi, LoiSoc, type DsCanhBao, type DsThucThi, type Toi } from './api';
 import { BangLenh } from './giao-dien/BangLenh';
 import { BieuTuong } from './giao-dien/BieuTuong';
 import { HopThoai } from './giao-dien/HopThoai';
 import type { Lenh } from './giao-dien/lenh';
 import { NguonThongBao } from './giao-dien/ThongBao';
-import { ghiKho, luuTuyChon, napTuyChon, docKho, type TuyChon } from './giao-dien/tuy-chon';
+import { ghiKho, luuTuyChon, napTuyChon, docKho, tuyChonHieuLuc, type TuyChon } from './giao-dien/tuy-chon';
 import { chuoi, ngonNgu, type NgonNgu } from './i18n';
 import { Ctx, type NguCanh } from './ngu-canh';
 import { VungDuLieu } from './khien/Watermark';
+import { CaiDatHeThong } from './trang/CaiDatHeThong';
+import { CanThiep } from './trang/CanThiep';
 import { CanhBao } from './trang/CanhBao';
+import { CauHinhNguyCo } from './trang/CauHinhNguyCo';
 import { ChiTiet } from './trang/ChiTiet';
 import { DangNhap } from './trang/DangNhap';
 import { DsThietBi } from './trang/DsThietBi';
+import { Luat } from './trang/Luat';
 import { QuanTriVien } from './trang/QuanTriVien';
 import { TaiKhoan } from './trang/TaiKhoan';
 import { TongQuan } from './trang/TongQuan';
 
 const NHAN_ROI_MS = 15 * 60_000;
-const GO_TAT: Record<string, string> = { o: '#/', c: '#/canh-bao', t: '#/thiet-bi', k: '#/tai-khoan', q: '#/quan-tri-vien' };
+const GO_TAT: Record<string, string> = {
+  o: '#/',
+  c: '#/canh-bao',
+  t: '#/thiet-bi',
+  x: '#/can-thiep',
+  l: '#/luat',
+  n: '#/cau-hinh-nguy-co',
+  k: '#/tai-khoan',
+  q: '#/quan-tri-vien',
+  s: '#/cai-dat',
+};
 
 function useHash(): string {
   const [hash, datHash] = useState(() => location.hash || '#/');
@@ -176,11 +191,38 @@ export function App() {
     return () => clearInterval(hen);
   }, [dangVao, duong]);
 
+  // Cài đặt toàn hệ thống (thuỷ vân...) do Super Admin đổi -> mọi màn SOC đang mở nhận trong <= 5 phút (request nền).
+  useEffect(() => {
+    if (!dangVao) return;
+    const hen = setInterval(() => {
+      goi<Toi>('/toi', { nen: true })
+        .then((moi) => datTt((cu) => (cu.loai === 'vao' && moi.caiDat ? { loai: 'vao', toi: { ...cu.toi, caiDat: moi.caiDat } } : cu)))
+        .catch(() => undefined);
+    }, 5 * 60_000);
+    return () => clearInterval(hen);
+  }, [dangVao]);
+
+  // Việc chờ duyệt (đề xuất chặn dải + yêu cầu four-eyes) cho huy hiệu "Can thiệp" - chỉ người duyệt được mới cần.
+  const coDuyet = tt.loai === 'vao' && tt.toi.quyen.includes('can-thiep:duyet');
+  const [soChoDuyet, datSoChoDuyet] = useState<number | null>(null);
+  useEffect(() => {
+    if (!coDuyet) return;
+    const nap = () =>
+      goi<DsThucThi>('/thuc-thi?trangThai=cho-duyet&limit=1', { nen: true })
+        .then((d) => datSoChoDuyet((d.dem.choDuyet ?? 0) + (d.dem.yeuCau ?? 0)))
+        .catch(() => undefined);
+    void nap();
+    const hen = setInterval(nap, 60_000);
+    return () => clearInterval(hen);
+  }, [coDuyet, duong]);
+
   const di = useCallback((h: string) => {
     location.hash = h;
   }, []);
 
   const quyen = tt.loai === 'vao' ? tt.toi.quyen : [];
+  const toiCd = tt.loai === 'vao' || tt.loai === 'can-passkey' ? tt.toi.caiDat : undefined;
+  const hieuLuc = tuyChonHieuLuc(tc, toiCd);
   const nhom: { nhan: string; muc: { d: string; nhan: string; bt: string; dem?: number | null }[] }[] = [
     {
       nhan: t.nhomGiamSat,
@@ -191,9 +233,20 @@ export function App() {
       ],
     },
     {
+      nhan: t.nhomPhanUng,
+      muc: quyen.includes('luat:xem')
+        ? [
+            { d: '/can-thiep', nhan: t.canThiep, bt: 'can-thiep', dem: soChoDuyet },
+            { d: '/luat', nhan: t.luat, bt: 'luat' },
+            { d: '/cau-hinh-nguy-co', nhan: t.cauHinhNguyCo, bt: 'cau-hinh' },
+          ]
+        : [],
+    },
+    {
       nhan: t.nhomQuanTri,
       muc: [
         ...(quyen.includes('quan-tri-vien') ? [{ d: '/quan-tri-vien', nhan: t.quanTriVien, bt: 'quan-tri-vien' }] : []),
+        ...(quyen.includes('cai-dat-soc') ? [{ d: '/cai-dat', nhan: t.caiDatHeThong, bt: 'cai-dat' }] : []),
         { d: '/tai-khoan', nhan: t.taiKhoan, bt: 'tai-khoan' },
       ],
     },
@@ -205,11 +258,13 @@ export function App() {
       { id: 'chu-de', nhom: t.hienThi, nhan: t.lenhDoiGiaoDien, tuKhoa: 'theme dark light', chay: doiChuDe },
       { id: 'ngon-ngu', nhom: t.hienThi, nhan: t.lenhDoiNgonNgu, tuKhoa: 'language ngon ngu', chay: doiNn },
       { id: 'mat-do', nhom: t.hienThi, nhan: t.lenhMatDo, tuKhoa: 'density', chay: () => doiTc({ matDo: tc.matDo === 'gon' ? 'thoang' : 'gon' }) },
-      { id: 'thuy-van', nhom: t.hienThi, nhan: t.lenhThuyVan, tuKhoa: 'watermark', chay: () => doiTc({ thuyVan: tc.thuyVan === 'nhe' ? 'chuan' : 'nhe' }) },
+      ...(hieuLuc.thuyVanBat && toiCd?.thuyVan.mucToiThieu !== 'chuan'
+        ? [{ id: 'thuy-van', nhom: t.hienThi, nhan: t.lenhThuyVan, tuKhoa: 'watermark', chay: () => doiTc({ thuyVan: tc.thuyVan === 'nhe' ? 'chuan' : 'nhe' }) }]
+        : []),
       { id: 'phim', nhom: t.hienThi, nhan: t.lenhPhimTat, tuKhoa: 'shortcuts', chay: () => datMoPhim(true) },
       { id: 'dang-xuat', nhom: t.taiKhoan, nhan: t.dangXuat, tuKhoa: 'logout sign out', chay: dangXuat },
     ],
-    [t, quyen.join(','), soMo, doiChuDe, doiNn, doiTc, tc.matDo, tc.thuyVan, dangXuat, di],
+    [t, quyen.join(','), soMo, soChoDuyet, doiChuDe, doiNn, doiTc, tc.matDo, tc.thuyVan, hieuLuc.thuyVanBat, toiCd, dangXuat, di],
   );
 
   const thanhCongCu = (
@@ -243,6 +298,7 @@ export function App() {
   const toi = tt.toi;
   const chiTietId = /^\/thiet-bi\/([0-9A-Za-z-]{8,40})$/.exec(duong)?.[1];
   const canhBaoId = /^\/canh-bao\/([0-9A-Za-z-]{8,40})$/.exec(duong)?.[1];
+  const luatId = /^\/luat\/(R-\d{3,6})$/.exec(duong)?.[1];
   let noiDung: ReactNode;
   let tieuDeTrang = t.tongQuan;
   if (chiTietId) {
@@ -254,6 +310,18 @@ export function App() {
   } else if (duong === '/canh-bao' || canhBaoId) {
     noiDung = <CanhBao moId={canhBaoId ?? null} />;
     tieuDeTrang = t.tieuDeCanhBao;
+  } else if ((duong === '/luat' || luatId) && toi.quyen.includes('luat:xem')) {
+    noiDung = <Luat moId={luatId ?? null} />;
+    tieuDeTrang = t.luat;
+  } else if (duong === '/can-thiep' && toi.quyen.includes('luat:xem')) {
+    noiDung = <CanThiep />;
+    tieuDeTrang = t.canThiep;
+  } else if (duong === '/cau-hinh-nguy-co' && toi.quyen.includes('luat:xem')) {
+    noiDung = <CauHinhNguyCo />;
+    tieuDeTrang = t.cauHinhNguyCo;
+  } else if (duong === '/cai-dat' && toi.quyen.includes('cai-dat-soc')) {
+    noiDung = <CaiDatHeThong daDoi={() => void napToi()} />;
+    tieuDeTrang = t.caiDatHeThong;
   } else if (duong === '/tai-khoan') {
     noiDung = <TaiKhoan />;
     tieuDeTrang = t.tkTieuDe;
@@ -337,7 +405,7 @@ export function App() {
                 </button>
               </div>
             </header>
-            <VungDuLieu email={toi.email} muc={tc.thuyVan} cheKhiRoi={tc.cheKhiRoi} chuDe={laToi ? 'dark' : 'light'} nhanChe={t.noiDungDaChe}>
+            <VungDuLieu bat={hieuLuc.thuyVanBat} email={toi.email} muc={hieuLuc.thuyVan} cheKhiRoi={hieuLuc.cheKhiRoi} chuDe={laToi ? 'dark' : 'light'} nhanChe={t.noiDungDaChe}>
               <main id="noi-dung-chinh" className="noi-dung" tabIndex={-1}>
                 {noiDung}
               </main>

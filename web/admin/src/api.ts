@@ -135,6 +135,8 @@ export type Toi = {
   moiTruong?: string;
   quyen: string[];
   soPasskey: number;
+  /** Cài đặt SOC toàn hệ thống (S7b; server cũ không gửi -> mặc định). */
+  caiDat?: CaiDatSoc;
   phien: { het: number; stepUpLuc: number; hoatDongLuc: number } | null;
 };
 export type Dem = { k: string | number | null; n: number };
@@ -204,4 +206,88 @@ export type TinSoc = {
   ds: { type: string; severity: string }[];
   kichHoat: string[];
   trangThai: string | null;
+};
+
+// ---------------------------------------------------------------- S7b: rule, can thiệp, cấu hình, cài đặt SOC
+export type CaiDatSoc = { thuyVan: { bat: boolean; mucToiThieu: 'nhe' | 'chuan' }; epCheKhiRoi: boolean };
+export type DieuKienLuat = { event: string[]; group_by: 'device' | 'ip' | 'cidr24'; count: 'events' | 'devices' | 'types' };
+export type Luat = {
+  id: string;
+  ten: string;
+  phienBan: number;
+  hong: boolean;
+  dieuKien: DieuKienLuat | null;
+  cuaSo: number;
+  nguong: number;
+  hanhDong: string[];
+  bat: boolean;
+  cheDo: 'active' | 'shadow';
+  shadowTu: number | null;
+  coTheBat: boolean;
+  batDuocLuc: number | null;
+  suaBoi: string | null;
+  kichHoat7n?: { that: number; shadow: number; cuoi: number | null };
+};
+export type ThanLuat = { ten: string; dieuKien: DieuKienLuat; cuaSo: number; nguong: number; hanhDong: string[] };
+export type PhienBanLuat = {
+  version: number;
+  name: string;
+  condition: DieuKienLuat | null;
+  window: number;
+  threshold: number;
+  action: string[] | null;
+  note: string | null;
+  created_by: string;
+  created_at: number;
+};
+export type ChiTietLuat = { luat: Luat; phienBan: PhienBanLuat[]; lanKichHoat: { ts: number; shadow: number; rule_version: number; group_key: string; actions: string }[] };
+export type KetQuaMoPhong = {
+  tu: number;
+  den: number;
+  soSuKien: number;
+  catBot: boolean;
+  soLanKichHoat: number;
+  soNhom: number;
+  theoNgay: { ngay: number; n: number }[];
+  topNhom: { khoa: string; n: number }[];
+  hienTai: { that: number | null; shadow: number | null } | null;
+  ms: number;
+};
+export type ThucThi = {
+  id: string;
+  target_type: 'device' | 'ip' | 'cidr' | 'asn';
+  target_value: string;
+  action: string;
+  reason: string;
+  created_by: string;
+  approved_by: string | null;
+  created_at: number;
+  expires_at: number;
+  revoked_at: number | null;
+  source: 'auto' | 'manual';
+  pending_approval: number;
+  rule_id: string | null;
+  level: number;
+};
+export type DsThucThi = { ds: ThucThi[]; tiepTheo: string | null; dem: { hieuLuc?: number | null; choDuyet?: number | null; yeuCau?: number | null }; underAttack: boolean };
+export type YeuCauDuyet = {
+  id: string;
+  kind: 'chan' | 'go-chan';
+  payload: { dich?: { loai: string; giaTri: string }[]; hanhDong?: string; thoiHan?: string; ids?: string[]; lyDo: string };
+  reason: string;
+  created_by: string;
+  created_at: number;
+  expires_at: number;
+  status: 'pending' | 'approved' | 'rejected' | 'cancelled';
+  decided_by: string | null;
+  decided_at: number | null;
+  decision_note: string | null;
+};
+export type CauHinhNguyCo = {
+  diem: Record<string, number>;
+  nguong: { suspicious: number; restricted: number; banned: number };
+  hoiPhuc: { diemMoiTuan: number; san: number };
+  ttlBac: number[];
+  underAttack: boolean;
+  diemToiDa: number;
 };
