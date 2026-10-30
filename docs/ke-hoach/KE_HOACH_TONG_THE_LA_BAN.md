@@ -65,11 +65,11 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 14 | S6 | Admin SOC 1 | S5 | ✅ 30/10 · e2e staging qua Access thật: realtime 587-722 ms, danh sách D1 45 ms |
 | 15 | S7 | Admin SOC 2 (chia S7a / S7b / S7c) | S6 | 🟨 S7a ✅ 30/10 (4ae38f9, PR #29) · S7b ✅ 30/10 (f1a6d3c, PR #32: rule + mô phỏng 7 ngày, can thiệp, four-eyes, Under Attack, Super Admin bật / tắt thuỷ vân; staging + prod) · S7c chưa |
 | 16 | A6 | Waypoint, chia sẻ, deep link | A5, S3 | ✅ 30/10 (53e946b + cf74304, v0.1.0-beta.8) · máy thật M32: App Links `verified`, link /w/ mở thẳng app (cold 1,5 s) |
-| 17 | A7 | Bản đồ offline + Camera AR (chia A7a / A7b / A7c) | A6 | ✅ 30/10 · A7a (a0e1d1b: tile VN trên R2 + Worker /ban-do) · A7b (d6de6a2: màn bản đồ + vùng offline) · A7c (62e4cab PR #33: Camera AR Camera2 nội bộ, v0.1.0-beta.9 đã phát hành) · nghiệm thu chế độ máy bay máy thật ⛔ (chờ thiết bị adb) |
+| 17 | A7 | Bản đồ offline + Camera AR (chia A7a / A7b / A7c) | A6 | ✅ 30/10 · A7a (a0e1d1b: tile VN trên R2 + Worker /ban-do) · A7b (d6de6a2: màn bản đồ + vùng offline) · A7c (62e4cab PR #33: Camera AR Camera2 nội bộ, v0.1.0-beta.9 đã phát hành) · máy thật M32 31/10: chế độ máy bay hiển thị bản đồ từ vùng offline, đổi Sáng / Tối không mạng |
 | 18 | R1 | Landing hoàn chỉnh (kéo lên làm cùng R0 theo yêu cầu người dùng) | N2 | ✅ 28/10 |
 | 19 | S8 | Bảo vệ edge web (CSP, header, WAF as code) | R1 | ✅ 29/10 (CSP nghiêm Report-Only tới 05/11; Access ở S6, Turnstile ở S7) |
 | 20 | S9 | Lớp bảo vệ nội dung web + build sạch | S8 | ✅ 29/10 (bdbd740; CSV audit ở S6) |
-| 21 | A8 | Cài đặt, quyền riêng tư, trợ năng, hiệu năng (chia A8a / A8b) | A7, S4 | 🟨 A8a ✅ 31/10 (quyền riêng tư + đồng ý NĐ 13, Q43; chưa phát hành APK - gộp A8b) · A8b chưa |
+| 21 | A8 | Cài đặt, quyền riêng tư, trợ năng, hiệu năng (chia A8a / A8b) | A7, S4 | 🟨 A8a ✅ 31/10 (0191b2d PR #34: quyền riêng tư + đồng ý NĐ 13, Q43; máy thật M32 đạt; chưa phát hành APK - gộp A8b) · A8b chưa |
 | 22 | S10 | Giám sát, log bất biến, backup, ứng phó sự cố | S7 | ⬜ |
 | 23 | R2 | Sẵn sàng store | A8, S4 | ⬜ |
 | 24 | R3 | QA tổng + kiểm thử bảo mật | R2, S9, S10 | ⬜ |
@@ -560,7 +560,14 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   định danh / kênh / RASP khi chưa đồng ý hoặc đã rút, đồng ý muộn chạy ngay; màn Quyền riêng tư (Cài đặt): công tắc đồng ý,
   số điểm, xuất JSON qua SAF, xoá toàn bộ (`clearApplicationUserData` + xoá khoá Keystore), mã thiết bị + thư
   privacy@tsudev.com điền sẵn, mở cài đặt app; giấy phép SQLCipher + OpenSSL. Hook pre-commit bỏ qua tệp nhị phân (`grep -I`).
-- Phát sinh A8a: (1) thử trên máy thật: xoá toàn bộ, mở thư, lưu tệp JSON, rút đồng ý rồi mở lại app (freeRASP không chạy);
+- Nghiệm thu A8a máy thật M32 (31/10, bản thử `--thu` cài đè beta.9): người dùng cũ được hỏi lại; "Chỉ dùng ngoại tuyến" 0 byte
+  mạng / 25 s (netstats theo uid); bật đồng ý ở Quyền riêng tư -> 65 KB / 20 s ngay, không cần mở lại; rút -> 0 byte, mở lại
+  app vẫn 0 byte (freeRASP không chạy); xuất JSON qua SAF vào Download (1,1 KB, đủ 2 điểm + mã thiết bị); thư yêu cầu xoá mở
+  Gmail điền sẵn người nhận / tiêu đề / mã (đã loại bỏ, không gửi); mở cài đặt app; xoá toàn bộ -> app đóng, mở lại như cài
+  mới: màn giới thiệu, 0 điểm, không còn vùng offline, mã thiết bị MỚI sau khi đồng ý. Cold start 655-683 ms (lần đầu sau cài 2,0 s).
+  A7b: bật máy bay -> bản đồ hiện từ vùng offline, đổi Tối vẫn hiện (chưa thử thu nhỏ tới z0-8 bằng adb).
+- Phát sinh A8a: (1) (đã nghiệm thu máy thật 31/10 - xem trên); dung lượng màn Vùng offline giảm 6,0 -> 5,9 MB khi tải thêm
+  "Tổng quan Việt Nam" (cách tính tổng của MapLibre?) - A8b xem lại;
   (2) landing `/quyen-rieng-tu` mục 6 nên nêu Cài đặt > Quyền riêng tư trong app + lựa chọn ngoại tuyến (vùng web - phiên chính);
   (3) phát hành APK gộp A8b (tăng version beta.10).
 - Phát sinh (từ A5): màn Giấy phép thêm SQLCipher (BSD, Zetetic) + OpenSSL (Apache 2, bản Android) + drift / sqlite3 (MIT)
