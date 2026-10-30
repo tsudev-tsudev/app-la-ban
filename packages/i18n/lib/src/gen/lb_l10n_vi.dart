@@ -926,4 +926,97 @@ class LbL10nVi extends LbL10n {
     );
     return '$_temp0';
   }
+
+  @override
+  String get mapMyLocation => 'Vị trí của tôi';
+
+  @override
+  String get mapNoLocation => 'Chưa có vị trí - đang chờ GPS.';
+
+  @override
+  String get mapFollowHeading => 'Xoay bản đồ theo hướng';
+
+  @override
+  String get mapNorthUp => 'Đưa hướng bắc lên trên';
+
+  @override
+  String get mapOffline => 'Bản đồ ngoại tuyến';
+
+  @override
+  String get mapOfflineIntro =>
+      'Tải trước vùng bản đồ để dùng khi không có mạng: chế độ máy bay, vùng núi, trên biển.';
+
+  @override
+  String get mapOfflineOverview => 'Tổng quan Việt Nam';
+
+  @override
+  String get mapOfflineOverviewDesc =>
+      'Cả nước, gồm quần đảo Hoàng Sa và Trường Sa; đường chính, tên tỉnh và thành phố.';
+
+  @override
+  String get mapOfflineCurrent => 'Vùng đang xem';
+
+  @override
+  String mapOfflineCurrentDesc(int tiles) {
+    return '$tiles ô bản đồ, chi tiết tới từng con phố.';
+  }
+
+  @override
+  String mapOfflineTooLarge(int tiles) {
+    return 'Vùng quá rộng ($tiles ô). Hãy phóng to bản đồ rồi tải lại.';
+  }
+
+  @override
+  String get mapOfflineNoView => 'Mở tab Bản đồ và di chuyển tới vùng cần tải.';
+
+  @override
+  String get mapOfflineDownload => 'Tải về';
+
+  @override
+  String mapOfflineDownloading(int done, int total) {
+    return 'Đang tải $done/$total';
+  }
+
+  @override
+  String get mapOfflineDone => 'Đã tải xong vùng bản đồ.';
+
+  @override
+  String get mapOfflineFailed =>
+      'Chưa tải xong - kiểm tra kết nối mạng rồi thử lại.';
+
+  @override
+  String get mapOfflineSaved => 'Vùng đã tải';
+
+  @override
+  String get mapOfflineEmpty => 'Chưa có vùng nào.';
+
+  @override
+  String get mapOfflineDelete => 'Xoá vùng';
+
+  @override
+  String mapOfflineDeleteTitle(String name) {
+    return 'Xoá vùng \"$name\"?';
+  }
+
+  @override
+  String mapOfflineStorage(double mb) {
+    final intl.NumberFormat mbNumberFormat =
+        intl.NumberFormat.decimalPatternDigits(
+          locale: localeName,
+          decimalDigits: 1,
+        );
+    final String mbString = mbNumberFormat.format(mb);
+
+    return 'Đang dùng $mbString MB trên máy';
+  }
+
+  @override
+  String mapOfflineAreaName(String date) {
+    return 'Vùng $date';
+  }
+
+  @override
+  String mapOfflineZoom(int from, int to) {
+    return 'Mức chi tiết $from-$to';
+  }
 }

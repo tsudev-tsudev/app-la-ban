@@ -929,6 +929,100 @@ class LbL10nEn extends LbL10n {
     );
     return '$_temp0';
   }
+
+  @override
+  String get mapMyLocation => 'My location';
+
+  @override
+  String get mapNoLocation => 'No location yet - waiting for GPS.';
+
+  @override
+  String get mapFollowHeading => 'Rotate map with heading';
+
+  @override
+  String get mapNorthUp => 'North up';
+
+  @override
+  String get mapOffline => 'Offline maps';
+
+  @override
+  String get mapOfflineIntro =>
+      'Download map areas ahead of time to use them without a connection: airplane mode, mountains, at sea.';
+
+  @override
+  String get mapOfflineOverview => 'Vietnam overview';
+
+  @override
+  String get mapOfflineOverviewDesc =>
+      'The whole country including the Hoàng Sa and Trường Sa archipelagos; main roads, province and city names.';
+
+  @override
+  String get mapOfflineCurrent => 'Current view';
+
+  @override
+  String mapOfflineCurrentDesc(int tiles) {
+    return '$tiles map tiles, detailed down to streets.';
+  }
+
+  @override
+  String mapOfflineTooLarge(int tiles) {
+    return 'This area is too large ($tiles tiles). Zoom in on the map, then try again.';
+  }
+
+  @override
+  String get mapOfflineNoView =>
+      'Open the Map tab and move to the area you want.';
+
+  @override
+  String get mapOfflineDownload => 'Download';
+
+  @override
+  String mapOfflineDownloading(int done, int total) {
+    return 'Downloading $done/$total';
+  }
+
+  @override
+  String get mapOfflineDone => 'Map area downloaded.';
+
+  @override
+  String get mapOfflineFailed =>
+      'Download didn\'t finish - check your connection and try again.';
+
+  @override
+  String get mapOfflineSaved => 'Downloaded areas';
+
+  @override
+  String get mapOfflineEmpty => 'No areas yet.';
+
+  @override
+  String get mapOfflineDelete => 'Delete area';
+
+  @override
+  String mapOfflineDeleteTitle(String name) {
+    return 'Delete \"$name\"?';
+  }
+
+  @override
+  String mapOfflineStorage(double mb) {
+    final intl.NumberFormat mbNumberFormat =
+        intl.NumberFormat.decimalPatternDigits(
+          locale: localeName,
+          decimalDigits: 1,
+        );
+    final String mbString = mbNumberFormat.format(mb);
+
+    return 'Using $mbString MB on this device';
+  }
+
+  @override
+  String mapOfflineAreaName(String date) {
+    return 'Area $date';
+  }
+
+  @override
+  String mapOfflineZoom(int from, int to) {
+    return 'Detail levels $from-$to';
+  }
 }
 
 /// The translations for English (`en_XA`).
@@ -1866,5 +1960,100 @@ class LbL10nEnXa extends LbL10nEn {
       zero: 'Ñở ŵảỹpởỉñťš',
     );
     return '[$_temp0 ················]';
+  }
+
+  @override
+  String get mapMyLocation => '[Mỹ łởçảťỉởñ ·····]';
+
+  @override
+  String get mapNoLocation =>
+      '[Ñở łởçảťỉởñ ỹẽť - ŵảỉťỉñğ fởř ĞPŠ. ··············]';
+
+  @override
+  String get mapFollowHeading => '[Řởťảťẽ mảp ŵỉťh hẽảđỉñğ ··········]';
+
+  @override
+  String get mapNorthUp => '[Ñởřťh ữp ····]';
+
+  @override
+  String get mapOffline => '[Ởffłỉñẽ mảpš ·····]';
+
+  @override
+  String get mapOfflineIntro =>
+      '[Đởŵñłởảđ mảp ảřẽảš ảhẽảđ ởf ťỉmẽ ťở ữšẽ ťhẽm ŵỉťhởữť ả çởññẽçťỉởñ: ảỉřpłảñẽ mởđẽ, mởữñťảỉñš, ảť šẽả. ········································]';
+
+  @override
+  String get mapOfflineOverview => '[Vỉẽťñảm ởvẽřvỉẽŵ ·······]';
+
+  @override
+  String get mapOfflineOverviewDesc =>
+      '[Ťhẽ ŵhởłẽ çởữñťřỹ ỉñçłữđỉñğ ťhẽ Hởàñğ Šả ảñđ Ťřườñğ Šả ảřçhỉpẽłảğởš; mảỉñ řởảđš, přởvỉñçẽ ảñđ çỉťỹ ñảmẽš. ··········································]';
+
+  @override
+  String get mapOfflineCurrent => '[Çữřřẽñť vỉẽŵ ·····]';
+
+  @override
+  String mapOfflineCurrentDesc(int tiles) {
+    return '[$tiles mảp ťỉłẽš, đẽťảỉłẽđ đởŵñ ťở šťřẽẽťš. ···············]';
+  }
+
+  @override
+  String mapOfflineTooLarge(int tiles) {
+    return '[Ťhỉš ảřẽả ỉš ťởở łảřğẽ ($tiles ťỉłẽš). Žởởm ỉñ ởñ ťhẽ mảp, ťhẽñ ťřỹ ảğảỉñ. ····························]';
+  }
+
+  @override
+  String get mapOfflineNoView =>
+      '[Ởpẽñ ťhẽ Mảp ťảb ảñđ mởvẽ ťở ťhẽ ảřẽả ỹởữ ŵảñť. ···················]';
+
+  @override
+  String get mapOfflineDownload => '[Đởŵñłởảđ ····]';
+
+  @override
+  String mapOfflineDownloading(int done, int total) {
+    return '[Đởŵñłởảđỉñğ $done/$total ······]';
+  }
+
+  @override
+  String get mapOfflineDone => '[Mảp ảřẽả đởŵñłởảđẽđ. ········]';
+
+  @override
+  String get mapOfflineFailed =>
+      '[Đởŵñłởảđ đỉđñ\'ť fỉñỉšh - çhẽçk ỹởữř çởññẽçťỉởñ ảñđ ťřỹ ảğảỉñ. ·························]';
+
+  @override
+  String get mapOfflineSaved => '[Đởŵñłởảđẽđ ảřẽảš ·······]';
+
+  @override
+  String get mapOfflineEmpty => '[Ñở ảřẽảš ỹẽť. ······]';
+
+  @override
+  String get mapOfflineDelete => '[Đẽłẽťẽ ảřẽả ·····]';
+
+  @override
+  String mapOfflineDeleteTitle(String name) {
+    return '[Đẽłẽťẽ \"$name\"? ····]';
+  }
+
+  @override
+  String mapOfflineStorage(double mb) {
+    final intl.NumberFormat mbNumberFormat =
+        intl.NumberFormat.decimalPatternDigits(
+          locale: localeName,
+          decimalDigits: 1,
+        );
+    final String mbString = mbNumberFormat.format(mb);
+
+    return '[Ữšỉñğ $mbString MB ởñ ťhỉš đẽvỉçẽ ··········]';
+  }
+
+  @override
+  String mapOfflineAreaName(String date) {
+    return '[Ảřẽả $date ··]';
+  }
+
+  @override
+  String mapOfflineZoom(int from, int to) {
+    return '[Đẽťảỉł łẽvẽłš $from-$to ······]';
   }
 }

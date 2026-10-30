@@ -101,7 +101,7 @@ void main() {
         Flavor.dev,
         khoKhoa: KhoKhoaBoNho(tm.path),
         nen: false,
-        ghiDeThem: [huongThu],
+        ghiDeThem: ghiDeThu,
       ),
     ))!;
     await tester.pumpWidget(app);
@@ -129,7 +129,7 @@ void main() {
         Flavor.dev,
         khoKhoa: KhoHong(),
         nen: false,
-        ghiDeThem: [huongThu],
+        ghiDeThem: ghiDeThu,
       ),
     ))!;
     await tester.pumpWidget(app);
@@ -157,7 +157,7 @@ void main() {
         Flavor.dev,
         khoKhoa: KhoKhoaBoNho(tm.path),
         nen: false,
-        ghiDeThem: [huongThu],
+        ghiDeThem: ghiDeThu,
       ),
     ))!;
     await tester.pumpWidget(app);

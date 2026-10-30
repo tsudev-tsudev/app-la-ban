@@ -50,7 +50,7 @@ void main() {
     nen: false,
     ghiDeThem: [
       if (daXem) caiDatProvider.overrideWith(CaiDatDaXem.new),
-      huongThu,
+      ...ghiDeThu,
       nguonViTriProvider.overrideWithValue(
         NguonViTriGhiSan([
           DocViTri(

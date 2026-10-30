@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:la_ban/src/app.dart';
+import 'package:la_ban/src/ban_do.dart';
 import 'package:la_ban/src/diem.dart';
 import 'package:la_ban/src/dinh_danh.dart';
 import 'package:la_ban/src/flavor.dart';
@@ -12,6 +13,7 @@ import 'package:la_ban/src/lam_cung.dart';
 import 'package:la_ban/src/luu_tru.dart';
 import 'package:la_ban/src/phien_ban.dart';
 import 'package:location_feature/location_feature.dart';
+import 'package:map_feature/map_feature.dart';
 import 'package:settings_feature/settings_feature.dart';
 import 'package:storage/storage.dart';
 
@@ -21,6 +23,7 @@ Future<void> khoiDong(Flavor flavor) async {
   WidgetsFlutterBinding.ensureInitialized();
   dangKyGiayPhepFont();
   dangKyGiayPhepDuLieu();
+  dangKyGiayPhepBanDo();
   runApp(await dungApp(flavor, dinhDanh: true));
 }
 
@@ -77,6 +80,7 @@ Future<Widget> dungApp(
       ] else
         anToanProvider.overrideWithValue(LyDoAnToan.migrationLoi),
       ...noiDiem(kho),
+      ...noiBanDo(flavor),
       ...ghiDeThem,
     ],
     child: LaBanApp(flavor: flavor),

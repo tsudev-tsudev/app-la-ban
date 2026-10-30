@@ -1567,6 +1567,144 @@ abstract class LbL10n {
   /// In vi, this message translates to:
   /// **'{count, plural, =0{Không có điểm nào} other{{count} điểm}}'**
   String wpSafeCount(int count);
+
+  /// Nút đưa bản đồ về vị trí hiện tại
+  ///
+  /// In vi, this message translates to:
+  /// **'Vị trí của tôi'**
+  String get mapMyLocation;
+
+  /// Thông báo khi chưa có vị trí
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có vị trí - đang chờ GPS.'**
+  String get mapNoLocation;
+
+  /// Nút bật chế độ xoay theo hướng máy
+  ///
+  /// In vi, this message translates to:
+  /// **'Xoay bản đồ theo hướng'**
+  String get mapFollowHeading;
+
+  /// Nút tắt xoay, đưa bắc lên trên
+  ///
+  /// In vi, this message translates to:
+  /// **'Đưa hướng bắc lên trên'**
+  String get mapNorthUp;
+
+  /// Nút / tiêu đề màn vùng offline
+  ///
+  /// In vi, this message translates to:
+  /// **'Bản đồ ngoại tuyến'**
+  String get mapOffline;
+
+  /// Giới thiệu màn vùng offline
+  ///
+  /// In vi, this message translates to:
+  /// **'Tải trước vùng bản đồ để dùng khi không có mạng: chế độ máy bay, vùng núi, trên biển.'**
+  String get mapOfflineIntro;
+
+  /// Tên gói cả nước
+  ///
+  /// In vi, this message translates to:
+  /// **'Tổng quan Việt Nam'**
+  String get mapOfflineOverview;
+
+  /// Mô tả gói cả nước
+  ///
+  /// In vi, this message translates to:
+  /// **'Cả nước, gồm quần đảo Hoàng Sa và Trường Sa; đường chính, tên tỉnh và thành phố.'**
+  String get mapOfflineOverviewDesc;
+
+  /// Tên mục tải vùng đang xem trên bản đồ
+  ///
+  /// In vi, this message translates to:
+  /// **'Vùng đang xem'**
+  String get mapOfflineCurrent;
+
+  /// Mô tả vùng đang xem
+  ///
+  /// In vi, this message translates to:
+  /// **'{tiles} ô bản đồ, chi tiết tới từng con phố.'**
+  String mapOfflineCurrentDesc(int tiles);
+
+  /// Vùng vượt trần số tile
+  ///
+  /// In vi, this message translates to:
+  /// **'Vùng quá rộng ({tiles} ô). Hãy phóng to bản đồ rồi tải lại.'**
+  String mapOfflineTooLarge(int tiles);
+
+  /// Chưa có vùng đang xem
+  ///
+  /// In vi, this message translates to:
+  /// **'Mở tab Bản đồ và di chuyển tới vùng cần tải.'**
+  String get mapOfflineNoView;
+
+  /// Nút tải vùng
+  ///
+  /// In vi, this message translates to:
+  /// **'Tải về'**
+  String get mapOfflineDownload;
+
+  /// Tiến độ tải tài nguyên
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải {done}/{total}'**
+  String mapOfflineDownloading(int done, int total);
+
+  /// Tải xong
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã tải xong vùng bản đồ.'**
+  String get mapOfflineDone;
+
+  /// Tải lỗi
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa tải xong - kiểm tra kết nối mạng rồi thử lại.'**
+  String get mapOfflineFailed;
+
+  /// Tiêu đề danh sách vùng
+  ///
+  /// In vi, this message translates to:
+  /// **'Vùng đã tải'**
+  String get mapOfflineSaved;
+
+  /// Danh sách rỗng
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có vùng nào.'**
+  String get mapOfflineEmpty;
+
+  /// Nút xoá vùng
+  ///
+  /// In vi, this message translates to:
+  /// **'Xoá vùng'**
+  String get mapOfflineDelete;
+
+  /// Hộp thoại xác nhận xoá
+  ///
+  /// In vi, this message translates to:
+  /// **'Xoá vùng \"{name}\"?'**
+  String mapOfflineDeleteTitle(String name);
+
+  /// Dung lượng CSDL offline
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang dùng {mb} MB trên máy'**
+  String mapOfflineStorage(double mb);
+
+  /// Tên tự đặt cho vùng tải theo ngày giờ
+  ///
+  /// In vi, this message translates to:
+  /// **'Vùng {date}'**
+  String mapOfflineAreaName(String date);
+
+  /// Dải zoom của vùng
+  ///
+  /// In vi, this message translates to:
+  /// **'Mức chi tiết {from}-{to}'**
+  String mapOfflineZoom(int from, int to);
 }
 
 class _LbL10nDelegate extends LocalizationsDelegate<LbL10n> {

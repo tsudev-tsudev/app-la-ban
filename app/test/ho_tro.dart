@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:la_ban/src/app.dart';
 import 'package:la_ban/src/flavor.dart';
+import 'package:map_feature/map_feature.dart';
 import 'package:settings_feature/settings_feature.dart';
 import 'package:test_kit/test_kit.dart';
 import 'package:waypoint_feature/waypoint_feature.dart';
@@ -45,6 +46,13 @@ final Override huongThu = huongProvider.overrideWith(
   ),
 );
 
+/// Ghi đè chung của test app: hướng cố định + bản đồ phẳng (platform view
+/// MapLibre không chạy trong test widget).
+final List<Override> ghiDeThu = [
+  huongThu,
+  banDoThatProvider.overrideWithValue(false),
+];
+
 /// App đầy đủ trong ProviderScope mới (kho điểm trong bộ nhớ trừ khi
 /// [khoDiem] = false).
 Widget appThu({
@@ -55,7 +63,7 @@ Widget appThu({
   overrides: [
     if (daXem) caiDatProvider.overrideWith(CaiDatDaXem.new),
     if (khoDiem) khoDiemProvider.overrideWithValue(KhoDiemBoNho()),
-    huongThu,
+    ...ghiDeThu,
     ...them,
   ],
   child: const LaBanApp(flavor: Flavor.dev),

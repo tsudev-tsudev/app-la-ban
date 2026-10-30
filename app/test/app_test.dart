@@ -78,7 +78,7 @@ void main() {
     final c = ProviderContainer(
       overrides: [
         caiDatProvider.overrideWith(CaiDatDaXem.new),
-        huongThu,
+        ...ghiDeThu,
         _tabDo,
       ],
     );
@@ -125,14 +125,14 @@ void main() {
     datHeThong(tester, oChup.first);
     await tester.pumpWidget(appThu());
     await tester.pumpAndSettle();
-    for (final (nhan, tieuDe) in [
-      ('Bản đồ', 'Bản đồ ngoại tuyến sẽ hiện ở đây.'),
-      ('Điểm', 'Chưa có điểm nào'),
-      ('Cài đặt', 'Ngôn ngữ'),
+    for (final (nhan, dau) in [
+      ('Bản đồ', find.byTooltip('Bản đồ ngoại tuyến')),
+      ('Điểm', find.text('Chưa có điểm nào')),
+      ('Cài đặt', find.text('Ngôn ngữ')),
     ]) {
       await tester.tap(find.byKey(ValueKey(_khoaTab(nhan))));
       await tester.pumpAndSettle();
-      expect(find.text(tieuDe), findsOneWidget, reason: nhan);
+      expect(dau, findsOneWidget, reason: nhan);
     }
   });
 
@@ -200,7 +200,7 @@ void main() {
     final t = tester.widget<Title>(find.byType(Title));
     expect(t.title, 'La bàn DEV');
     final prod = ProviderScope(
-      overrides: [caiDatProvider.overrideWith(CaiDatDaXem.new), huongThu],
+      overrides: [caiDatProvider.overrideWith(CaiDatDaXem.new), ...ghiDeThu],
       child: const LaBanApp(flavor: Flavor.prod),
     );
     await tester.pumpWidget(prod);
