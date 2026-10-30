@@ -63,7 +63,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 12 | S4 | Làm cứng app | S3 | ✅ 30/10 (1bd395f, v0.1.0-beta.7) · máy thật M32 release prod + staging: chỉ ADB_ENABLED / DEV_MODE / UNOFFICIAL_STORE mức info, điểm 0, không báo nhầm |
 | 13 | S5 | Threat Engine + enforcement | S1 | ✅ 28/10 |
 | 14 | S6 | Admin SOC 1 | S5 | ✅ 30/10 · e2e staging qua Access thật: realtime 587-722 ms, danh sách D1 45 ms |
-| 15 | S7 | Admin SOC 2 (chia S7a / S7b / S7c) | S6 | 🟨 S7a ✅ 30/10 (4ae38f9, PR #29: giao diện SOC mới + thuỷ vân + Alert Center + Telegram + passkey; staging + prod) · S7b, S7c chưa |
+| 15 | S7 | Admin SOC 2 (chia S7a / S7b / S7c) | S6 | 🟨 S7a ✅ 30/10 (4ae38f9, PR #29) · S7b ✅ 30/10 (f1a6d3c, PR #32: rule + mô phỏng 7 ngày, can thiệp, four-eyes, Under Attack, Super Admin bật / tắt thuỷ vân; staging + prod) · S7c chưa |
 | 16 | A6 | Waypoint, chia sẻ, deep link | A5, S3 | ✅ 30/10 (53e946b + cf74304, v0.1.0-beta.8) · máy thật M32: App Links `verified`, link /w/ mở thẳng app (cold 1,5 s) |
 | 17 | A7 | Bản đồ offline + Camera AR (chia A7a / A7b / A7c) | A6 | 🟨 A7a ✅ 30/10 (a0e1d1b: tile VN trên R2 + Worker /ban-do); A7b ✅ 30/10 (d6de6a2: màn bản đồ + vùng offline); A7c Camera AR chưa |
 | 18 | R1 | Landing hoàn chỉnh (kéo lên làm cùng R0 theo yêu cầu người dùng) | N2 | ✅ 28/10 |
@@ -433,6 +433,18 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   `/passkey`): tất cả đạt; realtime khi ấm 734-1470 ms (< 1,5 s), 2 lần đầu ngay sau deploy (lạnh) 3,5 s / 1,8 s.
 - Phát sinh (từ S7a) -> S10: đo p95 realtime SOC theo thời gian (S6 đo 587-722 ms; S7a khi ấm tới 1,47 s - sát ngân
   sách) - cân nhắc phát tin SOC trước khi chạy rule (`phatSoc` sớm, kích hoạt rule gửi tin thứ hai).
+- Kết quả S7b (30/10, QUYET_DINH Q41): migration 0007 (expand: `rule_versions` có dữ liệu bản đầu, `approval_requests`
+  four-eyes CHECK `decided_by <> created_by`, `soc_settings`, chỉ mục enforcement chờ duyệt). Thuần `thuan/mo-phong.ts`
+  (chạy lại rule ỨNG VIÊN trên `security_events` 7 ngày: cửa sổ trượt + không kích hoạt lặp như engine, theo ngày giờ VN,
+  trần 50.000 sự kiện; đổi logic -> shadow), `thuan/can-thiep.ts` (chuẩn hoá đích, dải tối thiểu /16 - /32, TTL cố định
+  hoặc leo thang, loại duyệt ngay / đề xuất / yêu cầu), cài đặt SOC trong `thuan/soc.ts`. Route `admin/luat.ts`,
+  `admin/can-thiep.ts`, `admin/cai-dat.ts`; ghi có điều kiện phiên bản (409). 6 quyền mới. SPA: Can thiệp (`g x`), Rule
+  (`g l`, ngăn sửa + mô phỏng + lịch sử), Cấu hình điểm + Under Attack (`g n`), Cài đặt hệ thống (`g s`, Super Admin:
+  thuỷ vân bật / tắt, độ đậm tối thiểu, ép che khi rời), nút chặn / thu hồi phiên ở chi tiết thiết bị. Test mới: 11 thuần +
+  5 tích hợp Miniflare Worker, 5 SPA. Phát hành: D1 0007 staging + prod, Worker f1a6d3c staging + prod, Pages admin
+  `staging` + main; e2e staging (thêm kiểm S7b chỉ đọc) đạt mọi mục S7b.
+- Phát sinh (từ S7b) -> S10 (ƯU TIÊN): realtime SOC staging dao động 663-1829 ms (3/5 lần vượt 1,5 s) - không do S7b
+  (đường Threat Engine -> DO không đổi); xem gợi ý phát tin SOC trước khi chạy rule ở mục S7a.
 - Phát sinh (từ S7a): người dùng tạo bot Telegram + đặt 2 secret (runbook admin-soc) - chưa có thì Worker bỏ qua im lặng;
   contract chỉ mục `alerts_open` cũ ở bản migration sau S7c.
 
