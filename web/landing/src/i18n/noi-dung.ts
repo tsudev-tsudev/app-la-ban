@@ -301,7 +301,7 @@ const vi: NoiDung = {
     moTa: 'Nếu ứng dụng báo thiết bị của bạn bị hạn chế và hiển thị mã REF, bạn có thể khiếu nại. Chúng tôi xem xét thủ công, không tự động từ chối.',
     buoc: [
       { tieuDe: 'Ghi lại mã REF', noiDung: 'Mã dạng REF-XXXXXX hiển thị trên màn thông báo của ứng dụng.' },
-      { tieuDe: 'Điền biểu mẫu', noiDung: 'Nhập mã REF và mô tả ngắn (ví dụ: máy đã root để phát triển, dùng VPN công ty...). Email để nhận trả lời là tuỳ chọn.' },
+      { tieuDe: 'Gửi khiếu nại', noiDung: 'Kèm mã REF và mô tả ngắn (ví dụ: máy đã root để phát triển, dùng VPN công ty...) qua nút bên dưới.' },
       { tieuDe: 'Nhận phản hồi', noiDung: 'Chúng tôi phản hồi trong 3 ngày làm việc. Nếu hạn chế là nhầm, thiết bị được gỡ hạn chế và khôi phục điểm uy tín.' },
     ],
     nutEmail: 'Gửi khiếu nại qua email',
@@ -523,7 +523,7 @@ const en: NoiDung = {
     moTa: 'If the app says your device is restricted and shows a REF code, you can appeal. Appeals are reviewed by a person, never auto-rejected.',
     buoc: [
       { tieuDe: 'Note your REF code', noiDung: 'It looks like REF-XXXXXX and appears on the app\'s notice screen.' },
-      { tieuDe: 'Fill in the form', noiDung: 'Enter your REF code and a short description (for example: rooted for development, company VPN...). A reply email is optional.' },
+      { tieuDe: 'Send your appeal', noiDung: 'Include your REF code and a short description (for example: rooted for development, company VPN...) using the button below.' },
       { tieuDe: 'Get a reply', noiDung: 'We reply within 3 business days. If the restriction was a mistake, it is lifted and your reputation score restored.' },
     ],
     nutEmail: 'Send appeal by email',
