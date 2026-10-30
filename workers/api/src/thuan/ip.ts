@@ -68,7 +68,7 @@ function matNa(toiDa: number, doDai: number): bigint {
   return ((1n << BigInt(doDai)) - 1n) << BigInt(toiDa - doDai);
 }
 
-function giaTriDai(d: Dai): string {
+export function giaTriDai(d: Dai): string {
   if (d.v === 4) {
     const p = [24n, 16n, 8n, 0n].map((s) => ((d.goc >> s) & 0xffn).toString());
     return `${p.join('.')}/${d.doDai}`;

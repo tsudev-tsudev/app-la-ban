@@ -1,6 +1,7 @@
 // Thành phần dùng chung SOC: tải dữ liệu (tự khoá khi hết phiên), ô số liệu, thanh xếp hạng, nhãn trạng thái.
 import { useCallback, useEffect, useState } from 'react';
-import { goi, LoiSoc } from './api';
+import { goi, goiStepUp, LoiSoc, maLoiPasskey } from './api';
+import { useThongBao } from './giao-dien/ThongBao';
 import { useSoc } from './ngu-canh';
 import { dinhDangSo } from './i18n';
 
@@ -97,5 +98,27 @@ export function ThongBaoLoi({ loi, napLai }: { loi: LoiSoc; napLai: () => void }
         {t.thuLai}
       </button>
     </div>
+  );
+}
+
+/**
+ * Ghi có step-up (S7b): gọi [duong], hỏi passkey khi server đòi, báo lỗi theo mã bằng toast; trả null khi lỗi để nơi gọi
+ * giữ nguyên biểu mẫu. 401 hết phiên -> về màn passkey.
+ */
+export function useGhi(): <T>(duong: string, body: unknown) => Promise<T | null> {
+  const { t, hetPhien } = useSoc();
+  const bao = useThongBao();
+  return useCallback(
+    async <T,>(duong: string, body: unknown): Promise<T | null> => {
+      try {
+        return await goiStepUp<T>(duong, body, () => bao(t.canStepUp, 'tin'));
+      } catch (e) {
+        if (e instanceof LoiSoc && e.status === 401 && e.ma !== 'can-step-up') hetPhien();
+        const ma = e instanceof LoiSoc ? e.ma : null;
+        bao(ma && t.loiMa[ma] ? t.loiMa[ma] : maLoiPasskey(e) === 'huy' ? t.passkeyHuy : t.loiChung, 'loi');
+        return null;
+      }
+    },
+    [t, bao, hetPhien],
   );
 }

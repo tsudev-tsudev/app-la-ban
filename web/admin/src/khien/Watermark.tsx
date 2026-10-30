@@ -1,7 +1,8 @@
 // SH-04 (S7a làm lại): thuỷ vân MỘT lớp nền vẽ bằng canvas (ô thưa 440 x 260, chữ mảnh ~5 %) thay cho lưới hàng trăm thẻ
 // span - nội dung dễ đọc hơn, DOM nhẹ hơn. Lớp chấm ẩn mang mã dấu vết (dau-vet.ts). Tự đậm lên khi rời cửa sổ / ẩn tab /
 // in; tuỳ chọn che mờ dữ liệu khi rời cửa sổ. Chỉ là lớp hình (aria-hidden, không nhận chuột); ảnh nền đặt qua CSSOM
-// (CSP không cho style nội tuyến dạng chuỗi; img-src cho phép data:).
+// (CSP không cho style nội tuyến dạng chuỗi; img-src cho phép data:). S7b: Super Admin tắt thuỷ vân toàn hệ thống -> [bat]
+// = false thì không tạo lớp (mã dấu vết + audit xem dữ liệu ở server vẫn giữ).
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { ALPHA_GOC, bitDauVet, doMoLop, LUOI_CHAM, maDauVet, nhanThuyVan, O_THUY_VAN, type MucThuyVan } from './dau-vet';
 import './watermark.css';
@@ -71,6 +72,7 @@ function useTangCuong(): boolean {
 }
 
 export function VungDuLieu({
+  bat = true,
   email,
   muc,
   cheKhiRoi,
@@ -78,6 +80,7 @@ export function VungDuLieu({
   nhanChe,
   children,
 }: {
+  bat?: boolean;
   email: string;
   muc: MucThuyVan;
   cheKhiRoi: boolean;
@@ -112,7 +115,7 @@ export function VungDuLieu({
   // kiểm soát chính).
   useLayoutEffect(() => {
     const g = goc.current;
-    if (!g) return;
+    if (!g || !bat) return;
     const el = document.createElement('div');
     el.className = 'thuy-van';
     el.setAttribute('aria-hidden', 'true');
@@ -142,7 +145,7 @@ export function VungDuLieu({
       el.remove();
       lop.current = null;
     };
-  }, []);
+  }, [bat]);
 
   useLayoutEffect(() => {
     const el = lop.current;
@@ -152,12 +155,12 @@ export function VungDuLieu({
     daDat.current.anh = anh ? `url("${anh}")` : '';
     el.style.backgroundImage = daDat.current.anh;
     el.style.backgroundSize = `${O_THUY_VAN.rong}px ${O_THUY_VAN.cao}px`;
-  }, [email, bayGio, ma, chuDe, lanVe]);
+  }, [email, bayGio, ma, chuDe, lanVe, bat]);
 
   useLayoutEffect(() => {
     daDat.current.doMo = String(doMoLop(muc, tangCuong));
     lop.current?.style.setProperty('--do-mo-thuy-van', daDat.current.doMo);
-  }, [muc, tangCuong]);
+  }, [muc, tangCuong, bat]);
 
   const che = cheKhiRoi && tangCuong;
   return (

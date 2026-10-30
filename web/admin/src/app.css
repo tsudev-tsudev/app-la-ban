@@ -1478,3 +1478,301 @@ button.o-dem:hover {
     box-shadow: var(--lb-shadow-md);
   }
 }
+
+/* ------------------------------------------------------------ S7b: rule, can thiệp, cấu hình, cài đặt hệ thống */
+@media (min-width: 1200px) {
+  .trang-co-ngan.mo.rong {
+    grid-template-columns: minmax(0, 1fr) minmax(420px, 540px);
+  }
+}
+
+.mo-ta-trang {
+  margin: 0;
+  max-inline-size: 80ch;
+  font: var(--lb-type-body-small);
+  color: var(--lb-color-text-muted);
+}
+
+.cd-active {
+  color: var(--lb-color-success-strong);
+  background: color-mix(in srgb, var(--lb-color-success) 12%, transparent);
+}
+.cd-shadow {
+  color: var(--lb-color-accent-strong);
+}
+.cd-tat {
+  color: var(--lb-color-text-muted);
+}
+
+.nhan-loi {
+  color: var(--lb-color-danger-strong);
+}
+
+.o-dieu-kien {
+  display: grid;
+  gap: 2px;
+  min-inline-size: 16ch;
+}
+
+.hang-tom-tat {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lb-space-xs) var(--lb-space-sm);
+}
+
+.luoi-2,
+.luoi-3 {
+  display: grid;
+  gap: var(--lb-space-sm);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
+}
+
+.luoi-3 legend {
+  grid-column: 1 / -1;
+}
+
+.hang-o {
+  display: flex;
+  align-items: end;
+  gap: var(--lb-space-xs);
+}
+
+.hang-o label:first-child {
+  flex: 1;
+}
+
+.luoi-chon {
+  display: grid;
+  gap: var(--lb-space-xs) var(--lb-space-md);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+}
+
+.luoi-chon legend {
+  grid-column: 1 / -1;
+}
+
+input.o-ngan {
+  inline-size: 7ch;
+}
+
+.loi-chu {
+  margin: 0;
+  color: var(--lb-color-danger-strong);
+  font: var(--lb-type-body-small);
+}
+
+.canh-bao-chu {
+  margin: 0;
+  padding: var(--lb-space-xs) var(--lb-space-sm);
+  border-inline-start: 3px solid var(--lb-color-warning-strong);
+  border-radius: var(--lb-radius-sm);
+  background: color-mix(in srgb, var(--lb-color-warning) 12%, transparent);
+  font: var(--lb-type-body-small);
+}
+
+/* mô phỏng: cột theo ngày (một chuỗi, một sắc độ, số in trên cột) */
+.ket-qua-mo-phong h4 {
+  margin: 0;
+  font: var(--lb-type-label);
+  color: var(--lb-color-text-muted);
+}
+
+.cot-ngay {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: var(--lb-space-xxs);
+  block-size: 140px;
+}
+
+.cot-ngay li {
+  display: grid;
+  grid-template-rows: 1fr auto auto;
+  align-items: end;
+  justify-items: center;
+  gap: 2px;
+  min-inline-size: 0;
+  position: relative;
+}
+
+.cot-ngay-thanh {
+  inline-size: 100%;
+  max-inline-size: 28px;
+  min-block-size: 1px;
+  align-self: end;
+  border-radius: var(--lb-radius-sm) var(--lb-radius-sm) 0 0;
+  background: var(--lb-color-primary-deep);
+}
+
+.cot-ngay-so {
+  font: var(--lb-type-caption);
+  font-variant-numeric: tabular-nums;
+}
+
+.cot-ngay-nhan {
+  font: var(--lb-type-caption);
+  color: var(--lb-color-text-muted);
+  white-space: nowrap;
+}
+
+/* can thiệp */
+.bang-under-attack {
+  margin: 0;
+  padding: var(--lb-space-sm) var(--lb-space-md);
+  border-radius: var(--lb-radius-md);
+  background: var(--lb-color-danger-strong);
+  color: var(--lb-color-on-danger);
+  font: var(--lb-type-body-small);
+}
+
+.o-dem[aria-pressed='true'] {
+  border-color: var(--lb-color-primary-deep);
+  box-shadow: inset 0 0 0 1px var(--lb-color-primary-deep);
+}
+
+a.o-dem {
+  text-decoration: none;
+}
+
+.tht-hieu-luc {
+  color: var(--lb-color-danger-strong);
+}
+.tht-cho {
+  color: var(--lb-color-warning-strong);
+  background: color-mix(in srgb, var(--lb-color-warning) 14%, transparent);
+}
+.tht-het,
+.tht-go {
+  color: var(--lb-color-text-muted);
+}
+
+.o-ly-do {
+  max-inline-size: 32ch;
+  overflow-wrap: anywhere;
+}
+
+.ds-yeu-cau {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--lb-space-sm);
+}
+
+.the-yeu-cau {
+  display: grid;
+  gap: var(--lb-space-xs);
+  padding: var(--dem-the);
+  border: 1px solid var(--lb-color-outline);
+  border-inline-start: 3px solid var(--lb-color-warning-strong);
+  border-radius: var(--lb-radius-md);
+}
+
+.the-yeu-cau p {
+  margin: 0;
+}
+
+.danh-sach-dich {
+  overflow-wrap: anywhere;
+}
+
+.day-phai {
+  margin-inline-start: auto;
+}
+
+.nut-nho {
+  min-block-size: 28px;
+  padding: 0 var(--lb-space-sm);
+  margin-block-start: var(--lb-space-xxs);
+}
+
+/* cấu hình điểm */
+.the-under-attack.bat {
+  border-color: var(--lb-color-danger-strong);
+  box-shadow: inset 4px 0 0 var(--lb-color-danger-strong);
+}
+
+.the-under-attack p {
+  margin: 0;
+  max-inline-size: 80ch;
+}
+
+.luoi-diem {
+  display: grid;
+  gap: var(--lb-space-xs) var(--lb-space-md);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+}
+
+.hang-diem {
+  display: flex;
+  align-items: center;
+  gap: var(--lb-space-xs);
+}
+
+.hang-diem .ma {
+  flex: 1;
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+  font: var(--lb-type-body-small);
+}
+
+/* cài đặt hệ thống: công tắc (checkbox role=switch, vẫn là điều khiển gốc - bàn phím / trình đọc màn hình dùng được) */
+.cong-tac {
+  display: flex;
+  align-items: center;
+  gap: var(--lb-space-sm);
+  min-block-size: 44px;
+  cursor: pointer;
+}
+
+.cong-tac input {
+  appearance: none;
+  flex: none;
+  inline-size: 44px;
+  block-size: 24px;
+  margin: 0;
+  border-radius: 999px;
+  border: 1px solid var(--lb-color-outline-strong);
+  background: var(--lb-color-surface);
+  position: relative;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.cong-tac input::after {
+  content: '';
+  position: absolute;
+  inset-block-start: 2px;
+  inset-inline-start: 2px;
+  inline-size: 18px;
+  block-size: 18px;
+  border-radius: 50%;
+  background: var(--lb-color-text-muted);
+  transition: transform 0.15s;
+}
+
+.cong-tac input:checked {
+  background: var(--lb-color-primary-deep);
+  border-color: var(--lb-color-primary-deep);
+}
+
+.cong-tac input:checked::after {
+  background: var(--lb-color-on-primary-deep);
+  transform: translateX(20px);
+}
+
+.cong-tac input:focus-visible {
+  outline: 3px solid var(--lb-color-primary-deep);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cong-tac input,
+  .cong-tac input::after {
+    transition: none;
+  }
+}

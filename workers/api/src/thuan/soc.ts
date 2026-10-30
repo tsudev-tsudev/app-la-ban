@@ -16,7 +16,14 @@ export const QUYEN = {
   'pii:ip-day-du': 'analyst',
   'canh-bao:xem': 'viewer',
   'canh-bao:xu-ly': 'analyst',
+  // S7b: rule + mô phỏng, can thiệp (chặn / gỡ chặn / thu hồi phiên), duyệt four-eyes, cấu hình điểm + Under Attack.
+  'luat:xem': 'analyst',
+  'can-thiep': 'responder',
+  'luat:sua': 'security_admin',
+  'can-thiep:duyet': 'security_admin',
+  'cau-hinh-nguy-co': 'security_admin',
   'quan-tri-vien': 'super_admin',
+  'cai-dat-soc': 'super_admin',
 } as const satisfies Record<string, VaiTro>;
 export type Quyen = keyof typeof QUYEN;
 
@@ -168,6 +175,51 @@ export function truyVanThietBi(loc: LocThietBi, bayGio: number): TruyVan {
 
 export function giaTriCursor(dong: { last_seen: number; risk_score: number; id: string }, loc: LocThietBi): Cursor {
   return { t: loc.sap === 'rui-ro' ? dong.risk_score : dong.last_seen, id: dong.id };
+}
+
+// ---------------------------------------------------------------- cài đặt SOC toàn hệ thống
+/**
+ * Cài đặt do Super Admin chỉnh, áp cho MỌI người xem SOC (khác tuỳ chọn hiển thị cá nhân lưu ở trình duyệt). Thuỷ vân
+ * tắt chỉ bỏ lớp hình răn đe chụp màn hình; mã dấu vết + audit xem dữ liệu ở server vẫn giữ (QUYET_DINH Q41).
+ */
+export const SchemaCaiDatSoc = z.strictObject({
+  thuyVan: z.strictObject({
+    bat: z.boolean(),
+    /** Độ đậm tối thiểu ép cho mọi người ('nhe' = người xem tự chọn). */
+    mucToiThieu: z.enum(['nhe', 'chuan']),
+  }),
+  /** Ép che dữ liệu khi rời cửa sổ cho mọi người (bật = người xem không tắt được). */
+  epCheKhiRoi: z.boolean(),
+});
+export type CaiDatSoc = z.infer<typeof SchemaCaiDatSoc>;
+export const CAI_DAT_SOC_MAC_DINH: CaiDatSoc = { thuyVan: { bat: true, mucToiThieu: 'nhe' }, epCheKhiRoi: false };
+
+/** Dòng D1 soc_settings (key -> JSON) -> cài đặt đầy đủ; khoá thiếu / hỏng lấy mặc định từng phần. */
+export function docCaiDatSoc(dong: readonly { key: string; value: string }[]): CaiDatSoc {
+  const kq: CaiDatSoc = structuredClone(CAI_DAT_SOC_MAC_DINH);
+  for (const d of dong) {
+    let v: unknown;
+    try {
+      v = JSON.parse(d.value);
+    } catch {
+      continue;
+    }
+    if (d.key === 'thuyvan') {
+      const p = SchemaCaiDatSoc.shape.thuyVan.safeParse(v);
+      if (p.success) kq.thuyVan = p.data;
+    } else if (d.key === 'epchekhiroi' && typeof v === 'boolean') {
+      kq.epCheKhiRoi = v;
+    }
+  }
+  return kq;
+}
+
+/** Cài đặt -> các dòng D1 cần ghi (khoá chữ thường, GLOB '[a-z]*' ở migration 0007). */
+export function dongCaiDatSoc(c: CaiDatSoc): { key: string; value: string }[] {
+  return [
+    { key: 'thuyvan', value: JSON.stringify(c.thuyVan) },
+    { key: 'epchekhiroi', value: JSON.stringify(c.epCheKhiRoi) },
+  ];
 }
 
 // ---------------------------------------------------------------- realtime
