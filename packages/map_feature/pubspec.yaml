@@ -4,11 +4,14 @@ publish_to: none
 resolution: workspace
 environment:
   sdk: ^3.13.0
+  flutter: ">=3.38.0"
 dependencies:
   design_system:
   flutter:
     sdk: flutter
+  flutter_riverpod: ^3.4.3
   i18n:
+  maplibre_gl: ^0.27.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

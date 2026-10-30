@@ -18,7 +18,8 @@ done
 KHOA_DIR="$HOME/.config/la-ban/android"
 KEY_PROPS="${LA_BAN_KEY_PROPERTIES:-$KHOA_DIR/key.properties}"
 [ -f "$KEY_PROPS" ] || { echo "Thiếu khoá upload: $KEY_PROPS (xem QUYET_DINH Q34)" >&2; exit 1; }
-export PATH="$HOME/tools/flutter/bin:$HOME/tools/java/jdk/bin:$PATH" JAVA_HOME="$HOME/tools/java/jdk" ANDROID_HOME="$HOME/tools/android-sdk"
+# JDK 21: maplibre_gl 0.27 biên dịch Java 21 (QUYET_DINH Q39).
+export PATH="$HOME/tools/flutter/bin:$HOME/tools/java/jdk21/bin:$PATH" JAVA_HOME="$HOME/tools/java/jdk21" ANDROID_HOME="$HOME/tools/android-sdk"
 export GRADLE_USER_HOME="$HOME/tools/java/gradle-home"
 if [ -s "$HOME/.nvm/nvm.sh" ]; then set +u; . "$HOME/.nvm/nvm.sh"; nvm use >/dev/null; set -u; fi
 BT="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)"
