@@ -99,6 +99,10 @@ if [ "$CHE_DO" = day-du ]; then
 
   buoc "Quét bí mật"
   npx secretlint --secretlintignore .secretlintignore "**/*"
+  # secretlint không có luật JWT; gitleaks có thể chưa cài -> chặn JWT nguyên văn (header + payload JSON base64url) ở
+  # mọi tệp git theo dõi. Test cần JWT thì ghép lúc chạy (GitGuardian từng báo nhầm PR #21).
+  ! git grep -nIE 'eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}' -- . ':!2026*.md' \
+    || loi "có chuỗi JWT nguyên văn trong repo (máy quét bí mật sẽ báo) - ghép token lúc chạy"
   if command -v gitleaks >/dev/null; then gitleaks dir . --no-banner --redact -c .gitleaks.toml; else echo "(gitleaks chưa cài - bỏ qua, secretlint đã chạy)"; fi
 
   buoc "Lỗ hổng phụ thuộc"

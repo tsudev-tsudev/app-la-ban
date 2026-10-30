@@ -3,8 +3,9 @@ import 'package:test/test.dart';
 
 void main() {
   test('che JWT, Bearer, token dài, tọa độ chính xác', () {
-    const jwt =
-        'eyJhbGciOiJFUzI1NiJ9.eyJzdWIiOiIwMUpCOFoifQ.MEUCIQDx9aBcDeFgHiJk';
+    // JWT giả ghép lúc chạy: không để chuỗi dạng JWT nguyên văn trong repo
+    // (máy quét bí mật như GitGuardian báo nhầm).
+    final jwt = ['eyJ${'a' * 12}', 'eyJ${'b' * 12}', 'c' * 16].join('.');
     expect(cheNhatKy('token $jwt hết hạn'), 'token <jwt> hết hạn');
     expect(
       cheNhatKy('authorization: Bearer abc.def'),
