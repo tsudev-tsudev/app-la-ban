@@ -24,11 +24,19 @@ Viewer chỉ thấy dải IP (/24, /48) và không mở được chi tiết thi�
 
 ```bash
 cd workers/api && npx wrangler d1 execute la-ban --remote --command \
-  "INSERT INTO admin_users (id, email, role, created_at, created_by) VALUES (lower(hex(randomblob(16))), '<email>', 'super_admin', unixepoch()*1000, 'runbook')"
+  "INSERT INTO admin_users (id, email, role, created_at, created_by) VALUES (lower(hex(randomblob(16))), '<email đã chuẩn hoá: Gmail bỏ dấu chấm>', 'super_admin', unixepoch()*1000, 'runbook')"
 ```
 
 5. Mở trang SOC -> nhập email -> mã OTP gửi về mail -> **Tạo passkey** (vân tay / Windows Hello / khoá bảo mật).
    Passkey gắn với tên miền: passkey tạo ở prod không dùng được ở staging và ngược lại.
+
+## Không nhận được mã OTP
+
+Access KHÔNG gửi mã cho email không khớp policy nhưng vẫn hiện "A code has been emailed" (chống dò email). Hay gặp nhất:
+gõ Gmail khác dạng trong policy (`devnguyen...` vs `dev.nguyen...`). `access.mjs` đã đưa cả dạng ghi trong tệp lẫn dạng
+không chấm vào policy; dạng chấm khác thì thêm dòng vào `admin-emails.txt` rồi `--apply`. Worker tự chuẩn hoá Gmail
+(`chuanHoaEmail`) nên mọi dạng đều ra cùng một quản trị viên. Kiểm thêm thư mục Spam / Promotions; người gửi
+`noreply@notify.cloudflare.com`. Muốn bỏ hẳn OTP email: thêm IdP Google (cần OAuth client).
 
 ## Thêm người
 

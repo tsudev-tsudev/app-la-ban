@@ -5,6 +5,7 @@ import type { Hono } from 'hono';
 import { z } from 'zod';
 import { ghiAudit } from '../d1/audit';
 import type { MoiTruongHono, Ngu } from '../moi-truong';
+import { chuanHoaEmail } from '../thuan/access-jwt';
 import { phanTichBody } from '../thuan/dau-vao';
 import { taoUlid } from '../thuan/dinh-danh';
 import { LoiApi } from '../thuan/loi';
@@ -16,7 +17,8 @@ const SchemaDat = z.strictObject({
     .string()
     .trim()
     .toLowerCase()
-    .regex(/^[^\s@]{1,64}@[^\s@]{1,190}$/),
+    .regex(/^[^\s@]{1,64}@[^\s@]{1,190}$/)
+    .transform(chuanHoaEmail),
   vaiTro: z.enum(VAI_TRO),
   voHieu: z.boolean().optional(),
 });

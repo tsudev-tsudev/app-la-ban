@@ -77,10 +77,26 @@ export async function kiemJwtAccess(
   if (typeof c.nbf === 'number' && c.nbf - LECH_GIAY > p.bayGioGiay) throw new LoiJwtAccess('het-han');
   if (typeof c.iat === 'number' && c.iat - LECH_GIAY > p.bayGioGiay) throw new LoiJwtAccess('het-han');
 
-  const email = typeof c.email === 'string' && /^[^\s@]{1,64}@[^\s@]{1,190}$/.test(c.email) ? c.email.toLowerCase() : null;
+  const email = typeof c.email === 'string' && /^[^\s@]{1,64}@[^\s@]{1,190}$/.test(c.email) ? chuanHoaEmail(c.email) : null;
   const dichVu = !email && typeof c.common_name === 'string' && c.common_name.length <= 128 ? c.common_name : null;
   if (!email && !dichVu) throw new LoiJwtAccess('danh-tinh');
   return { email, dichVu, sub: typeof c.sub === 'string' ? c.sub : '', exp };
+}
+
+const MIEN_GMAIL = new Set(['gmail.com', 'googlemail.com']);
+
+/**
+ * Email chuẩn để tra vai trò / phiên / passkey: chữ thường; Gmail bỏ dấu chấm + phần `+nhãn` của tên và gộp googlemail.com
+ * (Gmail coi `a.b@gmail.com` = `ab@gmail.com` = `ab+x@gmail.com` cùng một hộp thư - người dùng gõ dạng nào cũng là một người).
+ */
+export function chuanHoaEmail(email: string): string {
+  const e = email.trim().toLowerCase();
+  const at = e.lastIndexOf('@');
+  if (at < 1) return e;
+  const mien = e.slice(at + 1);
+  if (!MIEN_GMAIL.has(mien)) return e;
+  const ten = e.slice(0, at).split('+')[0]?.replace(/\./g, '') ?? '';
+  return ten ? `${ten}@gmail.com` : e;
 }
 
 /** Danh sách cấu hình phân tách dấu phẩy -> mảng đã cắt khoảng trắng, bỏ rỗng. */
