@@ -27,3 +27,12 @@ export async function docChuoiAudit(db: D1Database): Promise<DongAudit[]> {
     .all<DongAudit>();
   return results;
 }
+
+/** Một lô chuỗi sau rowid [sau] (kiểm theo lô ở SOC, không nạp cả bảng vào bộ nhớ). */
+export async function docChuoiTu(db: D1Database, sau: number, soDong: number): Promise<(DongAudit & { so: number })[]> {
+  const { results } = await db
+    .prepare('SELECT rowid AS so, id, actor, action, target, before, after, ip, ts, hash_prev, hash_self FROM audit_logs WHERE rowid > ? ORDER BY rowid LIMIT ?')
+    .bind(sau, soDong)
+    .all<DongAudit & { so: number }>();
+  return results;
+}

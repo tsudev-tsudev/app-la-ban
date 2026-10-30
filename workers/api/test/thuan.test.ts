@@ -273,6 +273,8 @@ describe('don-dep (hạn lưu Spec §6.4)', () => {
     const ds = cauLenhDonDep(bayGio);
     expect(ds[0]).toEqual({ sql: 'DELETE FROM idempotency_keys WHERE het_han <= ?', thamSo: [bayGio] });
     expect(ds[1]?.thamSo).toEqual([bayGio - LUU_SU_KIEN_MS]);
+    expect(ds[2]).toMatchObject({ thamSo: [bayGio - LUU_IP_CHI_TIET_MS] });
+    expect(ds[2]?.sql).toMatch(/^UPDATE appeals SET contact = NULL, ip = NULL /);
     expect(cauChonIpCanRutGon(bayGio, 10).thamSo).toEqual([bayGio - LUU_IP_CHI_TIET_MS, 10]);
     const rg = cauLenhRutGonIp({ device_id: 'd', ip: '1.2.3.4', asn: null, country: 'VN', first_seen: 1, last_seen: 2, count: 3 }, '1.2.3.0/24');
     expect(rg[0]?.thamSo).toEqual(['d', '1.2.3.0/24', null, 'VN', 1, 2, 3]);

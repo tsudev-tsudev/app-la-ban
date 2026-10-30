@@ -9,12 +9,17 @@ export type CauLenh = { sql: string; thamSo: (string | number | null)[] };
 /**
  * - xoá idempotency_keys hết hạn;
  * - xoá security_events quá 180 ngày (bản tổng hợp 13 tháng ở Analytics Engine - S5);
- * - IP chi tiết quá 90 ngày của thiết bị KHÔNG có enforcement nào -> đánh dấu để Worker rút gọn (cần băm ở JS).
+ * - IP chi tiết quá 90 ngày của thiết bị KHÔNG có enforcement nào -> đánh dấu để Worker rút gọn (cần băm ở JS);
+ * - khiếu nại đã xử lý quá 90 ngày: xoá email liên hệ + IP người gửi (giữ nội dung + quyết định làm hồ sơ, S7c1).
  */
 export function cauLenhDonDep(bayGio: number): CauLenh[] {
   return [
     { sql: 'DELETE FROM idempotency_keys WHERE het_han <= ?', thamSo: [bayGio] },
     { sql: 'DELETE FROM security_events WHERE ts < ?', thamSo: [bayGio - LUU_SU_KIEN_MS] },
+    {
+      sql: "UPDATE appeals SET contact = NULL, ip = NULL WHERE status <> 'open' AND reviewed_at < ? AND (contact IS NOT NULL OR ip IS NOT NULL)",
+      thamSo: [bayGio - LUU_IP_CHI_TIET_MS],
+    },
   ];
 }
 

@@ -3,7 +3,7 @@
 // độ, thuỷ vân), khoá khi nhàn rỗi 15 phút (server cũng tự hết hạn - đây chỉ để màn hình không còn hiện dữ liệu). S7b: nhóm
 // Phản ứng (can thiệp, rule, cấu hình điểm), Cài đặt hệ thống (Super Admin) và thuỷ vân theo cài đặt toàn hệ thống.
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { goi, LoiSoc, type DsCanhBao, type DsThucThi, type Toi } from './api';
+import { goi, LoiSoc, type DsCanhBao, type DsKhieuNai, type DsThucThi, type Toi } from './api';
 import { BangLenh } from './giao-dien/BangLenh';
 import { BieuTuong } from './giao-dien/BieuTuong';
 import { HopThoai } from './giao-dien/HopThoai';
@@ -20,7 +20,9 @@ import { CauHinhNguyCo } from './trang/CauHinhNguyCo';
 import { ChiTiet } from './trang/ChiTiet';
 import { DangNhap } from './trang/DangNhap';
 import { DsThietBi } from './trang/DsThietBi';
+import { KhieuNai } from './trang/KhieuNai';
 import { Luat } from './trang/Luat';
+import { NhatKyAudit } from './trang/NhatKyAudit';
 import { QuanTriVien } from './trang/QuanTriVien';
 import { TaiKhoan } from './trang/TaiKhoan';
 import { TongQuan } from './trang/TongQuan';
@@ -36,6 +38,8 @@ const GO_TAT: Record<string, string> = {
   k: '#/tai-khoan',
   q: '#/quan-tri-vien',
   s: '#/cai-dat',
+  i: '#/khieu-nai',
+  a: '#/audit',
 };
 
 function useHash(): string {
@@ -216,6 +220,22 @@ export function App() {
     return () => clearInterval(hen);
   }, [coDuyet, duong]);
 
+  // Khiếu nại đang mở (S7c1) cho huy hiệu "Khiếu nại" - người xem được khiếu nại.
+  const coKhieuNai = tt.loai === 'vao' && tt.toi.quyen.includes('khieu-nai:xem');
+  const [soKhieuNai, datSoKhieuNai] = useState<number | null>(null);
+  const [lanDemKn, datLanDemKn] = useState(0);
+  useEffect(() => {
+    if (!coKhieuNai) return;
+    const nap = () =>
+      goi<DsKhieuNai>('/khieu-nai?limit=1', { nen: true })
+        .then((d) => datSoKhieuNai(d.dem.open ?? 0))
+        .catch(() => undefined);
+    void nap();
+    const hen = setInterval(nap, 60_000);
+    return () => clearInterval(hen);
+  }, [coKhieuNai, lanDemKn]);
+  const doiDemKn = useCallback(() => datLanDemKn((n) => n + 1), []);
+
   const di = useCallback((h: string) => {
     location.hash = h;
   }, []);
@@ -230,6 +250,7 @@ export function App() {
         { d: '/', nhan: t.tongQuan, bt: 'tong-quan' },
         { d: '/canh-bao', nhan: t.canhBao, bt: 'canh-bao', dem: soMo },
         { d: '/thiet-bi', nhan: t.thietBi, bt: 'thiet-bi' },
+        ...(quyen.includes('khieu-nai:xem') ? [{ d: '/khieu-nai', nhan: t.khieuNai, bt: 'khieu-nai', dem: soKhieuNai }] : []),
       ],
     },
     {
@@ -246,6 +267,7 @@ export function App() {
       nhan: t.nhomQuanTri,
       muc: [
         ...(quyen.includes('quan-tri-vien') ? [{ d: '/quan-tri-vien', nhan: t.quanTriVien, bt: 'quan-tri-vien' }] : []),
+        ...(quyen.includes('audit:xem') ? [{ d: '/audit', nhan: t.nhatKyAudit, bt: 'audit' }] : []),
         ...(quyen.includes('cai-dat-soc') ? [{ d: '/cai-dat', nhan: t.caiDatHeThong, bt: 'cai-dat' }] : []),
         { d: '/tai-khoan', nhan: t.taiKhoan, bt: 'tai-khoan' },
       ],
@@ -319,6 +341,12 @@ export function App() {
   } else if (duong === '/cau-hinh-nguy-co' && toi.quyen.includes('luat:xem')) {
     noiDung = <CauHinhNguyCo />;
     tieuDeTrang = t.cauHinhNguyCo;
+  } else if (duong === '/khieu-nai' && toi.quyen.includes('khieu-nai:xem')) {
+    noiDung = <KhieuNai doiDem={doiDemKn} />;
+    tieuDeTrang = t.khieuNai;
+  } else if (duong === '/audit' && toi.quyen.includes('audit:xem')) {
+    noiDung = <NhatKyAudit />;
+    tieuDeTrang = t.nhatKyAudit;
   } else if (duong === '/cai-dat' && toi.quyen.includes('cai-dat-soc')) {
     noiDung = <CaiDatHeThong daDoi={() => void napToi()} />;
     tieuDeTrang = t.caiDatHeThong;

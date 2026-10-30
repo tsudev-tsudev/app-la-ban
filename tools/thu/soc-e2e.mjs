@@ -149,6 +149,20 @@ if (quyen.includes('luat:xem')) {
   kiem('/cau-hinh-nguy-co (S7b)', (await goi('/cau-hinh-nguy-co')).status === 200);
 }
 kiem('/cai-dat-soc đúng quyền (S7b)', (await goi('/cai-dat-soc')).status === (quyen.includes('cai-dat-soc') ? 200 : 403));
+// S7c1: khiếu nại (đọc) + audit (xem + kiểm chuỗi - lượt kiểm thêm đúng một dòng audit:kiem, chấp nhận trên staging).
+if (quyen.includes('khieu-nai:xem')) {
+  const kn = await goi('/khieu-nai?trangThai=tat-ca&limit=20');
+  kiem('/khieu-nai (S7c1)', kn.status === 200 && Array.isArray(kn.du?.ds), kn.du ? `${kn.du.ds.length} khiếu nại, đang mở ${kn.du.dem.open ?? 0}` : String(kn.status));
+}
+if (quyen.includes('audit:xem')) {
+  const au = await goi('/audit?limit=5');
+  kiem('/audit (S7c1)', au.status === 200 && (au.du?.ds?.length ?? 0) >= 1, au.du ? `${au.du.ds.length} dòng, mới nhất ${au.du.ds[0]?.action}` : String(au.status));
+  const t2 = Date.now();
+  const ke = await goi('/audit/kiem', {});
+  kiem('/audit/kiem chuỗi nguyên vẹn (S7c1)', ke.status === 200 && ke.du?.nguyenVen === true, ke.du ? `${ke.du.soDongDung} dòng, Worker ${ke.du.ms} ms, khứ hồi ${Date.now() - t2} ms` : String(ke.status));
+} else {
+  kiem('/audit đúng quyền (S7c1)', (await goi('/audit')).status === 403);
+}
 kiem('CSRF: thiếu x-soc -> 403', (await fetch(`${GOC}/api/phien/bat-dau`, { method: 'POST', headers: tieuDe({ 'content-type': 'application/json' }), body: '{}' })).status === 403);
 
 const ws = new WebSocket(`${GOC.replace('https', 'wss')}/api/ws`, { headers: tieuDe() });

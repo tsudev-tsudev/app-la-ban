@@ -43,6 +43,9 @@ export type Env = {
   /** Cảnh báo Telegram (S7a, `wrangler secret`): token bot + chat id. Thiếu một trong hai -> không gửi. */
   TELEGRAM_BOT_TOKEN?: string;
   TELEGRAM_CHAT_ID?: string;
+  /** Khiếu nại (S7c1): bí mật Turnstile (`wrangler secret`; thiếu -> 503) + hostname hợp lệ (dấu phẩy, rỗng = không kiểm). */
+  TURNSTILE_SECRET?: string;
+  TURNSTILE_TEN_MIEN?: string;
 };
 
 export type BienYeuCau = {

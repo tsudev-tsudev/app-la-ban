@@ -22,6 +22,10 @@ export const QUYEN = {
   'luat:sua': 'security_admin',
   'can-thiep:duyet': 'security_admin',
   'cau-hinh-nguy-co': 'security_admin',
+  // S7c1: khiếu nại (xem kèm email liên hệ = PII -> analyst; quyết định gỡ chặn -> responder), xem + kiểm chuỗi audit.
+  'khieu-nai:xem': 'analyst',
+  'khieu-nai:xu-ly': 'responder',
+  'audit:xem': 'security_admin',
   'quan-tri-vien': 'super_admin',
   'cai-dat-soc': 'super_admin',
 } as const satisfies Record<string, VaiTro>;

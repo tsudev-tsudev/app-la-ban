@@ -66,12 +66,19 @@ beforeAll(async () => {
       ACCESS_DICH_VU: 'svc-thu.access',
       TELEGRAM_BOT_TOKEN: '1:thu',
       TELEGRAM_CHAT_ID: '-100',
+      TURNSTILE_SECRET: 'bi-mat-thu',
+      TURNSTILE_TEN_MIEN: 'compass.tsudev.com',
     },
     outboundService: async (req) => {
       const u = new URL(req.url);
       if (u.hostname === 'api.telegram.org') {
         tinTelegram.push((await req.json()) as { chat_id: string; text: string });
         return Response.json({ ok: true });
+      }
+      if (u.hostname === 'challenges.cloudflare.com') {
+        const f = await req.formData();
+        const dat = f.get('secret') === 'bi-mat-thu' && f.get('response') === 'dat';
+        return Response.json(dat ? { success: true, hostname: 'compass.tsudev.com', action: 'khieu-nai' } : { success: false, 'error-codes': ['invalid-input-response'] });
       }
       return u.pathname === '/cdn-cgi/access/certs' ? access.jwks() : new Response('x', { status: 404 });
     },
@@ -481,5 +488,87 @@ describe('S7b: rule + can thiệp + four-eyes + cài đặt SOC', () => {
     expect((await goi('/toi', { jwt: v.jwt, cookie: v.cookie })).json.caiDat).toEqual(caiDat);
     const doc = await goi('/cai-dat-soc', { jwt: sa.jwt, cookie: sa.cookie });
     expect((doc.json.lichSu as { actor: string }[])[0]?.actor).toBe('sa9@thu.vn');
+  });
+});
+
+describe('S7c1: khiếu nại + audit', () => {
+  const TB3 = '01JTB000000000000000K7QZ1A';
+  let soIp = 1;
+  const guiKn = async (body: Record<string, unknown>, origin = 'https://compass.tsudev.com') => {
+    const res = await mf.dispatchFetch('https://compass-api.tsudev.com/v1/khieu-nai', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', origin, 'cf-connecting-ip': `198.18.0.${soIp++}` },
+      body: JSON.stringify({ ngonNgu: 'vi', turnstile: 'dat', noiDung: 'Tôi không root máy, xin xem xét lại giúp.', ...body }),
+    });
+    return { status: res.status, json: (await res.json().catch(() => ({}))) as Record<string, unknown> };
+  };
+
+  it('form công khai: Turnstile + REF; chỉ thiết bị bị hạn chế; một khiếu nại đang mở', async () => {
+    const bayGio = Date.now();
+    await db.prepare("INSERT INTO devices (id, installation_id_hash, platform, model, first_seen, last_seen, risk_score) VALUES (?, 'h-s7c', 'android', 'Pixel', 1, ?, 75)").bind(TB3, bayGio).run();
+    const ref = 'ref-0000k-7qz1a';
+    expect((await guiKn({ ref })).json.code).toBe('ref-khong-thay');
+    await db.prepare("UPDATE devices SET status = 'banned' WHERE id = ?").bind(TB3).run();
+    await db
+      .prepare("INSERT INTO enforcements (id, target_type, target_value, action, reason, created_by, created_at, expires_at, source) VALUES ('E-S7C-1', 'device', ?, 'ban', 'rule R-001', 'engine', ?, ?, 'auto')")
+      .bind(TB3, bayGio, bayGio + 86400_000)
+      .run();
+    expect((await guiKn({ ref, turnstile: 'sai' })).status).toBe(403);
+    expect((await guiKn({ ref }, 'https://gia.vn')).status).toBe(403);
+    expect((await guiKn({ ref: 'REF-00000-UUUUU' })).status).toBe(422);
+    const ok = await guiKn({ ref, lienHe: 'nguoi@dung.vn' });
+    expect(ok.status).toBe(201);
+    expect((await guiKn({ ref })).json.code).toBe('da-co-khieu-nai');
+    expect(await db.prepare('SELECT enforcement_id, contact, lang, status FROM appeals WHERE device_id = ?').bind(TB3).first()).toEqual({
+      enforcement_id: 'E-S7C-1',
+      contact: 'nguoi@dung.vn',
+      lang: 'vi',
+      status: 'open',
+    });
+  });
+
+  it('SOC: analyst xem, không quyết; responder chấp nhận -> gỡ chặn + điểm 0 + audit; quyết lại 409', async () => {
+    await themQt('an8@thu.vn', 'analyst');
+    const an = await vaoSoc('an8@thu.vn');
+    const ds = await goi('/khieu-nai', { jwt: an.jwt, cookie: an.cookie });
+    expect(ds.status).toBe(200);
+    const kn = (ds.json.ds as { id: string; ref: string; e_action: string; device_status: string }[]).find((x) => x.ref === 'REF-0000K-7QZ1A');
+    expect(kn).toMatchObject({ e_action: 'ban', device_status: 'banned' });
+    const body = { id: kn?.id, quyet: 'chap-nhan', ghiChu: 'Đã kiểm: không có dấu hiệu root' };
+    expect((await goi('/khieu-nai/quyet', { jwt: an.jwt, cookie: an.cookie, body })).status).toBe(403);
+    await themQt('re8@thu.vn', 'responder');
+    const re = await vaoSoc('re8@thu.vn');
+    expect((await goi('/khieu-nai/quyet', { jwt: re.jwt, cookie: re.cookie, body: { ...body, ghiChu: 'ngắn' } })).status).toBe(422);
+    const q = await goi('/khieu-nai/quyet', { jwt: re.jwt, cookie: re.cookie, body });
+    expect(q.json).toEqual({ ok: true, goChan: 1, trangThaiThietBi: 'clean' });
+    expect(await db.prepare('SELECT risk_score, status FROM devices WHERE id = ?').bind(TB3).first()).toEqual({ risk_score: 0, status: 'clean' });
+    expect((await goi('/khieu-nai/quyet', { jwt: re.jwt, cookie: re.cookie, body: { ...body, quyet: 'tu-choi' } })).json.code).toBe('da-quyet');
+    expect((await goi('/khieu-nai?trangThai=approved', { jwt: an.jwt, cookie: an.cookie })).json.ds).toHaveLength(1);
+    const a = await db.prepare("SELECT action FROM audit_logs WHERE actor = 're8@thu.vn' AND action NOT LIKE 'passkey:%' ORDER BY rowid").all();
+    expect(a.results.map((x) => (x as { action: string }).action)).toEqual(['can-thiep:go-chan', 'khieu-nai:chap-nhan']);
+  });
+
+  it('audit: chỉ security_admin; lọc + phân trang; sửa tay (gỡ trigger) bị phát hiện đúng dòng', async () => {
+    await themQt('sec8@thu.vn', 'security_admin');
+    const s = await vaoSoc('sec8@thu.vn');
+    await themQt('re9@thu.vn', 'responder');
+    const re = await vaoSoc('re9@thu.vn');
+    expect((await goi('/audit', { jwt: re.jwt, cookie: re.cookie })).status).toBe(403);
+    const t1 = await goi('/audit?limit=2', { jwt: s.jwt, cookie: s.cookie });
+    expect(t1.status).toBe(200);
+    expect(t1.json.ds).toHaveLength(2);
+    const t2 = await goi(`/audit?limit=2&truoc=${String(t1.json.tiepTheo)}`, { jwt: s.jwt, cookie: s.cookie });
+    expect((t2.json.ds as { so: number }[])[0]?.so).toBeLessThan((t1.json.ds as { so: number }[])[1]?.so ?? 0);
+    const loc = await goi('/audit?hanhDong=khieu-nai', { jwt: s.jwt, cookie: s.cookie });
+    expect((loc.json.ds as { action: string; after: { goChan: number } }[])[0]).toMatchObject({ action: 'khieu-nai:chap-nhan', after: { goChan: 1 } });
+
+    const k1 = await goi('/audit/kiem', { jwt: s.jwt, cookie: s.cookie, body: {} });
+    expect(k1.json).toMatchObject({ nguyenVen: true, dongLoi: null });
+    const sua = await db.prepare("SELECT rowid AS so, id FROM audit_logs WHERE action = 'khieu-nai:chap-nhan'").first<{ so: number; id: string }>();
+    await db.prepare('DROP TRIGGER audit_logs_khong_sua').run();
+    await db.prepare("UPDATE audit_logs SET actor = 'ke-gian@thu.vn' WHERE id = ?").bind(sua?.id).run();
+    const k2 = await goi('/audit/kiem', { jwt: s.jwt, cookie: s.cookie, body: {} });
+    expect(k2.json).toMatchObject({ nguyenVen: false, dongLoi: { so: sua?.so, id: sua?.id } });
+    expect(k2.json.soDongDung).toBe((sua?.so ?? 0) - 1);
   });
 });

@@ -86,7 +86,30 @@ export type NoiDung = {
   huong: { tieuDe: string; moTa: string; muc: (Muc & { icon: Icon; buoc?: string[] })[] };
   rieng: { capNhat: string; moTa: string; muc: Muc[] };
   khoan: { capNhat: string; moTa: string; muc: Muc[] };
-  khieu: { moTa: string; buoc: Muc[]; nutEmail: string; chuDeEmail: string; thanEmail: string; luuY: string };
+  khieu: {
+    moTa: string;
+    buoc: Muc[];
+    nutEmail: string;
+    chuDeEmail: string;
+    thanEmail: string;
+    luuY: string;
+    /** S7c1: form gửi thẳng (Turnstile). */
+    form: {
+      tieuDe: string;
+      ref: string;
+      refGoiY: string;
+      noiDung: string;
+      noiDungGoiY: string;
+      lienHe: string;
+      lienHeGoiY: string;
+      gui: string;
+      dangGui: string;
+      xong: string;
+      canJs: string;
+      hoacEmail: string;
+      loi: Record<'ref-loi' | 'ref-khong-thay' | 'da-co-khieu-nai' | 'turnstile' | 'qua-nhieu' | 'du-lieu' | 'chung' | 'chua-xac-minh', string>;
+    };
+  };
   loi404: { tieuDe: string; moTa: string; veTrangChu: string };
   /** Trang link chia sẻ điểm /w/<token>. {m}: số mét đã định dạng. */
   diem: {
@@ -247,16 +270,16 @@ const vi: NoiDung = {
     ],
   },
   rieng: {
-    capNhat: 'Cập nhật: 30/10/2026 · Bản dành cho giai đoạn thử nghiệm',
+    capNhat: 'Cập nhật: 31/10/2026 · Bản dành cho giai đoạn thử nghiệm',
     moTa: 'Chính sách này giải thích cách ứng dụng La bàn và website compass.tsudev.com (do TsuDev vận hành) xử lý dữ liệu cá nhân theo Nghị định 13/2023/NĐ-CP.',
     muc: [
       { tieuDe: '1. Dữ liệu trên máy của bạn', noiDung: 'Điểm mốc, cài đặt và lịch sử được lưu trong cơ sở dữ liệu mã hoá trên máy, khoá bảo vệ bởi Android Keystore. Dữ liệu này không gửi về máy chủ và không nằm trong bản sao lưu đám mây.' },
       { tieuDe: '2. Vị trí', noiDung: 'Vị trí chỉ xử lý trên máy để tính bắc thực, toạ độ và dẫn đường; không gửi lên máy chủ trừ khi bạn chủ động chia sẻ một điểm mốc.' },
-      { tieuDe: '3. Dữ liệu bảo mật kỹ thuật', noiDung: 'Để chống gian lận và bản bị sửa đổi, các phiên bản có kết nối máy chủ sẽ gửi: mã cài đặt ngẫu nhiên (không phải định danh phần cứng), loại máy, phiên bản Android và ứng dụng, kết quả xác thực thiết bị của Google, tín hiệu môi trường (ví dụ máy đã root, trình gỡ lỗi, công cụ can thiệp, nguồn cài đặt) và địa chỉ IP. Tín hiệu chỉ dùng để đánh giá rủi ro; quyết định hạn chế do máy chủ đưa ra và luôn kèm mã REF để khiếu nại. Từ bản 0.1.0-beta.7 ứng dụng gửi các dữ liệu này.' },
+      { tieuDe: '3. Dữ liệu bảo mật kỹ thuật', noiDung: 'Để chống gian lận và bản bị sửa đổi, các phiên bản có kết nối máy chủ sẽ gửi: mã cài đặt ngẫu nhiên (không phải định danh phần cứng), loại máy, phiên bản Android và ứng dụng, kết quả xác thực thiết bị của Google, tín hiệu môi trường (ví dụ máy đã root, trình gỡ lỗi, công cụ can thiệp, nguồn cài đặt) và địa chỉ IP. Tín hiệu chỉ dùng để đánh giá rủi ro; quyết định hạn chế do máy chủ đưa ra và luôn kèm mã REF để khiếu nại. Từ bản 0.1.0-beta.7 ứng dụng gửi các dữ liệu này. Ứng dụng chỉ gửi khi bạn bấm "Đồng ý và bắt đầu" ở màn giới thiệu; chọn "Chỉ dùng ngoại tuyến" thì không gửi gì, la bàn, bản đồ đã tải và điểm mốc vẫn dùng đủ.' },
       { tieuDe: '4. Thời hạn lưu', noiDung: 'Sự kiện bảo mật chi tiết lưu 180 ngày; địa chỉ IP chi tiết được rút gọn sau 90 ngày nếu không liên quan vi phạm; nhật ký kiểm toán lưu 24 tháng.' },
-      { tieuDe: '5. Không bán, không quảng cáo theo dõi', noiDung: 'Chúng tôi không bán dữ liệu và không dùng dữ liệu để quảng cáo theo dõi. Nhà cung cấp hạ tầng: Cloudflare (máy chủ, lưu trữ), Google (xác thực thiết bị). Thư viện bảo mật freeRASP của Talsec (Cộng hoà Séc) chạy trong ứng dụng và gửi về Talsec thông tin kỹ thuật về môi trường (loại máy, phiên bản hệ điều hành và ứng dụng, tên gói, kết quả kiểm tra bảo mật) để thống kê mối đe doạ; không gồm vị trí, điểm mốc hay nội dung của bạn.' },
-      { tieuDe: '6. Quyền của bạn', noiDung: 'Bạn có quyền được biết, truy cập, chỉnh sửa, xoá, hạn chế xử lý, rút lại đồng ý và khiếu nại. Xoá ứng dụng sẽ xoá toàn bộ dữ liệu trên máy. Gửi yêu cầu tới privacy@tsudev.com - chúng tôi phản hồi trong 72 giờ làm việc.' },
-      { tieuDe: '7. Website', noiDung: 'compass.tsudev.com là trang tĩnh: không cookie theo dõi, không công cụ phân tích bên thứ ba. Cloudflare có thể ghi nhật ký kỹ thuật (IP, thời điểm) để chống tấn công. Trang có lớp chống sao chép nội dung; khi phát hiện công cụ nhà phát triển, trang gửi một tín hiệu bảo mật gồm địa chỉ IP, đường dẫn trang và thời điểm, lưu như sự kiện bảo mật ở mục 4.' },
+      { tieuDe: '5. Không bán, không quảng cáo theo dõi', noiDung: 'Chúng tôi không bán dữ liệu và không dùng dữ liệu để quảng cáo theo dõi. Nhà cung cấp hạ tầng: Cloudflare (máy chủ, lưu trữ, xác minh chống bot Turnstile ở biểu mẫu khiếu nại), Google (xác thực thiết bị). Thư viện bảo mật freeRASP của Talsec (Cộng hoà Séc) chạy trong ứng dụng và gửi về Talsec thông tin kỹ thuật về môi trường (loại máy, phiên bản hệ điều hành và ứng dụng, tên gói, kết quả kiểm tra bảo mật) để thống kê mối đe doạ; không gồm vị trí, điểm mốc hay nội dung của bạn.' },
+      { tieuDe: '6. Quyền của bạn', noiDung: 'Bạn có quyền được biết, truy cập, chỉnh sửa, xoá, hạn chế xử lý, rút lại đồng ý và khiếu nại. Trong ứng dụng, mục Cài đặt > Quyền riêng tư cho phép rút hoặc cấp lại đồng ý, xuất dữ liệu của bạn ra tệp JSON và xoá toàn bộ dữ liệu trên máy; xoá ứng dụng cũng xoá toàn bộ dữ liệu trên máy. Dữ liệu bảo mật phía máy chủ được xoá theo yêu cầu gửi tới privacy@tsudev.com (kèm mã thiết bị hiển thị ở màn đó) - chúng tôi phản hồi trong 72 giờ làm việc.' },
+      { tieuDe: '7. Website', noiDung: 'compass.tsudev.com là trang tĩnh: không cookie theo dõi, không công cụ phân tích bên thứ ba. Cloudflare có thể ghi nhật ký kỹ thuật (IP, thời điểm) để chống tấn công. Trang có lớp chống sao chép nội dung; khi phát hiện công cụ nhà phát triển, trang gửi một tín hiệu bảo mật gồm địa chỉ IP, đường dẫn trang và thời điểm, lưu như sự kiện bảo mật ở mục 4. Biểu mẫu khiếu nại nhận mã REF, mô tả, email (nếu bạn điền) và địa chỉ IP người gửi để xử lý và chống lạm dụng; email và IP được xoá 90 ngày sau khi khiếu nại có kết quả.' },
       { tieuDe: '8. Trẻ em', noiDung: 'Ứng dụng dành cho người từ 13 tuổi trở lên.' },
       { tieuDe: '9. Liên hệ', noiDung: 'TsuDev - privacy@tsudev.com. Báo lỗ hổng bảo mật: security@tsudev.com.' },
     ],
@@ -278,13 +301,37 @@ const vi: NoiDung = {
     moTa: 'Nếu ứng dụng báo thiết bị của bạn bị hạn chế và hiển thị mã REF, bạn có thể khiếu nại. Chúng tôi xem xét thủ công, không tự động từ chối.',
     buoc: [
       { tieuDe: 'Ghi lại mã REF', noiDung: 'Mã dạng REF-XXXXXX hiển thị trên màn thông báo của ứng dụng.' },
-      { tieuDe: 'Gửi email', noiDung: 'Bấm nút bên dưới, điền mã REF và mô tả ngắn (ví dụ: máy đã root để phát triển, dùng VPN công ty...).' },
+      { tieuDe: 'Điền biểu mẫu', noiDung: 'Nhập mã REF và mô tả ngắn (ví dụ: máy đã root để phát triển, dùng VPN công ty...). Email để nhận trả lời là tuỳ chọn.' },
       { tieuDe: 'Nhận phản hồi', noiDung: 'Chúng tôi phản hồi trong 3 ngày làm việc. Nếu hạn chế là nhầm, thiết bị được gỡ hạn chế và khôi phục điểm uy tín.' },
     ],
     nutEmail: 'Gửi khiếu nại qua email',
     chuDeEmail: 'Khieu nai La ban REF-',
     thanEmail: 'Mã REF: REF-\nMô tả:\n',
     luuY: 'Đừng gửi mật khẩu hay thông tin nhạy cảm. Chúng tôi không bao giờ yêu cầu bạn cài thêm ứng dụng khác.',
+    form: {
+      tieuDe: 'Gửi khiếu nại',
+      ref: 'Mã REF',
+      refGoiY: 'REF-XXXXX-XXXXX',
+      noiDung: 'Mô tả (20 - 2000 ký tự)',
+      noiDungGoiY: 'Ví dụ: tôi dùng máy đã mở khoá bootloader để thử ROM, không sửa ứng dụng.',
+      lienHe: 'Email nhận trả lời (tuỳ chọn)',
+      lienHeGoiY: 'ban@vi-du.vn',
+      gui: 'Gửi khiếu nại',
+      dangGui: 'Đang gửi…',
+      xong: 'Đã nhận khiếu nại. Chúng tôi xem xét trong 3 ngày làm việc; nếu được chấp nhận, mở lại ứng dụng là thiết bị hết hạn chế.',
+      canJs: 'Biểu mẫu cần JavaScript để xác minh chống bot. Bạn vẫn có thể gửi qua email.',
+      hoacEmail: 'Hoặc gửi qua email',
+      loi: {
+        'ref-loi': 'Mã REF chưa đúng dạng - kiểm lại 10 ký tự sau "REF-".',
+        'ref-khong-thay': 'Không tìm thấy thiết bị đang bị hạn chế với mã REF này. Kiểm lại mã trên màn thông báo của ứng dụng.',
+        'da-co-khieu-nai': 'Thiết bị này đã có một khiếu nại đang chờ xử lý.',
+        turnstile: 'Xác minh chống bot chưa đạt. Thử lại ô xác minh rồi gửi lần nữa.',
+        'qua-nhieu': 'Bạn gửi quá nhiều lần. Vui lòng thử lại sau một giờ.',
+        'du-lieu': 'Nội dung chưa hợp lệ - mô tả tối thiểu 20 ký tự, email đúng dạng.',
+        chung: 'Không gửi được lúc này. Vui lòng thử lại sau hoặc gửi qua email.',
+        'chua-xac-minh': 'Hãy hoàn tất ô xác minh chống bot trước khi gửi.',
+      },
+    },
   },
   loi404: { tieuDe: 'Không tìm thấy trang', moTa: 'Kim la bàn chưa tìm ra đường tới trang này.', veTrangChu: 'Về trang chủ' },
   diem: {
@@ -445,16 +492,16 @@ const en: NoiDung = {
     ],
   },
   rieng: {
-    capNhat: 'Updated: 30 October 2026 · Beta-stage policy',
+    capNhat: 'Updated: 31 October 2026 · Beta-stage policy',
     moTa: 'This policy explains how the La bàn app and compass.tsudev.com (operated by TsuDev) process personal data under Vietnam Decree 13/2023/ND-CP.',
     muc: [
       { tieuDe: '1. Data on your device', noiDung: 'Waypoints, settings and history are stored in an encrypted database on your device with a key protected by Android Keystore. This data is not sent to our servers and is excluded from cloud backups.' },
       { tieuDe: '2. Location', noiDung: 'Location is processed on device for true north, coordinates and navigation; it is not sent to our servers unless you choose to share a waypoint.' },
-      { tieuDe: '3. Technical security data', noiDung: 'To prevent fraud and modified builds, versions that connect to our server will send: a random installation ID (not a hardware identifier), device model, Android and app version, Google device attestation results, environment signals (for example root, debugger, tampering tools, install source) and IP address. Signals are only used to assess risk; restrictions are decided by our server and always come with a REF code you can appeal. The app sends this data starting with version 0.1.0-beta.7.' },
+      { tieuDe: '3. Technical security data', noiDung: 'To prevent fraud and modified builds, versions that connect to our server will send: a random installation ID (not a hardware identifier), device model, Android and app version, Google device attestation results, environment signals (for example root, debugger, tampering tools, install source) and IP address. Signals are only used to assess risk; restrictions are decided by our server and always come with a REF code you can appeal. The app sends this data starting with version 0.1.0-beta.7, and only after you tap "Agree and start" on the welcome screen; choosing "Offline only" sends nothing while the compass, downloaded maps and waypoints keep working.' },
       { tieuDe: '4. Retention', noiDung: 'Detailed security events are kept for 180 days; detailed IP addresses are truncated after 90 days unless tied to a violation; audit logs are kept for 24 months.' },
-      { tieuDe: '5. No selling, no tracking ads', noiDung: 'We do not sell data or use it for tracking ads. Infrastructure providers: Cloudflare (servers, storage), Google (device attestation). The freeRASP security library by Talsec (Czech Republic) runs inside the app and sends Talsec technical environment data (device model, OS and app version, package name, security check results) for threat statistics; it does not include your location, waypoints or content.' },
-      { tieuDe: '6. Your rights', noiDung: 'You may know, access, correct, delete, restrict processing, withdraw consent and complain. Uninstalling the app deletes all on-device data. Email privacy@tsudev.com - we reply within 72 business hours.' },
-      { tieuDe: '7. Website', noiDung: 'compass.tsudev.com is a static site: no tracking cookies and no third-party analytics. Cloudflare may log technical data (IP, time) to stop attacks. The site has a content-copy protection layer; when developer tools are detected it sends one security signal containing your IP address, the page path and time, kept as a security event under section 4.' },
+      { tieuDe: '5. No selling, no tracking ads', noiDung: 'We do not sell data or use it for tracking ads. Infrastructure providers: Cloudflare (servers, storage, Turnstile anti-bot check on the appeal form), Google (device attestation). The freeRASP security library by Talsec (Czech Republic) runs inside the app and sends Talsec technical environment data (device model, OS and app version, package name, security check results) for threat statistics; it does not include your location, waypoints or content.' },
+      { tieuDe: '6. Your rights', noiDung: 'You may know, access, correct, delete, restrict processing, withdraw consent and complain. In the app, Settings > Privacy lets you withdraw or grant consent, export your data to a JSON file and erase all on-device data; uninstalling the app also deletes all on-device data. Server-side security data is deleted on request to privacy@tsudev.com (include the device code shown on that screen) - we reply within 72 business hours.' },
+      { tieuDe: '7. Website', noiDung: 'compass.tsudev.com is a static site: no tracking cookies and no third-party analytics. Cloudflare may log technical data (IP, time) to stop attacks. The site has a content-copy protection layer; when developer tools are detected it sends one security signal containing your IP address, the page path and time, kept as a security event under section 4. The appeal form receives your REF code, description, email (if provided) and the sender IP address to handle the appeal and prevent abuse; the email and IP are deleted 90 days after the appeal is decided.' },
       { tieuDe: '8. Children', noiDung: 'The app is intended for users aged 13 and over.' },
       { tieuDe: '9. Contact', noiDung: 'TsuDev - privacy@tsudev.com. Report security issues: security@tsudev.com.' },
     ],
@@ -476,13 +523,37 @@ const en: NoiDung = {
     moTa: 'If the app says your device is restricted and shows a REF code, you can appeal. Appeals are reviewed by a person, never auto-rejected.',
     buoc: [
       { tieuDe: 'Note your REF code', noiDung: 'It looks like REF-XXXXXX and appears on the app\'s notice screen.' },
-      { tieuDe: 'Send an email', noiDung: 'Tap the button below, fill in your REF code and a short description (for example: rooted for development, company VPN...).' },
+      { tieuDe: 'Fill in the form', noiDung: 'Enter your REF code and a short description (for example: rooted for development, company VPN...). A reply email is optional.' },
       { tieuDe: 'Get a reply', noiDung: 'We reply within 3 business days. If the restriction was a mistake, it is lifted and your reputation score restored.' },
     ],
     nutEmail: 'Send appeal by email',
     chuDeEmail: 'La ban appeal REF-',
     thanEmail: 'REF code: REF-\nDescription:\n',
     luuY: 'Never send passwords or sensitive information. We will never ask you to install another app.',
+    form: {
+      tieuDe: 'Send an appeal',
+      ref: 'REF code',
+      refGoiY: 'REF-XXXXX-XXXXX',
+      noiDung: 'Description (20 - 2000 characters)',
+      noiDungGoiY: 'For example: my bootloader is unlocked to test ROMs, I did not modify the app.',
+      lienHe: 'Reply email (optional)',
+      lienHeGoiY: 'you@example.com',
+      gui: 'Send appeal',
+      dangGui: 'Sending…',
+      xong: 'Appeal received. We review it within 3 business days; if accepted, reopen the app and the restriction is gone.',
+      canJs: 'The form needs JavaScript for the anti-bot check. You can still appeal by email.',
+      hoacEmail: 'Or send by email',
+      loi: {
+        'ref-loi': 'The REF code is not in the right format - check the 10 characters after "REF-".',
+        'ref-khong-thay': 'No restricted device matches this REF code. Check the code on the app\'s notice screen.',
+        'da-co-khieu-nai': 'This device already has an appeal waiting for review.',
+        turnstile: 'The anti-bot check did not pass. Retry the check box and send again.',
+        'qua-nhieu': 'Too many attempts. Please try again in an hour.',
+        'du-lieu': 'Please check your input - at least 20 characters of description and a valid email.',
+        chung: 'Could not send right now. Please try again later or appeal by email.',
+        'chua-xac-minh': 'Please complete the anti-bot check before sending.',
+      },
+    },
   },
   loi404: { tieuDe: 'Page not found', moTa: 'Our compass could not find a way to this page.', veTrangChu: 'Back to home' },
   diem: {

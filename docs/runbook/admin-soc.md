@@ -88,3 +88,22 @@ bằng khoá phần mềm trong script thử (`tools/thu/soc-e2e.mjs`). Prod KH�
   Attack); nhiều đích = yêu cầu four-eyes (hết hạn 24 giờ). Người tạo không tự duyệt được (Worker + CHECK D1).
 - **Under Attack** (`g n`): bật khi bị tấn công diện rộng - đề xuất chặn dải có hiệu lực ngay. Tắt ngay khi qua đợt.
 - Kẹt yêu cầu four-eyes (người duyệt vắng): người tạo huỷ yêu cầu rồi chặn từng đích (mỗi đích một thao tác có audit).
+
+## S7c1 - khiếu nại + nhật ký kiểm toán (QUYET_DINH Q44)
+
+- **Turnstile (một lần, người dùng làm - token trong `cf.env` chỉ có quyền ĐỌC Turnstile)**: Cloudflare dashboard ->
+  Turnstile -> Add widget `la-ban-khieu-nai`, chế độ Managed, hostname `compass.tsudev.com`, `la-ban-landing.pages.dev`,
+  `localhost`. Site key (công khai) -> `TURNSTILE_SITE_KEY` trong `web/landing/src/lib/khieu-nai.ts` (PR + deploy landing).
+  Secret -> `cd workers/api && npx wrangler secret put TURNSTILE_SECRET` (prod). Staging dùng secret THỬ của Cloudflare
+  `1x0000000000000000000000000000000AA` (luôn đạt) - `npx wrangler secret put TURNSTILE_SECRET --env staging`.
+  Thiếu secret -> `/v1/khieu-nai` trả 503; thiếu site key -> trang khiếu nại chỉ có nút email (như trước S7c1).
+- **Khiếu nại** (`g i`, analyst xem, responder quyết): form landing gửi mã REF + mô tả + email tuỳ chọn; Worker kiểm
+  Turnstile (`siteverify`, hostname theo `TURNSTILE_TEN_MIEN`), chỉ nhận cho thiết bị đang `restricted` / `banned`, mỗi
+  thiết bị một khiếu nại đang mở. **Chấp nhận** = gỡ mọi chặn thiết bị còn hiệu lực + điểm rủi ro về 0 (chặn IP / dải
+  không gỡ - xử lý ở Can thiệp); **từ chối** giữ nguyên. Cả hai cần lý do + passkey, ghi audit. Trả lời người dùng qua
+  email liên hệ (nếu có) bằng hộp thư security@ - SOC chưa tự gửi email.
+- **Nhật ký kiểm toán** (`g a`, Security Admin trở lên): lọc người làm / tiền tố hành động; nút **Kiểm chuỗi băm** chạy
+  lại toàn chuỗi ở Worker theo lô 2000 dòng. Báo `CHUỖI BỊ SỬA` ở dòng #N = có người sửa D1 ngoài API (đã gỡ trigger):
+  KHÔNG sửa lại tay; chụp kết quả, xuất bản sao D1 (`npx wrangler d1 export la-ban --remote --output=...`) ra ngoài repo,
+  báo Super Admin khác, xem `wrangler` / Cloudflare audit log của tài khoản để tìm ai có quyền D1. Lượt kiểm nào cũng
+  thành một dòng `audit:kiem`. Giới hạn: xoá dòng CUỐI chuỗi chưa phát hiện được (mốc neo ngoài D1 làm ở S10).

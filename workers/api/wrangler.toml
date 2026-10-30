@@ -26,6 +26,8 @@ PI_CHUNG_CHI = "cf09e7243bca9ab5d29dc788bbd31ba71efaebab7d69583d98bbfc5184a7f6bd
 ACCESS_TEAM = "purple-cake-8f2a.cloudflareaccess.com"
 ACCESS_AUD = "f1dec48a71e9b10406ae9534bea272e055a6bcf58a302e8d9324286976641ed3"
 SOC_NGUON = "https://compass-admin.tsudev.com"
+# S7c1 khiếu nại: hostname trang có widget Turnstile (bí mật: `wrangler secret put TURNSTILE_SECRET`).
+TURNSTILE_TEN_MIEN = "compass.tsudev.com"
 
 [[d1_databases]]
 binding = "DB"
@@ -104,6 +106,8 @@ PI_CHUNG_CHI = ""
 ACCESS_TEAM = "purple-cake-8f2a.cloudflareaccess.com"
 ACCESS_AUD = "f1dec48a71e9b10406ae9534bea272e055a6bcf58a302e8d9324286976641ed3"
 SOC_NGUON = "https://staging.la-ban-admin.pages.dev"
+# Staging dùng khoá thử của Cloudflare (luôn đạt, hostname example.com) -> không kiểm hostname.
+TURNSTILE_TEN_MIEN = ""
 ACCESS_DICH_VU = "961951549f4f1b1786ccdfe3d53212bb.access"
 
 [[env.staging.d1_databases]]

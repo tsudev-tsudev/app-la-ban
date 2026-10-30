@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// Sau `astro build`: đóng gói edge/_worker.ts -> dist/_worker.js, src/lib/diem-trang.ts -> dist/js/diem.js + sinh
+// Sau `astro build`: đóng gói edge/_worker.ts -> dist/_worker.js, src/lib/diem-trang.ts -> dist/js/diem.js,
+// src/lib/khieu-nai-trang.ts -> dist/js/khieu-nai.js + sinh
 // dist/_routes.json (chỉ trang HTML gọi worker).
 import { build } from 'esbuild';
 import { readdirSync, statSync, writeFileSync } from 'node:fs';
@@ -27,6 +28,20 @@ await build({
 await build({
   entryPoints: [join(goc, 'src/lib/diem-trang.ts')],
   outfile: join(dist, 'js/diem.js'),
+  bundle: true,
+  format: 'iife',
+  target: 'es2020',
+  platform: 'browser',
+  minify: true,
+  legalComments: 'none',
+  sourcemap: false,
+  logLevel: 'warning',
+});
+
+// Form khiếu nại (S7c1): Turnstile + gửi Worker - cùng hàm thuần với test (src/lib/khieu-nai.ts).
+await build({
+  entryPoints: [join(goc, 'src/lib/khieu-nai-trang.ts')],
+  outfile: join(dist, 'js/khieu-nai.js'),
   bundle: true,
   format: 'iife',
   target: 'es2020',
