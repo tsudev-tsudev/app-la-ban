@@ -7,6 +7,7 @@ import { donDep } from './d1/don-dep';
 import { dangKyDinhDanh } from './dinh-danh';
 import { dangKyKenh } from './kenh';
 import { dangKyKhienWeb } from './khien-web';
+import { dangKyKhieuNai } from './khieu-nai';
 import type { Env, MoiTruongHono } from './moi-truong';
 import { bayQuet } from './mw/bay';
 import { chanTheoThucThi } from './mw/chan';
@@ -72,6 +73,7 @@ app.post(
 dangKyKhienWeb(app, boTuyen);
 dangKyDinhDanh(app, boTuyen);
 dangKyKenh(app, boTuyen);
+dangKyKhieuNai(app, boTuyen);
 // Admin SOC (S6): Access JWT + vai trò + phiên passkey - xem src/admin/.
 app.route('/admin/v1', taoAdmin());
 

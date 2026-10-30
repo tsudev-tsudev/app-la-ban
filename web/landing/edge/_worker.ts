@@ -2,6 +2,7 @@
 // tài sản tĩnh (ảnh, font, _astro) không gọi worker - giữ hạn mức 100.000 lượt / ngày của gói Free.
 // Đóng gói bằng `edge/dong-goi.mjs` -> `dist/_worker.js` (minify, không comment - qua được ve-sinh-ban-build).
 import { tokenTuDuongDan } from '../src/lib/diem-chia-se';
+import { laTrangKhieuNai, themTurnstile, TURNSTILE_SITE_KEY } from '../src/lib/khieu-nai';
 import { HEADER_DIEU_KIEN, laHtml, taoNonce, themNonce } from './csp';
 
 type Moi = { ASSETS: { fetch(req: Request): Promise<Response> } };
@@ -17,7 +18,11 @@ export default {
     const h = new Headers(req.headers);
     for (const t of HEADER_DIEU_KIEN) h.delete(t);
     // Link chia sẻ điểm (A6): mọi /w/<token> dùng chung trang tĩnh /w/ - token đọc ở trình duyệt, server không lưu gì.
-    const laDiem = tokenTuDuongDan(new URL(req.url).pathname) !== null;
+    const duong = new URL(req.url).pathname;
+    const laDiem = tokenTuDuongDan(duong) !== null;
+    // Khiếu nại (S7c1): chỉ 2 trang này được nạp script + khung Turnstile, và chỉ khi đã có site key.
+    const coTurnstile = TURNSTILE_SITE_KEY !== '' && laTrangKhieuNai(duong);
+    const chinhCsp = (x: string) => (coTurnstile ? themTurnstile(x) : x);
     const res = await env.ASSETS.fetch(
       laDiem ? new Request(new URL('/w/', req.url), { method: req.method, headers: h }) : new Request(req, { headers: h }),
     );
@@ -26,9 +31,9 @@ export default {
 
     const nonce = taoNonce();
     const tieuDe = new Headers(res.headers);
-    tieuDe.set('content-security-policy', themNonce(csp, nonce));
+    tieuDe.set('content-security-policy', themNonce(chinhCsp(csp), nonce));
     const thu = res.headers.get('content-security-policy-report-only');
-    if (thu) tieuDe.set('content-security-policy-report-only', themNonce(thu, nonce));
+    if (thu) tieuDe.set('content-security-policy-report-only', themNonce(chinhCsp(thu), nonce));
     tieuDe.set('cache-control', 'private, no-cache');
     tieuDe.delete('etag');
     tieuDe.delete('last-modified');

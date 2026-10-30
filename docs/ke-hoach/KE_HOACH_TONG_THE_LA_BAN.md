@@ -63,7 +63,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 12 | S4 | Làm cứng app | S3 | ✅ 30/10 (1bd395f, v0.1.0-beta.7) · máy thật M32 release prod + staging: chỉ ADB_ENABLED / DEV_MODE / UNOFFICIAL_STORE mức info, điểm 0, không báo nhầm |
 | 13 | S5 | Threat Engine + enforcement | S1 | ✅ 28/10 |
 | 14 | S6 | Admin SOC 1 | S5 | ✅ 30/10 · e2e staging qua Access thật: realtime 587-722 ms, danh sách D1 45 ms |
-| 15 | S7 | Admin SOC 2 (chia S7a / S7b / S7c) | S6 | 🟨 S7a ✅ 30/10 (4ae38f9, PR #29) · S7b ✅ 30/10 (f1a6d3c, PR #32: rule + mô phỏng 7 ngày, can thiệp, four-eyes, Under Attack, Super Admin bật / tắt thuỷ vân; staging + prod) · S7c chưa |
+| 15 | S7 | Admin SOC 2 (chia S7a / S7b / S7c) | S6 | 🟨 S7a ✅ 30/10 (4ae38f9, PR #29) · S7b ✅ 30/10 (f1a6d3c, PR #32: rule + mô phỏng 7 ngày, can thiệp, four-eyes, Under Attack, Super Admin bật / tắt thuỷ vân; staging + prod) · S7c1 ✅ 31/10 (khiếu nại + Turnstile, xem / kiểm chuỗi audit) · S7c2 chưa |
 | 16 | A6 | Waypoint, chia sẻ, deep link | A5, S3 | ✅ 30/10 (53e946b + cf74304, v0.1.0-beta.8) · máy thật M32: App Links `verified`, link /w/ mở thẳng app (cold 1,5 s) |
 | 17 | A7 | Bản đồ offline + Camera AR (chia A7a / A7b / A7c) | A6 | ✅ 30/10 · A7a (a0e1d1b: tile VN trên R2 + Worker /ban-do) · A7b (d6de6a2: màn bản đồ + vùng offline) · A7c (62e4cab PR #33: Camera AR Camera2 nội bộ, v0.1.0-beta.9 đã phát hành) · nghiệm thu chế độ máy bay máy thật ⛔ (chờ thiết bị adb) |
 | 18 | R1 | Landing hoàn chỉnh (kéo lên làm cùng R0 theo yêu cầu người dùng) | N2 | ✅ 28/10 |
@@ -447,6 +447,21 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   (đường Threat Engine -> DO không đổi); xem gợi ý phát tin SOC trước khi chạy rule ở mục S7a.
 - Phát sinh (từ S7a): người dùng tạo bot Telegram + đặt 2 secret (runbook admin-soc) - chưa có thì Worker bỏ qua im lặng;
   contract chỉ mục `alerts_open` cũ ở bản migration sau S7c.
+- Chia S7c (31/10, QUYET_DINH Q44): **S7c1** khiếu nại (form landing + Turnstile + `siteverify` + duyệt ở SOC) + xem / kiểm
+  chuỗi audit. **S7c2** báo cáo CSV / PDF + Remote Config / phiên bản tối thiểu / pin dự phòng ký số có duyệt (four-eyes,
+  thêm kind mới cho `approval_requests` = bảng mới hoặc tạo lại theo expand / contract) + đo kill-switch <= 5 s.
+- Kết quả S7c1 (31/10, QUYET_DINH Q44): migration 0008 (expand: `appeals` thêm `contact` / `lang` / `ip` / `reviewed_at`
+  / `decision_note`, UNIQUE một khiếu nại đang mở / thiết bị). Thuần `thuan/khieu-nai.ts` (REF -> hậu tố id, đọc kết quả
+  siteverify, lọc khiếu nại / audit). Route công khai `POST /v1/khieu-nai` (CORS landing, 6 / giờ / IP), admin
+  `/khieu-nai` + `/khieu-nai/quyet` (chấp nhận = gỡ chặn thiết bị + điểm 0), `/audit` + `/audit/kiem` (kiểm theo lô 2000).
+  Cron dọn xoá email + IP khiếu nại 90 ngày sau quyết định. SPA: trang Khiếu nại (`g i`, huy hiệu số đang mở), Nhật ký
+  kiểm toán (`g a`, kiểm chuỗi, xem trước / sau). Landing: form + Turnstile (chỉ hiện khi có site key; CSP chỉ nới cho 2
+  trang khiếu nại ở edge), trang Quyền riêng tư cập nhật theo A8a (đồng ý, chế độ ngoại tuyến, Cài đặt > Quyền riêng tư)
+  + Turnstile + dữ liệu form khiếu nại. Test mới: 6 thuần + 3 tích hợp Miniflare Worker, 2 SPA, 4 landing.
+- Phát sinh (từ S7c1) -> S10: mốc neo chuỗi audit ngoài D1 (hash cuối + số dòng mỗi ngày vào R2 log bất biến) để phát
+  hiện xoá dòng CUỐI chuỗi; cron kiểm chuỗi hằng ngày + cảnh báo. -> người dùng: tạo widget Turnstile (token cf.env chỉ
+  có quyền đọc) - runbook admin-soc mục S7c1. -> A (app): màn khoá có nút mở `compass.tsudev.com/khieu-nai/?ref=<REF>`
+  (trang tự điền mã).
 
 ### A6 - Waypoint + chia sẻ
 - Làm: CRUD waypoint (ghi chú, ảnh), điều hướng (Vincenty), GPX/KML import/export, link `compass.tsudev.com/w/<token>` hết hạn,

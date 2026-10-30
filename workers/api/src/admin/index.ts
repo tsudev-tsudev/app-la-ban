@@ -8,6 +8,7 @@ import { dangKyCaiDat, napCaiDatSoc } from './cai-dat';
 import { dangKyCanThiep } from './can-thiep';
 import { dangKyCanhBao } from './canh-bao';
 import { dangKyDuLieu } from './du-lieu';
+import { dangKyKhieuNai } from './khieu-nai';
 import { dangKyLuat } from './luat';
 import { dangKyPasskey } from './passkey';
 import { dangKyQuanTriVien } from './quan-tri-vien';
@@ -53,6 +54,7 @@ export function taoAdmin(): Hono<MoiTruongHono> {
   dangKyLuat(r);
   dangKyCanThiep(r);
   dangKyCaiDat(r);
+  dangKyKhieuNai(r);
   dangKyQuanTriVien(r);
   return r;
 }

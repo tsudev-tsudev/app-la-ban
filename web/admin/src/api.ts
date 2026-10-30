@@ -291,3 +291,43 @@ export type CauHinhNguyCo = {
   underAttack: boolean;
   diemToiDa: number;
 };
+// S7c1
+export type KhieuNai = {
+  id: string;
+  device_id: string;
+  ref: string;
+  enforcement_id: string | null;
+  message: string;
+  status: 'open' | 'approved' | 'rejected';
+  reviewed_by: string | null;
+  reviewed_at: number | null;
+  decision_note: string | null;
+  ts: number;
+  contact: string | null;
+  lang: string | null;
+  device_status: string;
+  model: string | null;
+  app_version: string | null;
+  risk_score: number;
+  e_action: string | null;
+  e_reason: string | null;
+  e_source: string | null;
+  e_created_at: number | null;
+  e_expires_at: number | null;
+  e_revoked_at: number | null;
+};
+export type DsKhieuNai = { ds: KhieuNai[]; tiepTheo: string | null; dem: Record<string, number> };
+export type DongAudit = {
+  so: number;
+  id: string;
+  actor: string;
+  action: string;
+  target: string | null;
+  before: unknown;
+  after: unknown;
+  ip: string | null;
+  ts: number;
+  hash_prev: string;
+  hash_self: string;
+};
+export type KetQuaKiemAudit = { nguyenVen: boolean; soDongDung: number; dongLoi: { so: number; id: string; ts: number } | null; ms: number };

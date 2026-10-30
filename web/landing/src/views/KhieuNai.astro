@@ -1,8 +1,10 @@
 ---
-// Khiếu nại hạn chế: chưa có form (form + Turnstile + route Worker làm ở S7) -> mailto điền sẵn mẫu.
+// Khiếu nại hạn chế (S7c1): form gửi thẳng Worker /v1/khieu-nai, chống bot bằng Turnstile (siteverify ở Worker). Chưa có
+// site key -> chỉ mailto điền sẵn mẫu như trước. Email luôn còn làm đường dự phòng (Turnstile bị chặn, không có JS).
 import Icon from '../components/Icon.astro';
 import Trang from '../layouts/Trang.astro';
 import { NOI_DUNG, type NgonNgu } from '../i18n/noi-dung';
+import { NGUON_TURNSTILE, TURNSTILE_SITE_KEY } from '../lib/khieu-nai';
 
 interface Props {
   lang: NgonNgu;
@@ -10,6 +12,9 @@ interface Props {
 const { lang } = Astro.props;
 const t = NOI_DUNG[lang];
 const k = t.khieu;
+const f = k.form;
+const coForm = TURNSTILE_SITE_KEY !== '';
+const dataLoi = Object.fromEntries(Object.entries(f.loi).map(([ma, chu]) => [`data-loi-${ma}`, chu]));
 const mailto = `mailto:security@tsudev.com?subject=${encodeURIComponent(k.chuDeEmail)}&body=${encodeURIComponent(k.thanEmail)}`;
 ---
 <Trang lang={lang} trang="khieu">
@@ -31,10 +36,36 @@ const mailto = `mailto:security@tsudev.com?subject=${encodeURIComponent(k.chuDeE
         ))
       }
     </ol>
-    <a class="nut nut-chinh" href={mailto}><Icon ten="chia-se-qr" />{k.nutEmail}</a>
+    {
+      coForm && (
+        <form class="the form-kn" data-khieu-nai data-site-key={TURNSTILE_SITE_KEY} data-dang-gui={f.dangGui} data-xong={f.xong} {...dataLoi}>
+          <h2>{f.tieuDe}</h2>
+          <label>
+            <span>{f.ref}</span>
+            <input name="ref" required minlength="10" maxlength="24" pattern="[A-Za-z0-9 \-]{10,24}" placeholder={f.refGoiY} autocomplete="off" autocapitalize="characters" spellcheck="false" />
+          </label>
+          <label>
+            <span>{f.noiDung}</span>
+            <textarea name="noiDung" required minlength="20" maxlength="2000" rows="6" placeholder={f.noiDungGoiY} />
+          </label>
+          <label>
+            <span>{f.lienHe}</span>
+            <input name="lienHe" type="email" maxlength="254" placeholder={f.lienHeGoiY} autocomplete="email" />
+          </label>
+          <div class="o-turnstile" data-o="turnstile" />
+          <noscript><p class="mo">{f.canJs}</p></noscript>
+          <button class="nut nut-chinh" type="submit" data-o="gui" data-gui={f.gui} data-dang-gui={f.dangGui}>{f.gui}</button>
+          <p class="trang-thai-kn" data-o="trang-thai" role="status" aria-live="polite" hidden />
+        </form>
+      )
+    }
+    {coForm && <p class="mo">{f.hoacEmail}</p>}
+    <a class:list={['nut', coForm ? 'nut-phu' : 'nut-chinh']} href={mailto}><Icon ten="chia-se-qr" />{k.nutEmail}</a>
     <p class="mo luu-y">{k.luuY}</p>
   </section>
 </Trang>
+{coForm && <script is:inline src={`${NGUON_TURNSTILE}/turnstile/v0/api.js?render=explicit`} defer />}
+{coForm && <script is:inline src="/js/khieu-nai.js" defer />}
 
 <style>
   .vung-kn {
@@ -71,6 +102,50 @@ const mailto = `mailto:security@tsudev.com?subject=${encodeURIComponent(k.chuDeE
     background: var(--lb-color-primary-deep);
     color: var(--lb-color-on-primary-deep);
     font: var(--lb-type-label);
+  }
+  .form-kn {
+    display: grid;
+    gap: var(--lb-space-md);
+    width: 100%;
+    max-width: 46rem;
+  }
+  .form-kn h2 {
+    font: var(--lb-type-title);
+  }
+  .form-kn label {
+    display: grid;
+    gap: var(--lb-space-xs);
+    font: var(--lb-type-label);
+  }
+  .form-kn input,
+  .form-kn textarea {
+    font: var(--lb-type-body);
+    padding: var(--lb-space-sm) var(--lb-space-md);
+    border-radius: var(--lb-radius-sm);
+    border: 1px solid var(--lb-color-outline);
+    background: var(--lb-color-surface);
+    color: var(--lb-color-text);
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .form-kn textarea {
+    resize: vertical;
+  }
+  .form-kn .nut {
+    justify-self: start;
+  }
+  .o-turnstile {
+    min-height: 65px;
+  }
+  .trang-thai-kn {
+    font: var(--lb-type-body-small);
+    margin: 0;
+  }
+  .trang-thai-kn[data-loai='loi'] {
+    color: var(--lb-color-danger-strong);
+  }
+  .trang-thai-kn[data-loai='xong'] {
+    color: var(--lb-color-success-strong);
   }
   .luu-y {
     font: var(--lb-type-body-small);
