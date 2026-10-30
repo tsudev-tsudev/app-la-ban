@@ -1023,6 +1023,67 @@ class LbL10nEn extends LbL10n {
   String mapOfflineZoom(int from, int to) {
     return 'Detail levels $from-$to';
   }
+
+  @override
+  String get arOpen => 'View heading through camera';
+
+  @override
+  String get arTitle => 'Camera AR';
+
+  @override
+  String get arPermission =>
+      'Camera access lets the app overlay headings and saved points on the live view. Images stay on screen only: nothing is captured, stored or sent.';
+
+  @override
+  String get arPermissionBlocked =>
+      'Camera access is off. Turn it back on in your device Settings to use Camera AR.';
+
+  @override
+  String get arGrant => 'Allow camera';
+
+  @override
+  String get arOpenSettings => 'Open Settings';
+
+  @override
+  String get arNoCamera =>
+      'Couldn\'t open the rear camera - the device has none or another app is using it.';
+
+  @override
+  String get arRetry => 'Try again';
+
+  @override
+  String get arHoldUpright =>
+      'Hold the phone upright with the camera facing forward.';
+
+  @override
+  String get arCalibrate => 'Low compass accuracy - calibrate with a figure 8.';
+
+  @override
+  String get arNoLocation =>
+      'No location yet - saved points appear once GPS is ready.';
+
+  @override
+  String arDistanceM(int value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String valueString = valueNumberFormat.format(value);
+
+    return '$valueString m';
+  }
+
+  @override
+  String arDistanceKm(double value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String valueString = valueNumberFormat.format(value);
+
+    return '$valueString km';
+  }
+
+  @override
+  String arHeadingLabel(int degrees) {
+    return 'Camera heading $degrees degrees';
+  }
 }
 
 /// The translations for English (`en_XA`).
@@ -2055,5 +2116,67 @@ class LbL10nEnXa extends LbL10nEn {
   @override
   String mapOfflineZoom(int from, int to) {
     return '[Đẽťảỉł łẽvẽłš $from-$to ······]';
+  }
+
+  @override
+  String get arOpen => '[Vỉẽŵ hẽảđỉñğ ťhřởữğh çảmẽřả ···········]';
+
+  @override
+  String get arTitle => '[Çảmẽřả ẢŘ ····]';
+
+  @override
+  String get arPermission =>
+      '[Çảmẽřả ảççẽšš łẽťš ťhẽ ảpp ởvẽřłảỹ hẽảđỉñğš ảñđ šảvẽđ pởỉñťš ởñ ťhẽ łỉvẽ vỉẽŵ. Ỉmảğẽš šťảỹ ởñ šçřẽẽñ ởñłỹ: ñởťhỉñğ ỉš çảpťữřẽđ, šťởřẽđ ởř šẽñť. ··························································]';
+
+  @override
+  String get arPermissionBlocked =>
+      '[Çảmẽřả ảççẽšš ỉš ởff. Ťữřñ ỉť bảçk ởñ ỉñ ỹởữř đẽvỉçẽ Šẽťťỉñğš ťở ữšẽ Çảmẽřả ẢŘ. ································]';
+
+  @override
+  String get arGrant => '[Ảłłởŵ çảmẽřả ·····]';
+
+  @override
+  String get arOpenSettings => '[Ởpẽñ Šẽťťỉñğš ······]';
+
+  @override
+  String get arNoCamera =>
+      '[Çởữłđñ\'ť ởpẽñ ťhẽ řẽảř çảmẽřả - ťhẽ đẽvỉçẽ hảš ñởñẽ ởř ảñởťhẽř ảpp ỉš ữšỉñğ ỉť. ································]';
+
+  @override
+  String get arRetry => '[Ťřỹ ảğảỉñ ····]';
+
+  @override
+  String get arHoldUpright =>
+      '[Hởłđ ťhẽ phởñẽ ữpřỉğhť ŵỉťh ťhẽ çảmẽřả fảçỉñğ fởřŵảřđ. ······················]';
+
+  @override
+  String get arCalibrate =>
+      '[Łởŵ çởmpảšš ảççữřảçỹ - çảłỉbřảťẽ ŵỉťh ả fỉğữřẽ 8. ····················]';
+
+  @override
+  String get arNoLocation =>
+      '[Ñở łởçảťỉởñ ỹẽť - šảvẽđ pởỉñťš ảppẽảř ởñçẽ ĞPŠ ỉš řẽảđỹ. ·······················]';
+
+  @override
+  String arDistanceM(int value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String valueString = valueNumberFormat.format(value);
+
+    return '[$valueString m ··]';
+  }
+
+  @override
+  String arDistanceKm(double value) {
+    final intl.NumberFormat valueNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String valueString = valueNumberFormat.format(value);
+
+    return '[$valueString km ··]';
+  }
+
+  @override
+  String arHeadingLabel(int degrees) {
+    return '[Çảmẽřả hẽảđỉñğ $degrees đẽğřẽẽš ··········]';
   }
 }

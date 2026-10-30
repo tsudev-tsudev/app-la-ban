@@ -3,6 +3,7 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:i18n/i18n.dart';
+import 'package:la_ban/src/ar.dart';
 import 'package:la_ban/src/bang_an_toan.dart';
 import 'package:la_ban/src/luu_tru.dart';
 import 'package:la_ban/src/phien_ban.dart';
@@ -29,7 +30,7 @@ final dsTabProvider = Provider<List<TabApp>>((ref) {
       duongDan: '/la-ban',
       icon: LbIcons.laBanHoaGio,
       nhan: (l) => l.tabCompass,
-      man: const ManLaBan(theDuoi: TheViTri()),
+      man: const ManLaBan(theDuoi: TheViTri(), hanhDong: [NutAr()]),
     ),
     (
       duongDan: '/ban-do',

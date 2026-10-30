@@ -25,6 +25,9 @@ typedef TuThe = ({
 
   /// true khi máy dựng đứng và phương vị lấy theo hướng camera sau (-Z).
   bool theoCamera,
+
+  /// Góc ngóc của camera sau (độ): camera nhìn lên trời là dương (Camera AR).
+  double ngocCamera,
 });
 
 /// Trục "lên" và "phải" của màn hình trong toạ độ máy.
@@ -56,6 +59,7 @@ TuThe tuTheTuQuat(Quat q, {XoayManHinh xoay = XoayManHinh.r0}) {
     doc: radSangDo(math.asin(len.z.clamp(-1.0, 1.0))),
     lan: radSangDo(math.asin(phai.z.clamp(-1.0, 1.0))),
     theoCamera: theoCamera,
+    ngocCamera: radSangDo(math.asin(sau.z.clamp(-1.0, 1.0))),
   );
 }
 

@@ -267,5 +267,19 @@
   "mapOfflineDeleteTitle": "Delete \"{name}\"?",
   "mapOfflineStorage": "Using {mb} MB on this device",
   "mapOfflineAreaName": "Area {date}",
-  "mapOfflineZoom": "Detail levels {from}-{to}"
+  "mapOfflineZoom": "Detail levels {from}-{to}",
+  "arOpen": "View heading through camera",
+  "arTitle": "Camera AR",
+  "arPermission": "Camera access lets the app overlay headings and saved points on the live view. Images stay on screen only: nothing is captured, stored or sent.",
+  "arPermissionBlocked": "Camera access is off. Turn it back on in your device Settings to use Camera AR.",
+  "arGrant": "Allow camera",
+  "arOpenSettings": "Open Settings",
+  "arNoCamera": "Couldn't open the rear camera - the device has none or another app is using it.",
+  "arRetry": "Try again",
+  "arHoldUpright": "Hold the phone upright with the camera facing forward.",
+  "arCalibrate": "Low compass accuracy - calibrate with a figure 8.",
+  "arNoLocation": "No location yet - saved points appear once GPS is ready.",
+  "arDistanceM": "{value} m",
+  "arDistanceKm": "{value} km",
+  "arHeadingLabel": "Camera heading {degrees} degrees"
 }

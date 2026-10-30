@@ -1705,6 +1705,90 @@ abstract class LbL10n {
   /// In vi, this message translates to:
   /// **'Mức chi tiết {from}-{to}'**
   String mapOfflineZoom(int from, int to);
+
+  /// Nút mở Camera AR trên màn La bàn
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem hướng qua camera'**
+  String get arOpen;
+
+  /// Tiêu đề màn Camera AR
+  ///
+  /// In vi, this message translates to:
+  /// **'Camera AR'**
+  String get arTitle;
+
+  /// Giải thích trước khi xin quyền camera
+  ///
+  /// In vi, this message translates to:
+  /// **'Cần quyền camera để phủ hướng và điểm đã lưu lên khung hình. Hình ảnh chỉ hiện trên máy: không chụp, không lưu, không gửi đi.'**
+  String get arPermission;
+
+  /// Quyền camera bị từ chối hẳn
+  ///
+  /// In vi, this message translates to:
+  /// **'Quyền camera đang tắt. Bật lại trong Cài đặt của máy để dùng Camera AR.'**
+  String get arPermissionBlocked;
+
+  /// Nút xin quyền camera
+  ///
+  /// In vi, this message translates to:
+  /// **'Cho phép camera'**
+  String get arGrant;
+
+  /// Nút mở cài đặt ứng dụng của hệ thống
+  ///
+  /// In vi, this message translates to:
+  /// **'Mở Cài đặt'**
+  String get arOpenSettings;
+
+  /// Lỗi mở camera
+  ///
+  /// In vi, this message translates to:
+  /// **'Không mở được camera sau - máy không có hoặc ứng dụng khác đang dùng.'**
+  String get arNoCamera;
+
+  /// Nút thử mở lại camera
+  ///
+  /// In vi, this message translates to:
+  /// **'Thử lại'**
+  String get arRetry;
+
+  /// Nhắc khi máy nằm ngang
+  ///
+  /// In vi, this message translates to:
+  /// **'Giữ máy thẳng đứng, camera hướng ra phía trước.'**
+  String get arHoldUpright;
+
+  /// Nhắc hiệu chuẩn trên màn AR
+  ///
+  /// In vi, this message translates to:
+  /// **'Độ chính xác la bàn thấp - hãy hiệu chuẩn hình số 8.'**
+  String get arCalibrate;
+
+  /// Nhắc khi chưa có vị trí
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa có vị trí - điểm đã lưu sẽ hiện khi có GPS.'**
+  String get arNoLocation;
+
+  /// Khoảng cách theo mét
+  ///
+  /// In vi, this message translates to:
+  /// **'{value} m'**
+  String arDistanceM(int value);
+
+  /// Khoảng cách theo km (một chữ số thập phân)
+  ///
+  /// In vi, this message translates to:
+  /// **'{value} km'**
+  String arDistanceKm(double value);
+
+  /// Nhãn trợ năng cho số độ
+  ///
+  /// In vi, this message translates to:
+  /// **'Camera đang hướng {degrees} độ'**
+  String arHeadingLabel(int degrees);
 }
 
 class _LbL10nDelegate extends LocalizationsDelegate<LbL10n> {

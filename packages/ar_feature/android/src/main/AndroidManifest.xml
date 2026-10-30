@@ -1,0 +1,5 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Camera AR (A7c): chỉ xem trước, không chụp / quay. Máy không có camera sau vẫn cài được. -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+</manifest>

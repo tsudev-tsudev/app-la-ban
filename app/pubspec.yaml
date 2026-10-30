@@ -9,6 +9,7 @@ environment:
   sdk: ^3.13.0
 
 dependencies:
+  ar_feature:
   compass_feature:
   core:
   design_system:

@@ -4,3 +4,20 @@ publish_to: none
 resolution: workspace
 environment:
   sdk: ^3.13.0
+  flutter: ">=3.38.0"
+dependencies:
+  design_system:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^3.4.3
+  i18n:
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  test_kit:
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.tsudev.laban.ar
+        pluginClass: CameraArPlugin

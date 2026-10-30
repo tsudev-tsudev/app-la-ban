@@ -34,6 +34,7 @@ final class HuongDoc {
     required this.dungYen,
     required this.tNs,
     this.apSuat,
+    this.ngocCamera = 0,
   });
 
   /// Phương vị từ đã lọc [0, 360) (bắc từ; bắc thực cộng độ lệch WMM ở A3).
@@ -48,6 +49,9 @@ final class HuongDoc {
 
   /// Máy dựng đứng -> phương vị theo hướng camera sau.
   final bool theoCamera;
+
+  /// Góc ngóc camera sau (độ, nhìn lên trời dương) - Camera AR.
+  final double ngocCamera;
   final MucTinCay muc;
   final bool nhieuTu;
   final bool canHieuChuan;
@@ -199,6 +203,7 @@ final class BoHopNhat {
       doc: t.doc,
       lan: t.lan,
       theoCamera: t.theoCamera,
+      ngocCamera: t.ngocCamera,
       muc: tc.muc,
       nhieuTu: tc.nhieuTu,
       canHieuChuan: tc.canHieuChuan,
