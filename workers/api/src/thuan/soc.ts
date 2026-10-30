@@ -14,6 +14,8 @@ export const QUYEN = {
   'thiet-bi:ds': 'viewer',
   'thiet-bi:chi-tiet': 'analyst',
   'pii:ip-day-du': 'analyst',
+  'canh-bao:xem': 'viewer',
+  'canh-bao:xu-ly': 'analyst',
   'quan-tri-vien': 'super_admin',
 } as const satisfies Record<string, VaiTro>;
 export type Quyen = keyof typeof QUYEN;

@@ -1,61 +1,90 @@
-// Khung SOC (S6): trạng thái đăng nhập (Access -> vai trò -> passkey), điều hướng hash, giao diện sáng / tối, vi / en,
-// khoá khi nhàn rỗi 15 phút (server cũng tự hết hạn - đây chỉ để màn hình không còn hiện dữ liệu).
+// Khung SOC (S6, làm lại bố cục ở S7a): trạng thái đăng nhập (Access -> vai trò -> passkey), thanh bên theo nhóm + thanh
+// trên (môi trường, đếm ngược phiên, bảng lệnh Ctrl K), phím tắt kiểu "g c", tuỳ chọn hiển thị (giao diện, ngôn ngữ, mật
+// độ, thuỷ vân), khoá khi nhàn rỗi 15 phút (server cũng tự hết hạn - đây chỉ để màn hình không còn hiện dữ liệu).
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { goi, LoiSoc, type Toi } from './api';
+import { goi, LoiSoc, type DsCanhBao, type Toi } from './api';
+import { BangLenh } from './giao-dien/BangLenh';
+import { BieuTuong } from './giao-dien/BieuTuong';
+import { HopThoai } from './giao-dien/HopThoai';
+import type { Lenh } from './giao-dien/lenh';
+import { NguonThongBao } from './giao-dien/ThongBao';
+import { ghiKho, luuTuyChon, napTuyChon, docKho, type TuyChon } from './giao-dien/tuy-chon';
 import { chuoi, ngonNgu, type NgonNgu } from './i18n';
 import { Ctx, type NguCanh } from './ngu-canh';
 import { VungDuLieu } from './khien/Watermark';
+import { CanhBao } from './trang/CanhBao';
 import { ChiTiet } from './trang/ChiTiet';
 import { DangNhap } from './trang/DangNhap';
 import { DsThietBi } from './trang/DsThietBi';
 import { QuanTriVien } from './trang/QuanTriVien';
+import { TaiKhoan } from './trang/TaiKhoan';
 import { TongQuan } from './trang/TongQuan';
 
 const NHAN_ROI_MS = 15 * 60_000;
+const GO_TAT: Record<string, string> = { o: '#/', c: '#/canh-bao', t: '#/thiet-bi', k: '#/tai-khoan', q: '#/quan-tri-vien' };
 
-
-function docKho(k: string): string | null {
-  try {
-    return localStorage.getItem(k);
-  } catch {
-    return null;
-  }
-}
-function ghiKho(k: string, v: string): void {
-  try {
-    localStorage.setItem(k, v);
-  } catch {
-    // Trình duyệt chặn lưu trữ - chỉ mất tuỳ chọn hiển thị.
-  }
-}
-
-function useDuongDan(): string {
+function useHash(): string {
   const [hash, datHash] = useState(() => location.hash || '#/');
   useEffect(() => {
     const nghe = () => datHash(location.hash || '#/');
     addEventListener('hashchange', nghe);
     return () => removeEventListener('hashchange', nghe);
   }, []);
-  return hash.slice(1).split('?')[0] ?? '/';
+  return hash;
+}
+
+function useBayGio(chuKyMs: number): number {
+  const [x, datX] = useState(() => Date.now());
+  useEffect(() => {
+    const hen = setInterval(() => datX(Date.now()), chuKyMs);
+    return () => clearInterval(hen);
+  }, [chuKyMs]);
+  return x;
+}
+
+function dongHo(ms: number): string {
+  const p = Math.max(0, Math.floor(ms / 60_000));
+  return `${Math.floor(p / 60)}:${String(p % 60).padStart(2, '0')}`;
+}
+
+/** Phím đang gõ vào ô nhập -> không coi là phím tắt. */
+function dangGo(e: KeyboardEvent): boolean {
+  const el = e.target as HTMLElement | null;
+  return !!el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName));
 }
 
 type TrangThai = { loai: 'tai' } | { loai: 'loi'; ma: 'vai-tro' | 'access' | 'chung' } | { loai: 'can-passkey'; toi: Toi; khoa: boolean } | { loai: 'vao'; toi: Toi };
 
 export function App() {
   const [nn, datNn] = useState<NgonNgu>(() => ngonNgu(docKho('soc-nn') ?? document.documentElement.lang));
-  const [chuDe, datChuDe] = useState<'light' | 'dark' | null>(() => (docKho('soc-chu-de') as 'light' | 'dark' | null) ?? null);
+  const [tc, datTc] = useState<TuyChon>(napTuyChon);
   const [tt, datTt] = useState<TrangThai>({ loai: 'tai' });
+  const [moLenh, datMoLenh] = useState(false);
+  const [moPhim, datMoPhim] = useState(false);
+  const [moMenu, datMoMenu] = useState(false);
   const t = chuoi(nn);
-  const duong = useDuongDan();
+  const hash = useHash();
+  const duong = hash.slice(1).split('?')[0] ?? '/';
+  const bayGio = useBayGio(30_000);
 
   useEffect(() => {
     document.documentElement.lang = nn;
     document.title = t.tieuDe;
   }, [nn, t.tieuDe]);
   useEffect(() => {
-    if (chuDe) document.documentElement.dataset.theme = chuDe;
-    else delete document.documentElement.dataset.theme;
-  }, [chuDe]);
+    const h = document.documentElement;
+    if (tc.chuDe) h.dataset.theme = tc.chuDe;
+    else delete h.dataset.theme;
+    h.dataset.matDo = tc.matDo;
+  }, [tc.chuDe, tc.matDo]);
+
+  const doiTc = useCallback((p: Partial<TuyChon>) => {
+    datTc((cu) => {
+      const moi = { ...cu, ...p };
+      luuTuyChon(moi);
+      return moi;
+    });
+  }, []);
 
   const napToi = useCallback(async (khoa = false) => {
     try {
@@ -69,6 +98,7 @@ export function App() {
   useEffect(() => void napToi(), [napToi]);
 
   const hetPhien = useCallback(() => void napToi(true), [napToi]);
+  const dangXuat = useCallback(() => void goi('/phien/ket-thuc', { body: {} }).finally(() => napToi(true)), [napToi]);
 
   // Nhàn rỗi: không chuột / phím / chạm trong 15 phút -> đăng xuất phía server + khoá màn hình.
   const dangVao = tt.loai === 'vao';
@@ -90,21 +120,96 @@ export function App() {
     };
   }, [dangVao, napToi]);
 
-  const laToi = chuDe ? chuDe === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
-  const doiChuDe = () => {
-    const moi = laToi ? 'light' : 'dark';
-    datChuDe(moi);
-    ghiKho('soc-chu-de', moi);
-  };
-  const doiNn = () => {
+  const laToi = tc.chuDe ? tc.chuDe === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  const doiChuDe = useCallback(() => doiTc({ chuDe: laToi ? 'light' : 'dark' }), [doiTc, laToi]);
+  const doiNn = useCallback(() => {
     const moi = nn === 'vi' ? 'en' : 'vi';
     datNn(moi);
     ghiKho('soc-nn', moi);
-  };
+  }, [nn]);
+
+  // Phím tắt: Ctrl/Cmd K, "?", "/", chuỗi "g <chữ>" trong 1 giây.
+  useEffect(() => {
+    if (!dangVao) return;
+    let choG = 0;
+    const nghe = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        datMoLenh(true);
+        return;
+      }
+      if (dangGo(e) || e.ctrlKey || e.metaKey || e.altKey || document.querySelector('dialog[open]')) return;
+      if (e.key === '?') {
+        datMoPhim(true);
+      } else if (e.key === '/') {
+        const o = document.querySelector<HTMLElement>('[data-o-tim]');
+        if (o) {
+          e.preventDefault();
+          o.focus();
+        }
+      } else if (e.key === 'g') {
+        choG = Date.now();
+      } else if (Date.now() - choG < 1000 && GO_TAT[e.key]) {
+        location.hash = GO_TAT[e.key] as string;
+        choG = 0;
+      }
+    };
+    addEventListener('keydown', nghe);
+    return () => removeEventListener('keydown', nghe);
+  }, [dangVao]);
 
   const ctx = useMemo<NguCanh | null>(
-    () => (tt.loai === 'vao' ? { t, nn, toi: tt.toi, coQuyen: (q) => tt.toi.quyen.includes(q), hetPhien } : null),
-    [t, nn, tt, hetPhien],
+    () => (tt.loai === 'vao' ? { t, nn, toi: tt.toi, coQuyen: (q) => tt.toi.quyen.includes(q), hetPhien, tuyChon: tc, doiTuyChon: doiTc } : null),
+    [t, nn, tt, hetPhien, tc, doiTc],
+  );
+
+  // Số cảnh báo đang mở cho huy hiệu thanh bên (làm mới nền 60 giây, không gia hạn nhàn rỗi).
+  const [soMo, datSoMo] = useState<number | null>(null);
+  useEffect(() => {
+    if (!dangVao) return;
+    const nap = () =>
+      goi<DsCanhBao>('/canh-bao?limit=1', { nen: true })
+        .then((d) => datSoMo((d.dem.mo ?? 0) + (d.dem.ack ?? 0)))
+        .catch(() => undefined);
+    void nap();
+    const hen = setInterval(nap, 60_000);
+    return () => clearInterval(hen);
+  }, [dangVao, duong]);
+
+  const di = useCallback((h: string) => {
+    location.hash = h;
+  }, []);
+
+  const quyen = tt.loai === 'vao' ? tt.toi.quyen : [];
+  const nhom: { nhan: string; muc: { d: string; nhan: string; bt: string; dem?: number | null }[] }[] = [
+    {
+      nhan: t.nhomGiamSat,
+      muc: [
+        { d: '/', nhan: t.tongQuan, bt: 'tong-quan' },
+        { d: '/canh-bao', nhan: t.canhBao, bt: 'canh-bao', dem: soMo },
+        { d: '/thiet-bi', nhan: t.thietBi, bt: 'thiet-bi' },
+      ],
+    },
+    {
+      nhan: t.nhomQuanTri,
+      muc: [
+        ...(quyen.includes('quan-tri-vien') ? [{ d: '/quan-tri-vien', nhan: t.quanTriVien, bt: 'quan-tri-vien' }] : []),
+        { d: '/tai-khoan', nhan: t.taiKhoan, bt: 'tai-khoan' },
+      ],
+    },
+  ];
+
+  const dsLenh = useMemo<Lenh[]>(
+    () => [
+      ...nhom.flatMap((g) => g.muc.map((m) => ({ id: `di${m.d}`, nhom: g.nhan, nhan: m.nhan, tuKhoa: m.d, chay: () => di(`#${m.d}`) }))),
+      { id: 'chu-de', nhom: t.hienThi, nhan: t.lenhDoiGiaoDien, tuKhoa: 'theme dark light', chay: doiChuDe },
+      { id: 'ngon-ngu', nhom: t.hienThi, nhan: t.lenhDoiNgonNgu, tuKhoa: 'language ngon ngu', chay: doiNn },
+      { id: 'mat-do', nhom: t.hienThi, nhan: t.lenhMatDo, tuKhoa: 'density', chay: () => doiTc({ matDo: tc.matDo === 'gon' ? 'thoang' : 'gon' }) },
+      { id: 'thuy-van', nhom: t.hienThi, nhan: t.lenhThuyVan, tuKhoa: 'watermark', chay: () => doiTc({ thuyVan: tc.thuyVan === 'nhe' ? 'chuan' : 'nhe' }) },
+      { id: 'phim', nhom: t.hienThi, nhan: t.lenhPhimTat, tuKhoa: 'shortcuts', chay: () => datMoPhim(true) },
+      { id: 'dang-xuat', nhom: t.taiKhoan, nhan: t.dangXuat, tuKhoa: 'logout sign out', chay: dangXuat },
+    ],
+    [t, quyen.join(','), soMo, doiChuDe, doiNn, doiTc, tc.matDo, tc.thuyVan, dangXuat, di],
   );
 
   const thanhCongCu = (
@@ -135,54 +240,129 @@ export function App() {
     return <DangNhap t={t} toi={tt.toi} khoa={tt.khoa} xong={() => void napToi()} congCu={thanhCongCu} />;
   }
 
-  const dangXuat = () => void goi('/phien/ket-thuc', { body: {} }).finally(() => napToi(true));
-  const muc: [string, string, boolean][] = [
-    ['/', t.tongQuan, true],
-    ['/thiet-bi', t.thietBi, true],
-    ['/quan-tri-vien', t.quanTriVien, tt.toi.quyen.includes('quan-tri-vien')],
-  ];
+  const toi = tt.toi;
   const chiTietId = /^\/thiet-bi\/([0-9A-Za-z-]{8,40})$/.exec(duong)?.[1];
+  const canhBaoId = /^\/canh-bao\/([0-9A-Za-z-]{8,40})$/.exec(duong)?.[1];
   let noiDung: ReactNode;
-  if (chiTietId) noiDung = <ChiTiet id={chiTietId} />;
-  else if (duong === '/thiet-bi') noiDung = <DsThietBi />;
-  else if (duong === '/quan-tri-vien' && tt.toi.quyen.includes('quan-tri-vien')) noiDung = <QuanTriVien />;
-  else noiDung = <TongQuan />;
+  let tieuDeTrang = t.tongQuan;
+  if (chiTietId) {
+    noiDung = <ChiTiet id={chiTietId} />;
+    tieuDeTrang = t.thietBi;
+  } else if (duong === '/thiet-bi') {
+    noiDung = <DsThietBi key={hash} />;
+    tieuDeTrang = t.thietBi;
+  } else if (duong === '/canh-bao' || canhBaoId) {
+    noiDung = <CanhBao moId={canhBaoId ?? null} />;
+    tieuDeTrang = t.tieuDeCanhBao;
+  } else if (duong === '/tai-khoan') {
+    noiDung = <TaiKhoan />;
+    tieuDeTrang = t.tkTieuDe;
+  } else if (duong === '/quan-tri-vien' && toi.quyen.includes('quan-tri-vien')) {
+    noiDung = <QuanTriVien />;
+    tieuDeTrang = t.quanTriVien;
+  } else {
+    noiDung = <TongQuan />;
+  }
+  const moiTruong = toi.moiTruong ?? '';
+  const laProd = /^prod/.test(moiTruong);
+  const conLai = toi.phien ? toi.phien.het - bayGio : 0;
 
   return (
     <Ctx.Provider value={ctx}>
-      <div className="khung">
-        <header className="dau-trang">
-          <a className="thuong-hieu" href="#/">
-            <img src="/favicon.svg" alt="" width="28" height="28" />
-            <span>{t.tieuDe}</span>
+      <NguonThongBao nhanDong={t.dong}>
+        <div className="khung" data-menu-mo={moMenu ? '' : undefined}>
+          <a className="bo-qua" href="#noi-dung-chinh">
+            {t.dieuHuong}
           </a>
-          <nav aria-label={t.dieuHuong} className="dieu-huong">
-            {muc
-              .filter(([, , hien]) => hien)
-              .map(([d, nhan]) => {
-                const dang = d === '/' ? duong === '/' || duong === '' : duong.startsWith(d);
-                return (
-                  <a key={d} href={`#${d}`} aria-current={dang ? 'page' : undefined}>
-                    {nhan}
-                  </a>
-                );
-              })}
-          </nav>
-          <div className="nguoi-dung">
-            <span className="email" title={tt.toi.email}>
-              {tt.toi.email}
-            </span>
-            <span className="the-vai-tro">{t.vaiTro[tt.toi.vaiTro] ?? tt.toi.vaiTro}</span>
-            {thanhCongCu}
-            <button type="button" className="nut nut-phu" onClick={dangXuat}>
-              {t.dangXuat}
-            </button>
+          <aside className="thanh-ben" aria-label={t.dieuHuong}>
+            <a className="thuong-hieu" href="#/">
+              <img src="/favicon.svg" alt="" width="28" height="28" />
+              <span>{t.tieuDe}</span>
+            </a>
+            <nav className="dieu-huong">
+              {nhom
+                .filter((g) => g.muc.length > 0)
+                .map((g) => (
+                  <div key={g.nhan} className="nhom-dieu-huong">
+                    <p className="nhom-nhan">{g.nhan}</p>
+                    {g.muc.map((m) => {
+                      const dang = m.d === '/' ? duong === '/' || duong === '' : duong.startsWith(m.d);
+                      return (
+                        <a key={m.d} href={`#${m.d}`} aria-current={dang ? 'page' : undefined} onClick={() => datMoMenu(false)}>
+                          <BieuTuong ten={m.bt} />
+                          <span>{m.nhan}</span>
+                          {m.dem ? <span className="huy-hieu">{m.dem > 99 ? '99+' : m.dem}</span> : null}
+                        </a>
+                      );
+                    })}
+                  </div>
+                ))}
+            </nav>
+            <div className="chan-thanh-ben">
+              <span className="email" title={toi.email}>
+                {toi.email}
+              </span>
+              <span className="the-vai-tro">{t.vaiTro[toi.vaiTro] ?? toi.vaiTro}</span>
+            </div>
+          </aside>
+          <div className="cot-chinh">
+            <header className="thanh-tren">
+              <button type="button" className="nut-bieu-tuong chi-hep" aria-label={t.moMenu} aria-expanded={moMenu} onClick={() => datMoMenu((m) => !m)}>
+                <BieuTuong ten="menu" />
+              </button>
+              <h1 className="tieu-de-thanh">{tieuDeTrang}</h1>
+              {moiTruong && <span className={laProd ? 'moi-truong mt-prod' : 'moi-truong'}>{t.moiTruongNhan(moiTruong)}</span>}
+              <button type="button" className="o-tim-lenh" onClick={() => datMoLenh(true)}>
+                <BieuTuong ten="tim" co={16} />
+                <span>{t.timLenh}</span>
+                <kbd>Ctrl K</kbd>
+              </button>
+              <div className="nhom-nut">
+                {toi.phien && (
+                  <span className={conLai < 30 * 60_000 ? 'dem-phien sap-het' : 'dem-phien'} title={t.phienHetLuc}>
+                    {t.phienConLai(dongHo(conLai))}
+                  </span>
+                )}
+                <button type="button" className="nut-bieu-tuong" onClick={doiNn} aria-label={t.lenhDoiNgonNgu} title={t.lenhDoiNgonNgu}>
+                  <BieuTuong ten="ngon-ngu" />
+                </button>
+                <button type="button" className="nut-bieu-tuong" onClick={doiChuDe} aria-label={laToi ? t.giaoDienSang : t.giaoDienToi} title={laToi ? t.giaoDienSang : t.giaoDienToi}>
+                  <BieuTuong ten={laToi ? 'mat-troi' : 'mat-trang'} />
+                </button>
+                <button type="button" className="nut-bieu-tuong" onClick={() => datMoPhim(true)} aria-label={t.phimTat} title={t.phimTat}>
+                  <BieuTuong ten="ban-phim" />
+                </button>
+                <button type="button" className="nut-bieu-tuong" onClick={dangXuat} aria-label={t.dangXuat} title={t.dangXuat}>
+                  <BieuTuong ten="dang-xuat" />
+                </button>
+              </div>
+            </header>
+            <VungDuLieu email={toi.email} muc={tc.thuyVan} cheKhiRoi={tc.cheKhiRoi} chuDe={laToi ? 'dark' : 'light'} nhanChe={t.noiDungDaChe}>
+              <main id="noi-dung-chinh" className="noi-dung" tabIndex={-1}>
+                {noiDung}
+              </main>
+            </VungDuLieu>
           </div>
-        </header>
-        <VungDuLieu email={tt.toi.email}>
-          <main className="noi-dung">{noiDung}</main>
-        </VungDuLieu>
-      </div>
+          <BangLenh mo={moLenh} dong={() => datMoLenh(false)} ds={dsLenh} t={t} di={di} />
+          <HopThoai mo={moPhim} tieuDe={t.phimTat} dong={() => datMoPhim(false)}>
+            <dl className="dl phim-tat">
+              {t.dsPhimTat.map(([k, mo]) => (
+                <div key={k} className="dl-dong">
+                  <dt>
+                    <kbd>{k}</kbd>
+                  </dt>
+                  <dd>{mo}</dd>
+                </div>
+              ))}
+            </dl>
+            <div className="hang-nut">
+              <button type="button" className="nut" onClick={() => datMoPhim(false)}>
+                {t.dong}
+              </button>
+            </div>
+          </HopThoai>
+        </div>
+      </NguonThongBao>
     </Ctx.Provider>
   );
 }

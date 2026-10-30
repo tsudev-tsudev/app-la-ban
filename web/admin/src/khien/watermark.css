@@ -1,33 +1,45 @@
+/* Thuỷ vân SOC (SH-04, S7a): một lớp nền canvas phía trên dữ liệu, độ mờ theo biến --do-mo-thuy-van (đặt qua CSSOM). */
 .vung-du-lieu {
   position: relative;
   min-height: 280px;
   isolation: isolate;
 }
 
-.watermark {
+.thuy-van {
   position: absolute;
   inset: 0;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 320px);
-  grid-auto-rows: 140px;
-  overflow: hidden;
+  z-index: 3;
   pointer-events: none;
   user-select: none;
+  background-repeat: repeat;
+  color: var(--lb-color-text);
+  opacity: var(--do-mo-thuy-van, 0.25);
+  transition: opacity var(--lb-motion-normal, 200ms) ease;
 }
 
-.watermark span {
-  align-self: center;
-  justify-self: center;
-  transform: rotate(-24deg);
-  white-space: nowrap;
-  font: var(--lb-type-caption);
-  color: var(--lb-color-text);
-  opacity: 0.12;
+/* Che dữ liệu khi rời cửa sổ (tuỳ chọn người xem): làm mờ mọi thứ trừ lớp thuỷ vân + thông báo. */
+.vung-du-lieu[data-che] > :not(.thuy-van, .man-che) {
+  filter: blur(12px);
+}
+
+.man-che {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  font: var(--lb-type-label);
+  color: var(--lb-color-text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .thuy-van {
+    transition: none;
+  }
 }
 
 @media print {
-  .watermark span {
-    opacity: 0.3;
+  .thuy-van {
+    opacity: 0.9;
   }
 }

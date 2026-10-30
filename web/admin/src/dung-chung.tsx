@@ -84,7 +84,8 @@ export function NhanTrangThai({ tt }: { tt: string }) {
 }
 
 export function MucDo({ muc }: { muc: string }) {
-  return <span className={`muc-do md-${muc}`}>{muc}</span>;
+  const { t } = useSoc();
+  return <span className={`muc-do md-${muc}`}>{t.mucDo[muc] ?? muc}</span>;
 }
 
 export function ThongBaoLoi({ loi, napLai }: { loi: LoiSoc; napLai: () => void }) {

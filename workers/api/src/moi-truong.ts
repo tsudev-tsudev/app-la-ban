@@ -40,6 +40,9 @@ export type Env = {
   SOC_NGUON?: string;
   /** Common name service token Access được coi là danh tính `svc:<cn>` (CHỈ staging, thử e2e). Rỗng = không nhận. */
   ACCESS_DICH_VU?: string;
+  /** Cảnh báo Telegram (S7a, `wrangler secret`): token bot + chat id. Thiếu một trong hai -> không gửi. */
+  TELEGRAM_BOT_TOKEN?: string;
+  TELEGRAM_CHAT_ID?: string;
 };
 
 export type BienYeuCau = {

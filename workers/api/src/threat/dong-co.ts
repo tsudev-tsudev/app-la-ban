@@ -9,6 +9,7 @@ import { congDiem, diemSuKien, diemTheoLo, trangThaiHieuLuc, ttlLeoThang, type C
 import { canDuyet, khopQuyTac, type LoaiDich } from '../thuan/thuc-thi';
 import { phatSoc } from '../do/phong-soc';
 import { lienKetThietBi } from './lien-ket';
+import { baoCanhBao, type CanhBaoMoi } from './telegram';
 import { napCauHinh, napChoPhep, napLuat, xoaDem } from './nap';
 
 export const TAC_NHAN = 'he-thong:threat-engine';
@@ -186,13 +187,15 @@ class PhienXuLy {
     }
   }
 
+  /** Gộp theo (rule, nhóm) khi còn open / ack (S7a); cảnh báo thật mức cao -> Telegram một lần. */
   private async canhBao(ruleId: string, muc: string, khoa: string, shadow: boolean): Promise<void> {
-    await this.db
+    const dong = await this.db
       .prepare(
-        "INSERT INTO alerts (id, rule_id, severity, group_key, shadow, first_ts, last_ts) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT (rule_id, group_key) WHERE status = 'open' DO UPDATE SET count = count + 1, last_ts = excluded.last_ts, shadow = min(shadow, excluded.shadow)",
+        "INSERT INTO alerts (id, rule_id, severity, group_key, shadow, first_ts, last_ts) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT (rule_id, group_key) WHERE status IN ('open', 'ack') DO UPDATE SET count = count + 1, last_ts = excluded.last_ts, shadow = min(shadow, excluded.shadow) RETURNING id, rule_id, severity, group_key, count, shadow, notified_at",
       )
       .bind(taoUlid(this.bayGio), ruleId, muc, khoa, shadow ? 1 : 0, this.bayGio, this.bayGio)
-      .run();
+      .first<CanhBaoMoi>();
+    if (dong) await baoCanhBao(this.env, this.db, dong, this.bayGio);
   }
 
   /** Enforcement tự động: bỏ qua khi đã có cái tương đương còn hiệu lực; TTL theo số lần bị chặn trước (không tính đã thu hồi). */
