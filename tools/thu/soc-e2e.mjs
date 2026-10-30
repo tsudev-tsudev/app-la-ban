@@ -131,6 +131,24 @@ const cb = await goi('/canh-bao?trangThai=tat-ca&limit=20');
 kiem('/canh-bao (S7a)', cb.status === 200 && Array.isArray(cb.du?.ds) && typeof cb.du?.dem === 'object', cb.du ? `${cb.du.ds.length} cảnh báo, D1 ${cb.du.ms} ms` : String(cb.status));
 const pk = await goi('/passkey');
 kiem('/passkey (S7a)', pk.status === 200 && (pk.du?.ds?.length ?? 0) >= 1, pk.du ? `${pk.du.ds.length} passkey` : String(pk.status));
+// S7b: rule + mô phỏng 7 ngày, danh sách chặn, cài đặt SOC trong /toi (chỉ đọc - không ghi lên staging).
+const quyen = toi.du?.quyen ?? [];
+kiem('/toi có caiDat (S7b)', typeof toi.du?.caiDat?.thuyVan?.bat === 'boolean', JSON.stringify(toi.du?.caiDat ?? null));
+if (quyen.includes('luat:xem')) {
+  const luat = await goi('/luat');
+  kiem('/luat (S7b)', luat.status === 200 && (luat.du?.ds?.length ?? 0) >= 5, luat.du ? luat.du.ds.map((x) => `${x.id}:${x.cheDo}`).join(' ') : String(luat.status));
+  const r = luat.du?.ds?.find((x) => x.id === 'R-003');
+  if (r) {
+    const t1 = Date.now();
+    const mp = await goi('/luat/mo-phong', { id: r.id, than: { ten: r.ten, dieuKien: r.dieuKien, cuaSo: r.cuaSo, nguong: r.nguong, hanhDong: r.hanhDong } });
+    kiem('/luat/mo-phong 7 ngày (S7b)', mp.status === 200 && mp.du?.theoNgay?.length >= 7, mp.du ? `${mp.du.soLanKichHoat} lần / ${mp.du.soSuKien} sự kiện, D1 ${mp.du.ms} ms, khứ hồi ${Date.now() - t1} ms` : String(mp.status));
+  }
+  const tt = await goi('/thuc-thi?trangThai=tat-ca&limit=20');
+  kiem('/thuc-thi (S7b)', tt.status === 200 && Array.isArray(tt.du?.ds), tt.du ? `${tt.du.ds.length} dòng, hiệu lực ${tt.du.dem.hieuLuc ?? 0}, chờ duyệt ${tt.du.dem.choDuyet ?? 0}, Under Attack ${tt.du.underAttack}` : String(tt.status));
+  kiem('/yeu-cau-duyet (S7b)', (await goi('/yeu-cau-duyet')).status === 200);
+  kiem('/cau-hinh-nguy-co (S7b)', (await goi('/cau-hinh-nguy-co')).status === 200);
+}
+kiem('/cai-dat-soc đúng quyền (S7b)', (await goi('/cai-dat-soc')).status === (quyen.includes('cai-dat-soc') ? 200 : 403));
 kiem('CSRF: thiếu x-soc -> 403', (await fetch(`${GOC}/api/phien/bat-dau`, { method: 'POST', headers: tieuDe({ 'content-type': 'application/json' }), body: '{}' })).status === 403);
 
 const ws = new WebSocket(`${GOC.replace('https', 'wss')}/api/ws`, { headers: tieuDe() });

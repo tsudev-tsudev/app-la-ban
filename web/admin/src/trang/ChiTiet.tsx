@@ -1,8 +1,13 @@
 // Chi tiết thiết bị (Spec §8.2 mục 2): thông tin, dòng thời gian sự kiện, lịch sử IP / ASN, thiết bị liên quan, lịch sử
-// chặn, khiếu nại. Chỉ Analyst trở lên (server trả 403 cho Viewer). Mỗi lần xem được ghi audit phía server.
-import { MucDo, NhanTrangThai, ThongBaoLoi, useTai } from '../dung-chung';
+// chặn, khiếu nại. Chỉ Analyst trở lên (server trả 403 cho Viewer). Mỗi lần xem được ghi audit phía server. S7b: Responder
+// trở lên chặn / hạn chế thiết bị, gỡ chặn, thu hồi phiên ngay tại đây (lý do + passkey).
+import { useState } from 'react';
+import { useThongBao } from '../giao-dien/ThongBao';
+import { MucDo, NhanTrangThai, ThongBaoLoi, useGhi, useTai } from '../dung-chung';
 import { dinhDangLuc } from '../i18n';
 import { useSoc } from '../ngu-canh';
+import { HopThoaiChan } from './CanThiep';
+import { HopThoaiLyDo } from './Luat';
 
 type ChiTietTb = {
   thietBi: Record<string, unknown> & { id: string; status: string; risk_score: number; attest_signals: unknown };
@@ -17,8 +22,12 @@ type ChiTietTb = {
 const TRUONG = ['platform', 'model', 'os_version', 'app_version', 'build', 'locale', 'attestation_level', 'country', 'first_seen', 'last_seen', 'attested_at', 'last_violation_at'];
 
 export function ChiTiet({ id }: { id: string }) {
-  const { t, nn } = useSoc();
+  const { t, nn, coQuyen } = useSoc();
+  const bao = useThongBao();
+  const ghi = useGhi();
   const ct = useTai<ChiTietTb>(`/thiet-bi/${encodeURIComponent(id)}`);
+  const [hop, datHop] = useState<'chan' | 'thu-hoi' | { go: string } | null>(null);
+  const canThiep = coQuyen('can-thiep');
   const quayLai = (
     <a className="nut nut-phu" href="#/thiet-bi">
       ← {t.quayLai}
@@ -49,6 +58,16 @@ export function ChiTiet({ id }: { id: string }) {
         <span className="the-diem">
           {t.cot.diem}: <strong>{tb.risk_score}</strong>
         </span>
+        {canThiep && (
+          <div className="hang-nut trai day-phai">
+            <button type="button" className="nut nut-nguy" onClick={() => datHop('chan')}>
+              {t.chanThietBi}
+            </button>
+            <button type="button" className="nut" disabled={d.phienHoatDong === 0} onClick={() => datHop('thu-hoi')}>
+              {t.thuHoiPhien}
+            </button>
+          </div>
+        )}
       </div>
 
       <section className="the">
@@ -167,6 +186,11 @@ export function ChiTiet({ id }: { id: string }) {
                 <span className="o-so-phu">
                   {dinhDangLuc(x.created_at, nn)} · {x.revoked_at ? `${t.thuHoi} ${dinhDangLuc(x.revoked_at, nn)}` : `${t.hetHan} ${dinhDangLuc(x.expires_at, nn)}`} · {x.created_by}
                 </span>
+                {canThiep && !x.revoked_at && x.expires_at > Date.now() && (
+                  <button type="button" className="nut nut-phu nut-nho" onClick={() => datHop({ go: x.id })}>
+                    {t.goChan}
+                  </button>
+                )}
               </li>
             ))}
           </ul>
@@ -190,6 +214,28 @@ export function ChiTiet({ id }: { id: string }) {
           </ul>
         )}
       </section>
+      <HopThoaiChan
+        mo={hop === 'chan'}
+        dichSan={{ loai: 'device', giaTri: tb.id }}
+        dong={() => datHop(null)}
+        xong={() => {
+          datHop(null);
+          ct.napLai();
+        }}
+      />
+      <HopThoaiLyDo
+        mo={hop !== null && hop !== 'chan'}
+        tieuDe={hop === 'thu-hoi' ? t.thuHoiPhien : t.goChan}
+        dong={() => datHop(null)}
+        xong={async (lyDo) => {
+          const kq = hop === 'thu-hoi' ? await ghi('/thiet-bi/thu-hoi-phien', { thietBi: tb.id, lyDo }) : hop && hop !== 'chan' ? await ghi('/thuc-thi/go', { ids: [hop.go], lyDo }) : null;
+          if (kq) {
+            bao(t.daLuu);
+            datHop(null);
+            ct.napLai();
+          }
+        }}
+      />
     </div>
   );
 }
