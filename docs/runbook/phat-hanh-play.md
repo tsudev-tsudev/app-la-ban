@@ -1,0 +1,53 @@
+# Runbook - phát hành Google Play (R2)
+
+Người dùng bấm trong Play Console (CLAUDE.md: agent KHÔNG tự đẩy lên store); agent chuẩn bị AAB + tài liệu.
+Tài khoản nhà phát triển Play dự kiến có từ 05/11/2026 (QUYET_DINH Q19) - tới lúc đó dừng ở bước 1.
+
+## 1. Chuẩn bị (agent, không cần Play Console)
+
+```bash
+./tools/build/build-aab.sh          # AAB prod ký khoá upload + kiểm quyền + đo download size -> build/phat-hanh/<pb>/
+./tools/build/anh-store.sh          # 6 ảnh x {light, dark} x {vi, en} 1080x1920 -> design/store/play/
+node tools/build/thuong-hieu.mjs    # icon 512 + ảnh nổi bật 1024x500 -> design/store/
+node tools/build/kiem-listing.mjs   # độ dài tên / mô tả ngắn / mô tả đầy đủ của docs/store/play-listing.md
+```
+
+- Biểu tượng `design/store/play-icon-512.png`, ảnh nổi bật `design/store/play-feature-1024x500.png` (PNG 24-bit, không alpha).
+- Ảnh điện thoại: tải bộ `light-1..6` (thứ tự = tên tệp), tối đa 8 ảnh / ngôn ngữ.
+- Listing: `docs/store/play-listing.md`; Data Safety: `docs/store/data-safety.md`; App access: `docs/store/ghi-chu-reviewer.md`.
+
+## 2. Tạo ứng dụng + Play App Signing (người dùng, một lần)
+
+1. Play Console > Create app: tên "La bàn - TsuDev Compass", ngôn ngữ mặc định Tiếng Việt, App, Free.
+2. Release > Setup > App signing > **"Use a different key" -> "Export and upload a key from Java keystore"**: tải
+   `pepk.jar` + khoá mã hoá của Google từ trang đó, chạy trên máy (KHÔNG chép khoá vào repo):
+   ```bash
+   java -jar pepk.jar --keystore=$HOME/.config/la-ban/android/upload.jks --alias=<keyAlias trong key.properties> \
+     --output=$HOME/.config/la-ban/android/play-signing.zip --include-cert --rsa-aes-encryption \
+     --encryption-key-path=<tệp khoá mã hoá tải từ Play>
+   ```
+   Lý do (Q34): khoá ký của Play = khoá đang ký APK tải trực tiếp -> người dùng beta cập nhật đè từ Play được, máy chủ giữ
+   nguyên `PI_CHUNG_CHI`. Sau đó (tuỳ chọn) đăng ký khoá upload mới cho Play để tách vai trò; khoá cũ vẫn ký APK ngoài.
+3. Ghi lại "App signing key certificate" SHA-256 trên Play = SHA-256 ở `build/phat-hanh/<pb>/kich-thuoc.txt`. Khác nhau ->
+   dừng, kiểm lại bước 2.
+4. Release > App integrity > Play Integrity API: **Link Cloud project `app-la-ban` (930761930572)** (Q35 - không đổi mã).
+
+## 3. Bản internal
+
+1. Testing > Internal testing > Create release > tải `build/phat-hanh/<pb>/la-ban-<pb>.aab`.
+2. Ký hiệu Dart (obfuscate) ở `~/.config/la-ban/android/symbols/<pb>/aab` - giải stack trace bằng `flutter symbolize`; mapping R8 Play tự nhận trong AAB.
+3. Testers: danh sách email (người dùng + máy thử). Release notes ở cuối `play-listing.md`.
+4. Cổng R2: cài từ link opt-in trên Galaxy M32 -> mở app -> SOC thấy thiết bị có phán quyết app `PLAY_RECOGNIZED`.
+5. Đo download size Play hiển thị (Android vitals > App size) và đối chiếu `kich-thuoc.txt`.
+
+## 4. Miễn trừ thiết bị duyệt / pre-launch (agent-laban, Worker)
+
+Thiết bị duyệt của Google và pre-launch report (Firebase Test Lab) có thể là giả lập / máy đã mở khoá -> điểm rủi ro cao.
+Không dùng định danh phần cứng (CLAUDE.md) -> thêm quy tắc cho phép (`choPhep`, khớp `asn`) ở SOC cho ASN của Google
+(AS15169, AS396982) trong thời gian duyệt, có hạn + lý do + audit; gỡ sau khi duyệt xong. Trạng thái `banned` (màn khoá)
+không bao giờ áp tự động cho thiết bị khớp quy tắc này.
+
+## 5. Sau duyệt
+
+- Trang `/tai-ve` landing: đổi nút "Google Play - sắp có" thành link Play (agent-laban).
+- Bản APK tải trực tiếp vẫn phát hành song song (Q34) - cùng `versionCode` tăng dần với bản Play.

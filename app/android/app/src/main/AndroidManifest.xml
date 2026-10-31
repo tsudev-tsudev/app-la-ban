@@ -1,6 +1,12 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
     <!-- S2: đăng ký thiết bị / phiên với compass-api (HTTPS). S3: cấm HTTP + chỉ CA hệ thống (xml/mang.xml). -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- R2 (QUYET_DINH Q46): gỡ quyền thư viện kéo theo mà app không cần.
+         READ_GSERVICES (fingerprint-android trong freeRASP) đọc GSF ID - định danh cố định, trái Q7; thiếu quyền thư viện bỏ qua nguồn này.
+         RECEIVE_BOOT_COMPLETED (truetime trong freeRASP) chỉ để xoá bộ đệm giờ khi khởi động lại máy - không cần chạy lúc boot. -->
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" tools:node="remove" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" tools:node="remove" />
     <application
         android:label="${appName}"
         android:allowBackup="false"

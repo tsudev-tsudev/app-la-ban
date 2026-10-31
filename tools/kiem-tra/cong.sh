@@ -38,6 +38,7 @@ node tools/build/icon.mjs
 node tools/build/icon-dart.mjs --check
 node tools/build/arb-gia.mjs --check
 node tools/build/goc-tin-cay.mjs --check
+node tools/build/kiem-listing.mjs >/dev/null || loi "listing Play sai (node tools/build/kiem-listing.mjs)"
 for f in design/fonts/*.ttf design/fonts/OFL.txt; do
   cmp -s "$f" "packages/design_system/fonts/$(basename "$f")" || loi "packages/design_system/fonts lệch design/fonts ($(basename "$f")) - chép lại"
 done

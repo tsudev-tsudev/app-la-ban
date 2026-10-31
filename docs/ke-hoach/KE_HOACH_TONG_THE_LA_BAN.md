@@ -71,7 +71,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 20 | S9 | Lớp bảo vệ nội dung web + build sạch | S8 | ✅ 29/10 (bdbd740; CSV audit ở S6) |
 | 21 | A8 | Cài đặt, quyền riêng tư, trợ năng, hiệu năng (chia A8a / A8b) | A7, S4 | 🟨 A8a ✅ 31/10 (0191b2d PR #34: quyền riêng tư + đồng ý NĐ 13, Q43; máy thật M32 đạt; chưa phát hành APK - gộp A8b) · A8b ✅ 31/10 (trợ năng + Reduce motion, Q45; v0.1.0-beta.10) |
 | 22 | S10 | Giám sát, log bất biến, backup, ứng phó sự cố | S7 | ⬜ |
-| 23 | R2 | Sẵn sàng store | A8, S4 | ⬜ |
+| 23 | R2 | Sẵn sàng store | A8, S4 | 🟡 R2a 31/10 (AAB + Data Safety + listing + ảnh store, Q46) · R2b chờ Play Console (05/11) |
 | 24 | R3 | QA tổng + kiểm thử bảo mật | R2, S9, S10 | ⬜ |
 | 25 | R4 | Phát hành v1.0.0 + OTA | R3 | ⬜ |
 | 26 | M1 | Quảng cáo + IAP (v1.1.0) sau Release Gate | R4 | ⬜ |
@@ -621,6 +621,18 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   `UNRECOGNIZED_VERSION` sang `PLAY_RECOGNIZED` cho bản tải từ Play (bản APK R0 vẫn đạt nhờ cùng chứng chỉ).
 - Ghi chú (Q33/Q34): phần iOS của thẻ này (scheme flavor, Codemagic, Privacy Manifest, `NS*UsageDescription`) chuyển sang I1.
   Play App Signing: chọn tải lên khoá upload R0 làm khoá ký ứng dụng để người đã cài APK thử cập nhật thẳng từ Play.
+- Kết quả R2a (31/10/2026, Q46, phần không cần Play Console): `tools/build/build-aab.sh` (AAB prod 3 ABI ký khoá upload,
+  so quyền manifest gộp với `docs/store/data-safety.md`, đo download size bằng bundletool trong cache Gradle); gỡ quyền thư
+  viện `READ_GSERVICES` (GSF ID qua fingerprint-android của freeRASP) + `RECEIVE_BOOT_COMPLETED` (truetime) - cài đè trên M32
+  (bundletool split ký khoá upload, giữ dữ liệu): freeRASP `libts.so` nạp, không crash. **Download size thật** (bản beta.10):
+  arm64 32,4 MB · armv7 29,0 MB · x86_64 31,0 MB (APK tải trực tiếp 33,0 MB) - vượt ngân sách 25 MB hoàn toàn do freeRASP
+  (`libts.so` 12,5 MB nén / arm64; phần còn lại ~20 MB: Flutter 5,2 · MapLibre 3,6 · Dart 2,6 · SQLCipher 1,9 · dex + tài
+  nguyên) - giữ theo Q13 / Q36. Listing vi / en (`docs/store/play-listing.md`, cổng kiểm độ dài + từ cấm), Data Safety,
+  ghi chú reviewer (en / vi), runbook `docs/runbook/phat-hanh-play.md` (PEPK, liên kết Play Integrity, internal track),
+  ảnh nổi bật 1024x500 + 24 ảnh điện thoại 1080x1920 (`./tools/build/anh-store.sh`, widget test `app/test_store`).
+- Còn lại R2b (sau khi có Play Console): tạo app + Play App Signing PEPK + internal track + phán quyết `PLAY_RECOGNIZED`
+  (runbook mục 2-3); agent-laban: quy tắc miễn trừ ASN Google cho thiết bị duyệt (runbook mục 4) + landing đổi nút Play;
+  TalkBack nghe đọc tay (người dùng).
 
 ### R3 - QA tổng
 - Đọc thêm: SEC-TEST.
