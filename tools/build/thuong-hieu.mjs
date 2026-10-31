@@ -240,6 +240,20 @@ function xuatWeb() {
   );
   ghi('web/landing/public/og.png', png(og, 1200));
   ghi('design/store/og-1200x630.png', png(og, 1200));
+
+  // Ảnh nổi bật Google Play 1024x500 (R2): không alpha, chữ ít, chủ thể giữa (Play có thể cắt mép / phủ nút phát).
+  const scP = 1.2;
+  const xP = (1024 - ng.w * scP) / 2;
+  const noiBat = svg(
+    1024,
+    500,
+    nenGradient('p', 1024, 500) +
+      `<circle cx="930" cy="60" r="200" fill="${MAU.cyan}" fill-opacity="0.12"/>` +
+      `<circle cx="90" cy="470" r="160" fill="${MAU.coral}" fill-opacity="0.10"/>` +
+      `<g transform="translate(${xP} 120) scale(${scP})">${ng.noiDung}</g>` +
+      `<text x="512" y="390" text-anchor="middle" font-family="Be Vietnam Pro" font-weight="700" font-size="34" fill="${MAU.chu}">Bắc thực chính xác · Ngoại tuyến · Riêng tư</text>`,
+  );
+  ghi('design/store/play-feature-1024x500.png', pngKhongAlpha(noiBat, 1024));
 }
 
 /** Ảnh xem trước icon trên launcher: 3 nền (sáng, tối, ảnh) x mặt nạ tròn / squircle / themed + bản dev, stg. */
