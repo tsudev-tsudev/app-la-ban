@@ -75,4 +75,35 @@ void main() {
     final doan = font.single.paragraphs.map((p) => p.text).join('\n');
     expect(doan, contains('SIL OPEN FONT LICENSE'));
   });
+
+  testWidgets('chuyển trang: có hoạt ảnh, Reduce motion thì hiện ngay', (
+    tester,
+  ) async {
+    for (final giam in [false, true]) {
+      final nav = GlobalKey<NavigatorState>();
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pumpWidget(
+        MaterialApp(
+          navigatorKey: nav,
+          theme: LbTheme.light,
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(disableAnimations: giam),
+            child: child!,
+          ),
+          home: const Text('1'),
+        ),
+      );
+      nav.currentState!.push(
+        MaterialPageRoute<void>(
+          builder: (_) => const Scaffold(body: Text('2')),
+        ),
+      );
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 60));
+      final giua = tester.getRect(find.text('2'));
+      await tester.pumpAndSettle();
+      final cuoi = tester.getRect(find.text('2'));
+      expect(giua == cuoi, giam, reason: 'giam=$giam');
+    }
+  });
 }

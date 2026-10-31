@@ -7,6 +7,10 @@ import 'thu_chung.dart';
 void main() {
   setUpAll(napFontThat);
 
+  testWidgets('trợ năng: vùng chạm, nhãn, tương phản', (tester) async {
+    await kiemTroNang(tester, (o) => banDoThu(const ManBanDo(), o: o));
+  });
+
   testWidgets('ma trận 12 kích thước x theme x ngôn ngữ x cỡ chữ: không tràn', (
     tester,
   ) async {

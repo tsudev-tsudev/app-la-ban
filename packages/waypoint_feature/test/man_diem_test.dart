@@ -21,6 +21,13 @@ final OMaTran o = (
 void main() {
   setUpAll(napFontThat);
 
+  testWidgets('trợ năng: vùng chạm, nhãn, tương phản', (tester) async {
+    await kiemTroNang(
+      tester,
+      (o) => dung(const ManDiem(), o, ghiDe(kho: KhoDiemBoNho(diemThu))),
+    );
+  });
+
   testWidgets('trống: ma trận không tràn', (tester) async {
     await kiemMaTran(tester, (o) => dung(const ManDiem(), o, ghiDe()));
   });

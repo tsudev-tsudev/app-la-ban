@@ -57,6 +57,10 @@ void main() {
     child: khungThu(const ManQuyenRiengTu(), o: o),
   );
 
+  testWidgets('trợ năng: vùng chạm, nhãn, tương phản', (tester) async {
+    await kiemTroNang(tester, dung);
+  });
+
   testWidgets('ma trận 12 kích thước x theme x ngôn ngữ x cỡ chữ: không tràn', (
     tester,
   ) async {

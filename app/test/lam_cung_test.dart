@@ -119,8 +119,15 @@ void main() {
   });
 
   test('trang khiếu nại theo ngôn ngữ', () {
-    expect(trangKhieuNai(const Locale('vi')).path, '/khieu-nai');
-    expect(trangKhieuNai(const Locale('en')).path, '/en/appeal');
+    expect(
+      trangKhieuNai(const Locale('vi')).toString(),
+      'https://compass.tsudev.com/khieu-nai/',
+    );
+    expect(
+      trangKhieuNai(const Locale('en'), ref: 'LB-7K2Q-9XWD').toString(),
+      'https://compass.tsudev.com/en/appeal/?ref=LB-7K2Q-9XWD',
+    );
+    expect(trangKhieuNai(const Locale('vi'), ref: '').hasQuery, isFalse);
   });
 
   group('apKhoa', () {
@@ -212,6 +219,19 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('chep-ref')));
     await tester.pumpAndSettle();
     expect(chep, _ref);
+    final mo = <String>[];
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      const MethodChannel('la_ban/thiet_bi'),
+      (c) async {
+        if (c.method == 'moTrang') {
+          mo.add((c.arguments as Map)['url'] as String);
+        }
+        return c.method == 'moTrang' ? true : null;
+      },
+    );
+    await tester.tap(find.byKey(const ValueKey('khieu-nai')));
+    await tester.pumpAndSettle();
+    expect(mo, ['https://compass.tsudev.com/khieu-nai/?ref=$_ref']);
   });
 
   testWidgets('HIGH: băng hạn chế + REF, la bàn vẫn dùng', (tester) async {
@@ -221,6 +241,16 @@ void main() {
     expect(find.byType(BangHanChe), findsOneWidget);
     expect(find.byKey(const ValueKey('tab/ban-do')), findsOneWidget);
     expect(find.byType(ManKhoa), findsNothing);
+    expect(find.byKey(const ValueKey('khieu-nai-han-che')), findsOneWidget);
+  });
+
+  testWidgets('trợ năng: màn khoá + băng hạn chế', (tester) async {
+    for (final t in [TrangThaiThietBi.banned, TrangThaiThietBi.restricted]) {
+      await kiemTroNang(tester, (o) {
+        datHeThong(tester, o);
+        return app(tt(t));
+      });
+    }
   });
 
   testWidgets('LOW / MEDIUM: không hiện gì', (tester) async {

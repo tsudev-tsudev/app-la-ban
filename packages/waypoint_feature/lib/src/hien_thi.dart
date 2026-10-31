@@ -55,3 +55,29 @@ void baoNhanh(BuildContext context, String chu) {
     ?..hideCurrentSnackBar()
     ..showSnackBar(SnackBar(content: Text(chu)));
 }
+
+/// Chữ chọn / chép được (nhấn giữ) với vùng chạm >= 48 dp cho TalkBack (A8b)
+/// - `SelectableText` một dòng chỉ cao ~24 dp.
+class ChuChonDuoc extends StatelessWidget {
+  const new(this.chu, {this.style, this.textAlign, super.key});
+
+  /// Nội dung.
+  final String chu;
+
+  /// Kiểu chữ.
+  final TextStyle? style;
+
+  /// Căn lề (mặc định đầu dòng).
+  final TextAlign? textAlign;
+
+  @override
+  Widget build(BuildContext context) => ConstrainedBox(
+    constraints: const BoxConstraints(minHeight: kMinInteractiveDimension),
+    child: Align(
+      alignment: textAlign == TextAlign.center
+          ? Alignment.center
+          : AlignmentDirectional.centerStart,
+      child: SelectableText(chu, style: style, textAlign: textAlign),
+    ),
+  );
+}

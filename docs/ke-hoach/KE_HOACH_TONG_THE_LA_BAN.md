@@ -69,7 +69,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 18 | R1 | Landing hoàn chỉnh (kéo lên làm cùng R0 theo yêu cầu người dùng) | N2 | ✅ 28/10 |
 | 19 | S8 | Bảo vệ edge web (CSP, header, WAF as code) | R1 | ✅ 29/10 (CSP nghiêm Report-Only tới 05/11; Access ở S6, Turnstile ở S7) |
 | 20 | S9 | Lớp bảo vệ nội dung web + build sạch | S8 | ✅ 29/10 (bdbd740; CSV audit ở S6) |
-| 21 | A8 | Cài đặt, quyền riêng tư, trợ năng, hiệu năng (chia A8a / A8b) | A7, S4 | 🟨 A8a ✅ 31/10 (0191b2d PR #34: quyền riêng tư + đồng ý NĐ 13, Q43; máy thật M32 đạt; chưa phát hành APK - gộp A8b) · A8b chưa |
+| 21 | A8 | Cài đặt, quyền riêng tư, trợ năng, hiệu năng (chia A8a / A8b) | A7, S4 | 🟨 A8a ✅ 31/10 (0191b2d PR #34: quyền riêng tư + đồng ý NĐ 13, Q43; máy thật M32 đạt; chưa phát hành APK - gộp A8b) · A8b ✅ 31/10 (trợ năng + Reduce motion, Q45; v0.1.0-beta.10) |
 | 22 | S10 | Giám sát, log bất biến, backup, ứng phó sự cố | S7 | ⬜ |
 | 23 | R2 | Sẵn sàng store | A8, S4 | ⬜ |
 | 24 | R3 | QA tổng + kiểm thử bảo mật | R2, S9, S10 | ⬜ |
@@ -585,6 +585,14 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   "Tổng quan Việt Nam" (cách tính tổng của MapLibre?) - A8b xem lại;
   (2) landing `/quyen-rieng-tu` mục 6 nên nêu Cài đặt > Quyền riêng tư trong app + lựa chọn ngoại tuyến (vùng web - phiên chính);
   (3) phát hành APK gộp A8b (tăng version beta.10).
+- Kết quả A8b (31/10, QUYET_DINH Q45): `kiemTroNang` (test_kit) chạy audit vùng chạm Android 48 dp / iOS 44 pt, nhãn nút,
+  tương phản chữ AA cho mọi màn chính ở sáng / tối, vi / en, chữ x1 / x2 - là phần của cổng; `ChuChonDuoc` thay
+  `SelectableText` (vùng chạm 48 dp). Reduce motion: mặt la bàn nhảy thẳng (`BoNoiSuyGoc.nhay`), chuyển trang hiện ngay
+  (`LbChuyenTrang`), logo + hiệu chuẩn tĩnh. Cold start: freeRASP / MapLibre / Camera đã lazy (sau khung đầu + cổng đồng ý;
+  nhánh tab dựng khi ghé). Màn khoá + băng hạn chế: nút khiếu nại mở landing kèm `?ref=` (S7c1). Phát hành v0.1.0-beta.10.
+- Phát sinh A8b: đo pin %/giờ + FPS 120 Hz + TalkBack tay trên máy thật (adb không thấy M32 lúc phát hành 31/10) -> nghiệm thu
+  sau / R2; dung lượng APK arm64 ~33 MB > ngân sách tải 25 MB - đo "download size" thật của AAB trên Play (nén + tách ABI)
+  ở R2 trước khi cắt tính năng; số 6,0 -> 5,9 MB vùng offline (A8a phát sinh 1) chưa xem.
 - Phát sinh (từ A5): màn Giấy phép thêm SQLCipher (BSD, Zetetic) + OpenSSL (Apache 2, bản Android) + drift / sqlite3 (MIT)
   vào `LicenseRegistry`; đo cold start gồm `KhoLuuTru.mo` (mở CSDL ở isolate nền, khoá Keystore) trên máy thật.
 

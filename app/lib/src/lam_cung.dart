@@ -207,12 +207,23 @@ class KhungRuiRo extends ConsumerWidget {
   }
 }
 
-/// Trang khiếu nại theo ngôn ngữ giao diện.
-Uri trangKhieuNai(Locale l) => Uri.parse(
-  l.languageCode == 'vi'
-      ? 'https://compass.tsudev.com/khieu-nai'
-      : 'https://compass.tsudev.com/en/appeal',
+/// Trang khiếu nại theo ngôn ngữ giao diện; [ref] điền sẵn mã REF vào form
+/// (S7c1, Q44).
+Uri trangKhieuNai(Locale l, {String? ref}) => Uri.https(
+  'compass.tsudev.com',
+  l.languageCode == 'vi' ? '/khieu-nai/' : '/en/appeal/',
+  ref == null || ref.isEmpty ? null : {'ref': ref},
 );
+
+/// Mở trang khiếu nại (kèm REF nếu có); không mở được -> báo SnackBar.
+Future<void> moKhieuNai(BuildContext context, String? ref) async {
+  final messenger = ScaffoldMessenger.maybeOf(context);
+  final loi = context.l10n.securityAppealOpenFailed;
+  final url = trangKhieuNai(Localizations.localeOf(context), ref: ref);
+  if (!await moTrangLaBan(url)) {
+    messenger?.showSnackBar(SnackBar(content: Text(loi)));
+  }
+}
 
 /// Mã REF + nút chép (không lộ nguyên nhân kỹ thuật - Spec §7.3).
 class _MaRef extends StatelessWidget {
@@ -302,6 +313,14 @@ class BangHanChe extends StatelessWidget {
                   alignment: AlignmentDirectional.centerStart,
                   child: _MaRef(ref),
                 ),
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: TextButton(
+                    key: const ValueKey('khieu-nai-han-che'),
+                    onPressed: () => moKhieuNai(context, ref),
+                    child: Text(l10n.securityAppeal),
+                  ),
+                ),
               ],
             ],
           ),
@@ -371,16 +390,7 @@ class _ManKhoaState extends State<ManKhoa> {
                   const SizedBox(height: 24),
                   FilledButton(
                     key: const ValueKey('khieu-nai'),
-                    onPressed: () async {
-                      final messenger = ScaffoldMessenger.maybeOf(context);
-                      final loi = l10n.securityAppealOpenFailed;
-                      final url = trangKhieuNai(
-                        Localizations.localeOf(context),
-                      );
-                      if (!await moTrangLaBan(url)) {
-                        messenger?.showSnackBar(SnackBar(content: Text(loi)));
-                      }
-                    },
+                    onPressed: () => moKhieuNai(context, ref),
                     child: Text(l10n.securityAppeal),
                   ),
                 ],

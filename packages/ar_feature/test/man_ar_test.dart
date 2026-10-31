@@ -66,6 +66,10 @@ Widget arThu({
 void main() {
   setUpAll(napFontThat);
 
+  testWidgets('trợ năng: vùng chạm, nhãn, tương phản', (tester) async {
+    await kiemTroNang(tester, (o) => arThu(o: o));
+  });
+
   testWidgets('ma trận: không tràn', (tester) async {
     await kiemMaTran(tester, (o) => arThu(o: o));
   });

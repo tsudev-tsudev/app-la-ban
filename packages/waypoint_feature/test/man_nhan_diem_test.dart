@@ -19,6 +19,13 @@ final String quaHan = maHoaToken(diemThu[0], hetHan: gioThu ~/ 1000 - 1);
 void main() {
   setUpAll(napFontThat);
 
+  testWidgets('trợ năng: vùng chạm, nhãn, tương phản', (tester) async {
+    await kiemTroNang(
+      tester,
+      (o) => dung(ManNhanDiem(token: hopLe, moDanhSach: () {}), o, ghiDe()),
+    );
+  });
+
   testWidgets('nhận link: ma trận không tràn + golden', (tester) async {
     await kiemMaTran(
       tester,

@@ -63,9 +63,7 @@ class ManChiTietDiem extends ConsumerWidget {
                 Text(l.wpCoords, style: chu.labelLarge?.copyWith(color: phu)),
                 Row(
                   children: [
-                    Expanded(
-                      child: SelectableText(toaDo, style: chu.bodyLarge),
-                    ),
+                    Expanded(child: ChuChonDuoc(toaDo, style: chu.bodyLarge)),
                     IconButton(
                       tooltip: l.wpCopyCoords,
                       icon: const LbIcon(IconDiem.saoChep),
@@ -89,7 +87,7 @@ class ManChiTietDiem extends ConsumerWidget {
                 if (d.ghiChu.isNotEmpty) ...[
                   const SizedBox(height: LbSpacing.md),
                   Text(l.wpNote, style: chu.labelLarge?.copyWith(color: phu)),
-                  SelectableText(d.ghiChu, style: chu.bodyLarge),
+                  ChuChonDuoc(d.ghiChu, style: chu.bodyLarge),
                 ],
                 NgheAnhDiem(
                   id: id,

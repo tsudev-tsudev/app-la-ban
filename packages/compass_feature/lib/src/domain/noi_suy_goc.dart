@@ -71,6 +71,13 @@ final class BoNoiSuyGoc {
     }
   }
 
+  /// Đặt góc tới [den] NGAY tại [tUs], không nội suy (Reduce motion - A8b).
+  /// Nhịp lô vẫn được đo để tắt Reduce motion giữa chừng nội suy tiếp mượt.
+  void nhay(double den, int tUs) {
+    dat(den, tUs);
+    _tu = _den;
+  }
+
   /// Góc hiện tại [0, 360) tại [tUs].
   double giaTri(int tUs) {
     final tu = _tu;

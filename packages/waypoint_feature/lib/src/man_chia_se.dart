@@ -5,6 +5,7 @@ import 'package:i18n/i18n.dart';
 import 'package:waypoint_feature/src/domain/diem_moc.dart';
 import 'package:waypoint_feature/src/domain/ma_qr.dart';
 import 'package:waypoint_feature/src/domain/token_chia_se.dart';
+import 'package:waypoint_feature/src/hien_thi.dart';
 import 'package:waypoint_feature/src/icon_diem.dart';
 import 'package:waypoint_feature/src/man_diem.dart';
 import 'package:waypoint_feature/src/providers.dart';
@@ -60,7 +61,7 @@ class _ManChiaSeState extends ConsumerState<ManChiaSe> {
             ),
           ),
           const SizedBox(height: LbSpacing.md),
-          SelectableText(
+          ChuChonDuoc(
             link,
             key: const ValueKey('link-chia-se'),
             style: chu.bodySmall,

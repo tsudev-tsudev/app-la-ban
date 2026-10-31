@@ -149,6 +149,13 @@ class _MatLaBanState extends State<MatLaBan>
   void didUpdateWidget(MatLaBan old) {
     super.didUpdateWidget(old);
     if (widget.phuongVi == old.phuongVi) return;
+    // Reduce motion: mặt số nhảy thẳng tới hướng mới, không quay trượt.
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _nhip.stop();
+      _noiSuy.nhay(widget.phuongVi, _bayGioUs);
+      _goc.value = _noiSuy.giaTri(_bayGioUs);
+      return;
+    }
     _noiSuy.dat(widget.phuongVi, _bayGioUs);
     if (!_nhip.isActive) _nhip.start();
   }
