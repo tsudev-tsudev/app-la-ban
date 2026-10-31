@@ -118,3 +118,11 @@ Kế thừa từ repo anh em (ban-do-3d / ubnd) - áp dụng vì cùng hạ tầ
   KHÁC (31/10: tài khoản xanuicam) -> `d1 migrations apply` báo không thấy D1, còn `wrangler secret put` thì lặng lẽ TẠO
   Worker rỗng cùng tên ở tài khoản kia. MỌI lệnh wrangler của repo này phải nạp `set -a; . ~/.config/la-ban/cf.env; set +a`
   trước (như `deploy-web.sh`), kiểm `npx wrangler whoami` ra Account ID `9541f44e...`. (S7c1)
+- DO COLD START RA CHE DO AN TOAN: app chỉ đánh dấu "ổn định" 5 s sau khung đầu (hoặc khi về nền); `am force-stop` sớm hơn
+  3 lần liền = canh gác crash tính là crash -> lần mở sau vào Chế độ an toàn (băng vàng, tắt tính năng mới). Đo cold start:
+  chờ >= 6 s trước mỗi `force-stop`; lỡ vào thì bấm "Thử chế độ thường" rồi mở lại. (A8b máy thật, 31/10/2026)
+- UIAUTOMATOR MAN LA BAN: `uiautomator dump` báo "could not get idle state" ở tab La bàn (nhãn hướng đổi theo cảm biến liên
+  tục) kể cả khi tắt hoạt ảnh - soát trợ năng màn này bằng widget test `kiemTroNang`, máy thật chỉ soát các màn khác. Lỗi
+  dump để lại `/sdcard/u.xml` CŨ -> `rm` trước mỗi lần dump. (A8b)
+- DO PIN KHI CAM CAP: `dumpsys battery unplug` + `batterystats --reset` cho số mAh ƯỚC TÍNH theo power profile (không phải
+  pin thật); xong nhớ `dumpsys battery reset`. (A8b)

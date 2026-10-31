@@ -590,9 +590,16 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   `SelectableText` (vùng chạm 48 dp). Reduce motion: mặt la bàn nhảy thẳng (`BoNoiSuyGoc.nhay`), chuyển trang hiện ngay
   (`LbChuyenTrang`), logo + hiệu chuẩn tĩnh. Cold start: freeRASP / MapLibre / Camera đã lazy (sau khung đầu + cổng đồng ý;
   nhánh tab dựng khi ghé). Màn khoá + băng hạn chế: nút khiếu nại mở landing kèm `?ref=` (S7c1). Phát hành v0.1.0-beta.10.
-- Phát sinh A8b: đo pin %/giờ + FPS 120 Hz + TalkBack tay trên máy thật (adb không thấy M32 lúc phát hành 31/10) -> nghiệm thu
-  sau / R2; dung lượng APK arm64 ~33 MB > ngân sách tải 25 MB - đo "download size" thật của AAB trên Play (nén + tách ABI)
-  ở R2 trước khi cắt tính năng; số 6,0 -> 5,9 MB vùng offline (A8a phát sinh 1) chưa xem.
+- Nghiệm thu A8b máy thật M32 (31/10, beta.10 release arm64, Android 13, cáp USB): cold start 612-773 ms (lần đầu sau cài
+  2,1 s); uiautomator soát Bản đồ / Điểm / Cài đặt / Quyền riêng tư / Giấy phép: mọi nút có nhãn, vùng chạm >= 48 dp (tab La
+  bàn không đạt idle vì nhãn hướng đổi liên tục - đã có widget test); tắt 3 thang hoạt ảnh -> mở Quyền riêng tư: ảnh chụp
+  ngay sau chạm đã ở vị trí cuối; pin 30 phút tab La bàn (`battery unplug`, ước tính power profile): app 94,5 mAh, trong đó
+  màn hình 91,3 + cảm biến 2,86 -> phần app ~0,13 %/giờ + CPU (máy không định giá CPU, fg 9 phút 47 giây / 30 phút, ước
+  ~1 %/giờ) < 3 %/giờ. FPS không đo lại (A8b không đổi đường vẽ; A3: 60 Hz 58 FPS rớt 0,35 %). Bẫy mới: DO COLD START RA
+  CHE DO AN TOAN, UIAUTOMATOR MAN LA BAN, DO PIN KHI CAM CAP.
+- Phát sinh A8b -> R2: APK arm64 ~33 MB > ngân sách tải 25 MB - đo "download size" thật của AAB trên Play (nén + tách ABI)
+  trước khi cắt tính năng; đo pin thật không cắm cáp (Wi-Fi adb) để có số CPU; TalkBack nghe đọc bằng tay (người dùng);
+  số 6,0 -> 5,9 MB vùng offline (A8a phát sinh 1) chưa xem.
 - Phát sinh (từ A5): màn Giấy phép thêm SQLCipher (BSD, Zetetic) + OpenSSL (Apache 2, bản Android) + drift / sqlite3 (MIT)
   vào `LicenseRegistry`; đo cold start gồm `KhoLuuTru.mo` (mở CSDL ở isolate nền, khoá Keystore) trên máy thật.
 

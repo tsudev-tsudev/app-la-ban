@@ -120,3 +120,4 @@ Format: `[YYYY-MM-DD HH:MM] agent-X | LOẠI | nội dung` - LOẠI ∈ {QUYẾT
 [2026-10-31 10:22] agent-laban-app | BÀN GIAO HGLB-1031-102239 → agent-laban | landing | Ghi chu A8b | Main 531e58a co A8b (chi app/ packages/ + docs). Man khoa + bang han che da mo /khieu-nai/?ref=<REF> (en /en/appeal/?ref=) theo S7c1. Landing /tai-ve da deploy beta.10. QUYET_DINH Q45 = A8b; so tiep theo Q46.
 [2026-10-31 10:22] ĐÓNG HGLB-1031-010345
 [2026-10-31 10:22] ĐÓNG HGLB-1031-015837
+[2026-10-31 12:10] Nghiem thu may that A8b M32 31/10 (beta.10 release): cold start 612-773 ms; uiautomator 5 man 0 loi nhan / vung cham; tat hoat anh -> chuyen trang hien ngay; pin 30 phut tab La ban ~0,13 %/gio ngoai man hinh + CPU uoc ~1 %/gio (< 3 %). Bay moi: force-stop < 5 s x3 -> che do an toan (DO COLD START RA CHE DO AN TOAN). find NGHIEM THU A8B
