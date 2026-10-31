@@ -92,7 +92,7 @@ class _ManNhanDiemState extends ConsumerState<ManNhanDiem> {
               Text(d.ten, style: chu.headlineSmall),
               const SizedBox(height: LbSpacing.md),
               Text(l.wpCoords, style: chu.labelLarge?.copyWith(color: phu)),
-              SelectableText(toaDo, style: chu.bodyLarge),
+              ChuChonDuoc(toaDo, style: chu.bodyLarge),
               if (d.caoDo != null)
                 Text(
                   l.wpAltValue(double.parse(d.caoDo!.toStringAsFixed(1))),

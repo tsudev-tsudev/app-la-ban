@@ -182,6 +182,27 @@ void main() {
     );
   });
 
+  testWidgets('trợ năng: giới thiệu + khung 4 tab (vùng chạm, nhãn, tương '
+      'phản)', (tester) async {
+    await kiemTroNang(tester, (o) {
+      datHeThong(tester, o);
+      return appThu(daXem: false);
+    });
+    for (final t in ['/la-ban', '/ban-do', '/diem', '/cai-dat']) {
+      await kiemTroNang(
+        tester,
+        (o) {
+          datHeThong(tester, o);
+          return appThu();
+        },
+        truocKhiKiem: () async {
+          await tester.tap(find.byKey(ValueKey('tab$t')));
+          await tester.pump(const Duration(seconds: 1));
+        },
+      );
+    }
+  });
+
   testWidgets('golden: khung app + giới thiệu', (tester) async {
     await chupGolden(tester, 'khung_app', (o) {
       datHeThong(tester, o);

@@ -77,6 +77,10 @@ const _the = Scaffold(
 void main() {
   setUpAll(napFontThat);
 
+  testWidgets('trợ năng: vùng chạm, nhãn, tương phản', (tester) async {
+    await kiemTroNang(tester, (o) => dung(o, const ManViTri(), ghiDe()));
+  });
+
   testWidgets('ma trận màn chi tiết: không tràn', (tester) async {
     await kiemMaTran(tester, (o) => dung(o, const ManViTri(), ghiDe()));
   });

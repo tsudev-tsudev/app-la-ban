@@ -176,6 +176,16 @@ void main() {
       expect(b.giaTri(208000), closeTo(dangHien, 1e-9));
     });
 
+    test('nhảy (Reduce motion): tới đích ngay, rồi nội suy tiếp từ đó', () {
+      final b = BoNoiSuyGoc(heSoKeo: 1)
+        ..dat(0, 0)
+        ..nhay(90, 200000);
+      expect(b.giaTri(200000), closeTo(90, 1e-9));
+      b.dat(100, 216000);
+      expect(b.giaTri(216000), closeTo(90, 1e-9));
+      expect(b.giaTri(224000), closeTo(95, 1e-9));
+    });
+
     test('hệ số kéo mặc định: tới đích sau 1,25 khoảng', () {
       final b = BoNoiSuyGoc()
         ..dat(0, 0)

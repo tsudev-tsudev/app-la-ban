@@ -56,6 +56,16 @@ Override coHuong(HuongDoc h) =>
 void main() {
   setUpAll(napFontThat);
 
+  testWidgets('trợ năng: vùng chạm, nhãn, tương phản', (tester) async {
+    await kiemTroNang(
+      tester,
+      (o) => dung(o, [
+        coHuong(doc(muc: MucTinCay.thap, nhieuTu: true)),
+        ...coViTri,
+      ]),
+    );
+  });
+
   testWidgets('ma trận 12 kích thước x theme x ngôn ngữ x cỡ chữ: không tràn', (
     tester,
   ) async {
@@ -92,6 +102,49 @@ void main() {
     expect(find.text('Độ tin cậy: Cao'), findsOneWidget);
     expect(find.text('Ngóc 3° · Nghiêng -2°'), findsOneWidget);
     expect(find.bySemanticsLabel('Hướng 127 độ, Đông Nam'), findsOneWidget);
+  });
+
+  testWidgets('giảm chuyển động: mặt số nhảy thẳng tới hướng mới', (
+    tester,
+  ) async {
+    Widget mat(double pv, {required bool giam}) => khungThu(
+      MediaQuery(
+        data: MediaQueryData(disableAnimations: giam),
+        child: Builder(
+          builder: (context) => MatLaBan(
+            phuongVi: pv,
+            canh: 200,
+            nhan8: const ['B', 'ĐB', 'Đ', 'ĐN', 'N', 'TN', 'T', 'TB'],
+            mau: MauMatLaBan.tuTheme(context),
+          ),
+        ),
+      ),
+      o: oChup.first,
+    );
+    double goc() => tester
+        .widget<Transform>(
+          find.descendant(
+            of: find.byType(MatLaBan),
+            matching: find.byType(Transform),
+          ),
+        )
+        .transform
+        .getRotation()
+        .entry(1, 0);
+
+    await tester.pumpWidget(mat(0, giam: true));
+    await tester.pumpWidget(mat(90, giam: true));
+    await tester.pump();
+    // sin(-90°): đã tới đích ngay khung đầu, không còn khung nào chờ vẽ.
+    expect(goc(), closeTo(-1, 1e-6));
+    expect(tester.binding.hasScheduledFrame, isFalse);
+
+    await tester.pumpWidget(mat(180, giam: false));
+    await tester.pump();
+    expect(goc(), closeTo(-1, 1e-6));
+    expect(tester.binding.hasScheduledFrame, isTrue);
+    await tester.pumpAndSettle();
+    expect(goc(), closeTo(0, 1e-6));
   });
 
   testWidgets('đang khởi động / không có la bàn / lỗi khác', (tester) async {

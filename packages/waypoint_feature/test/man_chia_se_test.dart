@@ -16,6 +16,24 @@ final OMaTran o = (
 void main() {
   setUpAll(napFontThat);
 
+  testWidgets('trợ năng: vùng chạm, nhãn, tương phản', (tester) async {
+    await kiemTroNang(
+      tester,
+      (o) => dung(ManChiaSe(diem: diemThu[0]), o, ghiDe()),
+    );
+  });
+
+  testWidgets('trợ năng: chi tiết điểm', (tester) async {
+    await kiemTroNang(
+      tester,
+      (o) => dung(
+        const ManChiTietDiem(id: 'a'),
+        o,
+        ghiDe(kho: KhoDiemBoNho(diemThu)),
+      ),
+    );
+  });
+
   testWidgets('chia sẻ: ma trận không tràn + golden', (tester) async {
     await kiemMaTran(
       tester,
@@ -37,7 +55,12 @@ void main() {
     );
     await tester.pumpAndSettle();
     String link() => tester
-        .widget<SelectableText>(find.byKey(const ValueKey('link-chia-se')))
+        .widget<SelectableText>(
+          find.descendant(
+            of: find.byKey(const ValueKey('link-chia-se')),
+            matching: find.byType(SelectableText),
+          ),
+        )
         .data!;
     const bayGio = gioThu ~/ 1000;
     var g = giaiMaToken(tokenTuLink(link())!, bayGio: bayGio);

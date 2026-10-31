@@ -36,6 +36,14 @@ Widget dung(OMaTran o, List<Override> ghiDe) => ProviderScope(
 void main() {
   setUpAll(napFontThat);
 
+  testWidgets('trợ năng: vùng chạm, nhãn, tương phản', (tester) async {
+    await kiemTroNang(
+      tester,
+      (o) =>
+          dung(o, [huongProvider.overrideWith((ref) => Stream.value(doc()))]),
+    );
+  });
+
   testWidgets('ma trận: không tràn', (tester) async {
     await kiemMaTran(
       tester,

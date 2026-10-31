@@ -107,6 +107,11 @@ abstract final class LbTheme {
       textTheme: chu,
       iconTheme: IconThemeData(color: c.text, size: 24),
       extensions: [ext],
+      pageTransitionsTheme: PageTransitionsTheme(
+        builders: {
+          for (final p in TargetPlatform.values) p: const LbChuyenTrang(),
+        },
+      ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: c.surface,
         indicatorColor: c.primary.withValues(alpha: 0.24),
@@ -152,6 +157,33 @@ abstract final class LbTheme {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Chuyển trang mặc định của nền tảng, trừ khi bật Reduce motion / "Xoá hoạt
+/// ảnh" (A8b): khi đó trang mới hiện ngay, không trượt / phóng. Vẫn đi qua
+/// builder mặc định với hoạt ảnh đứng yên nên giữ cử chỉ vuốt lùi của iOS.
+class LbChuyenTrang extends PageTransitionsBuilder {
+  const new();
+
+  static const _macDinh = PageTransitionsTheme();
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    final giam = MediaQuery.disableAnimationsOf(context);
+    return _macDinh.buildTransitions(
+      route,
+      context,
+      giam ? kAlwaysCompleteAnimation : animation,
+      giam ? kAlwaysDismissedAnimation : secondaryAnimation,
+      child,
     );
   }
 }
