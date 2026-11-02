@@ -627,7 +627,7 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   bucket policy"; đột biến 5xx / 4xx / từ chối / attestation lỗi / phát lại từ Analytics Engine -> Telegram (chống lặp KV),
   việc định kỳ lỗi -> Telegram; security.txt có `Policy` + trang `/bao-cao-lo-hong/` `/en/security/`; runbook
   `ung-pho-su-co.md` (NĐ 13: 72 giờ) / `sao-luu-khoi-phuc.md` / `xoay-khoa.md`. **Diễn tập staging đạt**: 12 bảng khớp số
-  dòng, RTO 52 s; chuỗi nhật ký nguyên vẹn. Test mới: 11 Worker (thuần + tích hợp workerd) + 2 tools.
+  dòng, RTO 52 s; **prod đạt** (bản 02/11 kích tay `cron=thu:sao-luu`): 13 bảng, RTO 35 s; chuỗi nhật ký nguyên vẹn cả hai. Test mới: 11 Worker (thuần + tích hợp workerd) + 2 tools.
   CHƯA (người dùng): bot Telegram (`TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID`) + token chỉ Account Analytics Read
   (`CF_AE_TOKEN`) -> mới đo được "cảnh báo thử < 2 phút"; sao lưu khoá riêng ra ngoài máy.
 

@@ -1,10 +1,9 @@
 # Trạng thái SỐNG - quy trình: AGENTS_KICKOFF.md · lệnh: `./agents.sh help`
 
 ## LOCKS (chỉ tệp ĐANG sửa - xoá ngay khi xong)
-- agent-laban · workers/api, tools/sao-luu, tools/cloudflare, web/landing, docs/runbook · S10a
 
 ## Lưu ý đang hiệu lực (<= 8 dòng)
-- WRANGLER OAUTH SAI TAI KHOAN: luon nap ~/.config/la-ban/cf.env truoc moi lenh wrangler (OAuth may dang o tai khoan repo khac -> secret put tao Worker rac). find WRANGLER OAUTH
+- WRANGLER OAUTH SAI TAI KHOAN: luon 'set -a; . ~/.config/la-ban/cf.env; set +a' (source tran KHONG export) truoc moi lenh wrangler (OAuth may dang o tai khoan repo khac -> secret put tao Worker rac). find WRANGLER OAUTH
 - GITLEAKS CHUA CAI: cong.sh bo qua gitleaks khi khong co lenh; secretlint khong bat JWT -> cong co buoc git grep JWT rieng. Test can token thi ghep luc chay. find GITGUARDIAN
 - PHAT HANH APK: tăng version pubspec + phienBanApp -> PR -> ./tools/build/phat-hanh-apk.sh (main sạch) -> deploy-web.sh landing. Khoá upload ~/.config/la-ban/android/ NGOÀI repo. find PHAT HANH APK
 - GRADLE HOME + GH TOKEN: export GRADLE_USER_HOME=~/tools/java/gradle-home; gh: GH_TOKEN=$(gh auth token --user tsudev-tsudev) (active account khác). find GRADLE HOME
