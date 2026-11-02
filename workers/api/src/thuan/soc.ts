@@ -26,6 +26,13 @@ export const QUYEN = {
   'khieu-nai:xem': 'analyst',
   'khieu-nai:xu-ly': 'responder',
   'audit:xem': 'security_admin',
+  // S7c2: báo cáo (trang tổng hợp không PII -> viewer; xuất CSV -> analyst + passkey + audit; email liên hệ nguyên văn
+  // trong CSV -> security_admin), Remote Config ký số (xem -> analyst; đề xuất + duyệt four-eyes -> security_admin).
+  'bao-cao:xem': 'viewer',
+  'bao-cao:xuat': 'analyst',
+  'bao-cao:lien-he': 'security_admin',
+  'cau-hinh-tu-xa:xem': 'analyst',
+  'cau-hinh-tu-xa:sua': 'security_admin',
   'quan-tri-vien': 'super_admin',
   'cai-dat-soc': 'super_admin',
 } as const satisfies Record<string, VaiTro>;

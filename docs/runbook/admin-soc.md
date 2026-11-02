@@ -107,3 +107,24 @@ bằng khoá phần mềm trong script thử (`tools/thu/soc-e2e.mjs`). Prod KH�
   KHÔNG sửa lại tay; chụp kết quả, xuất bản sao D1 (`npx wrangler d1 export la-ban --remote --output=...`) ra ngoài repo,
   báo Super Admin khác, xem `wrangler` / Cloudflare audit log của tài khoản để tìm ai có quyền D1. Lượt kiểm nào cũng
   thành một dòng `audit:kiem`. Giới hạn: xoá dòng CUỐI chuỗi chưa phát hiện được (mốc neo ngoài D1 làm ở S10).
+
+## S7c2 - báo cáo + Remote Config ký số + kill-switch (QUYET_DINH Q47)
+
+- **Khoá ký cho SOC (một lần / mỗi môi trường, người giữ khoá làm)** - chính khoá ngoại tuyến, KHÔNG sinh khoá mới (app chỉ
+  tin `app-1`, web chỉ tin `web-1`):
+  `set -a; . ~/.config/la-ban/cf.env; set +a; cd workers/api` rồi
+  `npx wrangler secret put KHOA_KY_APP --env staging < ~/.config/la-ban/cau-hinh/app-1.pem` (tương tự `KHOA_KY_WEB` với
+  `web-1.pem`; prod: `--env=`). Thiếu / sai khoá -> trang **Cấu hình từ xa** báo "chưa có khoá ký", duyệt trả 503.
+  Rút quyền ký online: `npx wrangler secret delete KHOA_KY_APP` - công cụ ngoại tuyến vẫn dùng được.
+- **Cấu hình từ xa** (`g r`, analyst xem, Security Admin đề xuất / duyệt): form điền sẵn từ gói đang phục vụ, bảng
+  "Thay đổi" so với hiện tại. Đề xuất cần lý do + passkey; một yêu cầu chờ / mục; hết hạn sau 24 giờ. Người thứ hai duyệt
+  -> Worker ký + ghi KV ngay. App nhận khi mở / làm mới (đệm KV <= ~60 s), khiên web <= 5 phút. Tình huống khẩn (tắt AR /
+  bản đồ do lỗi, nâng mã tối thiểu sau bản vá bảo mật): đề xuất rồi gọi Security Admin thứ hai. CA mới (Google / Let's
+  Encrypt đổi gốc) -> công cụ ngoại tuyến `ky-cau-hinh.mjs dua-len-app --goc-them` (SOC không nhận PEM); gói do công cụ
+  ký không có trong "Lịch sử gói đã ký" (chỉ gói SOC ký) - ghi chú vào audit bằng một yêu cầu bất kỳ nếu cần dấu vết.
+- **Báo cáo** (`g b`): chọn khoảng (<= 92 ngày, giờ VN) -> **In / lưu PDF** (trình duyệt, chọn "Lưu dưới dạng PDF"; thuỷ
+  vân in kèm). **Xuất CSV** (analyst trở lên): passkey + một dòng audit `bao-cao:xuat` mỗi lần; mở bằng Excel đúng tiếng
+  Việt (BOM); ô bắt đầu bằng `= + - @` bị thêm `'`. Email liên hệ khiếu nại chỉ Security Admin thấy nguyên văn.
+- **Đo kill-switch** (staging): `node tools/thu/soc-e2e.mjs https://staging.la-ban-admin.pages.dev --kill-switch` (service
+  token cần vai trò responder trở lên) - đăng ký thiết bị thử, gọi API ký liên tục, SOC cấm, đo tới yêu cầu đầu bị 403
+  (chỉ tiêu <= 5 s), rồi gỡ chặn. Dọn thiết bị thử `model = 'node'` như `dinh-danh-e2e.mjs`.

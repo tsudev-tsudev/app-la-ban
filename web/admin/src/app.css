@@ -1851,3 +1851,105 @@ a.o-dem {
     gap: 0;
   }
 }
+
+/* S7c2: báo cáo + Remote Config */
+.luoi-bao-cao {
+  display: grid;
+  gap: var(--lb-space-md);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  margin-block: var(--lb-space-md);
+}
+
+.bao-cao-noi-dung {
+  display: grid;
+  gap: var(--lb-space-md);
+}
+
+.bao-cao-dau h2 {
+  margin: 0;
+}
+
+.bao-cao-dau p {
+  margin: var(--lb-space-xxs) 0 0;
+}
+
+.bao-cao .cot-ngay {
+  overflow-x: auto;
+}
+
+.bang td.so,
+.bang th.so {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.bang-khac caption {
+  text-align: start;
+  font: var(--lb-type-label);
+  padding-block-end: var(--lb-space-xxs);
+}
+
+.bang-khac del {
+  color: var(--lb-color-text-muted);
+}
+
+.bang-khac ins {
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.cau-hinh-tu-xa fieldset {
+  border: 1px solid var(--lb-color-outline);
+  border-radius: var(--lb-radius-sm);
+  padding: var(--lb-space-sm);
+  margin: 0;
+  min-inline-size: 0;
+}
+
+.cau-hinh-tu-xa fieldset[disabled] {
+  opacity: 0.75;
+}
+
+.the-con {
+  border: 1px solid var(--lb-color-outline);
+  border-radius: var(--lb-radius-sm);
+  padding: var(--lb-space-sm);
+  overflow-wrap: anywhere;
+}
+
+.the-con p {
+  margin: 0 0 var(--lb-space-xxs);
+}
+
+/* In / lưu PDF trang báo cáo: chỉ nội dung báo cáo, nền trắng, không bóng; thuỷ vân giữ nguyên (watermark.css). */
+@media print {
+  .thanh-ben,
+  .thanh-tren,
+  .bo-qua,
+  .khong-in,
+  .bo-loc {
+    display: none !important;
+  }
+
+  .khung,
+  .cot-chinh,
+  .noi-dung {
+    display: block;
+    padding: 0;
+    margin: 0;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .the {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+
+  .luoi-bao-cao {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

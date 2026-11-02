@@ -4,7 +4,9 @@ import { Hono } from 'hono';
 import type { MoiTruongHono } from '../moi-truong';
 import { gioiHanRoute } from '../mw/gioi-han';
 import { dsQuyen, type VaiTro } from '../thuan/soc';
+import { dangKyBaoCao } from './bao-cao';
 import { dangKyCaiDat, napCaiDatSoc } from './cai-dat';
+import { dangKyCauHinhTuXa } from './cau-hinh-tu-xa';
 import { dangKyCanThiep } from './can-thiep';
 import { dangKyCanhBao } from './canh-bao';
 import { dangKyDuLieu } from './du-lieu';
@@ -55,6 +57,8 @@ export function taoAdmin(): Hono<MoiTruongHono> {
   dangKyCanThiep(r);
   dangKyCaiDat(r);
   dangKyKhieuNai(r);
+  dangKyBaoCao(r);
+  dangKyCauHinhTuXa(r);
   dangKyQuanTriVien(r);
   return r;
 }

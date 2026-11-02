@@ -8,6 +8,7 @@ import { dongBoLists } from '../../src/threat/dong-bo-lists';
 import { xuLySuKien, type NguCanhSuKien, type SuKienVao } from '../../src/threat/dong-co';
 import { xoaDem } from '../../src/threat/nap';
 import { kiemChuoiAudit } from '../../src/thuan/audit';
+import { KHOA_CONG_KHAI } from '../../src/thuan/cau-hinh-tu-xa';
 import { taoUlid } from '../../src/thuan/dinh-danh';
 
 export { KhoNonce, GioiHanToc, PhongSoc } from '../../src/index';
@@ -74,6 +75,12 @@ app.post('/thu/dong-bo', async (c) => {
   }) as typeof fetch;
   const env = { ...c.env, MOI_TRUONG: 'prod', CF_LISTS_TOKEN: 't', CF_ACCOUNT_ID: 'a', CF_LIST_ID: 'l' };
   return c.json({ kq: await dongBoLists(env, b.bayGio, gia), goi });
+});
+
+// S7c2: thay khoá công khai app-1 / web-1 bằng khoá thử (test giữ khoá bí mật tương ứng ở binding KHOA_KY_*).
+app.post('/thu/khoa-cong-khai', async (c) => {
+  Object.assign(KHOA_CONG_KHAI, (await c.req.json()) as Record<string, string>);
+  return c.json({});
 });
 
 export default handler;

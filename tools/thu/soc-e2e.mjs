@@ -5,7 +5,7 @@
 // Chạy: node tools/thu/soc-e2e.mjs [https://staging.la-ban-admin.pages.dev]
 // Cần: ~/.config/la-ban/cau-hinh/access-svc-e2e.json (tools/cloudflare/access.mjs --apply) + dòng admin_users
 // 'svc:<client_id>' ở D1 staging. Khoá passkey thử lưu ~/.config/la-ban/cau-hinh/soc-e2e-passkey.json (lần sau đăng nhập).
-/* global URL, WebSocket, setTimeout, clearTimeout */
+/* global URL, WebSocket, setTimeout, clearTimeout, crypto */
 import { createHash, generateKeyPairSync, createPrivateKey, randomBytes, sign } from 'node:crypto';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
@@ -162,6 +162,76 @@ if (quyen.includes('audit:xem')) {
   kiem('/audit/kiem chuỗi nguyên vẹn (S7c1)', ke.status === 200 && ke.du?.nguyenVen === true, ke.du ? `${ke.du.soDongDung} dòng, Worker ${ke.du.ms} ms, khứ hồi ${Date.now() - t2} ms` : String(ke.status));
 } else {
   kiem('/audit đúng quyền (S7c1)', (await goi('/audit')).status === 403);
+}
+// S7c2: Remote Config (đọc), báo cáo tổng hợp + CSV (xuất thêm đúng một dòng audit bao-cao:xuat, chấp nhận trên staging).
+if (quyen.includes('cau-hinh-tu-xa:xem')) {
+  const ch = await goi('/cau-hinh-tu-xa');
+  kiem('/cau-hinh-tu-xa (S7c2)', ch.status === 200 && typeof ch.du?.coKhoa?.app === 'boolean', ch.du ? `app chữ ký ${ch.du.app.chuKyDung}, web chữ ký ${ch.du.web.chuKyDung}, khoá ký app ${ch.du.coKhoa.app} / web ${ch.du.coKhoa.web}, bản mới ${ch.du.banMoi}` : String(ch.status));
+}
+if (quyen.includes('bao-cao:xem')) {
+  const t3 = Date.now();
+  const th = await goi('/bao-cao/tong-hop');
+  kiem('/bao-cao/tong-hop 7 ngày (S7c2)', th.status === 200 && th.du?.suKien?.theoNgay?.length >= 7, th.du ? `D1 ${th.du.d1Ms} ms, khứ hồi ${Date.now() - t3} ms` : String(th.status));
+}
+if (quyen.includes('bao-cao:xuat')) {
+  const den = Date.now();
+  const r = await fetch(`${GOC}/api/bao-cao/xuat`, {
+    method: 'POST',
+    headers: tieuDe({ 'content-type': 'application/json', 'x-soc': '1' }),
+    body: JSON.stringify({ loai: 'su-kien', tu: den - 86_400_000, den }),
+  });
+  const b = new Uint8Array(await r.arrayBuffer());
+  kiem('/bao-cao/xuat CSV (S7c2)', r.status === 200 && b[0] === 0xef && /^text\/csv/.test(r.headers.get('content-type') ?? ''), `${r.status}, ${r.headers.get('x-so-dong')} dòng, ${b.length} byte`);
+}
+// Kill-switch (Spec tiêu chí 8, <= 5 s): thiết bị thử gọi API ký liên tục; SOC cấm -> đo tới yêu cầu đầu tiên bị 403.
+if (process.argv.includes('--kill-switch') && quyen.includes('can-thiep')) {
+  const { privateKey: kTb, publicKey: pTb } = generateKeyPairSync('ec', { namedCurve: 'P-256' });
+  const spki = pTb.export({ type: 'spki', format: 'der' }).toString('base64url');
+  const kyTb = (x) => sign('sha256', Buffer.from(x), kTb).toString('base64url');
+  const api = async (duong, body, bearer) => {
+    const than = body ? JSON.stringify(body) : '';
+    const h = { 'content-type': 'application/json' };
+    if (bearer) {
+      const ts = Date.now();
+      const nonce = randomBytes(16).toString('base64url');
+      Object.assign(h, { authorization: `Bearer ${bearer}`, 'x-timestamp': String(ts), 'x-nonce': nonce, 'x-signature': kyTb(`${body ? 'POST' : 'GET'}\n${duong}\n\n${createHash('sha256').update(than).digest('hex')}\n${ts}\n${nonce}`) });
+    }
+    const r = await fetch(API_STG + duong, { method: body && !bearer ? 'POST' : 'GET', headers: h, body: body && !bearer ? than : undefined });
+    return { status: r.status, du: await r.json().catch(() => null) };
+  };
+  const idCai = crypto.randomUUID();
+  const chg = await api('/v1/device/challenge', { installationId: idCai });
+  const dk = await api('/v1/device/register', {
+    installationId: idCai, khoaCongKhai: spki, thachThuc: chg.du?.thachThuc, chuKy: kyTb(`la-ban/v1/dang-ky\n${chg.du?.thachThuc}\n${idCai}\n${spki}`), nenTang: 'android', goi: 'com.tsudev.laban.stg',
+    integrityToken: null, thongTin: { heDieuHanh: 'e2e', model: 'node', phienBan: '0.0.0', build: 1, ngonNgu: 'vi' },
+  });
+  const tb = dk.du?.thietBiId;
+  const at = dk.du?.phien?.accessToken;
+  kiem('kill-switch: thiết bị thử đăng ký + gọi ký 200', !!tb && (await api('/v1/device/me', null, at)).status === 200, tb ?? JSON.stringify(dk.du));
+  let dung = false;
+  let bi = null;
+  const vong = (async () => {
+    while (!dung) {
+      const t = Date.now();
+      const r = await api('/v1/device/me', null, at);
+      if (r.status === 403 || r.status === 401) {
+        bi = { luc: t, status: r.status, code: r.du?.code };
+        return;
+      }
+      await new Promise((x) => setTimeout(x, 100));
+    }
+  })();
+  await new Promise((x) => setTimeout(x, 500));
+  const batDau = Date.now();
+  const cam = await goi('/thuc-thi/chan', { dich: [{ loai: 'device', giaTri: tb }], hanhDong: 'ban', thoiHan: '1h', lyDo: 'Đo kill-switch e2e staging (S7c2)' });
+  const xongSoc = Date.now();
+  await Promise.race([vong, new Promise((x) => setTimeout(x, 15_000))]);
+  dung = true;
+  kiem('kill-switch: SOC cấm thiết bị', [200, 201].includes(cam.status), `${cam.status} ${cam.du?.code ?? ''} (${xongSoc - batDau} ms)`);
+  kiem('kill-switch: yêu cầu kế tiếp bị chặn <= 5 s', !!bi && bi.luc - batDau <= 5000, bi ? `${bi.status} ${bi.code} sau ${bi.luc - batDau} ms kể từ lúc bấm (SOC trả lời sau ${xongSoc - batDau} ms)` : 'không bị chặn trong 15 s');
+  const ids = (cam.du?.tao ?? []).map((x) => x.id ?? x);
+  if (ids.length) kiem('kill-switch: gỡ chặn thử', (await goi('/thuc-thi/go', { ids, lyDo: 'Dọn sau khi đo kill-switch e2e' })).status === 200);
+  console.log(`     thiết bị thử ${tb} (model node / e2e) - dọn bằng D1 như dinh-danh-e2e`);
 }
 kiem('CSRF: thiếu x-soc -> 403', (await fetch(`${GOC}/api/phien/bat-dau`, { method: 'POST', headers: tieuDe({ 'content-type': 'application/json' }), body: '{}' })).status === 403);
 
