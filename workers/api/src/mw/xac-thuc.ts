@@ -14,6 +14,7 @@ import { LoiApi } from '../thuan/loi';
 import { docBearer, LECH_TS_MS } from '../thuan/phien';
 import type { MoiTruongHono } from '../moi-truong';
 import { baoSuKien } from './dich-vu';
+import { choKiemChan } from './chan';
 import { apKetQuaGioiHan, lenhGioiHan } from './gioi-han';
 import { cauNonce, type DongDem } from '../thuan/dem-d1';
 import type { LuatGioiHan } from '../thuan/gioi-han';
@@ -40,7 +41,7 @@ export function taoXacThuc(o: { choPhepBiCam?: boolean; gioiHan?: readonly LuatG
     const claim = await kiemJwt(await napKhoaPhien(c.env.KHOA_PHIEN), token, c.env.MOI_TRUONG, bayGio);
     if (!claim) throw new LoiApi(401, 'token-sai', undefined, TOKEN_SAI);
     const db = c.env.DB;
-    const d = await doBuoc(c.get('dongHo'), 'phien', () => db.prepare(
+    const [d] = await Promise.all([doBuoc(c.get('dongHo'), 'phien', () => db.prepare(
       'SELECT s.revoked_at, d.status, d.attestation_level, d.public_key FROM sessions s JOIN devices d ON d.id = s.device_id WHERE s.id = ? AND s.device_id = ?',
     )
       .bind(claim.sid, claim.sub)
@@ -49,7 +50,7 @@ export function taoXacThuc(o: { choPhepBiCam?: boolean; gioiHan?: readonly LuatG
         status: string;
         attestation_level: string;
         public_key: string | null;
-      }>());
+      }>()), choKiemChan(c)]);
     if (!d || d.revoked_at !== null) throw new LoiApi(401, 'phien-thu-hoi', undefined, TOKEN_SAI);
     if (d.status === 'banned' && !o.choPhepBiCam) throw new LoiApi(403, 'thiet-bi-bi-cam');
 

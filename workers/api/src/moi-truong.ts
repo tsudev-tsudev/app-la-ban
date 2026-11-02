@@ -66,6 +66,8 @@ export type BienYeuCau = {
   requestId: string;
   /** R3c: thời gian chờ I/O theo bước -> doubles AE (mw/co-ban.ts). */
   dongHo?: DongHo;
+  /** R3c: kết quả kiểm chặn IP / ASN (mw/chan.ts) - route có xác thực chờ song song với truy vấn phiên. */
+  choChan?: Promise<boolean>;
   ip: string;
   /** Phạm vi khoá idempotency: thiết bị / phiên khi đã xác thực (S2), mặc định theo IP. */
   phamViIdem?: string;
