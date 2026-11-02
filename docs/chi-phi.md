@@ -9,7 +9,7 @@ Workers **Free** (QUYET_DINH Q22: lên Workers Paid 5 USD/tháng khi production 
 | Loại | Production | Staging |
 |---|---|---|
 | Worker | `la-ban-api` -> `compass-api.tsudev.com` | `la-ban-api-staging` -> `compass-api-stg.tsudev.com` |
-| D1 | `la-ban` (APAC) | `la-ban-staging` (APAC) |
+| D1 | `la-ban-prod` (SIN, từ 03/11 - Q53; `la-ban` ICN cũ chờ xoá) | `la-ban-staging` (APAC) |
 | KV | `la-ban-cau-hinh` | `la-ban-cau-hinh-staging` |
 | R2 | `la-ban-cdn` (-> `compass-cdn.tsudev.com`), `la-ban-nhat-ky` | `la-ban-cdn-staging`, `la-ban-nhat-ky-staging` |
 | Durable Objects (SQLite) | `PhongSoc` (SOC realtime); `KhoNonce`, `GioiHanToc` không còn dùng từ R3c (Q52, chờ bỏ) | như production |

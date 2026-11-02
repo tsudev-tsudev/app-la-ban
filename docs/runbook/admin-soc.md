@@ -23,7 +23,7 @@ Viewer chỉ thấy dải IP (/24, /48) và không mở được chi tiết thi�
    thêm Super Admin vào D1:
 
 ```bash
-cd workers/api && npx wrangler d1 execute la-ban --remote --command \
+cd workers/api && npx wrangler d1 execute la-ban-prod --remote --command \
   "INSERT INTO admin_users (id, email, role, created_at, created_by) VALUES (lower(hex(randomblob(16))), '<email đã chuẩn hoá: Gmail bỏ dấu chấm>', 'super_admin', unixepoch()*1000, 'runbook')"
 ```
 
@@ -49,7 +49,7 @@ Vô hiệu hoá = thu hồi ngay mọi phiên SOC của người đó; Access v�
 Super Admin khác xoá passkey không có giao diện (S7). Tạm thời (ghi audit thủ công vào LOG):
 
 ```bash
-npx wrangler d1 execute la-ban --remote --command "DELETE FROM admin_passkeys WHERE email = '<email>'"
+npx wrangler d1 execute la-ban-prod --remote --command "DELETE FROM admin_passkeys WHERE email = '<email>'"
 ```
 
 Lần đăng nhập sau người đó được tạo passkey mới (chỉ cần Access).
@@ -82,7 +82,7 @@ bằng khoá phần mềm trong script thử (`tools/thu/soc-e2e.mjs`). Prod KH�
 
 - **Thuỷ vân bật / tắt**: Super Admin -> Quản trị -> Cài đặt hệ thống (`g s`). Lưu cần passkey + lý do; mọi màn SOC đang
   mở nhận trong <= 5 phút. Lịch sử ở cùng trang (đọc từ audit). Kiểm nhanh qua D1:
-  `npx wrangler d1 execute la-ban --remote --command "SELECT * FROM soc_settings"` (staging: `la-ban-staging --env staging`).
+  `npx wrangler d1 execute la-ban-prod --remote --command "SELECT * FROM soc_settings"` (staging: `la-ban-staging --env staging`).
 - **Rule** (`g l`): mô phỏng 7 ngày trước khi lưu; đổi logic tự về shadow 7 ngày; bật thực thi chỉ khi đủ 7 ngày shadow.
 - **Can thiệp** (`g x`): chặn 1 thiết bị / IP có hiệu lực ngay; dải / ASN đơn = đề xuất chờ người khác duyệt (trừ Under
   Attack); nhiều đích = yêu cầu four-eyes (hết hạn 24 giờ). Người tạo không tự duyệt được (Worker + CHECK D1).
@@ -104,7 +104,7 @@ bằng khoá phần mềm trong script thử (`tools/thu/soc-e2e.mjs`). Prod KH�
   email liên hệ (nếu có) bằng hộp thư security@ - SOC chưa tự gửi email.
 - **Nhật ký kiểm toán** (`g a`, Security Admin trở lên): lọc người làm / tiền tố hành động; nút **Kiểm chuỗi băm** chạy
   lại toàn chuỗi ở Worker theo lô 2000 dòng. Báo `CHUỖI BỊ SỬA` ở dòng #N = có người sửa D1 ngoài API (đã gỡ trigger):
-  KHÔNG sửa lại tay; chụp kết quả, xuất bản sao D1 (`npx wrangler d1 export la-ban --remote --output=...`) ra ngoài repo,
+  KHÔNG sửa lại tay; chụp kết quả, xuất bản sao D1 (`npx wrangler d1 export la-ban-prod --remote --output=...`) ra ngoài repo,
   báo Super Admin khác, xem `wrangler` / Cloudflare audit log của tài khoản để tìm ai có quyền D1. Lượt kiểm nào cũng
   thành một dòng `audit:kiem`. Giới hạn: xoá dòng CUỐI chuỗi chưa phát hiện được (mốc neo ngoài D1 làm ở S10).
 

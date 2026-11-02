@@ -6,7 +6,7 @@ Token: `~/.config/la-ban/cf.env` (`CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID
 ```bash
 cd workers/api && set -a && . ~/.config/la-ban/cf.env && set +a
 npx wrangler d1 migrations apply la-ban-staging --env staging --remote && npm run deploy:staging   # staging trước
-npx wrangler d1 migrations apply la-ban --env= --remote && npm run deploy                         # production
+npx wrangler d1 migrations apply la-ban-prod --env= --remote && npm run deploy                         # production
 curl -s https://compass-api.tsudev.com/v1/health    # build = mã commit vừa deploy
 ```
 `npm run deploy*` gắn `BAN_BUILD` = `git rev-parse --short HEAD` -> deploy SAU khi commit.

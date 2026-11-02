@@ -23,7 +23,7 @@ World Editor 3D. Yêu cầu bảo mật chi tiết (mã `SEC-...`): `KE_HOACH_BA
 | Thành phần | Công nghệ | Tên miền |
 |---|---|---|
 | App | Flutter + Riverpod + go_router + Drift/SQLCipher + dio; native Kotlin/NDK, Swift | - |
-| API | Worker `la-ban-api` (Hono + zod), D1 `la-ban`, Durable Objects, KV, R2, Analytics Engine, Cron | `compass-api.tsudev.com` |
+| API | Worker `la-ban-api` (Hono + zod), D1 `la-ban-prod` (SIN), Durable Objects, KV, R2, Analytics Engine, Cron | `compass-api.tsudev.com` |
 | Landing | Pages `la-ban-landing` (Astro, vi/en) | `compass.tsudev.com` |
 | Admin SOC | Pages `la-ban-admin` (Vite + React + TS) sau Cloudflare Access | `compass-admin.tsudev.com` |
 | Tài nguyên | R2 công khai (WMM, tile, i18n, config ký số) | `compass-cdn.tsudev.com` |
