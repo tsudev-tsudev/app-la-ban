@@ -637,6 +637,12 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   `/su-co-app` (nhóm + tỷ lệ không lỗi) + trang admin "Sự cố app". `tools/build/giai-ngan-xep.sh` (flutter symbolize với
   symbol ngoài repo). Landing Quyền riêng tư mục 3 / 4 + Data Safety "Crash logs". Crash native / ANR + crash-free cho R4 =
   Android vitals Play Console. Phiên bản app 0.1.0-beta.12 (APK do người dùng chạy `phat-hanh-apk.sh`).
+- Nghiệm thu S10 (02/11): Telegram nhóm "La bàn - Cảnh báo SOC" người dùng thử đạt; `TELEGRAM_*` + `CF_AE_TOKEN` cả hai
+  môi trường; cron prod `dot-bien` -> `{"dotBien":[]}` (đọc được Analytics Engine). Máy thật M32 (beta.12 cài đè beta.11, giữ
+  dữ liệu): cold start 588-666 ms, công tắc "Gửi báo cáo sự cố" mặc định tắt / bật được / lưu bền qua khởi động lại, đi qua
+  La bàn / Bản đồ / Điểm / Hiệu chuẩn / Tuỳ chọn / Camera AR không lỗi Flutter trong logcat, D1 `app_crashes` = 0. **Lỗi tìm
+  thấy + sửa**: `devices.app_version` / `last_seen` không cập nhật sau nâng cấp (D1 ghi beta.10 khi máy chạy beta.12; mẫu số
+  tỷ lệ không lỗi thiếu) -> `/v1/status` ghi nền theo header `x-app-version` (PR #44, #45) - đo lại M32: `0.1.0-beta.12` build 12.
 
 ### R2 - Sẵn sàng store
 - Làm: khóa upload Android (ngoài repo) + Play App Signing; scheme/configuration flavor iOS dev/staging/prod (Xcode trên Codemagic/Mac); Codemagic cho iOS (App Store Connect API key); Privacy Manifest +
