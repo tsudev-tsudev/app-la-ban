@@ -70,7 +70,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 19 | S8 | Bảo vệ edge web (CSP, header, WAF as code) | R1 | ✅ 29/10 (CSP nghiêm Report-Only tới 05/11; Access ở S6, Turnstile ở S7) |
 | 20 | S9 | Lớp bảo vệ nội dung web + build sạch | S8 | ✅ 29/10 (bdbd740; CSV audit ở S6) |
 | 21 | A8 | Cài đặt, quyền riêng tư, trợ năng, hiệu năng (chia A8a / A8b) | A7, S4 | 🟨 A8a ✅ 31/10 (0191b2d PR #34: quyền riêng tư + đồng ý NĐ 13, Q43; máy thật M32 đạt; chưa phát hành APK - gộp A8b) · A8b ✅ 31/10 (trợ năng + Reduce motion, Q45; v0.1.0-beta.10) |
-| 22 | S10 | Giám sát, log bất biến, backup, ứng phó sự cố | S7 | ⬜ |
+| 22 | S10 | Giám sát, log bất biến, backup, ứng phó sự cố (chia S10a / S10b) | S7 | 🟨 S10a ✅ 02/11 (máy chủ: nhật ký bất biến R2 + mốc neo audit, sao lưu mã hoá + diễn tập, đột biến -> Telegram, security.txt, runbook IR, Q48) · S10b ⛔ chờ chốt SDK crash app |
 | 23 | R2 | Sẵn sàng store | A8, S4 | 🟡 R2a 31/10 (AAB + Data Safety + listing + ảnh store, Q46) · R2b chờ Play Console (05/11) |
 | 24 | R3 | QA tổng + kiểm thử bảo mật | R2, S9, S10 | ⬜ |
 | 25 | R4 | Phát hành v1.0.0 + OTA | R3 | ⬜ |
@@ -617,6 +617,19 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
 - Làm: Sentry + Crashlytics (che PII); Tail Worker -> R2 có hash chain + object lock; cảnh báo Telegram; backup D1 hằng ngày ->
   R2 + diễn tập khôi phục; trang status; runbook sự cố, xoay khóa/pin, gỡ chặn (`docs/runbook/`).
 - Cổng: diễn tập khôi phục đạt RPO/RTO; cảnh báo thử tới < 2 phút.
+- Chia (02/11, QUYET_DINH Q48): **S10a** phía máy chủ (nhật ký bất biến, mốc neo audit từ S7c1, sao lưu + diễn tập, cảnh báo
+  đột biến, security.txt + chính sách lỗ hổng, runbook IR / sao lưu / xoay khoá). **S10b** Sentry / Crashlytics trong app
+  (SDK bên thứ ba -> người dùng chốt trước, cập nhật Data Safety + Quyền riêng tư) + trang status nếu cần thêm.
+- Kết quả S10a (02/11, QUYET_DINH Q48): cron 5 phút xuất `audit_logs` / `security_events` (IP rút gọn) / `rule_hits` -> R2
+  `nhat-ky/` đoạn NDJSON nối chuỗi băm + mốc neo audit (`trang-thai/dau-chuoi.json`); sao lưu D1 hằng ngày 02:30 VN mã hoá lai
+  AES-GCM + RSA-OAEP 4096 (khoá công khai trong `wrangler.toml`, khoá riêng `~/.config/la-ban/sao-luu/`); R2 bucket lock
+  (prod 400 / 30 ngày, staging 30 / 7) + lifecycle (`tools/cloudflare/r2-khoa.mjs`) - xoá thử bị từ chối "locked by the
+  bucket policy"; đột biến 5xx / 4xx / từ chối / attestation lỗi / phát lại từ Analytics Engine -> Telegram (chống lặp KV),
+  việc định kỳ lỗi -> Telegram; security.txt có `Policy` + trang `/bao-cao-lo-hong/` `/en/security/`; runbook
+  `ung-pho-su-co.md` (NĐ 13: 72 giờ) / `sao-luu-khoi-phuc.md` / `xoay-khoa.md`. **Diễn tập staging đạt**: 12 bảng khớp số
+  dòng, RTO 52 s; chuỗi nhật ký nguyên vẹn. Test mới: 11 Worker (thuần + tích hợp workerd) + 2 tools.
+  CHƯA (người dùng): bot Telegram (`TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID`) + token chỉ Account Analytics Read
+  (`CF_AE_TOKEN`) -> mới đo được "cảnh báo thử < 2 phút"; sao lưu khoá riêng ra ngoài máy.
 
 ### R2 - Sẵn sàng store
 - Làm: khóa upload Android (ngoài repo) + Play App Signing; scheme/configuration flavor iOS dev/staging/prod (Xcode trên Codemagic/Mac); Codemagic cho iOS (App Store Connect API key); Privacy Manifest +

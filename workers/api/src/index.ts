@@ -18,10 +18,14 @@ import { BAO_CAO_TOI_DA, laLoaiBaoCao, phanTichBaoCaoCsp } from './thuan/bao-cao
 import { NGUON_WEB, nguonChoPhep } from './thuan/cors';
 import { LoiApi } from './thuan/loi';
 import { laLuotHangNgay } from './thuan/don-dep';
+import { laLuotSaoLuu } from './thuan/sao-luu';
 import { sucKhoe } from './thuan/suc-khoe';
 import { capNhatNguyCo } from './threat/dinh-ky';
 import { dongBoLists } from './threat/dong-bo-lists';
 import { BoTuyen } from './tuyen';
+import { xuatNhatKy } from './van-hanh/nhat-ky';
+import { saoLuuD1 } from './van-hanh/sao-luu';
+import { baoVanHanh, kiemDotBien } from './van-hanh/canh-bao';
 
 export { KhoNonce } from './do/kho-nonce';
 export { GioiHanToc } from './do/gioi-han-toc';
@@ -95,13 +99,21 @@ export default {
     const viec: [string, () => Promise<unknown>][] = [
       ['nguy-co', () => capNhatNguyCo(env)],
       ['dong-bo-lists', () => dongBoLists(env)],
+      ['nhat-ky', () => xuatNhatKy(env)],
+      ['dot-bien', () => kiemDotBien(env)],
     ];
     if (laLuotHangNgay(su.scheduledTime)) viec.push(['don-dep', () => donDep(env.DB as D1Database)]);
+    // 'thu:sao-luu' = kích tay khi diễn tập (`wrangler dev --remote --test-scheduled`, /__scheduled?cron=thu:sao-luu):
+    // handler scheduled chỉ Cloudflare gọi được, cron thật không bao giờ có chuỗi này.
+    if (laLuotSaoLuu(su.scheduledTime) || su.cron === 'thu:sao-luu') viec.push(['sao-luu', () => saoLuuD1(env)]);
     for (const [ten, chay] of viec) {
       ctx.waitUntil(
         chay().then(
           (kq) => ghiLog('info', ten, { kq }),
-          (e: unknown) => ghiLog('error', `${ten}-loi`, { loi: String(e) }),
+          (e: unknown) => {
+            ghiLog('error', `${ten}-loi`, { loi: String(e) });
+            return baoVanHanh(env, ten, String(e));
+          },
         ),
       );
     }

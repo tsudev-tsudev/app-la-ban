@@ -5,7 +5,7 @@ import { NOI_DUNG, type NgonNgu } from '../i18n/noi-dung';
 
 interface Props {
   lang: NgonNgu;
-  loai: 'rieng' | 'khoan';
+  loai: 'rieng' | 'khoan' | 'loHong';
 }
 const { lang, loai } = Astro.props;
 const t = NOI_DUNG[lang];

@@ -2,3 +2,5 @@ Contact: mailto:security@tsudev.com
 Expires: 2027-10-27T17:00:00.000Z
 Preferred-Languages: vi, en
 Canonical: https://compass.tsudev.com/.well-known/security.txt
+Policy: https://compass.tsudev.com/en/security/
+Policy: https://compass.tsudev.com/bao-cao-lo-hong/

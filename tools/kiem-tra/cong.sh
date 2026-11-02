@@ -30,8 +30,8 @@ dash=$(printf '%s\n' "$DOI" | grep -vE '^2026.*\.md$' | grep -E '\.(md|ts|tsx|mj
 [ -z "$dash" ] || loi "Có em/en dash (chỉ dùng '-'):\n$dash"
 
 buoc "Thương hiệu: token / icon / pseudo-locale sinh khớp nguồn + tương phản AA + font + lớp Dart"
-node --test 'tools/build/*.test.mjs' 'tools/cloudflare/*.test.mjs' 'tools/kiem-tra/*.test.mjs' 'tools/cau-hinh/*.test.mjs' >/dev/null \
-  || loi "test tools đỏ (node --test 'tools/build/*.test.mjs' 'tools/cloudflare/*.test.mjs' 'tools/kiem-tra/*.test.mjs' 'tools/cau-hinh/*.test.mjs')"
+node --test 'tools/build/*.test.mjs' 'tools/cloudflare/*.test.mjs' 'tools/kiem-tra/*.test.mjs' 'tools/cau-hinh/*.test.mjs' 'tools/sao-luu/*.test.mjs' >/dev/null \
+  || loi "test tools đỏ (node --test 'tools/build/*.test.mjs' 'tools/cloudflare/*.test.mjs' 'tools/kiem-tra/*.test.mjs' 'tools/cau-hinh/*.test.mjs' 'tools/sao-luu/*.test.mjs')"
 node tools/build/tokens.mjs --check
 node tools/kiem-tra/tuong-phan.mjs
 node tools/build/icon.mjs

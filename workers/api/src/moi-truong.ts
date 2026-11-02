@@ -52,6 +52,11 @@ export type Env = {
   /** Khiếu nại (S7c1): bí mật Turnstile (`wrangler secret`; thiếu -> 503) + hostname hợp lệ (dấu phẩy, rỗng = không kiểm). */
   TURNSTILE_SECRET?: string;
   TURNSTILE_TEN_MIEN?: string;
+  /** Sao lưu D1 (S10a): khoá CÔNG KHAI RSA-OAEP 4096 (SPKI base64, biến thường - không bí mật). Thiếu -> bỏ sao lưu. */
+  KHOA_SAO_LUU?: string;
+  /** Phát hiện đột biến (S10a): token CHỈ quyền Account Analytics Read (`wrangler secret`) + tên dataset AE. Thiếu -> bỏ. */
+  CF_AE_TOKEN?: string;
+  AE_BANG?: string;
 };
 
 export type BienYeuCau = {
