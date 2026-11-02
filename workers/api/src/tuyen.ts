@@ -8,7 +8,7 @@ import { LoiApi } from './thuan/loi';
 import type { MoiTruongHono, Ngu } from './moi-truong';
 import { gioiHanRoute } from './mw/gioi-han';
 import { idempotency } from './mw/idempotency';
-import { taoXacThuc, xacThuc } from './mw/xac-thuc';
+import { taoXacThuc } from './mw/xac-thuc';
 
 export type DinhNghiaTuyen<B extends z.ZodType = z.ZodType, P extends z.ZodType = z.ZodType> = {
   phuongThuc: 'get' | 'post';
@@ -57,8 +57,11 @@ export class BoTuyen {
         await next();
       },
     ];
-    if (d.xacThuc) chuoi.push(d.xacThuc === 'ke-ca-bi-cam' ? taoXacThuc({ choPhepBiCam: true }) : xacThuc);
-    chuoi.push(gioiHanRoute(d.gioiHan ?? []));
+    const dsLuat = d.gioiHan ?? [];
+    // Route có xác thực: luật theo thiết bị đếm chung batch D1 với nonce (R3c) - không đếm lại ở gioiHanRoute.
+    const luatThietBi = d.xacThuc ? dsLuat.filter((l) => l.chieu === 'thiet-bi') : [];
+    if (d.xacThuc) chuoi.push(taoXacThuc({ choPhepBiCam: d.xacThuc === 'ke-ca-bi-cam', gioiHan: luatThietBi }));
+    chuoi.push(gioiHanRoute(dsLuat.filter((l) => !luatThietBi.includes(l))));
     if (d.body) chuoi.push(docBody(d.body, d.bodyToiDa));
     if (d.phuongThuc === 'post' && d.idempotent !== false) chuoi.push(idempotency);
     const cuoi: MiddlewareHandler<MoiTruongHono> = async (c) => xuLy(c, c.get('body') as z.infer<B>);

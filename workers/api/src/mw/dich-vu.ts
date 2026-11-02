@@ -60,3 +60,18 @@ export function baoSuKien(c: Ngu, thietBi: string | null, loai: string, muc: SuK
     'su-kien',
   );
 }
+
+/**
+ * Đọc dữ liệu nhỏ qua Cache API của colo (R3c, Q52): isolate mới trong colo đọc ~1 ms thay vì KV / R2 nguội ~200 ms.
+ * Khoá theo host của Worker (prod / staging không lẫn); [ttlGiay] = độ cũ tối đa, bằng cacheTtl KV cũ nên Remote Config /
+ * kill-switch không chậm hơn trước. Lỗi Cache API -> đọc thẳng nguồn. null không được đệm.
+ */
+export async function docQuaColo(c: Ngu, khoa: string, ttlGiay: number, nap: () => Promise<string | null>): Promise<string | null> {
+  const cache = typeof caches === 'undefined' ? null : caches.default;
+  const url = `https://${new URL(c.req.url).host}/__dem/${khoa}`;
+  const trung = await cache?.match(url).catch(() => undefined);
+  if (trung) return trung.text();
+  const tho = await nap();
+  if (tho !== null && cache) nen(c, cache.put(url, new Response(tho, { headers: { 'cache-control': `max-age=${ttlGiay}` } })), 'dem-colo');
+  return tho;
+}

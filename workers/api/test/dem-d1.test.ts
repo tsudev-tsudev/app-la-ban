@@ -79,3 +79,21 @@ describe('bộ đếm giới hạn trên D1', () => {
     expect(await db.prepare("SELECT 1 FROM gioi_han_dem WHERE khoa = 'k-don'").first()).toBeNull();
   });
 });
+
+describe('docQuaColo (Cache API colo)', () => {
+  it('/v1/config: lần sau trong TTL đọc từ cache colo dù KV đã đổi (cùng độ cũ tối đa như cacheTtl KV)', async () => {
+    const mfc = await taoMf(undefined, { cache: true });
+    try {
+      const kv = (await mfc.getKVNamespace('CAU_HINH')) as unknown as KVNamespace;
+      const goi = { kid: 'app-1', duLieu: 'eyJ2IjoxfQ', chuKy: 'A'.repeat(86) };
+      await kv.put('app-cau-hinh', JSON.stringify(goi));
+      const doc = async () => (await mfc.dispatchFetch('https://compass-api.tsudev.com/v1/config', { headers: { 'cf-connecting-ip': '198.51.100.5' } })).json();
+      expect(await doc()).toEqual(goi);
+      await kv.put('app-cau-hinh', JSON.stringify({ ...goi, kid: 'app-2' }));
+      await new Promise((r) => setTimeout(r, 50));
+      expect(await doc()).toEqual(goi);
+    } finally {
+      await mfc.dispose();
+    }
+  }, 60_000);
+});

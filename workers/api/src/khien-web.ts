@@ -1,12 +1,13 @@
 // S9 - route cho lớp khiên web (SEC-WEB-SHIELD): cấu hình mức ký số, tín hiệu công cụ nhà phát triển, tài nguyên URL ký.
-import { asnCua } from './mw/dich-vu';
+import { asnCua, docQuaColo } from './mw/dich-vu';
 import type { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { z } from 'zod';
 import type { MoiTruongHono } from './moi-truong';
 import { traVanDe } from './mw/co-ban';
 import { ghiLog } from './mw/ghi-log';
-import { gioiHanRoute } from './mw/gioi-han';
+import { gioiHanDocCongKhai } from './mw/gioi-han';
+import { doBuoc } from './thuan/do-tre';
 import { xuLySuKien } from './threat/dong-co';
 import { nenBao } from './thuan/bay';
 import { NGUON_WEB, nguonChoPhep } from './thuan/cors';
@@ -30,9 +31,12 @@ export function dangKyKhienWeb(app: Hono<MoiTruongHono>, boTuyen: BoTuyen): void
       c.set('tuyen', '/v1/web/cau-hinh');
       await next();
     },
-    gioiHanRoute([{ chieu: 'ip', gioiHan: 60, cuaSoMs: 60_000 }]),
+    gioiHanDocCongKhai,
     async (c) => {
-      const goi = goiCauHinhHopLe((await c.env.CAU_HINH?.get(KHOA_KV_KHIEN, { cacheTtl: 300 })) ?? null);
+      const tho = await doBuoc(c.get('dongHo'), 'luuTru', () =>
+        docQuaColo(c, 'cau-hinh/web', 300, async () => (await c.env.CAU_HINH?.get(KHOA_KV_KHIEN, { cacheTtl: 300 })) ?? null),
+      );
+      const goi = goiCauHinhHopLe(tho);
       if (!goi) return traVanDe(c, 404);
       return c.body(goi, 200, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=300' });
     },

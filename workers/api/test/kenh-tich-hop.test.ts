@@ -96,6 +96,17 @@ describe('chữ ký request (SEC-NET)', () => {
     expect((await goi('/v1/device/me', { tieuDe })).du).toMatchObject({ status: 401, code: 'nonce' });
   });
 
+  it('R3c: luật theo thiết bị đếm chung batch nonce - vượt 60 / phút ở /v1/device/me -> 429 + Retry-After; thiết bị khác không bị', async () => {
+    const t = await dangKy();
+    const ma: number[] = [];
+    for (let i = 0; i < 60; i++) ma.push((await goiKy(t, '/v1/device/me')).status);
+    expect(ma.every((m) => m === 200)).toBe(true);
+    const vuot = await goiKy(t, '/v1/device/me');
+    expect(vuot.du).toMatchObject({ status: 429, code: 'qua-nhieu-yeu-cau' });
+    expect(Number(vuot.headers.get('retry-after'))).toBeGreaterThan(0);
+    expect((await goiKy(await dangKy(), '/v1/device/me')).status).toBe(200);
+  }, 30_000);
+
   it('ts lệch > 60 s -> 401 lech-gio kèm x-server-time', async () => {
     const t = await dangKy();
     const r = await goiKy(t, '/v1/device/me', undefined, { ts: Date.now() - 61_000 });

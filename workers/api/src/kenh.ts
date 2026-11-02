@@ -6,8 +6,8 @@ import type { Hono } from 'hono';
 import { z } from 'zod';
 import type { MoiTruongHono, Ngu } from './moi-truong';
 import { traVanDe } from './mw/co-ban';
-import { asnCua, nen } from './mw/dich-vu';
-import { gioiHanRoute } from './mw/gioi-han';
+import { asnCua, docQuaColo, nen } from './mw/dich-vu';
+import { gioiHanDocCongKhai } from './mw/gioi-han';
 import { dongBoLists } from './threat/dong-bo-lists';
 import { ghiSuKien } from './threat/dong-co';
 import { docLatest, docPhienBanApp, GOI_APP_TOI_DA, GOP_LOAI_MS, KHOA_KV_APP, LOAI_CHI_SERVER, refChoTrangThai, type BanMoi } from './thuan/kenh';
@@ -29,15 +29,10 @@ async function banMoiNhat(c: Ngu, bayGio: number): Promise<BanMoi | null> {
   if (demLatest && bayGio - demLatest.luc < LATEST_DEM_MS) return demLatest.ban;
   let ban: BanMoi | null;
   try {
-    const cache = typeof caches === 'undefined' ? null : caches.default;
-    const khoa = `https://${new URL(c.req.url).host}/__dem/android/latest.json`;
-    const trung = await cache?.match(khoa);
-    let tho: string | null = trung ? await trung.text() : null;
-    if (tho === null) {
+    const tho = await docQuaColo(c, 'android/latest.json', LATEST_DEM_MS / 1000, async () => {
       const vat = await c.env.CDN?.get('android/latest.json');
-      tho = vat ? await vat.text() : null;
-      if (tho !== null && cache) nen(c, cache.put(khoa, new Response(tho, { headers: { 'cache-control': `max-age=${LATEST_DEM_MS / 1000}` } })), 'dem-latest');
-    }
+      return vat ? vat.text() : null;
+    });
     ban = tho === null ? null : docLatest(tho);
   } catch {
     ban = null;
@@ -56,9 +51,11 @@ export function dangKyKenh(app: Hono<MoiTruongHono>, boTuyen: BoTuyen): void {
       c.set('tuyen', '/v1/config');
       await next();
     },
-    gioiHanRoute([{ chieu: 'ip', gioiHan: 60, cuaSoMs: 60_000 }]),
+    gioiHanDocCongKhai,
     async (c) => {
-      const tho = await doBuoc(c.get('dongHo'), 'luuTru', async () => (await c.env.CAU_HINH?.get(KHOA_KV_APP, { cacheTtl: 60 })) ?? null);
+      const tho = await doBuoc(c.get('dongHo'), 'luuTru', () =>
+        docQuaColo(c, 'cau-hinh/app', 60, async () => (await c.env.CAU_HINH?.get(KHOA_KV_APP, { cacheTtl: 60 })) ?? null),
+      );
       const goi = goiCauHinhHopLe(tho, GOI_APP_TOI_DA);
       if (!goi) return traVanDe(c, 404);
       return c.body(goi, 200, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60' });

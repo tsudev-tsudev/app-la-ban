@@ -16,6 +16,8 @@ export type Env = {
   SU_KIEN?: AnalyticsEngineDataset;
   /** Rate Limiting binding: lớp thô theo IP trước mọi route. */
   RL_IP?: RateLimit;
+  /** R3c (Q52): giới hạn theo IP cho route công khai chỉ đọc (/v1/config, /v1/web/cau-hinh) - không ghi D1. */
+  RL_DOC_CONG_KHAI?: RateLimit;
   /** A7a: bucket chứa tile / glyph bản đồ (`ban-do/`), dùng chung prod + staging (dữ liệu công khai). */
   BAN_DO?: R2Bucket;
   /** A7a: giới hạn riêng theo IP cho /ban-do (tải vùng offline = hàng nghìn tile). */

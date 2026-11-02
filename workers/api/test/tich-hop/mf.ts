@@ -30,6 +30,8 @@ export type TuyChonMf = {
   bindings?: Record<string, string>;
   /** Thay mạng ra ngoài của Worker (Google giả lập). */
   outboundService?: (req: Request) => Response | Promise<Response>;
+  /** Cache API của colo (R3c docQuaColo). Mặc định TẮT để test thấy thay đổi KV / R2 ngay. */
+  cache?: boolean;
 };
 
 export async function taoMf(rl: { limit: number; period: 10 | 60 } = { limit: 1000, period: 60 }, tc: TuyChonMf = {}): Promise<Miniflare> {
@@ -47,7 +49,7 @@ export async function taoMf(rl: { limit: number; period: 10 | 60 } = { limit: 10
   const ma = kq.outputFiles[0]?.text;
   if (!ma) throw new Error('esbuild không ra tệp');
   // Miniflare 5 đổi cấu trúc tuỳ chọn; giữ dạng v4 dễ đọc rồi chuyển bằng hàm của chính Miniflare.
-  const mf = new Miniflare(convertV4MiniflareOptions({
+  const tuyChon = convertV4MiniflareOptions({
     workers: [
       {
         name: 'la-ban-api-thu',
@@ -64,7 +66,10 @@ export async function taoMf(rl: { limit: number; period: 10 | 60 } = { limit: 10
         ratelimits: { RL_IP: { namespace_id: '1001', simple: rl } },
       },
     ],
-  }));
+  });
+  // Miniflare 5: Cache API bật / tắt ở `dev.cacheAPI` của từng worker (dạng v4 không còn khoá `cache`).
+  for (const w of tuyChon.workers as { dev?: Record<string, unknown> }[]) w.dev = { ...w.dev, cacheAPI: tc.cache ?? false };
+  const mf = new Miniflare(tuyChon);
   const db = await mf.getD1Database('DB');
   const thuMuc = join(GOC, 'migrations');
   for (const tep of readdirSync(thuMuc).filter((t) => t.endsWith('.sql')).sort()) {
