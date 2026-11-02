@@ -8,7 +8,7 @@ import { ghiLog } from './ghi-log';
 
 /**
  * Chặn ở tầng Worker IP / dải / ASN có enforcement còn hiệu lực (trước cả WAF List, có hiệu lực ngay ở isolate ghi và
- * <= 15 s ở isolate khác). Allow-list thắng. Lỗi D1 -> cho qua (ưu tiên sẵn sàng) + log.
+ * <= 3 s ở isolate khác (DEM_CHAN_MS)). Allow-list thắng. Lỗi D1 -> cho qua (ưu tiên sẵn sàng) + log.
  */
 export const chanTheoThucThi: MiddlewareHandler<MoiTruongHono> = async (c, next) => {
   const db = c.env.DB;

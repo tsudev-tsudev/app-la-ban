@@ -13,10 +13,12 @@ import { ghiKho, luuTuyChon, napTuyChon, docKho, tuyChonHieuLuc, type TuyChon } 
 import { chuoi, ngonNgu, type NgonNgu } from './i18n';
 import { Ctx, type NguCanh } from './ngu-canh';
 import { VungDuLieu } from './khien/Watermark';
+import { BaoCao } from './trang/BaoCao';
 import { CaiDatHeThong } from './trang/CaiDatHeThong';
 import { CanThiep } from './trang/CanThiep';
 import { CanhBao } from './trang/CanhBao';
 import { CauHinhNguyCo } from './trang/CauHinhNguyCo';
+import { CauHinhTuXa } from './trang/CauHinhTuXa';
 import { ChiTiet } from './trang/ChiTiet';
 import { DangNhap } from './trang/DangNhap';
 import { DsThietBi } from './trang/DsThietBi';
@@ -40,6 +42,8 @@ const GO_TAT: Record<string, string> = {
   s: '#/cai-dat',
   i: '#/khieu-nai',
   a: '#/audit',
+  b: '#/bao-cao',
+  r: '#/cau-hinh-tu-xa',
 };
 
 function useHash(): string {
@@ -251,6 +255,7 @@ export function App() {
         { d: '/canh-bao', nhan: t.canhBao, bt: 'canh-bao', dem: soMo },
         { d: '/thiet-bi', nhan: t.thietBi, bt: 'thiet-bi' },
         ...(quyen.includes('khieu-nai:xem') ? [{ d: '/khieu-nai', nhan: t.khieuNai, bt: 'khieu-nai', dem: soKhieuNai }] : []),
+        ...(quyen.includes('bao-cao:xem') ? [{ d: '/bao-cao', nhan: t.baoCao, bt: 'bao-cao' }] : []),
       ],
     },
     {
@@ -260,6 +265,7 @@ export function App() {
             { d: '/can-thiep', nhan: t.canThiep, bt: 'can-thiep', dem: soChoDuyet },
             { d: '/luat', nhan: t.luat, bt: 'luat' },
             { d: '/cau-hinh-nguy-co', nhan: t.cauHinhNguyCo, bt: 'cau-hinh' },
+            ...(quyen.includes('cau-hinh-tu-xa:xem') ? [{ d: '/cau-hinh-tu-xa', nhan: t.cauHinhTuXa, bt: 'cau-hinh-tu-xa' }] : []),
           ]
         : [],
     },
@@ -344,6 +350,12 @@ export function App() {
   } else if (duong === '/khieu-nai' && toi.quyen.includes('khieu-nai:xem')) {
     noiDung = <KhieuNai doiDem={doiDemKn} />;
     tieuDeTrang = t.khieuNai;
+  } else if (duong === '/bao-cao' && toi.quyen.includes('bao-cao:xem')) {
+    noiDung = <BaoCao />;
+    tieuDeTrang = t.baoCao;
+  } else if (duong === '/cau-hinh-tu-xa' && toi.quyen.includes('cau-hinh-tu-xa:xem')) {
+    noiDung = <CauHinhTuXa />;
+    tieuDeTrang = t.cauHinhTuXa;
   } else if (duong === '/audit' && toi.quyen.includes('audit:xem')) {
     noiDung = <NhatKyAudit />;
     tieuDeTrang = t.nhatKyAudit;

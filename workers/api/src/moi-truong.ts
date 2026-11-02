@@ -43,6 +43,12 @@ export type Env = {
   /** Cảnh báo Telegram (S7a, `wrangler secret`): token bot + chat id. Thiếu một trong hai -> không gửi. */
   TELEGRAM_BOT_TOKEN?: string;
   TELEGRAM_CHAT_ID?: string;
+  /**
+   * Remote Config ký số từ SOC (S7c2, `wrangler secret`): khoá bí mật Ed25519 PKCS8 PEM kid app-1 / web-1. Thiếu hoặc
+   * không khớp khoá công khai app / web đang tin -> SOC chỉ xem, duyệt trả 503 (dùng công cụ ngoại tuyến).
+   */
+  KHOA_KY_APP?: string;
+  KHOA_KY_WEB?: string;
   /** Khiếu nại (S7c1): bí mật Turnstile (`wrangler secret`; thiếu -> 503) + hostname hợp lệ (dấu phẩy, rỗng = không kiểm). */
   TURNSTILE_SECRET?: string;
   TURNSTILE_TEN_MIEN?: string;

@@ -331,3 +331,90 @@ export type DongAudit = {
   hash_self: string;
 };
 export type KetQuaKiemAudit = { nguyenVen: boolean; soDongDung: number; dongLoi: { so: number; id: string; ts: number } | null; ms: number };
+
+// ---------------------------------------------------------------- S7c2: báo cáo + Remote Config
+export type DemK = { k: string | number | null; n: number };
+export type TongHop = {
+  khoang: { tu: number; den: number };
+  taoLuc: number;
+  moiTruong: string;
+  thietBi: { tong: number; moi: number; hoatDong: number; trangThai: DemK[] };
+  suKien: { mucDo: DemK[]; loai: DemK[]; theoNgay: { k: string; n: number }[] };
+  thucThi: { theoLoai: { hanhDong: string; nguon: string; n: number }[]; goTrongKy: number; hieuLuc: number };
+  khieuNai: { k: string; n: number; tbXuLyMs: number | null }[];
+  canhBao: { mucDo: DemK[]; ketLuan: DemK[] };
+  rule: DemK[];
+  audit: DemK[];
+  cauHinh: DemK[];
+};
+
+export type DeXuatApp = { toiThieu: number; khuyenNghi: number; tat: string[]; pin: string[]; ngay: number };
+export type DeXuatWeb = { landing: string; admin: string; ngay: number };
+export type GoiCauHinh<D> = { noiDung: Record<string, unknown> | null; chuKyDung: boolean; deXuat: D };
+export type YeuCauCauHinh = {
+  id: string;
+  target: 'app' | 'web';
+  payload: DeXuatApp | DeXuatWeb;
+  reason: string;
+  created_by: string;
+  created_at: number;
+  expires_at: number;
+  status: 'pending' | 'approved' | 'rejected' | 'cancelled';
+  decided_by: string | null;
+  decided_at: number | null;
+  decision_note: string | null;
+  hetHan: boolean;
+};
+export type CauHinhTuXa = {
+  app: GoiCauHinh<DeXuatApp>;
+  web: GoiCauHinh<DeXuatWeb>;
+  coKhoa: { app: boolean; web: boolean };
+  banMoi: number | null;
+  gocDongGoi: { ten: string; pin: string; het: string }[];
+  tinhNang: string[];
+  yeuCau: YeuCauCauHinh[];
+  lichSu: { id: string; target: 'app' | 'web'; issued_at: number; content: Record<string, unknown>; created_by: string; approved_by: string }[];
+  toi: string;
+};
+
+/** Tên tệp từ Content-Disposition (server chỉ dùng ASCII). */
+export function tenTepTai(cd: string | null, macDinh: string): string {
+  const m = /filename="([A-Za-z0-9._-]{1,120})"/.exec(cd ?? '');
+  return m?.[1] ?? macDinh;
+}
+
+async function xuatMotLan(body: unknown): Promise<{ blob: Blob; ten: string; soDong: number; biCat: boolean }> {
+  let res: Response;
+  try {
+    res = await fetch('/api/bao-cao/xuat', {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { accept: 'text/csv', 'content-type': 'application/json', 'x-soc': '1' },
+      body: JSON.stringify(body),
+    });
+  } catch {
+    throw new LoiSoc(0, 'mang');
+  }
+  if (!res.ok) {
+    const j = (await res.json().catch(() => ({}))) as { code?: string };
+    throw new LoiSoc(res.status, j.code ?? null);
+  }
+  return {
+    blob: await res.blob(),
+    ten: tenTepTai(res.headers.get('content-disposition'), 'la-ban.csv'),
+    soDong: Number(res.headers.get('x-so-dong') ?? '0'),
+    biCat: res.headers.get('x-bi-cat') === '1',
+  };
+}
+
+/** Xuất CSV (S7c2): server đòi passkey gần đây -> hỏi passkey rồi gửi lại, như [goiStepUp]. */
+export async function xuatCsv(body: unknown, truocPasskey?: () => void): Promise<{ blob: Blob; ten: string; soDong: number; biCat: boolean }> {
+  try {
+    return await xuatMotLan(body);
+  } catch (loi) {
+    if (!(loi instanceof LoiSoc && loi.ma === 'can-step-up')) throw loi;
+    truocPasskey?.();
+    await xacThucPasskey();
+    return xuatMotLan(body);
+  }
+}

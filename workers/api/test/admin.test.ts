@@ -120,7 +120,7 @@ describe('quyền + phiên + che PII', () => {
     expect(coQuyen('viewer', 'thiet-bi:chi-tiet')).toBe(false);
     expect(coQuyen('responder', 'thiet-bi:chi-tiet')).toBe(true);
     expect(coQuyen('security_admin', 'quan-tri-vien')).toBe(false);
-    expect(dsQuyen('super_admin')).toHaveLength(16);
+    expect(dsQuyen('super_admin')).toHaveLength(21);
     expect(coQuyen('viewer', 'canh-bao:xem')).toBe(true);
     expect(coQuyen('viewer', 'canh-bao:xu-ly')).toBe(false);
     expect(coQuyen('analyst', 'canh-bao:xu-ly')).toBe(true);

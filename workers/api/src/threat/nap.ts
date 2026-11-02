@@ -6,6 +6,11 @@ import { phanTichLuat, type DongLuat, type Luat } from '../thuan/luat';
 import type { LoaiDich, QuyTac } from '../thuan/thuc-thi';
 
 export const DEM_MS = 15_000;
+/**
+ * Danh sách chặn IP / dải / ASN đệm NGẮN hơn: kill-switch SOC phải có hiệu lực <= 5 s ở MỌI isolate (Spec tiêu chí 8).
+ * 1 truy vấn D1 nhỏ / isolate / 3 s - không đáng kể so với lưu lượng.
+ */
+export const DEM_CHAN_MS = 3_000;
 
 type Dem<T> = { het: number; giaTri: T } | null;
 let demCauHinh: Dem<CauHinhNguyCo> = null;
@@ -17,10 +22,10 @@ export function xoaDem(): void {
   demCauHinh = demLuat = demChoPhep = demChan = null;
 }
 
-async function quaDem<T>(dem: Dem<T>, ghi: (d: Dem<T>) => void, bayGio: number, nap: () => Promise<T>): Promise<T> {
+async function quaDem<T>(dem: Dem<T>, ghi: (d: Dem<T>) => void, bayGio: number, nap: () => Promise<T>, demMs = DEM_MS): Promise<T> {
   if (dem && dem.het > bayGio) return dem.giaTri;
   const giaTri = await nap();
-  ghi({ het: bayGio + DEM_MS, giaTri });
+  ghi({ het: bayGio + demMs, giaTri });
   return giaTri;
 }
 
@@ -57,7 +62,7 @@ export function napChoPhep(db: D1Database, bayGio = Date.now()): Promise<QuyTac[
       .bind(bayGio)
       .all<DongQuyTac>();
     return thanhQuyTac(results);
-  });
+  }, DEM_CHAN_MS);
 }
 
 /** Điều kiện SQL "enforcement mạng còn hiệu lực": chưa thu hồi, chưa hết hạn, không còn chờ duyệt. */
@@ -72,5 +77,5 @@ export function napChan(db: D1Database, bayGio = Date.now()): Promise<QuyTac[]> 
       .bind(bayGio)
       .all<DongQuyTac>();
     return thanhQuyTac(results);
-  });
+  }, DEM_CHAN_MS);
 }

@@ -1,4 +1,5 @@
 // Admin SOC (S6) trên workerd thật: Access JWT -> vai trò -> passkey -> phiên -> quyền / che PII -> realtime WebSocket.
+import { generateKeyPairSync } from 'node:crypto';
 import type { D1Database } from '@cloudflare/workers-types';
 import type { Miniflare } from 'miniflare';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -11,6 +12,11 @@ let mf: Miniflare;
 let db: D1Database;
 let access: AccessGia;
 const tinTelegram: { chat_id: string; text: string }[] = [];
+// S7c2: khoá ký Remote Config thử (Worker nhận PEM qua binding, khoá công khai thay qua /thu/khoa-cong-khai).
+const khoaThu = (['app', 'web'] as const).map(() => {
+  const { privateKey, publicKey } = generateKeyPairSync('ed25519');
+  return { pem: privateKey.export({ type: 'pkcs8', format: 'pem' }).toString(), x: publicKey.export({ format: 'jwk' }).x as string };
+});
 
 type Kq = { status: number; json: Record<string, unknown>; cookie: string | null };
 
@@ -68,6 +74,8 @@ beforeAll(async () => {
       TELEGRAM_CHAT_ID: '-100',
       TURNSTILE_SECRET: 'bi-mat-thu',
       TURNSTILE_TEN_MIEN: 'compass.tsudev.com',
+      KHOA_KY_APP: khoaThu[0]?.pem ?? '',
+      KHOA_KY_WEB: khoaThu[1]?.pem ?? '',
     },
     outboundService: async (req) => {
       const u = new URL(req.url);
@@ -570,5 +578,95 @@ describe('S7c1: khiếu nại + audit', () => {
     const k2 = await goi('/audit/kiem', { jwt: s.jwt, cookie: s.cookie, body: {} });
     expect(k2.json).toMatchObject({ nguyenVen: false, dongLoi: { so: sua?.so, id: sua?.id } });
     expect(k2.json.soDongDung).toBe((sua?.so ?? 0) - 1);
+  });
+});
+
+describe('S7c2: Remote Config four-eyes + báo cáo', () => {
+  const PIN = ['hxqRlPTu1bMS/0DITB1SSu0vd4u/8l8TjPgfaAp63Gc=', 'C5+lpZ7tcVwmwQIMcRtPbsQtWLABXhQzejna0wHFr8M='];
+  beforeAll(async () => {
+    await mf.dispatchFetch('https://compass-api.tsudev.com/thu/khoa-cong-khai', {
+      method: 'POST',
+      body: JSON.stringify({ 'app-1': khoaThu[0]?.x, 'web-1': khoaThu[1]?.x }),
+    });
+  });
+
+  it('đề xuất -> người tạo không tự duyệt -> người thứ hai duyệt: Worker ký, KV + /v1/config phục vụ, lịch sử + audit', async () => {
+    await themQt('an10@thu.vn', 'analyst');
+    await themQt('sec10@thu.vn', 'security_admin');
+    await themQt('sec11@thu.vn', 'security_admin');
+    const an = await vaoSoc('an10@thu.vn');
+    const a = await vaoSoc('sec10@thu.vn');
+    const b = await vaoSoc('sec11@thu.vn');
+    const xem = await goi('/cau-hinh-tu-xa', { jwt: an.jwt, cookie: an.cookie });
+    expect(xem.status).toBe(200);
+    expect(xem.json).toMatchObject({ coKhoa: { app: true, web: true }, app: { noiDung: null } });
+    const body = { dich: 'app', noiDung: { toiThieu: 1, khuyenNghi: 2, tat: ['ar'], pin: PIN, ngay: 30 }, lyDo: 'Tắt AR do lỗi camera Samsung' };
+    expect((await goi('/cau-hinh-tu-xa/yeu-cau', { jwt: an.jwt, cookie: an.cookie, body })).status).toBe(403);
+    expect((await goi('/cau-hinh-tu-xa/yeu-cau', { jwt: a.jwt, cookie: a.cookie, body: { ...body, noiDung: { ...body.noiDung, khuyenNghi: 0 } } })).status).toBe(422);
+    const yc = await goi('/cau-hinh-tu-xa/yeu-cau', { jwt: a.jwt, cookie: a.cookie, body });
+    expect(yc.status).toBe(201);
+    expect((await goi('/cau-hinh-tu-xa/yeu-cau', { jwt: b.jwt, cookie: b.cookie, body })).json.code).toBe('dang-co-yeu-cau');
+    expect((await goi('/cau-hinh-tu-xa/quyet', { jwt: a.jwt, cookie: a.cookie, body: { id: yc.json.id, dongY: true } })).json.code).toBe('khong-tu-duyet');
+    const kv = await mf.getKVNamespace('CAU_HINH');
+    expect(await kv.get('app-cau-hinh')).toBeNull();
+    const q = await goi('/cau-hinh-tu-xa/quyet', { jwt: b.jwt, cookie: b.cookie, body: { id: yc.json.id, dongY: true, ghiChu: 'Đã xem lỗi' } });
+    expect(q.status).toBe(200);
+    const raw = await (await mf.dispatchFetch('https://compass-api.tsudev.com/v1/config')).text();
+    const g = JSON.parse(raw) as { kid: string; duLieu: string; chuKy: string };
+    expect(g.kid).toBe('app-1');
+    const nd = JSON.parse(Buffer.from(g.duLieu, 'base64url').toString()) as Record<string, unknown>;
+    expect(nd).toMatchObject({ v: 1, phatHanh: q.json.phatHanh, capNhat: { toiThieu: 1, khuyenNghi: 2 }, tat: ['ar'], pin: PIN, gocThem: [] });
+    const pub = await crypto.subtle.importKey('raw', Buffer.from(khoaThu[0]?.x ?? '', 'base64url'), { name: 'Ed25519' }, false, ['verify']);
+    expect(await crypto.subtle.verify({ name: 'Ed25519' }, pub, Buffer.from(g.chuKy, 'base64url'), Buffer.from(g.duLieu, 'base64url'))).toBe(true);
+    expect((await goi('/cau-hinh-tu-xa/quyet', { jwt: b.jwt, cookie: b.cookie, body: { id: yc.json.id, dongY: true } })).json.code).toBe('da-quyet');
+    const sau = await goi('/cau-hinh-tu-xa', { jwt: an.jwt, cookie: an.cookie });
+    expect(sau.json).toMatchObject({ app: { chuKyDung: true, deXuat: { tat: ['ar'], khuyenNghi: 2 } } });
+    expect((sau.json.lichSu as { created_by: string; approved_by: string }[])[0]).toMatchObject({ created_by: 'sec10@thu.vn', approved_by: 'sec11@thu.vn' });
+    const au = await db.prepare("SELECT action FROM audit_logs WHERE action LIKE 'cau-hinh-tu-xa:%' ORDER BY rowid").all();
+    expect(au.results.map((x) => (x as { action: string }).action)).toEqual(['cau-hinh-tu-xa:de-xuat', 'cau-hinh-tu-xa:duyet']);
+
+    // Gói đổi (công cụ ngoại tuyến) giữa lúc đề xuất và duyệt -> 409, yêu cầu vẫn chờ.
+    const yw = await goi('/cau-hinh-tu-xa/yeu-cau', { jwt: a.jwt, cookie: a.cookie, body: { dich: 'web', noiDung: { landing: 'nhe', admin: 'chat', ngay: 30 }, lyDo: 'Giảm khiên landing thử' } });
+    expect(yw.status).toBe(201);
+    await kv.put('web-khien', JSON.stringify({ kid: 'web-1', duLieu: Buffer.from(JSON.stringify({ v: 1, phatHanh: 9, het: Date.now() + 1e9, muc: { landing: 'tat', admin: 'tat' } })).toString('base64url'), chuKy: 'AAAA' }));
+    expect((await goi('/cau-hinh-tu-xa/quyet', { jwt: b.jwt, cookie: b.cookie, body: { id: yw.json.id, dongY: true } })).json.code).toBe('cau-hinh-da-doi');
+    expect((await goi('/cau-hinh-tu-xa', { jwt: an.jwt, cookie: an.cookie })).json).toMatchObject({ web: { chuKyDung: false } });
+    expect((await goi('/cau-hinh-tu-xa/huy', { jwt: a.jwt, cookie: a.cookie, body: { id: yw.json.id } })).status).toBe(200);
+  });
+
+  it('báo cáo: viewer xem tổng hợp, không xuất; analyst xuất CSV (BOM, IP đầy đủ, chống công thức) + audit', async () => {
+    await themQt('v12@thu.vn', 'viewer');
+    await themQt('an12@thu.vn', 'analyst');
+    const v = await vaoSoc('v12@thu.vn');
+    const an = await vaoSoc('an12@thu.vn');
+    await db
+      .prepare("INSERT INTO security_events (id, device_id, type, severity, signals, ip, ts) VALUES ('01JTB00000000000000000EV12', '01JTB0000000000000000000AA', '=CMD()', 'high', '{}', '203.0.113.77', ?)")
+      .bind(Date.now() - 1000)
+      .run();
+    const th = await goi('/bao-cao/tong-hop', { jwt: v.jwt, cookie: v.cookie });
+    expect(th.status).toBe(200);
+    expect((th.json.suKien as { theoNgay: unknown[] }).theoNgay.length).toBeGreaterThanOrEqual(7);
+    expect((await goi(`/bao-cao/tong-hop?tu=0&den=${Date.now()}`, { jwt: v.jwt, cookie: v.cookie })).status).toBe(422);
+    const den = Date.now() + 1000;
+    const body = { loai: 'su-kien', tu: den - 86_400_000, den };
+    expect((await goi('/bao-cao/xuat', { jwt: v.jwt, cookie: v.cookie, body })).status).toBe(403);
+    const res = await mf.dispatchFetch(`${GOC}/bao-cao/xuat`, {
+      method: 'POST',
+      headers: { 'cf-access-jwt-assertion': an.jwt, cookie: an.cookie, 'content-type': 'application/json', origin: NGUON, 'x-soc': '1' },
+      body: JSON.stringify(body),
+    });
+    expect(res.status).toBe(200);
+    expect(res.headers.get('content-type')).toMatch(/^text\/csv/);
+    expect(res.headers.get('content-disposition')).toMatch(/la-ban-su-kien-.*\.csv/);
+    const byte = new Uint8Array(await res.arrayBuffer());
+    expect([...byte.slice(0, 3)]).toEqual([0xef, 0xbb, 0xbf]);
+    const csv = new TextDecoder().decode(byte);
+    expect(csv.startsWith('id,thoi_diem,thiet_bi,loai')).toBe(true);
+    expect(csv).toContain("'=CMD()");
+    expect(csv).toContain('203.0.113.77');
+    const au = await db.prepare("SELECT actor, after FROM audit_logs WHERE action = 'bao-cao:xuat'").all();
+    expect(au.results).toHaveLength(1);
+    expect(JSON.parse(String((au.results[0] as { after: string }).after))).toMatchObject({ soDong: Number(res.headers.get('x-so-dong')), cat: false, vaiTro: 'analyst' });
+    expect(csv.trim().split('\r\n')).toHaveLength(Number(res.headers.get('x-so-dong')) + 1);
   });
 });
