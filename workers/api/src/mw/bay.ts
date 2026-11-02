@@ -1,3 +1,4 @@
+import { asnCua } from './dich-vu';
 import type { MiddlewareHandler } from 'hono';
 import { xuLySuKien } from '../threat/dong-co';
 import { dongBoLists } from '../threat/dong-bo-lists';
@@ -19,7 +20,7 @@ export const bayQuet: MiddlewareHandler<MoiTruongHono> = async (c, next) => {
   c.set('tuyen', 'bay');
   const ip = c.get('ip');
   if (c.env.DB && ip && nenBao(daBao, ip, Date.now())) {
-    const viec = xuLySuKien(c.env, { thietBi: null, ip, country: c.req.header('cf-ipcountry') ?? null }, [
+    const viec = xuLySuKien(c.env, { thietBi: null, ip, asn: asnCua(c), country: c.req.header('cf-ipcountry') ?? null }, [
       { id: taoUlid(), type: 'HONEYPOT_HIT', severity: 'high', signals: { bay: nhan, method: c.req.method } },
     ]).then(
       async (kq) => {

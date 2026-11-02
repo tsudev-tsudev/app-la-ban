@@ -552,6 +552,24 @@ const VI = {
   chThieuKhoa: 'Worker chưa có khoá ký cho mục này (secret KHOA_KY_APP / KHOA_KY_WEB) - chỉ xem; đổi bằng công cụ ngoại tuyến.',
   chChiXem: 'Vai trò của bạn chỉ xem; Security Admin đề xuất và duyệt.',
   chMacDinh: 'mặc định',
+  // R2: allow-list
+  cpTieuDe: 'Danh sách cho phép (miễn trừ)',
+  cpMoTa: 'Đích khớp không bị cấm tự động và không bị chặn IP ở edge. Luôn có hạn; dùng cho thiết bị duyệt của Google Play (ASN 15169, 396982) trong thời gian duyệt.',
+  cpTrong: 'Không có miễn trừ nào đang hiệu lực.',
+  cpDich: 'Đích',
+  cpTaoBoi: 'Tạo bởi',
+  cpHet: 'Hết hạn',
+  cpThaoTac: 'Thao tác',
+  cpLoai: 'Loại',
+  cpGiaTri: 'Giá trị',
+  cpHan: 'Thời hạn',
+  cpTenHan: { '24h': '24 giờ', '7d': '7 ngày', '30d': '30 ngày', '90d': '90 ngày' } as Record<string, string>,
+  cpThem: 'Thêm miễn trừ',
+  cpGoogle: 'ASN Google Play review',
+  cpGo: 'Gỡ miễn trừ',
+  cpCanhBao: (dich: string, han: string) => `Miễn trừ ${dich} trong ${han}: Threat Engine vẫn ghi sự kiện nhưng không cấm / hạn chế tự động. Gỡ ngay khi xong việc.`,
+  cpDaThem: 'Đã thêm miễn trừ.',
+  cpDaGo: 'Đã gỡ miễn trừ.',
 };
 
 type Chuoi = typeof VI;
@@ -1092,6 +1110,24 @@ const EN: Chuoi = {
   chThieuKhoa: 'The Worker has no signing key for this target (secret KHOA_KY_APP / KHOA_KY_WEB) - view only; use the offline tool.',
   chChiXem: 'Your role is view-only; Security Admins propose and approve.',
   chMacDinh: 'default',
+  // R2: allow-list
+  cpTieuDe: 'Allow-list (exemptions)',
+  cpMoTa: 'Matching targets are never auto-banned and never IP-blocked at the edge. Always time-limited; use for Google Play review devices (ASN 15169, 396982) during review.',
+  cpTrong: 'No active exemptions.',
+  cpDich: 'Target',
+  cpTaoBoi: 'Created by',
+  cpHet: 'Expires',
+  cpThaoTac: 'Actions',
+  cpLoai: 'Type',
+  cpGiaTri: 'Value',
+  cpHan: 'Duration',
+  cpTenHan: { '24h': '24 hours', '7d': '7 days', '30d': '30 days', '90d': '90 days' } as Record<string, string>,
+  cpThem: 'Add exemption',
+  cpGoogle: 'Google Play review ASNs',
+  cpGo: 'Remove exemption',
+  cpCanhBao: (dich: string, han: string) => `Exempt ${dich} for ${han}: the Threat Engine still records events but will not auto-ban / restrict. Remove it as soon as you are done.`,
+  cpDaThem: 'Exemption added.',
+  cpDaGo: 'Exemption removed.',
 };
 
 export type ChuoiSoc = Chuoi;

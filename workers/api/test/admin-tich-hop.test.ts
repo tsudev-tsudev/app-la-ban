@@ -670,3 +670,43 @@ describe('S7c2: Remote Config four-eyes + báo cáo', () => {
     expect(csv.trim().split('\r\n')).toHaveLength(Number(res.headers.get('x-so-dong')) + 1);
   });
 });
+
+describe('R2: allow-list miễn trừ thiết bị duyệt store', () => {
+  it('security_admin thêm ASN Google (có hạn) -> thiết bị qua ASN đó không bị cấm tự động; gỡ -> tính điểm lại; audit', async () => {
+    await themQt('an20@thu.vn', 'analyst');
+    await themQt('sec20@thu.vn', 'security_admin');
+    const an = await vaoSoc('an20@thu.vn');
+    const s = await vaoSoc('sec20@thu.vn');
+    const body = { dich: [{ loai: 'asn', giaTri: 'AS15169' }, { loai: 'asn', giaTri: '396982' }], thoiHan: '7d', lyDo: 'Google Play review lần đầu' };
+    expect((await goi('/cho-phep/them', { jwt: an.jwt, cookie: an.cookie, body })).status).toBe(403);
+    expect((await goi('/cho-phep/them', { jwt: s.jwt, cookie: s.cookie, body: { ...body, thoiHan: 'mai-mai' } })).status).toBe(422);
+    expect((await goi('/cho-phep/them', { jwt: s.jwt, cookie: s.cookie, body: { ...body, dich: [{ loai: 'cidr', giaTri: '10.0.0.0/8' }] } })).json.code).toBe('dich-loi');
+    const them = await goi('/cho-phep/them', { jwt: s.jwt, cookie: s.cookie, body });
+    expect(them.status).toBe(201);
+    const ds = await goi('/cho-phep', { jwt: an.jwt, cookie: an.cookie });
+    expect((ds.json.ds as { target_value: string; hieuLuc: boolean }[]).filter((x) => x.hieuLuc).map((x) => x.target_value).sort()).toEqual(['15169', '396982']);
+
+    const tb = '01JTB0000000000000000000R2';
+    await db.prepare("INSERT INTO devices (id, installation_id_hash, platform, first_seen, last_seen) VALUES (?, 'h-r2', 'android', 1, ?)").bind(tb, Date.now()).run();
+    const lo = async (asn: number) =>
+      (await (
+        await mf.dispatchFetch('https://compass-api.tsudev.com/thu/su-kien', {
+          method: 'POST',
+          body: JSON.stringify({
+            n: { thietBi: tb, ip: '66.249.66.1', asn },
+            ds: [{ id: crypto.randomUUID(), type: 'HOOK_FRIDA', severity: 'critical', signals: {} }, { id: crypto.randomUUID(), type: 'APP_REPACKAGED', severity: 'critical', signals: {} }],
+            bayGio: Date.now(),
+          }),
+        })
+      ).json()) as { diem: number; trangThai: string };
+    await mf.dispatchFetch('https://compass-api.tsudev.com/thu/xoa-dem', { method: 'POST' });
+    expect(await lo(15169)).toMatchObject({ diem: 0, trangThai: 'clean' });
+    const id = (them.json.ids as string[])[0];
+    expect((await goi('/cho-phep/go', { jwt: s.jwt, cookie: s.cookie, body: { id, lyDo: 'Duyệt xong, gỡ miễn trừ' } })).status).toBe(200);
+    expect((await goi('/cho-phep/go', { jwt: s.jwt, cookie: s.cookie, body: { id, lyDo: 'Duyệt xong, gỡ miễn trừ' } })).status).toBe(404);
+    await mf.dispatchFetch('https://compass-api.tsudev.com/thu/xoa-dem', { method: 'POST' });
+    expect((await lo(15169)).trangThai).not.toBe('clean');
+    const au = await db.prepare("SELECT action FROM audit_logs WHERE action LIKE 'cho-phep:%' ORDER BY rowid").all();
+    expect(au.results.map((x) => (x as { action: string }).action)).toEqual(['cho-phep:them', 'cho-phep:go']);
+  });
+});

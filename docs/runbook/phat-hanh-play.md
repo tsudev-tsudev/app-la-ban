@@ -47,6 +47,12 @@ Không dùng định danh phần cứng (CLAUDE.md) -> thêm quy tắc cho phép
 (AS15169, AS396982) trong thời gian duyệt, có hạn + lý do + audit; gỡ sau khi duyệt xong. Trạng thái `banned` (màn khoá)
 không bao giờ áp tự động cho thiết bị khớp quy tắc này.
 
+Cách làm (đã có từ 02/11/2026): SOC -> **Can thiệp** -> mục **Danh sách cho phép** -> nút **ASN Google Play review**
+(điền AS15169 + AS396982) -> chọn hạn 7 hoặc 30 ngày -> lý do + passkey (Security Admin). Worker chuyển ASN của kết nối
+(`request.cf.asn`) vào Threat Engine cho mọi sự kiện (app, bẫy, giới hạn tốc độ, khiên web), nên thiết bị qua mạng Google
+được cho điểm 0 + rule chỉ shadow (vẫn ghi sự kiện để xem lại). Gỡ bằng nút **Gỡ miễn trừ** khi duyệt xong. Mọi lần thêm /
+gỡ ghi audit `cho-phep:them` / `cho-phep:go`.
+
 ## 5. Sau duyệt
 
 - Trang `/tai-ve` landing: đổi nút "Google Play - sắp có" thành link Play (agent-laban).
