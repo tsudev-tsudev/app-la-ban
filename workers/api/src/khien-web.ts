@@ -6,6 +6,7 @@ import { z } from 'zod';
 import type { MoiTruongHono } from './moi-truong';
 import { traVanDe } from './mw/co-ban';
 import { ghiLog } from './mw/ghi-log';
+import { choKiemChan, DUONG_CHAN_SONG_SONG } from './mw/chan';
 import { gioiHanDocCongKhai } from './mw/gioi-han';
 import { doBuoc } from './thuan/do-tre';
 import { xuLySuKien } from './threat/dong-co';
@@ -22,6 +23,8 @@ export function dangKyKhienWeb(app: Hono<MoiTruongHono>, boTuyen: BoTuyen): void
   const corsWeb = (phuongThuc: string[]) =>
     cors({ origin: (o) => nguonChoPhep(o, NGUON_WEB), allowMethods: phuongThuc, allowHeaders: ['content-type'], maxAge: 86400 });
   app.use('/v1/web/cau-hinh', corsWeb(['GET']));
+  // Chỉ đọc, không tác dụng phụ: kiểm chặn song song với đọc cache, chờ trước khi trả (R3c).
+  DUONG_CHAN_SONG_SONG.add('GET /v1/web/cau-hinh');
   app.use('/v1/web/signals', corsWeb(['POST']));
 
   // Gói cấu hình nằm sẵn ở KV đã ký; Worker chỉ kiểm hình dạng rồi trả nguyên văn (trình duyệt tự kiểm chữ ký).
@@ -36,6 +39,7 @@ export function dangKyKhienWeb(app: Hono<MoiTruongHono>, boTuyen: BoTuyen): void
       const tho = await doBuoc(c.get('dongHo'), 'luuTru', () =>
         docQuaColo(c, 'cau-hinh/web', 300, async () => (await c.env.CAU_HINH?.get(KHOA_KV_KHIEN, { cacheTtl: 300 })) ?? null),
       );
+      await choKiemChan(c);
       const goi = goiCauHinhHopLe(tho);
       if (!goi) return traVanDe(c, 404);
       return c.body(goi, 200, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=300' });
