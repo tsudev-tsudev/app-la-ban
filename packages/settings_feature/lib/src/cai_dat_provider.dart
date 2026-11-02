@@ -35,6 +35,10 @@ class CaiDatNotifier extends Notifier<CaiDat> {
     ),
   );
 
+  /// Bật / tắt gửi báo cáo sự cố (S10b). Chỉ có hiệu lực khi đã đồng ý
+  /// trực tuyến (`CaiDat.guiBaoLoi`).
+  void datBaoLoi(bool v) => _dat(state.copyWith(baoLoi: v));
+
   // Ghi nền theo thứ tự gọi; giao diện đổi ngay, không chờ đĩa.
   void _dat(CaiDat moi) {
     state = moi;

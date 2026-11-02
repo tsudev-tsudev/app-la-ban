@@ -27,6 +27,7 @@ final class CaiDat {
     this.cheDo = CheDoGiaoDien.heThong,
     this.daXemGioiThieu = false,
     this.dongY,
+    this.baoLoi = false,
   });
 
   /// Đọc từ JSON đã lưu; khoá thiếu / giá trị lạ (bản cũ, tệp hỏng) -> mặc
@@ -42,6 +43,7 @@ final class CaiDat {
         CheDoGiaoDien.heThong,
     daXemGioiThieu: j['daXemGioiThieu'] == true,
     dongY: DongYXuLy.tuJson(j['dongY']),
+    baoLoi: j['baoLoi'] == true,
   );
 
   Map<String, Object?> toJson() => {
@@ -49,6 +51,7 @@ final class CaiDat {
     'cheDo': cheDo.name,
     'daXemGioiThieu': daXemGioiThieu,
     'dongY': ?dongY?.toJson(),
+    'baoLoi': baoLoi,
   };
 
   final LuaChonNgonNgu ngonNgu;
@@ -59,6 +62,13 @@ final class CaiDat {
 
   /// Lựa chọn với thông báo xử lý dữ liệu (null = chưa trả lời).
   final DongYXuLy? dongY;
+
+  /// Người dùng bật "Gửi báo cáo sự cố" (S10b, QUYET_DINH Q49) - mặc định TẮT.
+  final bool baoLoi;
+
+  /// Được gửi báo cáo sự cố: cần CẢ đồng ý trực tuyến lẫn công tắc riêng
+  /// (mục đích khác nhau - Nghị định 13/2023 Điều 11).
+  bool get guiBaoLoi => trucTuyen && baoLoi;
 
   /// Phải qua màn giới thiệu: lần đầu, hoặc thông báo dữ liệu có bản mới.
   bool get canGioiThieu => !daXemGioiThieu || canHoiDongY(dongY);
@@ -71,11 +81,13 @@ final class CaiDat {
     CheDoGiaoDien? cheDo,
     bool? daXemGioiThieu,
     DongYXuLy? dongY,
+    bool? baoLoi,
   }) => CaiDat(
     ngonNgu: ngonNgu ?? this.ngonNgu,
     cheDo: cheDo ?? this.cheDo,
     daXemGioiThieu: daXemGioiThieu ?? this.daXemGioiThieu,
     dongY: dongY ?? this.dongY,
+    baoLoi: baoLoi ?? this.baoLoi,
   );
 
   @override
@@ -84,13 +96,15 @@ final class CaiDat {
       other.ngonNgu == ngonNgu &&
       other.cheDo == cheDo &&
       other.daXemGioiThieu == daXemGioiThieu &&
-      other.dongY == dongY;
+      other.dongY == dongY &&
+      other.baoLoi == baoLoi;
 
   @override
-  int get hashCode => Object.hash(ngonNgu, cheDo, daXemGioiThieu, dongY);
+  int get hashCode =>
+      Object.hash(ngonNgu, cheDo, daXemGioiThieu, dongY, baoLoi);
 
   @override
   String toString() =>
       'CaiDat(ngonNgu: ${ngonNgu.name}, cheDo: ${cheDo.name}, '
-      'daXemGioiThieu: $daXemGioiThieu, dongY: $dongY)';
+      'daXemGioiThieu: $daXemGioiThieu, dongY: $dongY, baoLoi: $baoLoi)';
 }

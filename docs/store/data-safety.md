@@ -43,6 +43,7 @@ Mọi dòng dưới đây là **tuỳ chọn** ("Users can choose whether this d
 |---|---|---|---|---|---|
 | Location | Approximate location | Có | Không | Fraud prevention, security, and compliance | quốc gia + ASN suy từ địa chỉ IP ở máy chủ (Cloudflare); IP chi tiết rút gọn sau 90 ngày |
 | Device or other IDs | Device or other IDs | Có | **Có (Talsec)** | Fraud prevention, security, and compliance | mã cài đặt ngẫu nhiên + khoá công khai ECDSA phần cứng (không IMEI / serial / MAC / Android ID); freeRASP gửi Talsec mã phiên bản cài của riêng nó |
+| App info and performance | Crash logs | Có (tuỳ chọn RIÊNG, mặc định tắt) | Không | App functionality | S10b (Q49): loại lỗi, ngăn xếp đã che mã, phiên bản app / Android - chỉ khi bật "Gửi báo cáo sự cố"; về Worker của TsuDev, lưu 90 ngày |
 | App info and performance | Diagnostics | Có | **Có (Talsec)** | Fraud prevention, security, and compliance | loại máy, phiên bản Android / app, tên gói, nguồn cài, kết quả kiểm tra môi trường (root, trình gỡ lỗi, hook, giả lập, chữ ký), phán quyết Play Integrity |
 
 Không khai (không rời máy hoặc được miễn theo định nghĩa của Play):
@@ -63,4 +64,4 @@ Không khai (không rời máy hoặc được miễn theo định nghĩa của 
 | Google Play Integrity | API của Google Play services; token đi qua máy chủ TsuDev để giải mã -> đã gộp vào "Diagnostics" | mục 5 |
 | Talsec (freeRASP, Cộng hoà Séc) | dùng dữ liệu để thống kê mối đe doạ của chính họ -> **chia sẻ** | mục 5; đối chiếu hướng dẫn Data Safety mới nhất của Talsec khi điền |
 
-Không có SDK quảng cáo, phân tích, crash (Sentry / Crashlytics dời S10 - khi thêm PHẢI sửa bảng này + hỏi người dùng).
+Không có SDK quảng cáo, phân tích, crash. Báo cáo sự cố tự xây (S10b, QUYET_DINH Q49) đi thẳng về Worker của TsuDev - không bên thứ ba; tỷ lệ crash / ANR native lấy từ Android vitals của Play Console (không cần SDK).

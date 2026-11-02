@@ -23,6 +23,7 @@ import { ChiTiet } from './trang/ChiTiet';
 import { DangNhap } from './trang/DangNhap';
 import { DsThietBi } from './trang/DsThietBi';
 import { KhieuNai } from './trang/KhieuNai';
+import { SuCoApp } from './trang/SuCoApp';
 import { Luat } from './trang/Luat';
 import { NhatKyAudit } from './trang/NhatKyAudit';
 import { QuanTriVien } from './trang/QuanTriVien';
@@ -44,6 +45,7 @@ const GO_TAT: Record<string, string> = {
   a: '#/audit',
   b: '#/bao-cao',
   r: '#/cau-hinh-tu-xa',
+  e: '#/su-co-app',
 };
 
 function useHash(): string {
@@ -256,6 +258,7 @@ export function App() {
         { d: '/thiet-bi', nhan: t.thietBi, bt: 'thiet-bi' },
         ...(quyen.includes('khieu-nai:xem') ? [{ d: '/khieu-nai', nhan: t.khieuNai, bt: 'khieu-nai', dem: soKhieuNai }] : []),
         ...(quyen.includes('bao-cao:xem') ? [{ d: '/bao-cao', nhan: t.baoCao, bt: 'bao-cao' }] : []),
+        ...(quyen.includes('su-co:xem') ? [{ d: '/su-co-app', nhan: t.suCoApp, bt: 'su-co-app' }] : []),
       ],
     },
     {
@@ -353,6 +356,9 @@ export function App() {
   } else if (duong === '/bao-cao' && toi.quyen.includes('bao-cao:xem')) {
     noiDung = <BaoCao />;
     tieuDeTrang = t.baoCao;
+  } else if (duong === '/su-co-app' && toi.quyen.includes('su-co:xem')) {
+    noiDung = <SuCoApp />;
+    tieuDeTrang = t.suCoApp;
   } else if (duong === '/cau-hinh-tu-xa' && toi.quyen.includes('cau-hinh-tu-xa:xem')) {
     noiDung = <CauHinhTuXa />;
     tieuDeTrang = t.cauHinhTuXa;

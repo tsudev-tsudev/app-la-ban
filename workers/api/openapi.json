@@ -10,6 +10,116 @@
     }
   ],
   "paths": {
+    "/v1/app/su-co": {
+      "post": {
+        "summary": "Lô báo cáo sự cố app (<= 10) đã ký bằng khoá thiết bị - chỉ khi người dùng bật",
+        "responses": {
+          "202": {
+            "description": "Thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "nhan": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": [
+                    "nhan"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Lỗi RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VanDe"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "phienThietBi": [],
+            "kyThietBi": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "suCo": {
+                    "minItems": 1,
+                    "maxItems": 10,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "loai": {
+                          "type": "string",
+                          "enum": [
+                            "flutter",
+                            "dart"
+                          ]
+                        },
+                        "kieu": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 120
+                        },
+                        "thongDiep": {
+                          "type": "string",
+                          "maxLength": 500
+                        },
+                        "nganXep": {
+                          "type": "string",
+                          "maxLength": 8000
+                        },
+                        "phienBan": {
+                          "type": "string",
+                          "pattern": "^[0-9A-Za-z.+-]{1,40}$"
+                        },
+                        "luc": {
+                          "type": "integer",
+                          "exclusiveMinimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "loai",
+                        "kieu",
+                        "thongDiep",
+                        "nganXep",
+                        "phienBan",
+                        "luc"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": [
+                  "suCo"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/device/attest": {
       "post": {
         "summary": "Xác minh lại thiết bị (Play Integrity mới, thách thức mới) - cập nhật mức tin cậy",

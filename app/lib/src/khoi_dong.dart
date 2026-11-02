@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:la_ban/src/app.dart';
 import 'package:la_ban/src/ar.dart';
 import 'package:la_ban/src/ban_do.dart';
+import 'package:la_ban/src/bao_loi.dart';
 import 'package:la_ban/src/cong_truc_tuyen.dart';
 import 'package:la_ban/src/diem.dart';
 import 'package:la_ban/src/dinh_danh.dart';
@@ -64,6 +65,15 @@ Future<Widget> dungApp(
       ? null
       : CongTrucTuyen(mo: KhoCaiDatTep(kho!.caiDat).doc().trucTuyen);
   if (dv != null) batDauDinhDanh(dv, cong!);
+  // S10b: báo cáo sự cố tự xây (Q49) - chỉ ghi / gửi khi người dùng bật công
+  // tắc riêng trong Quyền riêng tư VÀ đã đồng ý trực tuyến.
+  if (kho != null && dinhDanh) {
+    final caiDat = KhoCaiDatTep(kho.caiDat);
+    bool duoc() => caiDat.doc().guiBaoLoi;
+    final hang = HangBaoLoi(TepJson.mo('${kho.thuMuc}/bao_cao_loi.json'));
+    batLoi(hang, duoc, phienBanApp);
+    if (dv != null) batDauGuiBaoLoi(hang, dv, cong!, duoc);
+  }
   if (kenh != null) batDauKenh(kenh, dv, cong!);
   // S4: kiểm tra môi trường + freeRASP, chỉ báo server (SEC-APP).
   final rasp = kho != null && dv != null ? taoDichVuRasp(kho, dv) : null;

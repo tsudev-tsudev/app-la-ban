@@ -27,6 +27,7 @@ export const BANG_SAO_LUU = [
   'soc_settings',
   'config_requests',
   'config_versions',
+  'app_crashes',
 ] as const;
 export type BangSaoLuu = (typeof BANG_SAO_LUU)[number];
 

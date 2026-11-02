@@ -1132,6 +1132,17 @@ class LbL10nEn extends LbL10n {
       'Sends technical security data and receives signed configuration. Turning it off withdraws consent; the security library stops completely from the next app launch.';
 
   @override
+  String get privacyCrash => 'Send crash reports';
+
+  @override
+  String get privacyCrashHint =>
+      'When the app hits an error, sends the error type, the encoded code trace, and the app and Android versions so we can fix it. Never sends your location, waypoints or anything you type; kept for 90 days.';
+
+  @override
+  String get privacyCrashNeedsOnline =>
+      'Turn on Online security connection first.';
+
+  @override
   String privacyChoiceAt(String date) {
     return 'Choice recorded on $date';
   }
@@ -2358,6 +2369,17 @@ class LbL10nEnXa extends LbL10nEn {
   @override
   String get privacyOnlineHint =>
       '[Šẽñđš ťẽçhñỉçảł šẽçữřỉťỹ đảťả ảñđ řẽçẽỉvẽš šỉğñẽđ çởñfỉğữřảťỉởñ. Ťữřñỉñğ ỉť ởff ŵỉťhđřảŵš çởñšẽñť; ťhẽ šẽçữřỉťỹ łỉbřảřỹ šťởpš çởmpłẽťẽłỹ fřởm ťhẽ ñẽxť ảpp łảữñçh. ·································································]';
+
+  @override
+  String get privacyCrash => '[Šẽñđ çřảšh řẽpởřťš ········]';
+
+  @override
+  String get privacyCrashHint =>
+      '[Ŵhẽñ ťhẽ ảpp hỉťš ảñ ẽřřởř, šẽñđš ťhẽ ẽřřởř ťỹpẽ, ťhẽ ẽñçởđẽđ çởđẽ ťřảçẽ, ảñđ ťhẽ ảpp ảñđ Ảñđřởỉđ vẽřšỉởñš šở ŵẽ çảñ fỉx ỉť. Ñẽvẽř šẽñđš ỹởữř łởçảťỉởñ, ŵảỹpởỉñťš ởř ảñỹťhỉñğ ỹởữ ťỹpẽ; kẽpť fởř 90 đảỹš. ·················································································]';
+
+  @override
+  String get privacyCrashNeedsOnline =>
+      '[Ťữřñ ởñ Ởñłỉñẽ šẽçữřỉťỹ çởññẽçťỉởñ fỉřšť. ·················]';
 
   @override
   String privacyChoiceAt(String date) {

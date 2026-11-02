@@ -1,6 +1,7 @@
 # Trạng thái SỐNG - quy trình: AGENTS_KICKOFF.md · lệnh: `./agents.sh help`
 
 ## LOCKS (chỉ tệp ĐANG sửa - xoá ngay khi xong)
+- agent-laban · packages/settings_feature, packages/core, packages/i18n, app/lib, workers/api, web/admin, web/landing, docs · S10b
 
 ## Lưu ý đang hiệu lực (<= 8 dòng)
 - WRANGLER OAUTH SAI TAI KHOAN: luon 'set -a; . ~/.config/la-ban/cf.env; set +a' (source tran KHONG export) truoc moi lenh wrangler (OAuth may dang o tai khoan repo khac -> secret put tao Worker rac). find WRANGLER OAUTH

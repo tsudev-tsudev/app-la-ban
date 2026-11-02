@@ -195,3 +195,22 @@ describe('/v1/events', () => {
     expect((await goi('/v1/events', { body: JSON.stringify({ events: [suKien('', 'ROOT_DETECTED')] }), tieuDe: { authorization: `Bearer ${t.token}` } })).status).toBe(401);
   });
 });
+
+describe('S10b: /v1/app/su-co', () => {
+  const suCo = (kieu: string, nx: string) => ({ loai: 'dart', kieu, thongDiep: 'loi a@b.vn 203.0.113.77', nganXep: nx, phienBan: '0.1.0-beta.12+12', luc: Date.now() });
+  it('ký đúng -> 202, gom dấu vết bỏ qua địa chỉ abs, che email / IP; không ký -> 401; lô > 10 -> 422', async () => {
+    const t = await dangKy();
+    const nx = (abs: string) => `#00 abs ${abs} virt 00000000001b2c _kDartIsolateSnapshotInstructions+0x1b2c\n#01 abs ${abs}ff virt 0000000000aa00 _kDartIsolateSnapshotInstructions+0xaa00`;
+    const lo = JSON.stringify({ suCo: [suCo('a1', nx('0000007a1b2c')), suCo('a1', nx('0000009c0000'))] });
+    expect(await goiKy(t, '/v1/app/su-co', lo)).toMatchObject({ status: 202, du: { nhan: 2 } });
+    const { results } = await db.prepare('SELECT fingerprint, message, device_id FROM app_crashes WHERE device_id = ?').bind(t.id).all<{ fingerprint: string; message: string }>();
+    expect(results).toHaveLength(2);
+    expect(results[0]?.fingerprint).toBe(results[1]?.fingerprint);
+    expect(results[0]?.message).toBe('loi <email> 203.0.113.x');
+    expect((await goi('/v1/app/su-co', { body: lo })).status).toBe(401);
+    const qua = JSON.stringify({ suCo: Array.from({ length: 11 }, () => suCo('b', '#0 x')) });
+    expect((await goiKy(t, '/v1/app/su-co', qua)).status).toBe(422);
+    const ev = await db.prepare('SELECT count(*) AS n FROM security_events WHERE device_id = ?').bind(t.id).first<{ n: number }>();
+    expect(ev?.n).toBe(0);
+  });
+});
