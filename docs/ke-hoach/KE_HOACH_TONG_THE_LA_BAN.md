@@ -679,6 +679,27 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
 - Làm: E2E (cài mới -> attest -> la bàn -> waypoint -> chia sẻ -> nâng cấp); ma trận nâng cấp + OTA + rollback; benchmark;
   MobSF + ZAP + Semgrep; bộ kịch bản kiểm thử bảo mật nội bộ trên thiết bị thử của dự án; chuẩn bị gói cho pentest độc lập.
 - Cổng: tiêu chí Spec §15 mục 1-11 đạt; 0 Critical/High mở.
+- Kế hoạch chia (02/11, bàn giao từ phiên S10 - máy chưa có công cụ nào: semgrep / osv-scanner / gitleaks / docker / ZAP /
+  MobSF đều KHÔNG có; RAM 7 GB, không docker -> cài bản độc lập vào `~/tools/` NGOÀI repo, chi phí 0):
+  - **R3a - quét tự động + web** (một phiên): (1) cài `gitleaks` + `osv-scanner` (binary GitHub release vào `~/tools/bin`),
+    `semgrep` (venv `~/tools/semgrep`), ZAP (bản cross-platform chạy bằng JDK 21 sẵn có, `zap.sh -cmd` / baseline), MobSF
+    (venv Python, chỉ phân tích tĩnh APK - nếu quá nặng RAM thì ghi lý do + thay bằng `apkanalyzer` / `aapt2` + kiểm tay);
+    (2) nối `cong.sh day-du`: gitleaks toàn lịch sử, osv-scanner `package-lock.json` + `pubspec.lock` (hiện cổng bỏ qua vì
+    thiếu lệnh), semgrep (`p/typescript`, `p/secrets`, luật tự viết cho Worker: SQL nối chuỗi, thiếu `canQuyen`); (3) ZAP
+    baseline vào landing / admin (preview) / API **staging** (không quét prod), securityheaders + SSL Labs (A+), kiểm CSP
+    không `unsafe-*`, tỷ lệ request tự động không token tới API bảo vệ bị chặn >= 99 %; (4) MobSF APK beta.12: 0 High
+    (quyền, `exported`, cleartext, debuggable, khoá cứng). Mọi phát hiện Critical / High sửa ngay trong phase; Medium ghi
+    hạn. Kết quả vào `docs/kiem-thu/R3a-<ngày>.md` (không dán bí mật / PII).
+  - **R3b - E2E + kịch bản nội bộ trên M32** (một phiên, cần người dùng mở khoá PIN M32 - adb đã bật `svc power stayon usb`):
+    (1) E2E tay có kịch bản qua adb (`uiautomator dump` + `input tap`, ảnh chụp): cài mới -> đồng ý -> attest -> la bàn ->
+    điểm mốc -> chia sẻ link /w/ -> mở lại -> nâng cấp; (2) ma trận nâng cấp beta.7 -> beta.12 (APK trên GitHub Release),
+    dữ liệu còn, migration Drift đúng; Remote Config ép `toiThieu` + rollback; (3) kịch bản bảo mật nội bộ SEC-TEST: APK đóng
+    gói lại (apktool + ký khoá khác) -> SOC ghi nhận + chặn, phát lại request (nonce) -> 401, sửa thân sau ký -> 401, giả vị
+    trí (mock location app) -> tín hiệu, proxy chặn giữa (mitmproxy, CA người dùng) -> pin từ chối; mục tiêu >= 95 % được
+    ghi nhận, 100 % request nhạy cảm không hợp lệ bị từ chối; (4) đối chiếu ngân sách Spec §15 (mục 0 / 2 của kế hoạch:
+    cold start, FPS, jank, tải về, pin) - số đã đo ở A3 / A8b / R2a / S10, đo lại phần thiếu; (5) chuẩn bị gói pentest độc
+    lập (`docs/kiem-thu/goi-pentest.md`: phạm vi, tài khoản thử staging, service token, quy tắc - chưa chốt đơn vị, Q25).
+  - Cổng R3 = cả hai đạt + 0 Critical / High mở. iOS ngoài phạm vi (I1).
 
 ### R4 - Phát hành v1.0.0
 - Làm: staged rollout Play (1->5->20->50->100%) (iOS phased ở I1); Shorebird kênh staging -> stable; theo dõi crash-free, ANR, chặn
