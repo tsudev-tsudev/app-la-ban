@@ -25,6 +25,7 @@ export async function xuatNhatKy(env: Env, bayGio = Date.now()): Promise<KetQuaN
   const ds: DongXuat[] = [];
   let con = false;
   for (const bang of BANG_NHAT_KY) {
+    // nosemgrep: la-ban-sql-noi-chuoi - bang lặp từ hằng BANG_NHAT_KY (as const)
     const { results } = await db
       .prepare(`SELECT rowid AS _so, * FROM ${bang} WHERE rowid > ? ORDER BY rowid LIMIT ?`)
       .bind(dau.conTro[bang], LO_NHAT_KY)

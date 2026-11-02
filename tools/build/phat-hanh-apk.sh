@@ -58,7 +58,7 @@ PASS=$(grep '^storePassword=' "$KEY_PROPS" | cut -d= -f2-)
 ALIAS=$(grep '^keyAlias=' "$KEY_PROPS" | cut -d= -f2-)
 CERT=$("$JAVA_HOME/bin/keytool" -exportcert -keystore "$STORE" -alias "$ALIAS" -storepass "$PASS" | sha256sum | cut -d' ' -f1)
 for f in "$RA"/*.apk; do
-  "$BT/apksigner" verify --min-sdk-version 24 "$f"
+  "$BT/apksigner" verify --min-sdk-version 26 "$f"
   CO=$("$BT/apksigner" verify --print-certs "$f" | sed -n 's/.*certificate SHA-256 digest: //p' | head -1)
   [ "$CO" = "$CERT" ] || { echo "Chứng chỉ $f không khớp khoá upload" >&2; exit 1; }
 done

@@ -25,6 +25,7 @@ export async function saoLuuD1(env: Env, bayGio = Date.now()): Promise<KetQuaSao
     let sau = 0;
     dem[bang] = 0;
     for (;;) {
+      // nosemgrep: la-ban-sql-noi-chuoi - bang lặp từ hằng danh sách bảng sao lưu
       const { results } = await db
         .prepare(`SELECT rowid AS _so, * FROM ${bang} WHERE rowid > ? ORDER BY rowid LIMIT ?`)
         .bind(sau, LO_SAO_LUU)

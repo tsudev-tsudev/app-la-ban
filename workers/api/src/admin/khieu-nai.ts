@@ -51,6 +51,7 @@ export function dangKyKhieuNai(r: Hono<MoiTruongHono>): void {
     const gioiHan = docGioiHanTrang(loc.limit);
     const d = db(c);
     const [ds, dem] = await d.batch([
+      // nosemgrep: la-ban-sql-noi-chuoi - dk chỉ gồm mệnh đề literal, giá trị qua bind
       d
         .prepare(
           `SELECT a.id, a.device_id, a.enforcement_id, a.message, a.status, a.reviewed_by, a.reviewed_at, a.decision_note, a.ts, a.contact, a.lang, d.status AS device_status, d.model, d.app_version, d.risk_score, e.action AS e_action, e.reason AS e_reason, e.source AS e_source, e.created_at AS e_created_at, e.expires_at AS e_expires_at, e.revoked_at AS e_revoked_at FROM appeals a JOIN devices d ON d.id = a.device_id LEFT JOIN enforcements e ON e.id = a.enforcement_id${dk.length ? ` WHERE ${dk.join(' AND ')}` : ''} ORDER BY a.ts DESC, a.id DESC LIMIT ?`,
@@ -119,6 +120,7 @@ export function dangKyKhieuNai(r: Hono<MoiTruongHono>): void {
     const loc = docLocAudit(c.req.query());
     const tv = truyVanAudit(loc);
     const gioiHan = docGioiHanTrang(loc.limit);
+    // nosemgrep: la-ban-sql-noi-chuoi - tv.where sinh từ truyVanAudit (thuan, có test), giá trị qua bind
     const { results } = await db(c)
       .prepare(`SELECT rowid AS so, id, actor, action, target, before, after, ip, ts, hash_prev, hash_self FROM audit_logs${tv.where} ORDER BY rowid DESC LIMIT ?`)
       .bind(...tv.thamSo, gioiHan + 1)

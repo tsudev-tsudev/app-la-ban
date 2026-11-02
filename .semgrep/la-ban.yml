@@ -1,0 +1,65 @@
+# Luật Semgrep riêng của repo (R3a, SEC-TEST). Chạy trong `./tools/kiem-tra/cong.sh day-du` cùng p/typescript + p/secrets.
+# Chặn có chủ ý một dòng: comment `// nosemgrep: <id> - <lý do>` ngay dòng trước, lý do phải đọc được khi review.
+rules:
+  - id: la-ban-sql-noi-chuoi
+    languages: [typescript]
+    severity: ERROR
+    message: >-
+      SQL D1 dựng bằng nội suy / nối chuỗi. Giá trị phải qua `.bind(...)`; chỉ được nội suy hằng (TÊN_HOA), danh sách dấu
+      `?` (`x.map(() => '?').join(', ')`) hoặc mệnh đề sinh từ hàm thuần có test trong `src/thuan/`.
+    paths:
+      include: [workers/api/src/]
+      exclude: ['*.test.ts']
+    patterns:
+      - pattern-either:
+          - pattern: $DB.prepare(`...${$X}...`)
+          - pattern: $DB.prepare("..." + $X)
+          - pattern: $DB.prepare($X + "...")
+      - pattern-not: $DB.prepare(`...${$A.map(() => '?').join($S)}...`)
+      - metavariable-pattern:
+          metavariable: $X
+          patterns:
+            - pattern-not-regex: ^[A-Z][A-Z0-9_]*$
+            - pattern-not: $A.map(() => "...").join($S)
+            - pattern-not: |
+                "..."
+            - pattern-not: '$C ? "..." : "..."'
+
+  - id: la-ban-admin-thieu-canquyen
+    languages: [typescript]
+    severity: ERROR
+    message: >-
+      Route Admin SOC không có `canQuyen(...)` / `canStepUp` trước handler. Mọi route admin phải kiểm quyền theo vai trò
+      (SEC-ADM); route tự phục vụ (passkey / phiên của chính mình) đánh dấu nosemgrep kèm lý do.
+    paths:
+      include: [workers/api/src/admin/]
+      exclude: ['*.test.ts']
+    pattern-either:
+      - pattern: $R.get($P, async ($C) => {...})
+      - pattern: $R.post($P, async ($C) => {...})
+      - pattern: $R.put($P, async ($C) => {...})
+      - pattern: $R.patch($P, async ($C) => {...})
+      - pattern: $R.delete($P, async ($C) => {...})
+
+  - id: la-ban-worker-log-bi-mat
+    languages: [typescript]
+    severity: ERROR
+    message: Không ghi log biến môi trường bí mật / header Authorization (log Workers đi ra R2 bất biến).
+    paths:
+      include: [workers/api/src/]
+    pattern-either:
+      - pattern: console.$F(..., $E.env.$K, ...)
+      - pattern: console.$F(..., $R.header('authorization'), ...)
+
+  - id: la-ban-web-eval
+    languages: [typescript, javascript]
+    severity: ERROR
+    message: eval / new Function / chuỗi trong setTimeout trái CSP không `unsafe-eval`.
+    paths:
+      include: [web/, workers/api/src/]
+      exclude: ['dist/', '*.test.ts']
+    pattern-either:
+      - pattern: eval(...)
+      - pattern: new Function(...)
+      - pattern: setTimeout("...", ...)
+      - pattern: setInterval("...", ...)

@@ -139,6 +139,13 @@
         "referrer-policy": "no-referrer",
         "cross-origin-resource-policy": "cross-origin"
       }
+    },
+    {
+      "description": "la-ban: HSTS compass-admin (cả phản hồi chuyển hướng của Cloudflare Access - SSL Labs A+, R3a)",
+      "expression": "(http.host eq \"compass-admin.tsudev.com\")",
+      "headers": {
+        "strict-transport-security": "max-age=31536000; includeSubDomains"
+      }
     }
   ],
   "quyTac": [

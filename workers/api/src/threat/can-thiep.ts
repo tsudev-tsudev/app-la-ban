@@ -13,7 +13,9 @@ export async function tinhLaiThietBi(db: D1Database, cfg: CauHinhNguyCo, ids: re
   if (ids.length === 0) return;
   const dau = ids.map(() => '?').join(', ');
   const [tb, tt] = await db.batch([
+    // nosemgrep: la-ban-sql-noi-chuoi - dau = danh sách dấu ? theo ids
     db.prepare(`SELECT id, risk_score, status FROM devices WHERE id IN (${dau})`).bind(...ids),
+    // nosemgrep: la-ban-sql-noi-chuoi - dau = danh sách dấu ? theo ids
     db
       .prepare(`SELECT target_value, action FROM enforcements WHERE target_type = 'device' AND revoked_at IS NULL AND expires_at > ? AND target_value IN (${dau})`)
       .bind(bayGio, ...ids),

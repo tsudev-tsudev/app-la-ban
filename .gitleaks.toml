@@ -1,5 +1,14 @@
 [extend]
 useDefault = true
 
-[allowlist]
+[[allowlists]]
+description = "Tệp sinh / tài liệu gốc người dùng / lockfile (không chứa bí mật)."
 paths = ['''node_modules''', '''dist''', '''\.dart_tool''', '''build''', '''\.wrangler''', '''\.astro''', '''^2026.*\.md$''', '''package-lock\.json''', '''pubspec\.lock''']
+
+# Báo nhầm đã kiểm tay (R3a 02/11/2026):
+# - ACCESS_AUD: audience tag Cloudflare Access - công khai, nằm trong claim `aud` của mọi JWT Access, không phải bí mật.
+# - Tiền tố PEM trong schema zod kiểm khoá service account (chỉ là chuỗi '-----BEGIN PRIVATE KEY-----', không có khoá).
+[[allowlists]]
+description = "Giá trị công khai / chuỗi kiểm định dạng"
+regexTarget = "line"
+regexes = ['''ACCESS_AUD = "[0-9a-f]{64}"''', '''startsWith\('-----BEGIN PRIVATE KEY-----'\)''']

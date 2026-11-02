@@ -33,6 +33,7 @@ export function taoAdmin(): Hono<MoiTruongHono> {
   r.use('*', async (c, next) => (KHONG_CAN_PHIEN.test(c.req.path) ? next() : canPhien(c, next)));
 
   // Trạng thái đăng nhập cho giao diện: chỉ cần Access + vai trò (chưa cần phiên passkey).
+  // nosemgrep: la-ban-admin-thieu-canquyen - /toi chỉ trả danh tính + quyền của chính người gọi (Access)
   r.get('/toi', async (c) => {
     const qt = c.get('quanTri') as { email: string; vaiTro: VaiTro };
     const db = c.env.DB as D1Database;
