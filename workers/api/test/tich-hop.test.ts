@@ -31,8 +31,8 @@ describe('migration D1 0001 + 0002', () => {
     const db = await mf.getD1Database('DB');
     const { results } = await db.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE '\\_%' ESCAPE '\\' AND name NOT LIKE 'sqlite%' ORDER BY name").all<{ name: string }>();
     expect(results.map((r) => r.name)).toEqual([
-      'admin_challenges', 'admin_passkeys', 'admin_sessions', 'admin_users', 'alert_notes', 'alerts', 'allow_list', 'app_crashes', 'appeals', 'approval_requests', 'audit_logs', 'config_requests', 'config_versions', 'device_ips', 'device_links', 'devices', 'enforcements', 'idempotency_keys',
-      'rule_hits', 'rule_versions', 'rules', 'security_events', 'sessions', 'soc_settings', 'threat_config',
+      'admin_challenges', 'admin_passkeys', 'admin_sessions', 'admin_users', 'alert_notes', 'alerts', 'allow_list', 'app_crashes', 'appeals', 'approval_requests', 'audit_logs', 'config_requests', 'config_versions', 'device_ips', 'device_links', 'devices', 'enforcements', 'gioi_han_dem', 'idempotency_keys',
+      'nonce_dung', 'rule_hits', 'rule_versions', 'rules', 'security_events', 'sessions', 'soc_settings', 'threat_config',
     ]);
   });
   it('ràng buộc: enforcement phải có hạn, người duyệt khác người tạo; vai trò hợp lệ', async () => {

@@ -42,23 +42,30 @@ function canDb(env: Env): D1Database {
   return env.DB;
 }
 
-/** Lô sự kiện (từ app - đã kiểm chữ ký ở tầng xác thực - hoặc do server sinh: RATE_ABUSE, SIGNATURE_MISMATCH...). */
-export async function xuLySuKien(env: Env, n: NguCanhSuKien, ds: readonly SuKienVao[], bayGio = Date.now()): Promise<KetQuaXuLy> {
+/** Lô đã ghi (phần đồng bộ của Threat Engine) + phần còn lại để chạy sau phản hồi. */
+export type LoDaGhi = { nhan: number; trung: number; tiep: () => Promise<KetQuaXuLy> };
+
+/**
+ * Phần ĐỒNG BỘ (R3c): nạp cấu hình / rule / allow-list / thiết bị / loại đã tính điểm SONG SONG (một vòng D1) -> chấm
+ * điểm -> ghi sự kiện chống trùng. `tiep()` = chạy rule + cập nhật điểm / trạng thái + phát SOC realtime (DO): route app
+ * gọi nó trong waitUntil để phản hồi không chờ (app chỉ cần biết nhận / trùng; quyết định chặn vẫn ở server, có hiệu lực
+ * từ yêu cầu kế tiếp như trước - xác thực đọc trạng thái từ D1 mỗi yêu cầu).
+ */
+export async function ghiSuKien(env: Env, n: NguCanhSuKien, ds: readonly SuKienVao[], bayGio = Date.now()): Promise<LoDaGhi> {
   const db = canDb(env);
-  const [cfg, dsLuat, choPhep] = await Promise.all([napCauHinh(db, bayGio), napLuat(db, bayGio), napChoPhep(db, bayGio)]);
+  const dsLoai = ds.map((e) => e.type);
+  const [cfg, dsLuat, choPhep, tb, daTinh] = await Promise.all([
+    napCauHinh(db, bayGio),
+    napLuat(db, bayGio),
+    napChoPhep(db, bayGio),
+    n.thietBi ? db.prepare('SELECT id, risk_score, status, platform FROM devices WHERE id = ?').bind(n.thietBi).first<ThietBi>() : null,
+    n.gopLoaiMs && n.thietBi ? loaiDaTinh(db, n.thietBi, dsLoai, bayGio - n.gopLoaiMs) : null,
+  ]);
   const mien = khopQuyTac(choPhep, { thietBi: n.thietBi, ip: n.ip, asn: n.asn ?? null }) !== null;
-  const tb = n.thietBi
-    ? await db.prepare('SELECT id, risk_score, status, platform FROM devices WHERE id = ?').bind(n.thietBi).first<ThietBi>()
-    : null;
   if (n.thietBi && !tb) throw new Error('thiết bị không tồn tại');
 
   const ipPrefix = n.ip ? rutGonIp(n.ip) : null;
-  const dsLoai = ds.map((e) => e.type);
-  const diem = mien
-    ? ds.map(() => 0)
-    : n.gopLoaiMs && n.thietBi
-      ? diemTheoLo(cfg, dsLoai, await loaiDaTinh(db, n.thietBi, dsLoai, bayGio - n.gopLoaiMs))
-      : dsLoai.map((l) => diemSuKien(cfg, l));
+  const diem = mien ? ds.map(() => 0) : daTinh ? diemTheoLo(cfg, dsLoai, daTinh) : dsLoai.map((l) => diemSuKien(cfg, l));
   const kqChen = await db.batch(
     ds.map((e, i) =>
       db
@@ -70,8 +77,6 @@ export async function xuLySuKien(env: Env, n: NguCanhSuKien, ds: readonly SuKien
   );
   const moiChiSo = ds.flatMap((_, i) => ((kqChen[i]?.meta.changes ?? 0) > 0 ? [i] : []));
   const moi = moiChiSo.map((i) => ds[i] as SuKienVao);
-  const ctx = new PhienXuLy(env, db, cfg, n, tb, mien, bayGio);
-  for (const i of moiChiSo) ctx.themDiem(diem[i] ?? 0);
   for (const i of moiChiSo) {
     const e = ds[i] as SuKienVao;
     env.SU_KIEN?.writeDataPoint({
@@ -80,21 +85,31 @@ export async function xuLySuKien(env: Env, n: NguCanhSuKien, ds: readonly SuKien
       doubles: [diem[i] ?? 0],
     });
   }
-  await ctx.chayLuat(dsLuat, [...new Set(moi.map((e) => e.type))]);
-  await ctx.ketThuc(dsLuat);
-  if (moi.length > 0) {
-    await phatSoc(env, {
-      loai: 'su-kien',
-      nhanLuc: bayGio,
-      thietBi: n.thietBi,
-      ip: n.ip,
-      quocGia: n.country ?? null,
-      ds: moi.map((e) => ({ type: e.type, severity: e.severity })),
-      kichHoat: ctx.kichHoat,
-      trangThai: ctx.trangThai,
-    });
-  }
-  return { nhan: moi.length, trung: ds.length - moi.length, diem: ctx.diem, trangThai: ctx.trangThai, kichHoat: ctx.kichHoat, canDongBo: ctx.canDongBo };
+  const tiep = async (): Promise<KetQuaXuLy> => {
+    const ctx = new PhienXuLy(env, db, cfg, n, tb, mien, bayGio);
+    for (const i of moiChiSo) ctx.themDiem(diem[i] ?? 0);
+    await ctx.chayLuat(dsLuat, [...new Set(moi.map((e) => e.type))]);
+    await ctx.ketThuc(dsLuat);
+    if (moi.length > 0) {
+      await phatSoc(env, {
+        loai: 'su-kien',
+        nhanLuc: bayGio,
+        thietBi: n.thietBi,
+        ip: n.ip,
+        quocGia: n.country ?? null,
+        ds: moi.map((e) => ({ type: e.type, severity: e.severity })),
+        kichHoat: ctx.kichHoat,
+        trangThai: ctx.trangThai,
+      });
+    }
+    return { nhan: moi.length, trung: ds.length - moi.length, diem: ctx.diem, trangThai: ctx.trangThai, kichHoat: ctx.kichHoat, canDongBo: ctx.canDongBo };
+  };
+  return { nhan: moi.length, trung: ds.length - moi.length, tiep };
+}
+
+/** Lô sự kiện (từ app - đã kiểm chữ ký ở tầng xác thực - hoặc do server sinh: RATE_ABUSE, SIGNATURE_MISMATCH...). */
+export async function xuLySuKien(env: Env, n: NguCanhSuKien, ds: readonly SuKienVao[], bayGio = Date.now()): Promise<KetQuaXuLy> {
+  return (await ghiSuKien(env, n, ds, bayGio)).tiep();
 }
 
 /** Loại (trong [dsLoai]) đã có điểm cho thiết bị từ mốc [tu]. */

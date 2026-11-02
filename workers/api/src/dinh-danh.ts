@@ -69,16 +69,19 @@ async function danhGiaAttest(c: Ngu, goiApp: string, token: string | null, chuoi
   }
 }
 
-async function ghiIp(c: Ngu, db: D1Database, thietBi: string, bayGio: number): Promise<void> {
+function lenhGhiIp(c: Ngu, db: D1Database, thietBi: string, bayGio: number): D1PreparedStatement | null {
   const ip = c.get('ip');
-  if (!ip) return;
+  if (!ip) return null;
   const asn = (c.req.raw as { cf?: { asn?: number } }).cf?.asn ?? null;
-  await db
+  return db
     .prepare(
       'INSERT INTO device_ips (device_id, ip, asn, country, first_seen, last_seen) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT (device_id, ip) DO UPDATE SET last_seen = excluded.last_seen, count = count + 1, asn = excluded.asn',
     )
-    .bind(thietBi, ip, asn, c.req.header('cf-ipcountry') ?? null, bayGio, bayGio)
-    .run();
+    .bind(thietBi, ip, asn, c.req.header('cf-ipcountry') ?? null, bayGio, bayGio);
+}
+
+async function ghiIp(c: Ngu, db: D1Database, thietBi: string, bayGio: number): Promise<void> {
+  await lenhGhiIp(c, db, thietBi, bayGio)?.run();
 }
 
 async function capPhien(env: Env, k: KhoaPhien, db: D1Database, p: { thietBi: string; jkt: string; muc: string; bayGio: number; chuoi?: string }) {
@@ -250,9 +253,10 @@ export function dangKyDinhDanh(_app: Hono<MoiTruongHono>, boTuyen: BoTuyen): voi
         ph.lenh,
         db.prepare('DELETE FROM sessions WHERE id = ? AND NOT EXISTS (SELECT 1 FROM sessions WHERE id = ? AND thay_boi = ?)').bind(ph.id, d.id, ph.id),
         db.prepare('UPDATE devices SET last_seen = ? WHERE id = ?').bind(bayGio, d.device_id),
+        // IP của lần làm mới đi chung lô (R3c: bớt một vòng D1); thua đua vẫn ghi IP - IP đó thật sự đã gọi.
+        ...[lenhGhiIp(c, db, d.device_id, bayGio)].filter((l): l is D1PreparedStatement => l !== null),
       ]));
       if (!xoay?.meta.changes) throw new LoiApi(409, 'dang-xoay');
-      await doBuoc(dh, 'd1', () => ghiIp(c, db, d.device_id, bayGio));
       return c.json({ mucTin: d.attestation_level, phien: ph.phien });
     },
   );

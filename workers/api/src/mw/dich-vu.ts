@@ -2,22 +2,33 @@
 import type { Env, Ngu } from '../moi-truong';
 import { dongBoLists } from '../threat/dong-bo-lists';
 import { xuLySuKien, type SuKienVao } from '../threat/dong-co';
+import { cauCapThach, cauDungThach, cauNonce, thachConHan } from '../thuan/dem-d1';
 import { taoUlid } from '../thuan/dinh-danh';
+import { laNonceHopLe, NONCE_TTL_MAC_DINH_MS } from '../thuan/nonce';
 import { LoiApi } from '../thuan/loi';
 import { ghiLog } from './ghi-log';
 
-function doNonce(env: Env, ten: string): DurableObjectStub {
-  const ns = env.KHO_NONCE;
-  if (!ns) throw new LoiApi(503, 'chua-cau-hinh', { thieu: 'KHO_NONCE' });
-  return ns.get(ns.idFromName(ten));
-}
-
-/** POST tới DO: 200 -> true, 409 -> false, khác -> lỗi 503 (không đoán). */
-export async function goiNonce(env: Env, ten: string, duong: string, du: unknown): Promise<boolean> {
-  const res = await doNonce(env, ten).fetch(`https://do${duong}`, { method: 'POST', body: JSON.stringify(du) });
-  if (res.status === 200) return true;
-  if (res.status === 409) return false;
-  throw new LoiApi(503, 'nonce-loi', { status: res.status });
+/**
+ * Kho nonce trên D1 (R3c, Q52 - trước là DO KhoNonce, cùng ngữ nghĩa): '/nonce' {nonce, ttlMs} dùng một lần trong hạn;
+ * '/cap' {nonce, ttlMs} lưu thách thức server cấp; '/dung' {nonce} thách thức còn hạn -> xoá, true. Nonce sai dạng -> false
+ * (bị từ chối như phát lại). Lỗi D1 -> 503 (không đoán: không bao giờ cho qua khi không kiểm được).
+ */
+export async function goiNonce(env: Env, ten: string, duong: '/nonce' | '/cap' | '/dung', du: { nonce: unknown; ttlMs?: number }, bayGio = Date.now()): Promise<boolean> {
+  const db = env.DB;
+  if (!db) throw new LoiApi(503, 'chua-cau-hinh', { thieu: 'DB' });
+  if (!laNonceHopLe(du.nonce)) return false;
+  const ttl = typeof du.ttlMs === 'number' && Number.isFinite(du.ttlMs) && du.ttlMs > 0 ? du.ttlMs : NONCE_TTL_MAC_DINH_MS;
+  try {
+    if (duong === '/dung') {
+      const c = cauDungThach(ten, du.nonce);
+      return thachConHan(await db.prepare(c.sql).bind(...c.thamSo).first<{ het_han: number }>(), bayGio);
+    }
+    const c = duong === '/cap' ? cauCapThach(ten, du.nonce, bayGio, ttl) : cauNonce(ten, du.nonce, bayGio, ttl);
+    const kq = await db.prepare(c.sql).bind(...c.thamSo).run();
+    return duong === '/cap' || kq.meta.changes === 1;
+  } catch (e) {
+    throw new LoiApi(503, 'nonce-loi', { loi: String(e).slice(0, 120) });
+  }
 }
 
 /** Việc nền sau phản hồi (waitUntil); lỗi chỉ ghi log. */

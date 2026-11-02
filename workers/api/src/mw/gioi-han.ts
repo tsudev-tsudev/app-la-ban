@@ -4,6 +4,7 @@ import { xuLySuKien } from '../threat/dong-co';
 import { dongBoLists } from '../threat/dong-bo-lists';
 import { rutGonIp } from '../thuan/che-pii';
 import { taoUlid } from '../thuan/dinh-danh';
+import { cauDem, quyetDinhDem, type DongDem, type QuyetDinhDem } from '../thuan/dem-d1';
 import { doBuoc } from '../thuan/do-tre';
 import { khoaGioiHan, type LuatGioiHan } from '../thuan/gioi-han';
 import { LoiApi } from '../thuan/loi';
@@ -41,34 +42,35 @@ function giaTriChieu(c: Ngu, chieu: LuatGioiHan['chieu']): string | null {
 }
 
 /**
- * Giới hạn nhiều chiều chính xác bằng DO GioiHanToc cho route nhạy cảm. Vượt bất kỳ chiều nào -> 429 + Retry-After.
- * Lỗi DO -> cho qua (ưu tiên sẵn sàng; lớp RL_IP + WAF vẫn chặn lũ) và ghi log.
+ * Giới hạn nhiều chiều theo route (SEC-API API-01): mọi luật của yêu cầu đếm trong MỘT batch D1 (R3c, Q52 - trước là
+ * DO GioiHanToc: ~485 ms mỗi lần isolate chạm DO lần đầu). Vượt bất kỳ chiều nào -> 429 + Retry-After. Lỗi D1 -> cho qua
+ * (ưu tiên sẵn sàng; lớp RL_IP + WAF vẫn chặn lũ) và ghi log.
  */
 export function gioiHanRoute(dsLuat: LuatGioiHan[]): MiddlewareHandler<MoiTruongHono> {
   return async (c, next) => {
-    const ns = c.env.GIOI_HAN_TOC;
-    if (ns && dsLuat.length) {
-      const kq = await doBuoc(c.get('dongHo'), 'gioiHan', () => Promise.all(
-        dsLuat.map(async (l) => {
-          const gt = giaTriChieu(c, l.chieu);
-          if (gt === null) return null;
-          const khoa = khoaGioiHan(l.chieu, gt, `${c.req.method} ${c.get('tuyen') ?? c.req.path}`);
-          try {
-            const res = await ns.get(ns.idFromName(khoa)).fetch('https://do/gioi-han', {
-              method: 'POST',
-              body: JSON.stringify({ khoa, gioiHan: l.gioiHan, cuaSoMs: l.cuaSoMs }),
-            });
-            return res.ok ? ((await res.json()) as { choPhep: boolean; thuLaiSau: number; lanDauVuot?: boolean }) : null;
-          } catch (e) {
-            ghiLog('error', 'gioi-han-do-loi', { chieu: l.chieu, loi: String(e) });
-            return null;
-          }
-        }),
-      ));
-      const bi = kq.filter((k) => k && !k.choPhep);
+    const db = c.env.DB;
+    if (db && dsLuat.length) {
+      const bayGio = Date.now();
+      const apDung = dsLuat.flatMap((l) => {
+        const gt = giaTriChieu(c, l.chieu);
+        return gt === null ? [] : [{ l, lenh: cauDem(khoaGioiHan(l.chieu, gt, `${c.req.method} ${c.get('tuyen') ?? c.req.path}`), bayGio, l.cuaSoMs) }];
+      });
+      let kq: (QuyetDinhDem | null)[] = [];
+      if (apDung.length) {
+        try {
+          const ds = await doBuoc(c.get('dongHo'), 'gioiHan', () => db.batch<DongDem>(apDung.map((a) => db.prepare(a.lenh.sql).bind(...a.lenh.thamSo))));
+          kq = apDung.map((a, i) => {
+            const dong = ds[i]?.results[0];
+            return dong ? quyetDinhDem(dong, bayGio, a.l.gioiHan, a.l.cuaSoMs) : null;
+          });
+        } catch (e) {
+          ghiLog('error', 'gioi-han-d1-loi', { loi: String(e) });
+        }
+      }
+      const bi = kq.filter((k): k is QuyetDinhDem => !!k && !k.choPhep);
       if (bi.length) {
-        if (bi.some((k) => k?.lanDauVuot)) baoLamDung(c);
-        const cho = Math.max(...bi.map((k) => k?.thuLaiSau ?? 1));
+        if (bi.some((k) => k.lanDauVuot)) baoLamDung(c);
+        const cho = Math.max(...bi.map((k) => k.thuLaiSau));
         throw new LoiApi(429, 'qua-nhieu-yeu-cau', { ip: rutGonIp(c.get('ip')) }, { 'retry-after': String(cho) });
       }
     }
