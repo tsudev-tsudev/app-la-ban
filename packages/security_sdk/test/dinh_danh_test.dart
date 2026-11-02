@@ -404,6 +404,8 @@ void main() {
         expect(td['x-timestamp'], '1761800000000');
         expect(td['x-nonce'], matches(RegExp(r'^[A-Za-z0-9_-]{32}$')));
         expect(td['x-signature'], b64url(List.filled(70, 1)));
+        // Dạng pubspec `ten+build` - Worker docPhienBanApp chỉ nhận dạng này.
+        expect(td['x-app-version'], '0.1.0+5');
         expect(
           nt.daKy.last,
           chuoiYeuCau(
