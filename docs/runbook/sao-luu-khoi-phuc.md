@@ -26,7 +26,7 @@ Mục tiêu: **RPO <= 24 giờ** (bản mã hoá hằng ngày; Time Travel còn 
 
 ## Khôi phục thật
 
-1. Thử Time Travel trước: `npx wrangler d1 time-travel info la-ban` -> `npx wrangler d1 time-travel restore la-ban --timestamp <ISO>`.
+1. Thử Time Travel trước: `npx wrangler d1 time-travel info la-ban-prod` -> `npx wrangler d1 time-travel restore la-ban-prod --timestamp <ISO>`.
 2. Nếu cần bản hằng ngày: tải tệp (`npx wrangler r2 object get la-ban-nhat-ky/sao-luu/<ngày>.lbsl --remote --file x.lbsl`) ->
    `node tools/sao-luu/sao-luu.mjs giai-ma x.lbsl --ra khoi-phuc.sql` (kiểm băm + số dòng theo tiêu đề).
 3. Tạo D1 mới (hoặc làm trống), `wrangler d1 migrations apply <db> --remote`, rồi `wrangler d1 execute <db> --remote --file khoi-phuc.sql`.

@@ -15,7 +15,7 @@ project hay cổng dev với các repo khác trên máy (`ubnd`, `ban-do-3d`, `t
 ## Stack (chốt ở QUYET_DINH.md - đổi phải ghi lại ở đó)
 - App: Flutter stable (ghim commit ở `.flutter-version`, SDK tại `~/tools/flutter`), Dart 3, Impeller, Riverpod, go_router, Drift + SQLCipher, dio, ARB i18n,
   pub workspace (gốc repo). Native: Kotlin (+ NDK C++ cho kiểm tra bảo mật) / Swift.
-- Máy chủ: Cloudflare - Worker `la-ban-api` (Hono + zod, TypeScript) · D1 `la-ban` · Durable Objects (nonce, rate, realtime SOC)
+- Máy chủ: Cloudflare - Worker `la-ban-api` (Hono + zod, TypeScript) · D1 `la-ban-prod` (SIN) · Durable Objects (nonce, rate, realtime SOC)
   · KV (cấu hình ký số) · R2 (tile bản đồ, bản sao lưu, log bất biến) · Analytics Engine (chuỗi thời gian sự kiện).
 - Web: Pages `la-ban-landing` (Astro tĩnh, vi/en) · Pages `la-ban-admin` (Vite + React + TS SPA) sau Cloudflare Access.
 - Không có CI GitHub Actions (billing) - cổng DUY NHẤT là `./tools/kiem-tra/cong.sh` chạy ở máy. Build iOS: xem QUYET_DINH Q6.
@@ -51,7 +51,7 @@ docs/adr/  docs/runbook/  docs/BAY_DA_GAP.md
 
 ## Phát hành (agent tự làm khi cổng xanh, trừ khi QUYET_DINH ghi khác)
 - Nhánh `phase/<mã>` -> PR base `main` (KHÔNG xếp chồng PR) -> squash merge -> kiểm `git log origin/main`.
-- Worker: `cd workers/api && npx wrangler d1 migrations apply la-ban --remote && npx wrangler deploy` (staging trước: `--env staging`).
+- Worker: `cd workers/api && npx wrangler d1 migrations apply la-ban-prod --remote && npx wrangler deploy` (staging trước: `--env staging`).
 - Web: `npx wrangler pages deploy web/<x>/dist --project-name la-ban-<x> --branch main`. Đổi CSP / worker / wasm -> deploy
   `--branch <nhanh>` và thử `https://<id>.la-ban-<x>.pages.dev` TRƯỚC (CSP thật chỉ có ở Pages).
 - Đo bản đang phục vụ bằng chuỗi CHỈ có ở bản mới (`curl -sL`), đừng tin mã 200.

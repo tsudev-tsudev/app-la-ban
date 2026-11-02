@@ -34,8 +34,9 @@ KHOA_SAO_LUU = "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAkoALyBfCtIxP6EwsCCwf
 
 [[d1_databases]]
 binding = "DB"
-database_name = "la-ban"
-database_id = "cfca0a7f-203a-408b-a45b-bd76c636769f"
+# Q53 (03/11/2026): primary ở SIN (cùng colo phục vụ người dùng VN). DB cũ `la-ban` (ICN) giữ để rollback tới 17/11.
+database_name = "la-ban-prod"
+database_id = "1730d7d5-2227-4e5e-b18c-d8dc470deed2"
 migrations_dir = "migrations"
 
 [[kv_namespaces]]
