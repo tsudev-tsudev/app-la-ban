@@ -1,5 +1,6 @@
 import type { VaiTro } from './thuan/soc';
 import type { Context } from 'hono';
+import type { DongHo } from './thuan/do-tre';
 
 // Binding khai báo ở wrangler.toml. Tuỳ chọn (?) để test đơn vị dựng được app thiếu binding; middleware xử lý khi thiếu.
 export type Env = {
@@ -15,6 +16,8 @@ export type Env = {
   SU_KIEN?: AnalyticsEngineDataset;
   /** Rate Limiting binding: lớp thô theo IP trước mọi route. */
   RL_IP?: RateLimit;
+  /** R3c (Q52): giới hạn theo IP cho route công khai chỉ đọc (/v1/config, /v1/web/cau-hinh) - không ghi D1. */
+  RL_DOC_CONG_KHAI?: RateLimit;
   /** A7a: bucket chứa tile / glyph bản đồ (`ban-do/`), dùng chung prod + staging (dữ liệu công khai). */
   BAN_DO?: R2Bucket;
   /** A7a: giới hạn riêng theo IP cho /ban-do (tải vùng offline = hàng nghìn tile). */
@@ -61,6 +64,8 @@ export type Env = {
 
 export type BienYeuCau = {
   requestId: string;
+  /** R3c: thời gian chờ I/O theo bước -> doubles AE (mw/co-ban.ts). */
+  dongHo?: DongHo;
   ip: string;
   /** Phạm vi khoá idempotency: thiết bị / phiên khi đã xác thực (S2), mặc định theo IP. */
   phamViIdem?: string;

@@ -142,7 +142,7 @@ describe('S10a: tích hợp Worker (D1 + R2 trong workerd)', () => {
     const { results } = await db
       .prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE '\\_%' ESCAPE '\\' AND name NOT LIKE 'sqlite%' AND name <> 'd1_migrations'")
       .all<{ name: string }>();
-    const boQua = ['sessions', 'idempotency_keys', 'admin_challenges', 'admin_sessions'];
+    const boQua = ['sessions', 'idempotency_keys', 'admin_challenges', 'admin_sessions', 'nonce_dung', 'gioi_han_dem'];
     expect(results.map((r) => r.name).sort()).toEqual([...BANG_SAO_LUU, ...boQua].sort());
   });
 

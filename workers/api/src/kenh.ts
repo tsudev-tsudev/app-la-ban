@@ -4,13 +4,14 @@
 //   POST /v1/events  (phiên + chữ ký)   lô sự kiện bảo mật -> Threat Engine
 import type { Hono } from 'hono';
 import { z } from 'zod';
-import type { Env, MoiTruongHono } from './moi-truong';
+import type { MoiTruongHono, Ngu } from './moi-truong';
 import { traVanDe } from './mw/co-ban';
-import { asnCua, nen } from './mw/dich-vu';
-import { gioiHanRoute } from './mw/gioi-han';
+import { asnCua, docQuaColo, nen } from './mw/dich-vu';
+import { gioiHanDocCongKhai } from './mw/gioi-han';
 import { dongBoLists } from './threat/dong-bo-lists';
-import { xuLySuKien } from './threat/dong-co';
+import { ghiSuKien } from './threat/dong-co';
 import { docLatest, docPhienBanApp, GOI_APP_TOI_DA, GOP_LOAI_MS, KHOA_KV_APP, LOAI_CHI_SERVER, refChoTrangThai, type BanMoi } from './thuan/kenh';
+import { doBuoc } from './thuan/do-tre';
 import { goiCauHinhHopLe } from './thuan/khien-web';
 import { LoiApi } from './thuan/loi';
 import { schemaLoSuKien, tinHieuLuu, LO_TOI_DA } from './thuan/su-kien';
@@ -19,13 +20,20 @@ import type { BoTuyen } from './tuyen';
 const LATEST_DEM_MS = 5 * 60 * 1000;
 let demLatest: { luc: number; ban: BanMoi | null } | null = null;
 
-/** Bản APK mới nhất (R2 `android/latest.json`), đệm 5 phút theo isolate. Lỗi R2 -> null (không chặn /v1/status). */
-async function banMoiNhat(env: Env, bayGio: number): Promise<BanMoi | null> {
+/**
+ * Bản APK mới nhất (R2 `android/latest.json`), đệm 5 phút theo isolate + Cache API của colo (R3c: isolate mới trong colo
+ * đọc ~1 ms thay vì R2 ~200 ms). Khoá cache theo host của Worker nên prod / staging không lẫn. Lỗi -> null (không chặn
+ * /v1/status).
+ */
+async function banMoiNhat(c: Ngu, bayGio: number): Promise<BanMoi | null> {
   if (demLatest && bayGio - demLatest.luc < LATEST_DEM_MS) return demLatest.ban;
   let ban: BanMoi | null;
   try {
-    const vat = await env.CDN?.get('android/latest.json');
-    ban = vat ? docLatest(await vat.text()) : null;
+    const tho = await docQuaColo(c, 'android/latest.json', LATEST_DEM_MS / 1000, async () => {
+      const vat = await c.env.CDN?.get('android/latest.json');
+      return vat ? vat.text() : null;
+    });
+    ban = tho === null ? null : docLatest(tho);
   } catch {
     ban = null;
   }
@@ -43,9 +51,12 @@ export function dangKyKenh(app: Hono<MoiTruongHono>, boTuyen: BoTuyen): void {
       c.set('tuyen', '/v1/config');
       await next();
     },
-    gioiHanRoute([{ chieu: 'ip', gioiHan: 60, cuaSoMs: 60_000 }]),
+    gioiHanDocCongKhai,
     async (c) => {
-      const goi = goiCauHinhHopLe((await c.env.CAU_HINH?.get(KHOA_KV_APP, { cacheTtl: 60 })) ?? null, GOI_APP_TOI_DA);
+      const tho = await doBuoc(c.get('dongHo'), 'luuTru', () =>
+        docQuaColo(c, 'cau-hinh/app', 60, async () => (await c.env.CAU_HINH?.get(KHOA_KV_APP, { cacheTtl: 60 })) ?? null),
+      );
+      const goi = goiCauHinhHopLe(tho, GOI_APP_TOI_DA);
       if (!goi) return traVanDe(c, 404);
       return c.body(goi, 200, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60' });
     },
@@ -86,7 +97,7 @@ export function dangKyKenh(app: Hono<MoiTruongHono>, boTuyen: BoTuyen): void {
         trangThai,
         mucTin: c.get('mucTin') ?? 'unverified',
         ref: refChoTrangThai(trangThai, thietBi),
-        banMoi: await banMoiNhat(c.env, Date.now()),
+        banMoi: await doBuoc(c.get('dongHo'), 'luuTru', () => banMoiNhat(c, Date.now())),
       });
     },
   );
@@ -108,20 +119,23 @@ export function dangKyKenh(app: Hono<MoiTruongHono>, boTuyen: BoTuyen): void {
       if (!c.env.DB) throw new LoiApi(503, 'chua-cau-hinh', { thieu: 'DB' });
       if (body.events.some((e) => LOAI_CHI_SERVER.has(e.type))) throw new LoiApi(422, 'loai-chi-server');
       const bayGio = Date.now();
-      const kq = await xuLySuKien(
-        c.env,
-        {
-          thietBi: c.get('thietBi') as string,
-          ip: c.get('ip') || null,
-          asn: asnCua(c),
-          country: c.req.header('cf-ipcountry') ?? null,
-          gopLoaiMs: GOP_LOAI_MS,
-        },
-        body.events.map((e) => ({ id: e.event_id, type: e.type, severity: e.severity, signals: tinHieuLuu(e, bayGio) })),
-        bayGio,
+      const lo = await doBuoc(c.get('dongHo'), 'd1', () =>
+        ghiSuKien(
+          c.env,
+          {
+            thietBi: c.get('thietBi') as string,
+            ip: c.get('ip') || null,
+            asn: asnCua(c),
+            country: c.req.header('cf-ipcountry') ?? null,
+            gopLoaiMs: GOP_LOAI_MS,
+          },
+          body.events.map((e) => ({ id: e.event_id, type: e.type, severity: e.severity, signals: tinHieuLuu(e, bayGio) })),
+          bayGio,
+        ),
       );
-      if (kq.canDongBo) nen(c, dongBoLists(c.env), 'dong-bo-lists');
-      return c.json({ nhan: kq.nhan, trung: kq.trung }, 202);
+      // Rule + điểm + SOC realtime chạy sau phản hồi (R3c) - lỗi chỉ ghi log, sự kiện đã nằm trong D1.
+      nen(c, lo.tiep().then((kq) => (kq.canDongBo ? dongBoLists(c.env) : undefined)), 'threat-nen');
+      return c.json({ nhan: lo.nhan, trung: lo.trung }, 202);
     },
   );
 }

@@ -2,6 +2,7 @@ import type { MiddlewareHandler } from 'hono';
 import { kiemChuKyThietBi, kiemJwt, napKhoaPhien, nhapKhoaThietBi } from '../attest/khoa';
 import { nenBao } from '../thuan/bay';
 import { sha256HexByte } from '../thuan/bam';
+import { doBuoc } from '../thuan/do-tre';
 import {
   chuoiYeuCau,
   docTieuDeKy,
@@ -12,7 +13,10 @@ import {
 import { LoiApi } from '../thuan/loi';
 import { docBearer, LECH_TS_MS } from '../thuan/phien';
 import type { MoiTruongHono } from '../moi-truong';
-import { baoSuKien, goiNonce } from './dich-vu';
+import { baoSuKien } from './dich-vu';
+import { apKetQuaGioiHan, lenhGioiHan } from './gioi-han';
+import { cauNonce, type DongDem } from '../thuan/dem-d1';
+import type { LuatGioiHan } from '../thuan/gioi-han';
 
 const TOKEN_SAI = { 'www-authenticate': 'Bearer error="invalid_token"' };
 /** SIGNATURE_MISMATCH tối đa 1 lần / thiết bị / phút / isolate - kẻ cầm JWT nhưng không có khoá không làm ngập D1. */
@@ -23,9 +27,10 @@ const daBaoKy = new Map<string, number>();
  * không bị cấm (đọc D1 MỖI yêu cầu để thu hồi / cấm có hiệu lực ngay) -> header ký đủ + ts lệch <= 60 s -> khoá thiết bị
  * đang lưu khớp `cnf.jkt` của JWT -> chữ ký đúng trên chuỗi chuẩn -> nonce chưa dùng (DO KhoNonce, 5 phút). Nonce kiểm
  * SAU chữ ký để kẻ không có khoá không đốt được nonce của thiết bị. Đặt thietBi / phien / mucTin / trangThai + phamViIdem.
+ * [gioiHan]: luật chiều 'thiet-bi' của route - đếm chung batch với nonce (BoTuyen tách ra khỏi gioiHanRoute).
  * [choPhepBiCam]: chỉ /v1/status - thiết bị bị cấm vẫn đọc được trạng thái + mã REF để hiện màn khoá / khiếu nại.
  */
-export function taoXacThuc(o: { choPhepBiCam?: boolean } = {}): MiddlewareHandler<MoiTruongHono> {
+export function taoXacThuc(o: { choPhepBiCam?: boolean; gioiHan?: readonly LuatGioiHan[] } = {}): MiddlewareHandler<MoiTruongHono> {
   return async (c, next) => {
     const token = docBearer(c.req.header('authorization'));
     if (!token) throw new LoiApi(401, 'can-xac-thuc', undefined, { 'www-authenticate': 'Bearer' });
@@ -34,7 +39,8 @@ export function taoXacThuc(o: { choPhepBiCam?: boolean } = {}): MiddlewareHandle
     const bayGio = Date.now();
     const claim = await kiemJwt(await napKhoaPhien(c.env.KHOA_PHIEN), token, c.env.MOI_TRUONG, bayGio);
     if (!claim) throw new LoiApi(401, 'token-sai', undefined, TOKEN_SAI);
-    const d = await c.env.DB.prepare(
+    const db = c.env.DB;
+    const d = await doBuoc(c.get('dongHo'), 'phien', () => db.prepare(
       'SELECT s.revoked_at, d.status, d.attestation_level, d.public_key FROM sessions s JOIN devices d ON d.id = s.device_id WHERE s.id = ? AND s.device_id = ?',
     )
       .bind(claim.sid, claim.sub)
@@ -43,7 +49,7 @@ export function taoXacThuc(o: { choPhepBiCam?: boolean } = {}): MiddlewareHandle
         status: string;
         attestation_level: string;
         public_key: string | null;
-      }>();
+      }>());
     if (!d || d.revoked_at !== null) throw new LoiApi(401, 'phien-thu-hoi', undefined, TOKEN_SAI);
     if (d.status === 'banned' && !o.choPhepBiCam) throw new LoiApi(403, 'thiet-bi-bi-cam');
 
@@ -85,12 +91,19 @@ export function taoXacThuc(o: { choPhepBiCam?: boolean } = {}): MiddlewareHandle
         });
       throw new LoiApi(401, 'chu-ky');
     }
-    if (
-      !(await goiNonce(c.env, `thiet-bi:${claim.sub}`, '/nonce', {
-        nonce: tieuDe.nonce,
-        ttlMs: NONCE_YEU_CAU_TTL_MS,
-      }))
-    ) {
+    // Nonce + luật giới hạn theo thiết bị của route trong MỘT batch D1 (R3c, Q52): một lần ghi thay vì hai.
+    c.set('phamViIdem', `thiet-bi:${claim.sub}`);
+    const apDung = lenhGioiHan(c, o.gioiHan ?? [], bayGio);
+    const cn = cauNonce(`thiet-bi:${claim.sub}`, tieuDe.nonce, bayGio, NONCE_YEU_CAU_TTL_MS);
+    let ds: D1Result<DongDem>[];
+    try {
+      ds = await doBuoc(c.get('dongHo'), 'nonce', () =>
+        db.batch<DongDem>([db.prepare(cn.sql).bind(...cn.thamSo), ...apDung.map((a) => db.prepare(a.lenh.sql).bind(...a.lenh.thamSo))]),
+      );
+    } catch (e) {
+      throw new LoiApi(503, 'nonce-loi', { loi: String(e).slice(0, 120) });
+    }
+    if (ds[0]?.meta.changes !== 1) {
       c.env.SU_KIEN?.writeDataPoint({
         indexes: ['phat-lai'],
         blobs: ['phat-lai', c.get('tuyen') ?? ''],
@@ -98,6 +111,7 @@ export function taoXacThuc(o: { choPhepBiCam?: boolean } = {}): MiddlewareHandle
       });
       throw new LoiApi(401, 'nonce');
     }
+    apKetQuaGioiHan(c, apDung, ds.slice(1).map((r) => r.results[0]), bayGio);
     c.set('thietBi', claim.sub);
     c.set('phien', claim.sid);
     c.set('mucTin', d.attestation_level);

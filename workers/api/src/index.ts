@@ -3,7 +3,7 @@ import { cors } from 'hono/cors';
 import { z } from 'zod';
 import { taoAdmin } from './admin';
 import { phucVuBanDo } from './ban-do';
-import { donDep } from './d1/don-dep';
+import { donDem, donDep } from './d1/don-dep';
 import { dangKyDinhDanh } from './dinh-danh';
 import { dangKyKenh } from './kenh';
 import { dangKyKhienWeb } from './khien-web';
@@ -103,6 +103,7 @@ export default {
       ['dong-bo-lists', () => dongBoLists(env)],
       ['nhat-ky', () => xuatNhatKy(env)],
       ['dot-bien', () => kiemDotBien(env)],
+      ['don-dem', () => donDem(env.DB as D1Database)],
     ];
     if (laLuotHangNgay(su.scheduledTime)) viec.push(['don-dep', () => donDep(env.DB as D1Database)]);
     // 'thu:sao-luu' = kích tay khi diễn tập (`wrangler dev --remote --test-scheduled`, /__scheduled?cron=thu:sao-luu):

@@ -69,6 +69,12 @@ name = "RL_IP"
 namespace_id = "1001"
 simple = { limit = 600, period = 60 }
 
+# R3c (Q52): route công khai chỉ đọc (/v1/config, /v1/web/cau-hinh) - khoá "<route>:<ip>", không ghi D1.
+[[ratelimits]]
+name = "RL_DOC_CONG_KHAI"
+namespace_id = "1021"
+simple = { limit = 60, period = 60 }
+
 # Cron 5 phút: Threat Engine (hồi phục điểm, hạ trạng thái khi chặn hết hạn, đồng bộ Cloudflare List); lượt 19:15 UTC
 # thêm dọn hạn lưu (Spec §6.4, DAT-01). Một lịch duy nhất / môi trường vì gói Free giới hạn số cron trigger toàn tài khoản.
 [triggers]
@@ -151,6 +157,12 @@ name = "RL_IP"
 namespace_id = "1002"
 simple = { limit = 600, period = 60 }
 
+# R3c (Q52): route công khai chỉ đọc (/v1/config, /v1/web/cau-hinh) - khoá "<route>:<ip>", không ghi D1.
+[[env.staging.ratelimits]]
+name = "RL_DOC_CONG_KHAI"
+namespace_id = "1022"
+simple = { limit = 60, period = 60 }
+
 [env.staging.triggers]
 crons = ["*/5 * * * *"]
 
@@ -207,6 +219,12 @@ simple = { limit = 3000, period = 60 }
 name = "RL_IP"
 namespace_id = "1003"
 simple = { limit = 600, period = 60 }
+
+# R3c (Q52): route công khai chỉ đọc (/v1/config, /v1/web/cau-hinh) - khoá "<route>:<ip>", không ghi D1.
+[[env.dev.ratelimits]]
+name = "RL_DOC_CONG_KHAI"
+namespace_id = "1023"
+simple = { limit = 60, period = 60 }
 
 [[env.dev.durable_objects.bindings]]
 name = "KHO_NONCE"

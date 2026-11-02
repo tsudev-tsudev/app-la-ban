@@ -12,7 +12,7 @@ Workers **Free** (QUYET_DINH Q22: lên Workers Paid 5 USD/tháng khi production 
 | D1 | `la-ban` (APAC) | `la-ban-staging` (APAC) |
 | KV | `la-ban-cau-hinh` | `la-ban-cau-hinh-staging` |
 | R2 | `la-ban-cdn` (-> `compass-cdn.tsudev.com`), `la-ban-nhat-ky` | `la-ban-cdn-staging`, `la-ban-nhat-ky-staging` |
-| Durable Objects (SQLite) | `KhoNonce`, `GioiHanToc`, `PhongSoc` (khung, 501) | như production |
+| Durable Objects (SQLite) | `PhongSoc` (SOC realtime); `KhoNonce`, `GioiHanToc` không còn dùng từ R3c (Q52, chờ bỏ) | như production |
 | Pages | `la-ban-landing` (`compass.tsudev.com`), `la-ban-admin` (`compass-admin.tsudev.com`, 403 tới S6), `la-ban-status` (`compass-status.tsudev.com`) | preview `<id>.la-ban-<x>.pages.dev` |
 | Analytics Engine | CHƯA (cần bật trên dashboard) | |
 
@@ -30,7 +30,9 @@ Workers **Free** (QUYET_DINH Q22: lên Workers Paid 5 USD/tháng khi production 
 | WAF (zone Free) | 5 custom rule, 1 rate-limit rule, Managed Free Ruleset | cần zone Pro (20 USD/tháng) cho Managed Rules đầy đủ + OWASP |
 
 ## Hệ quả cho kế hoạch
-- KV ghi 1.000 / ngày -> KHÔNG dùng KV cho dữ liệu ghi thường xuyên (nonce, rate, phiên): đã chọn Durable Objects (kế hoạch mục 1).
+- KV ghi 1.000 / ngày -> KHÔNG dùng KV cho dữ liệu ghi thường xuyên (nonce, rate, phiên). Ban đầu chọn Durable Objects;
+  R3c (Q52) chuyển nonce + rate sang D1 vì DO nguội tốn ~485 ms / lần: mỗi yêu cầu ký ghi ~2 dòng D1 -> gói Free
+  (100.000 dòng ghi / ngày) đủ cho beta, production theo lượng người dùng cần Workers Paid (R4).
 - 100.000 request Workers / ngày dùng chung cả tài khoản (Worker `tsudev`, cron...) -> đủ cho dev / staging; production
   cần Workers Paid trước khi phát hành (R4).
 - WAF zone Free chỉ 5 custom rule và zone dùng chung -> S8 phải đếm rule hiện có (dự án khác đã dùng một số) trước khi thêm;
