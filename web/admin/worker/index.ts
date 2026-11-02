@@ -32,6 +32,8 @@ async function khoaAccess(team: string, kid: string | null): Promise<JsonWebKey[
 function voiTieuDe(res: Response, them: Record<string, string> = {}): Response {
   const h = new Headers(res.headers);
   for (const [k, v] of Object.entries({ ...TIEU_DE_ADMIN, ...them })) h.set(k, v);
+  // Pages gắn `Access-Control-Allow-Origin: *` cho tài sản tĩnh; SOC không phục vụ origin khác (ZAP 10098, R3a).
+  h.delete('access-control-allow-origin');
   return new Response(res.body, { status: res.status, statusText: res.statusText, headers: h });
 }
 

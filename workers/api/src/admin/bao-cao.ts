@@ -30,6 +30,7 @@ export function dangKyBaoCao(r: Hono<MoiTruongHono>): void {
       d.prepare('SELECT status AS k, COUNT(*) AS n FROM devices GROUP BY status'),
       d.prepare('SELECT severity AS k, COUNT(*) AS n FROM security_events WHERE ts >= ? AND ts < ? GROUP BY severity').bind(k.tu, k.den),
       d.prepare('SELECT type AS k, COUNT(*) AS n FROM security_events WHERE ts >= ? AND ts < ? GROUP BY type ORDER BY n DESC LIMIT 12').bind(k.tu, k.den),
+      // nosemgrep: la-ban-sql-noi-chuoi - ngay là biểu thức strftime hằng (LECH_VN_MS hằng số)
       d.prepare(`SELECT ${ngay} AS k, COUNT(*) AS n FROM security_events WHERE ts >= ? AND ts < ? GROUP BY k ORDER BY k`).bind(k.tu, k.den),
       d.prepare("SELECT action || '|' || source AS k, COUNT(*) AS n FROM enforcements WHERE created_at >= ? AND created_at < ? GROUP BY k ORDER BY n DESC").bind(k.tu, k.den),
       d

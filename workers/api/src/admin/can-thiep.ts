@@ -80,6 +80,7 @@ export function dangKyCanThiep(r: Hono<MoiTruongHono>): void {
     const gioiHan = docGioiHanTrang(loc.limit);
     const d = db(c);
     const [ds, dem] = await d.batch([
+      // nosemgrep: la-ban-sql-noi-chuoi - dk chỉ gồm mệnh đề literal, giá trị qua bind
       d
         .prepare(
           `SELECT id, target_type, target_value, action, reason, created_by, approved_by, created_at, expires_at, revoked_at, source, pending_approval, rule_id, level FROM enforcements${dk.length ? ` WHERE ${dk.join(' AND ')}` : ''} ORDER BY created_at DESC, id DESC LIMIT ?`,

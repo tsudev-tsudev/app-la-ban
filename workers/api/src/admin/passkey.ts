@@ -109,6 +109,7 @@ function loiXacMinh(e: unknown): never {
 }
 
 export function dangKyPasskey(r: Hono<MoiTruongHono>): void {
+  // nosemgrep: la-ban-admin-thieu-canquyen - passkey / phiên của chính mình, lọc theo email Access
   r.post('/passkey/dang-ky/bat-dau', async (c) => {
     await body(c, SchemaBatDau);
     const { email } = c.get('quanTri') as { email: string };
@@ -124,6 +125,7 @@ export function dangKyPasskey(r: Hono<MoiTruongHono>): void {
     return c.json({ thachThucId: t.id, tuyChon: tuyChonDangKy({ thachThuc: t.challenge, rpId: rp, email, userId, loaiTru: daCo.map((x) => x.id) }) });
   });
 
+  // nosemgrep: la-ban-admin-thieu-canquyen - passkey / phiên của chính mình, lọc theo email Access
   r.post('/passkey/dang-ky/xong', async (c) => {
     const b = await body(c, SchemaDangKyXong);
     const { email } = c.get('quanTri') as { email: string };
@@ -159,6 +161,7 @@ export function dangKyPasskey(r: Hono<MoiTruongHono>): void {
     return c.json({ ok: true, phienHet: het }, 201);
   });
 
+  // nosemgrep: la-ban-admin-thieu-canquyen - passkey / phiên của chính mình, lọc theo email Access
   r.post('/phien/bat-dau', async (c) => {
     await body(c, SchemaBatDau);
     const { email } = c.get('quanTri') as { email: string };
@@ -170,6 +173,7 @@ export function dangKyPasskey(r: Hono<MoiTruongHono>): void {
   });
 
   // Dùng cho cả đăng nhập (chưa có phiên) lẫn step-up (đang có phiên -> chỉ làm mới step_up_at).
+  // nosemgrep: la-ban-admin-thieu-canquyen - passkey / phiên của chính mình, lọc theo email Access
   r.post('/phien/xong', async (c) => {
     const b = await body(c, SchemaXacThucXong);
     const { email } = c.get('quanTri') as { email: string };
@@ -206,6 +210,7 @@ export function dangKyPasskey(r: Hono<MoiTruongHono>): void {
   });
 
   // Tự quản lý passkey của chính mình (S7a): xem, đổi tên, xoá (step-up, không xoá passkey cuối cùng).
+  // nosemgrep: la-ban-admin-thieu-canquyen - passkey / phiên của chính mình, lọc theo email Access
   r.get('/passkey', async (c) => {
     const { email } = c.get('quanTri') as { email: string };
     const { results } = await db(c)
@@ -215,6 +220,7 @@ export function dangKyPasskey(r: Hono<MoiTruongHono>): void {
     return c.json({ ds: results });
   });
 
+  // nosemgrep: la-ban-admin-thieu-canquyen - passkey / phiên của chính mình, lọc theo email Access
   r.post('/passkey/doi-ten', async (c) => {
     const b = await body(c, SchemaDoiTen);
     const { email } = c.get('quanTri') as { email: string };
@@ -242,6 +248,7 @@ export function dangKyPasskey(r: Hono<MoiTruongHono>): void {
     return c.json({ ok: true });
   });
 
+  // nosemgrep: la-ban-admin-thieu-canquyen - passkey / phiên của chính mình, lọc theo email Access
   r.post('/phien/ket-thuc', async (c) => {
     await body(c, SchemaBatDau);
     const { email } = c.get('quanTri') as { email: string };

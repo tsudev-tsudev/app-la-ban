@@ -104,13 +104,24 @@ if [ "$CHE_DO" = day-du ]; then
   # mọi tệp git theo dõi. Test cần JWT thì ghép lúc chạy (GitGuardian từng báo nhầm PR #21).
   ! git grep -nIE 'eyJ[A-Za-z0-9_-]{10,}\.eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}' -- . ':!2026*.md' \
     || loi "có chuỗi JWT nguyên văn trong repo (máy quét bí mật sẽ báo) - ghép token lúc chạy"
-  if command -v gitleaks >/dev/null; then gitleaks dir . --no-banner --redact -c .gitleaks.toml; else echo "(gitleaks chưa cài - bỏ qua, secretlint đã chạy)"; fi
+  # R3a: công cụ quét cài ở ~/tools (NGOÀI repo) - xem docs/runbook/cong-cu-quet.md. Thiếu lệnh = cổng đỏ.
+  can_lenh() { command -v "$1" >/dev/null || loi "thiếu $1 - cài theo docs/runbook/cong-cu-quet.md"; }
+  can_lenh gitleaks
+  gitleaks git . --no-banner --redact --log-level warn -c .gitleaks.toml || loi "gitleaks: có bí mật trong lịch sử git"
+  gitleaks dir . --no-banner --redact --log-level warn -c .gitleaks.toml || loi "gitleaks: có bí mật trong thư mục làm việc"
+
+  buoc "SAST (Semgrep: luật repo + p/typescript + p/secrets + p/kotlin)"
+  can_lenh semgrep
+  semgrep scan --test --metrics=off -q --config .semgrep/la-ban.yml .semgrep/la-ban.ts >/dev/null || loi "test luật .semgrep/la-ban.yml đỏ"
+  semgrep scan --metrics=off -q --error --config .semgrep/la-ban.yml --config p/typescript --config p/secrets --config p/kotlin \
+    --exclude=.semgrep --exclude='*.lock' . || loi "Semgrep có phát hiện (sửa hoặc nosemgrep kèm lý do)"
 
   buoc "Lỗ hổng phụ thuộc"
   npm audit --omit=dev --audit-level=high
-  if command -v osv-scanner >/dev/null; then
-    osv-scanner scan source --lockfile=package-lock.json $( [ -f pubspec.lock ] && echo --lockfile=pubspec.lock ) || loi "osv-scanner báo lỗ hổng"
-  else echo "(osv-scanner chưa cài - pubspec.lock chưa được quét lỗ hổng)"; fi
+  can_lenh osv-scanner
+  osv-scanner scan source --lockfile=package-lock.json --lockfile=pubspec.lock >/dev/null || {
+    osv-scanner scan source --lockfile=package-lock.json --lockfile=pubspec.lock | tail -20; loi "osv-scanner báo lỗ hổng"; }
+  echo "osv-scanner: package-lock.json + pubspec.lock sạch ✓"
 fi
 
 printf '\n\033[1;32m✓ Cổng %s xanh\033[0m\n' "$CHE_DO"

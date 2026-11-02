@@ -1,0 +1,4 @@
+# JWT GIẢ trong test cũ (payload {"sub":"12345678"}, chữ ký giả) - đã đổi sang ghép lúc chạy ở HEAD; lịch sử không viết lại.
+b8bfd630b34da941c9e923e48d44b913bfeff78e:packages/core/test/bao_cao_loi_test.dart:jwt:19
+1bd395f48def1b75b35c7cdd601d02d6f84a6b3a:packages/core/test/nhat_ky_test.dart:jwt:7
+7751ef061c1ae90cd42795da4434b3c4a5c66c0f:packages/core/test/nhat_ky_test.dart:jwt:7

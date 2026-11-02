@@ -19,7 +19,7 @@ const env = () => ({
     fetch: async (r: Request) => {
       const p = new URL(r.url).pathname;
       if (p === '/' || p === '/index.html') return new Response('<!doctype html><title>SOC</title>', { headers: { 'content-type': 'text/html' } });
-      if (p === '/assets/a.js') return new Response('x', { headers: { 'content-type': 'text/javascript' } });
+      if (p === '/assets/a.js') return new Response('x', { headers: { 'content-type': 'text/javascript', 'access-control-allow-origin': '*' } });
       return new Response('nf', { status: 404 });
     },
   },
@@ -57,7 +57,9 @@ describe('_worker compass-admin', () => {
     expect(csp).toContain("script-src 'self'");
     expect(csp).not.toContain('unsafe');
     expect(trang.headers.get('x-frame-options')).toBe('DENY');
-    expect((await goi('/assets/a.js', jwt)).headers.get('cache-control')).toContain('immutable');
+    const js = await goi('/assets/a.js', jwt);
+    expect(js.headers.get('cache-control')).toContain('immutable');
+    expect(js.headers.get('access-control-allow-origin')).toBeNull();
     expect((await goi('/khong-co.js', jwt)).status).toBe(404);
     const api = await goi('/api/thiet-bi?trangThai=banned', jwt);
     expect(api.status).toBe(200);
