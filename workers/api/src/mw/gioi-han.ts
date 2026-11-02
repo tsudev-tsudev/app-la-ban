@@ -1,3 +1,4 @@
+import { asnCua } from './dich-vu';
 import type { MiddlewareHandler } from 'hono';
 import { xuLySuKien } from '../threat/dong-co';
 import { dongBoLists } from '../threat/dong-bo-lists';
@@ -79,7 +80,7 @@ function baoLamDung(c: Ngu): void {
   if (!c.env.DB) return;
   const p = c.get('phamViIdem');
   const thietBi = p?.startsWith('thiet-bi:') ? p.slice(9) : null;
-  const viec = xuLySuKien(c.env, { thietBi, ip: c.get('ip') || null, country: c.req.header('cf-ipcountry') ?? null }, [
+  const viec = xuLySuKien(c.env, { thietBi, ip: c.get('ip') || null, asn: asnCua(c), country: c.req.header('cf-ipcountry') ?? null }, [
     { id: taoUlid(), type: 'RATE_ABUSE', severity: 'medium', signals: { route: c.get('tuyen') ?? '' } },
   ]).then(
     async (kq) => {

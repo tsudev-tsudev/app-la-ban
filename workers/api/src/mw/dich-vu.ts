@@ -30,12 +30,18 @@ export function nen(c: Ngu, viec: Promise<unknown>, ten: string): void {
   }
 }
 
+/** ASN của kết nối (request.cf của Cloudflare) - cho allow-list theo ASN (thiết bị duyệt store, R2). Không có -> null. */
+export function asnCua(c: { req: { raw: Request } }): number | null {
+  const asn = (c.req.raw as { cf?: { asn?: unknown } }).cf?.asn;
+  return typeof asn === 'number' && Number.isInteger(asn) && asn > 0 ? asn : null;
+}
+
 /** Sự kiện do server sinh -> Threat Engine (chạy nền, không làm chậm phản hồi). */
 export function baoSuKien(c: Ngu, thietBi: string | null, loai: string, muc: SuKienVao['severity'], tinHieu: Record<string, unknown>): void {
   if (!c.env.DB) return;
   nen(
     c,
-    xuLySuKien(c.env, { thietBi, ip: c.get('ip') || null, country: c.req.header('cf-ipcountry') ?? null }, [
+    xuLySuKien(c.env, { thietBi, ip: c.get('ip') || null, asn: asnCua(c), country: c.req.header('cf-ipcountry') ?? null }, [
       { id: taoUlid(), type: loai, severity: muc, signals: tinHieu },
     ]).then(async (kq) => {
       if (kq.canDongBo) await dongBoLists(c.env);

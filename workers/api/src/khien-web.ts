@@ -1,4 +1,5 @@
 // S9 - route cho lớp khiên web (SEC-WEB-SHIELD): cấu hình mức ký số, tín hiệu công cụ nhà phát triển, tài nguyên URL ký.
+import { asnCua } from './mw/dich-vu';
 import type { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { z } from 'zod';
@@ -54,7 +55,7 @@ export function dangKyKhienWeb(app: Hono<MoiTruongHono>, boTuyen: BoTuyen): void
       if (!nguonChoPhep(c.req.header('origin'), NGUON_WEB)) return traVanDe(c, 403);
       const ip = c.get('ip');
       if (c.env.DB && ip && nenBao(daBao, ip, Date.now(), 60_000)) {
-        const viec = xuLySuKien(c.env, { thietBi: null, ip, country: c.req.header('cf-ipcountry') ?? null }, [suKienTuTinHieu(body, taoUlid())]).catch(
+        const viec = xuLySuKien(c.env, { thietBi: null, ip, asn: asnCua(c), country: c.req.header('cf-ipcountry') ?? null }, [suKienTuTinHieu(body, taoUlid())]).catch(
           (e: unknown) => ghiLog('error', 'tin-hieu-web-loi', { loi: String(e) }),
         );
         try {

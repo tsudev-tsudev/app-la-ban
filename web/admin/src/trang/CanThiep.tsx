@@ -8,6 +8,7 @@ import { useThongBao } from '../giao-dien/ThongBao';
 import { ThongBaoLoi, useGhi, useTai } from '../dung-chung';
 import { dinhDangLuc, dinhDangSo, truocDay } from '../i18n';
 import { useSoc } from '../ngu-canh';
+import { ChoPhep } from './ChoPhep';
 import { HopThoaiLyDo } from './Luat';
 
 type LoaiDich = 'device' | 'ip' | 'cidr' | 'asn';
@@ -337,6 +338,8 @@ export function CanThiep() {
           </ul>
         )}
       </section>
+
+      <ChoPhep />
 
       <HopThoaiChan
         mo={hop === 'chan'}

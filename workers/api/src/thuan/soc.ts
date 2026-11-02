@@ -33,6 +33,8 @@ export const QUYEN = {
   'bao-cao:lien-he': 'security_admin',
   'cau-hinh-tu-xa:xem': 'analyst',
   'cau-hinh-tu-xa:sua': 'security_admin',
+  // R2: allow-list (miễn trừ thiết bị duyệt store / IP văn phòng) - nới phòng thủ -> security_admin + passkey + audit.
+  'cho-phep': 'security_admin',
   'quan-tri-vien': 'super_admin',
   'cai-dat-soc': 'super_admin',
 } as const satisfies Record<string, VaiTro>;

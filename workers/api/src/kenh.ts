@@ -6,7 +6,7 @@ import type { Hono } from 'hono';
 import { z } from 'zod';
 import type { Env, MoiTruongHono } from './moi-truong';
 import { traVanDe } from './mw/co-ban';
-import { nen } from './mw/dich-vu';
+import { asnCua, nen } from './mw/dich-vu';
 import { gioiHanRoute } from './mw/gioi-han';
 import { dongBoLists } from './threat/dong-bo-lists';
 import { xuLySuKien } from './threat/dong-co';
@@ -99,6 +99,7 @@ export function dangKyKenh(app: Hono<MoiTruongHono>, boTuyen: BoTuyen): void {
         {
           thietBi: c.get('thietBi') as string,
           ip: c.get('ip') || null,
+          asn: asnCua(c),
           country: c.req.header('cf-ipcountry') ?? null,
           gopLoaiMs: GOP_LOAI_MS,
         },

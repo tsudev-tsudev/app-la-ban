@@ -642,6 +642,11 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
 - Còn lại R2b (sau khi có Play Console): tạo app + Play App Signing PEPK + internal track + phán quyết `PLAY_RECOGNIZED`
   (runbook mục 2-3); agent-laban: quy tắc miễn trừ ASN Google cho thiết bị duyệt (runbook mục 4) + landing đổi nút Play;
   TalkBack nghe đọc tay (người dùng).
+- Kết quả R2 miễn trừ (02/11, từ ghi chú R2a): ASN của kết nối (`request.cf.asn`) đi vào Threat Engine ở mọi nguồn sự
+  kiện (trước đây thiếu -> allow-list theo ASN không khớp); allow-list quản lý từ SOC (`/cho-phep`, `/cho-phep/them` /
+  `go`, quyền `cho-phep` security_admin + passkey + audit, hạn 24 giờ - 90 ngày, nút điền ASN Google), trang Can thiệp
+  có mục Danh sách cho phép. Landing: bỏ nhãn "Sắp có" ở 5 tính năng đã phát hành; Quyền riêng tư mục 5 nói rõ freeRASP
+  không được đọc GSF ID. Test mới: 2 thuần + 1 tích hợp Worker.
 
 ### R3 - QA tổng
 - Đọc thêm: SEC-TEST.

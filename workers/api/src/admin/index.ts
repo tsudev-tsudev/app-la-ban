@@ -7,6 +7,7 @@ import { dsQuyen, type VaiTro } from '../thuan/soc';
 import { dangKyBaoCao } from './bao-cao';
 import { dangKyCaiDat, napCaiDatSoc } from './cai-dat';
 import { dangKyCauHinhTuXa } from './cau-hinh-tu-xa';
+import { dangKyChoPhep } from './cho-phep';
 import { dangKyCanThiep } from './can-thiep';
 import { dangKyCanhBao } from './canh-bao';
 import { dangKyDuLieu } from './du-lieu';
@@ -59,6 +60,7 @@ export function taoAdmin(): Hono<MoiTruongHono> {
   dangKyKhieuNai(r);
   dangKyBaoCao(r);
   dangKyCauHinhTuXa(r);
+  dangKyChoPhep(r);
   dangKyQuanTriVien(r);
   return r;
 }
