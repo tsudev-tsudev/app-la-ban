@@ -72,7 +72,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 21 | A8 | Cài đặt, quyền riêng tư, trợ năng, hiệu năng (chia A8a / A8b) | A7, S4 | 🟨 A8a ✅ 31/10 (0191b2d PR #34: quyền riêng tư + đồng ý NĐ 13, Q43; máy thật M32 đạt; chưa phát hành APK - gộp A8b) · A8b ✅ 31/10 (trợ năng + Reduce motion, Q45; v0.1.0-beta.10) |
 | 22 | S10 | Giám sát, log bất biến, backup, ứng phó sự cố (chia S10a / S10b) | S7 | ✅ S10a ✅ 02/11 (máy chủ: nhật ký bất biến R2 + mốc neo audit, sao lưu mã hoá + diễn tập, đột biến -> Telegram, security.txt, runbook IR, Q48) · S10b ✅ 02/11 (báo cáo sự cố tự xây, 0 đồng, đồng ý riêng, Q49) |
 | 23 | R2 | Sẵn sàng store | A8, S4 | 🟡 R2a 31/10 (AAB + Data Safety + listing + ảnh store, Q46) · R2b chờ Play Console (05/11) |
-| 24 | R3 | QA tổng + kiểm thử bảo mật (chia R3a / R3b) | R2, S9, S10 | 🟨 R3a ✅ 02/11 (gitleaks / osv-scanner / Semgrep vào cổng, ZAP + MobSF + SSL Labs A+, 0 High, minSdk 26, Q50) · R3b ✅ 02/11 (E2E + nâng cấp beta.7->13 + 5 kịch bản SEC-TEST trên M32, sửa 2 lỗi, Q51) · R3c ✅ 03/11 (DO -> D1 cho nonce + giới hạn, p95 staging < 300 ms, Q52; đo lại prod sau 24 h) |
+| 24 | R3 | QA tổng + kiểm thử bảo mật (chia R3a / R3b) | R2, S9, S10 | 🟨 R3a ✅ 02/11 (gitleaks / osv-scanner / Semgrep vào cổng, ZAP + MobSF + SSL Labs A+, 0 High, minSdk 26, Q50) · R3b ✅ 02/11 (E2E + nâng cấp beta.7->13 + 5 kịch bản SEC-TEST trên M32, sửa 2 lỗi, Q51) · R3c ✅ 03/11 (#48-#50, Q52: DO -> D1 nonce + giới hạn; staging p95 < 300 ms; prod p50 ~100 ms, p95 tới 600 ms do D1 prod ở ICN - đo lại 24 h) |
 | 25 | R4 | Phát hành v1.0.0 + OTA | R3 | ⬜ |
 | 26 | M1 | Quảng cáo + IAP (v1.1.0) sau Release Gate | R4 | ⬜ |
 | 27 | R0 | Bản APK thử: khoá ký, script phát hành GitHub Release + R2, trang tải | A5 | ✅ 28/10 |
@@ -719,7 +719,11 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
     thiết bị chung một batch), route công khai chỉ đọc dùng Rate Limiting binding + Cache API colo, Threat Engine sau ghi sự
     kiện chạy `waitUntil`, `/v1/health` không chạm D1, refresh gộp ghi IP. Staging lưu lượng thưa: p50 16-46 ms mọi route,
     p95 `/v1/status` 118 ms, `/v1/session/refresh` 46 ms, `/v1/config` 211 ms, `/v1/web/cau-hinh` 36 ms (trước, prod 7 ngày:
-    1,3-4,4 s). Không đổi hợp đồng API / chữ ký; e2e staging + prod đạt. Đo lại AE prod sau 24 h (`docs/kiem-thu/R3c-20261103.md`).
+    1,3-4,4 s). Không đổi hợp đồng API / chữ ký; e2e staging + prod đạt. **Prod**: D1 primary ở ICN (staging SIN) ->
+    mỗi vòng D1 từ SIN ~70-100 ms; thêm kiểm chặn song song (#49, #50); mẫu nhỏ prod p50 ~100 ms mọi route, p95
+    `/v1/status` 374 ms, `/v1/config` 188 ms, refresh 596 ms. Đo lại 24 h (`./tools/thu/do-tre-ae.sh prod 24`); chuyển D1
+    prod sang DC gần hơn chỉ khi người dùng duyệt (`docs/kiem-thu/R3c-20261103.md` mục 5).
+  - Phát sinh: bỏ lớp DO `KhoNonce` / `GioiHanToc` (deleted_classes) ở bản Worker sau.
   - Cổng R3 = R3a + R3b + R3c đạt + 0 Critical / High mở. iOS ngoài phạm vi (I1).
 
 ### R4 - Phát hành v1.0.0
