@@ -214,3 +214,25 @@ describe('S10b: /v1/app/su-co', () => {
     expect(ev?.n).toBe(0);
   });
 });
+
+describe('/v1/status cập nhật phiên bản sau nâng cấp', () => {
+  it('header x-app-version hợp lệ -> app_version / build + last_seen mới; sai dạng -> giữ nguyên', async () => {
+    const t = await dangKy();
+    const doc = () => db.prepare('SELECT app_version, build, last_seen FROM devices WHERE id = ?').bind(t.id).first<{ app_version: string; build: number; last_seen: number }>();
+    const truoc = await doc();
+    expect(truoc?.app_version).toBe('0.1.0');
+    const goiStatus = async (pb: string) =>
+      goi('/v1/status', { tieuDe: { ...(await tieuDeKy(t.tb, t.token, { phuongThuc: 'GET', duong: '/v1/status' })), 'x-app-version': pb } });
+    expect((await goiStatus('0.1.0-beta.12+12')).status).toBe(200);
+    let sau = await doc();
+    for (let i = 0; i < 20 && sau?.app_version !== '0.1.0-beta.12'; i++) {
+      await new Promise((r) => setTimeout(r, 50));
+      sau = await doc();
+    }
+    expect(sau).toMatchObject({ app_version: '0.1.0-beta.12', build: 12 });
+    expect(sau?.last_seen).toBeGreaterThanOrEqual(truoc?.last_seen ?? 0);
+    expect((await goiStatus("1'; DROP TABLE devices; --")).status).toBe(200);
+    await new Promise((r) => setTimeout(r, 200));
+    expect((await doc())?.app_version).toBe('0.1.0-beta.12');
+  });
+});

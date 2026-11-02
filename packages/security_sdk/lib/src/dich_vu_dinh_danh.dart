@@ -222,6 +222,9 @@ final class DichVuDinhDanh {
           'x-timestamp': '$ts',
           'x-nonce': nonce,
           'x-signature': await _ky(chuoi),
+          // Chỉ để máy chủ cập nhật phiên bản sau nâng cấp (hiển thị / thống
+          // kê ở SOC) - không nằm trong chuỗi ký, không dùng để quyết định.
+          'x-app-version': cauHinh.phienBanApp,
         },
       );
       if (lan == 0 && r.status == 401) {

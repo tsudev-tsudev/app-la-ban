@@ -10,7 +10,7 @@ import { asnCua, nen } from './mw/dich-vu';
 import { gioiHanRoute } from './mw/gioi-han';
 import { dongBoLists } from './threat/dong-bo-lists';
 import { xuLySuKien } from './threat/dong-co';
-import { docLatest, GOI_APP_TOI_DA, GOP_LOAI_MS, KHOA_KV_APP, LOAI_CHI_SERVER, refChoTrangThai, type BanMoi } from './thuan/kenh';
+import { docLatest, docPhienBanApp, GOI_APP_TOI_DA, GOP_LOAI_MS, KHOA_KV_APP, LOAI_CHI_SERVER, refChoTrangThai, type BanMoi } from './thuan/kenh';
 import { goiCauHinhHopLe } from './thuan/khien-web';
 import { LoiApi } from './thuan/loi';
 import { schemaLoSuKien, tinHieuLuu, LO_TOI_DA } from './thuan/su-kien';
@@ -68,6 +68,20 @@ export function dangKyKenh(app: Hono<MoiTruongHono>, boTuyen: BoTuyen): void {
     async (c) => {
       const thietBi = c.get('thietBi') as string;
       const trangThai = schemaTrangThai.catch('clean').parse(c.get('trangThai'));
+      // App gọi khi mở / quay lại (<= 15 phút / lần): cập nhật lần thấy cuối (mẫu số tỷ lệ không lỗi ở SOC) + phiên bản
+      // sau nâng cấp. Ghi nền - không làm chậm phản hồi.
+      const pb = docPhienBanApp(c.req.header('x-app-version'));
+      const db = c.env.DB;
+      if (db) {
+        nen(
+          c,
+          db
+            .prepare('UPDATE devices SET last_seen = ?, app_version = coalesce(?, app_version), build = coalesce(?, build) WHERE id = ?')
+            .bind(Date.now(), pb?.phienBan ?? null, pb?.build ?? null, thietBi)
+            .run(),
+          'thiet-bi-thay',
+        );
+      }
       return c.json({
         trangThai,
         mucTin: c.get('mucTin') ?? 'unverified',

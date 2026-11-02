@@ -53,3 +53,13 @@ export function docLatest(raw: string | null): BanMoi | null {
 export function refChoTrangThai(trangThai: string, thietBiId: string): string | null {
   return trangThai === 'restricted' || trangThai === 'banned' ? maRef(thietBiId) : null;
 }
+
+/**
+ * Header `x-app-version` app gửi kèm yêu cầu ký (dạng pubspec `0.1.0-beta.12+12`) -> phiên bản + build để cập nhật
+ * `devices` khi người dùng nâng cấp (trước đây chỉ ghi lúc đăng ký - SOC hiện phiên bản cũ). Thông tin do client tự khai,
+ * chỉ để hiển thị / thống kê - KHÔNG dùng cho quyết định chặn. Sai dạng -> null.
+ */
+export function docPhienBanApp(h: string | undefined | null): { phienBan: string; build: number } | null {
+  const m = /^(\d{1,3}\.\d{1,3}\.\d{1,3}(?:-[a-z]{1,10}\.\d{1,4})?)\+(\d{1,9})$/.exec(h ?? '');
+  return m?.[1] && m[2] ? { phienBan: m[1], build: Number(m[2]) } : null;
+}
