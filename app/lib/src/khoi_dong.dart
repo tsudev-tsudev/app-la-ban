@@ -85,6 +85,9 @@ Future<Widget> dungApp(
       kenhProvider.overrideWithValue(kenh),
       dichVuRaspProvider.overrideWithValue(rasp),
       congTrucTuyenProvider.overrideWithValue(cong),
+      // R3b: vị trí giả (Location.isMock) -> tín hiệu MOCK_LOCATION, chỉ báo.
+      if (rasp != null)
+        baoViTriGiaProvider.overrideWithValue(baoViTriGia(rasp, cong!)),
       if (kho != null && dinhDanh)
         khoaDaLuuProvider.overrideWithValue(docKhoaDaLuu(kho)),
       if (kho != null) ...[

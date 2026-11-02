@@ -102,6 +102,28 @@ void main() {
     await xong(tester);
   });
 
+  testWidgets('link /w/ mới khi đang ở màn điểm chia sẻ -> giải mã lại token '
+      'mới (không giữ nội dung cũ)', (tester) async {
+    datManHinh(tester, manHinh12[3]);
+    datHeThong(tester, oChup.first);
+    await tester.pumpWidget((await tester.runAsync(app))!);
+    await tester.pumpAndSettle();
+    final router = chua(tester).read(routerProvider)..go('/w/$token');
+    await tester.pumpAndSettle();
+    expect(find.text('Hồ Gươm'), findsOneWidget);
+    // Đổi một ký tự giữa token (ký tự cuối có thể chỉ chứa bit đệm base64).
+    final g = token.length ~/ 2;
+    final sai = token.replaceRange(g, g + 1, token[g] == 'A' ? 'B' : 'A');
+    router.go('/w/$sai');
+    await tester.pumpAndSettle();
+    expect(find.text('Hồ Gươm'), findsNothing);
+    expect(
+      find.text('Link không hợp lệ hoặc bị cắt mất khi gửi.'),
+      findsOneWidget,
+    );
+    await xong(tester);
+  });
+
   testWidgets('deep link khi chưa xem giới thiệu: vẫn mở màn điểm; link lạ '
       '-> tab đầu', (tester) async {
     datManHinh(tester, manHinh12[3]);

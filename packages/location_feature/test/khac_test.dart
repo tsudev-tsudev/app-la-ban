@@ -2,12 +2,42 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:location_feature/location_feature.dart';
 
 import 'ho_tro.dart';
 
 void main() {
+  test('vị trí giả: báo MỘT lần mỗi lượt nghe, vẫn phát vị trí', () async {
+    DocViTri doc({required bool gia}) => DocViTri(
+      viDo: 21,
+      kinhDo: 105.8,
+      luc: DateTime.utc(2026, 11, 2),
+      gia: gia,
+    );
+    final daBao = <DocViTri>[];
+    final c = ProviderContainer(
+      overrides: [
+        nguonViTriProvider.overrideWithValue(
+          NguonViTriGhiSan([doc(gia: false), doc(gia: true), doc(gia: true)]),
+        ),
+        baoViTriGiaProvider.overrideWithValue(daBao.add),
+      ],
+    );
+    addTearDown(c.dispose);
+    final nhan = <DocViTri>[];
+    c.listen(docViTriProvider, (_, v) {
+      if (v.value case final d?) nhan.add(d);
+    }, fireImmediately: true);
+    await c.read(quyenViTriProvider.future);
+    await pumpEventQueue();
+    // Riverpod gộp giá trị phát dồn - chỉ cần vị trí vẫn tới màn.
+    expect(nhan, isNotEmpty);
+    expect(daBao, hasLength(1));
+    expect(daBao.single.gia, isTrue);
+  });
+
   group('geoid EGM96 1°', () {
     final g = LuoiGeoid.tuBytes(
       ByteData.sublistView(
@@ -109,6 +139,7 @@ void main() {
       expect(d.doChinhXacDung, isNull);
       expect(d.doCaoMucBien, isNull);
       expect(d.nguon, NguonDocViTri.gps);
+      expect(d.gia, isFalse);
       expect(d.luc.isUtc, isTrue);
       expect(
         d,
@@ -124,6 +155,14 @@ void main() {
           double.nan,
           0,
         ]),
+      );
+      expect(
+        giaiMaDocViTri([21.0, 105.8, 0, 0, 0, 0, 0, 1.7e12, 0, 0, 1])!.gia,
+        isTrue,
+      );
+      expect(
+        giaiMaDocViTri([21.0, 105.8, 0, 0, 0, 0, 0, 1.7e12, 0, 0, 0])!.gia,
+        isFalse,
       );
       expect(giaiMaDocViTri([1, 2]), isNull);
       expect(giaiMaDocViTri('x'), isNull);

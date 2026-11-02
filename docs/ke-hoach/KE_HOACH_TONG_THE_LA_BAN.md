@@ -72,7 +72,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 21 | A8 | Cài đặt, quyền riêng tư, trợ năng, hiệu năng (chia A8a / A8b) | A7, S4 | 🟨 A8a ✅ 31/10 (0191b2d PR #34: quyền riêng tư + đồng ý NĐ 13, Q43; máy thật M32 đạt; chưa phát hành APK - gộp A8b) · A8b ✅ 31/10 (trợ năng + Reduce motion, Q45; v0.1.0-beta.10) |
 | 22 | S10 | Giám sát, log bất biến, backup, ứng phó sự cố (chia S10a / S10b) | S7 | ✅ S10a ✅ 02/11 (máy chủ: nhật ký bất biến R2 + mốc neo audit, sao lưu mã hoá + diễn tập, đột biến -> Telegram, security.txt, runbook IR, Q48) · S10b ✅ 02/11 (báo cáo sự cố tự xây, 0 đồng, đồng ý riêng, Q49) |
 | 23 | R2 | Sẵn sàng store | A8, S4 | 🟡 R2a 31/10 (AAB + Data Safety + listing + ảnh store, Q46) · R2b chờ Play Console (05/11) |
-| 24 | R3 | QA tổng + kiểm thử bảo mật (chia R3a / R3b) | R2, S9, S10 | 🟨 R3a ✅ 02/11 (gitleaks / osv-scanner / Semgrep vào cổng, ZAP + MobSF + SSL Labs A+, 0 High, minSdk 26, Q50) · R3b ⬜ E2E + kịch bản M32 |
+| 24 | R3 | QA tổng + kiểm thử bảo mật (chia R3a / R3b) | R2, S9, S10 | 🟨 R3a ✅ 02/11 (gitleaks / osv-scanner / Semgrep vào cổng, ZAP + MobSF + SSL Labs A+, 0 High, minSdk 26, Q50) · R3b ✅ 02/11 (E2E + nâng cấp beta.7->13 + 5 kịch bản SEC-TEST trên M32, sửa 2 lỗi, Q51) · R3c ⬜ tối ưu API p95 |
 | 25 | R4 | Phát hành v1.0.0 + OTA | R3 | ⬜ |
 | 26 | M1 | Quảng cáo + IAP (v1.1.0) sau Release Gate | R4 | ⬜ |
 | 27 | R0 | Bản APK thử: khoá ký, script phát hành GitHub Release + R2, trang tải | A5 | ✅ 28/10 |
@@ -699,7 +699,21 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
     ghi nhận, 100 % request nhạy cảm không hợp lệ bị từ chối; (4) đối chiếu ngân sách Spec §15 (mục 0 / 2 của kế hoạch:
     cold start, FPS, jank, tải về, pin) - số đã đo ở A3 / A8b / R2a / S10, đo lại phần thiếu; (5) chuẩn bị gói pentest độc
     lập (`docs/kiem-thu/goi-pentest.md`: phạm vi, tài khoản thử staging, service token, quy tắc - chưa chốt đơn vị, Q25).
-  - Cổng R3 = cả hai đạt + 0 Critical / High mở. iOS ngoài phạm vi (I1).
+  - Kết quả R3b (02/11, Q51, `docs/kiem-thu/R3b-20261102.md`): E2E + ma trận nâng cấp beta.7 -> 13 đạt (dữ liệu giữ, 0
+    crash); Remote Config `toiThieu` + rollback thử trên staging (đẩy cấu hình prod bị chế độ auto chặn); 5/5 kịch bản
+    SEC-TEST ghi nhận / chặn, 14/14 request ký sai bị từ chối. Sửa 2 lỗi: link /w/ thứ hai giữ nội dung cũ (`ValueKey`
+    route); **High** - bản đóng gói lại bị cấm, mở lại sau khi access token hết hạn vẫn vào la bàn (làm mới phiên 403
+    `thiet-bi-bi-cam` chỉ là lỗi) -> `tinhTrang()` coi đó là `banned` + REF. Thêm nguồn `Location.isMock` -> `MOCK_LOCATION`.
+    Ngân sách §15 đạt trừ tải về (freeRASP, Q13 / Q36) và **API p95 phía server** (AE prod 7 ngày: `/v1/health` p50 213 ms,
+    `/v1/status` p95 1,85 s, `/v1/session/refresh` p95 2,6 s, `/v1/events` p95 3,7 s) -> R3c.
+  - **R3c - tối ưu độ trễ API** (một phiên, không cần M32): (1) đo từng đoạn trong Worker (thêm `doubles` theo bước vào AE:
+    middleware `chanTheoThucThi` / `gioiHanThoIp` / `bayQuet`, D1, DO nonce, DO rate) trên staging - `Date.now()` trong
+    Worker chỉ nhảy khi có I/O nên đúng là thời gian chờ I/O; (2) nghi phạm: mỗi request gọi nhiều DO tuần tự (rate + nonce
+    + realtime) và D1 primary APAC không bật read replication (`d1 info`: `read_replication.mode disabled`) - gộp / song song
+    hoá lời gọi, cache danh sách chặn trong bộ nhớ isolate + KV, bật D1 read replication (Sessions API) cho truy vấn đọc,
+    `/v1/health` không chạm D1 / DO; (3) đo lại AE sau 24 h: p95 < 300 ms cho `/v1/status`, `/v1/config`, `/v1/events`,
+    `/v1/session/refresh`. Không đổi hợp đồng API / chữ ký. Staging trước, prod sau.
+  - Cổng R3 = R3a + R3b + R3c đạt + 0 Critical / High mở. iOS ngoài phạm vi (I1).
 
 ### R4 - Phát hành v1.0.0
 - Làm: staged rollout Play (1->5->20->50->100%) (iOS phased ở I1); Shorebird kênh staging -> stable; theo dõi crash-free, ANR, chặn

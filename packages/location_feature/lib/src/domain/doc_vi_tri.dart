@@ -39,11 +39,16 @@ final class DocViTri {
     this.tocDo,
     this.huongDi,
     this.nguon = NguonDocViTri.khac,
+    this.gia = false,
   });
 
   final double viDo;
   final double kinhDo;
   final DateTime luc;
+
+  /// Nền tảng đánh dấu vị trí giả (`Location.isMock`: nhà cung cấp thử / app
+  /// giả vị trí). Chỉ để báo tín hiệu `MOCK_LOCATION` - server quyết định.
+  final bool gia;
 
   /// Độ cao trên elipxoit WGS84 (m) - `Location.getAltitude`.
   final double? doCaoElip;
@@ -99,6 +104,7 @@ DocViTri? giaiMaDocViTri(Object? e) {
     huongDi: _soHuuHan(e[6]),
     doCaoMucBien: _soHuuHan(e[8]),
     nguon: NguonDocViTri.values[nguon.clamp(0, 3)],
+    gia: e.length > 10 && _soHuuHan(e[10]) == 1,
   );
 }
 

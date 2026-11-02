@@ -61,7 +61,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: duongDanNhanDiem,
+        // Khoá theo token: link /w/ mới khi đang ở màn này phải giải mã lại
+        // (go_router giữ State khi chỉ đổi tham số đường dẫn - lỗi R3b, M32).
         builder: (context, state) => ManNhanDiem(
+          key: ValueKey(state.pathParameters['token']),
           token: state.pathParameters['token']!,
           moDanhSach: () => context.go('/diem'),
         ),

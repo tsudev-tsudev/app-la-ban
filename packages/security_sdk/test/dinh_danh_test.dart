@@ -344,6 +344,27 @@ void main() {
       final kq = await d.damBaoPhien();
       expect((kq as Err).failure.code, 'dinhDanh.biCam');
       expect(d.phien, isNotNull);
+      // R3b: mở lại app sau khi token hết hạn -> vẫn ra trạng thái banned
+      // (server quyết) để app hiện màn khoá, không chỉ là lỗi mạng.
+      final t = (await d.tinhTrang() as Ok<TinhTrangThietBi>).value;
+      expect(t.trangThai, TrangThaiThietBi.banned);
+      expect(t.ref, isNull);
+    });
+
+    test('đăng ký bị từ chối vì cấm -> Failure biCam (dừng thử lại)', () async {
+      api.xuLy = (duong, body) => duong == '/v1/device/register'
+          ? (status: 403, duLieu: {'code': 'thiet-bi-bi-cam'})
+          : api.macDinh(duong, body);
+      final d = dv();
+      expect(((await d.damBaoPhien()) as Err).failure.code, 'dinhDanh.biCam');
+      expect(((await d.tinhTrang()) as Err).failure.code, 'dinhDanh.biCam');
+    });
+
+    test('mã REF theo công thức Worker; id sai dạng -> null', () {
+      // Cùng ví dụ với test Worker: 10 ký tự cuối, tách 5 - 5.
+      expect(maRefThietBi('01M6ECZHZF0000000000ABCDEF'), 'REF-0000A-BCDEF');
+      expect(maRefThietBi('TB1'), isNull);
+      expect(maRefThietBi('01m6eczhzf0000000000abcdef'), isNull);
     });
 
     test(

@@ -112,7 +112,14 @@ final class DichVuDinhDanh {
         'ngonNgu': cauHinh.ngonNgu(),
       },
     });
-    if (!r.ok) return Err(Failure('dinhDanh.dangKy', '${r.status} ${r.ma}'));
+    if (!r.ok) {
+      // Cấm theo installation ID (server) -> dừng thử lại như khi làm mới.
+      return Err(
+        SauLamMoi.tuPhanHoi(r.status, r.ma) == SauLamMoi.biCam
+            ? const Failure('dinhDanh.biCam')
+            : Failure('dinhDanh.dangKy', '${r.status} ${r.ma}'),
+      );
+    }
     final p = PhienThietBi.tuJson(r.duLieu);
     if (p == null) return const Err(Failure('dinhDanh.phanHoi'));
     await _luu(p);
@@ -164,9 +171,20 @@ final class DichVuDinhDanh {
   Future<void> huyPhien() => tep.ghi({...tep.duLieu}..remove('phien'));
 
   /// Trạng thái thiết bị + mã REF + bản APK mới nhất (`/v1/status`).
+  ///
+  /// Làm mới phiên bị từ chối vì thiết bị đã bị cấm (403 `thiet-bi-bi-cam`,
+  /// thường gặp khi app mở lại sau khi access token hết hạn) cũng là trạng
+  /// thái `banned` do SERVER trả -> app hiện màn khoá như `/v1/status`
+  /// (R3b: bản đóng gói lại bị cấm nhưng mở lại vẫn vào la bàn).
   Future<Result<TinhTrangThietBi>> tinhTrang() => _boc(() async {
     final kq = await goiKy('GET', '/v1/status');
-    if (kq case Err(:final failure)) return Err(failure);
+    if (kq case Err(:final failure)) {
+      final p = phien;
+      if (failure.code == 'dinhDanh.biCam' && p != null) {
+        return Ok(TinhTrangThietBi.biCam(p));
+      }
+      return Err(failure);
+    }
     final r = (kq as Ok<PhanHoiKy>).value;
     if (!r.ok) return Err(Failure('dinhDanh.trangThai', '${r.status} ${r.ma}'));
     final t = TinhTrangThietBi.tuJson(r.duLieu);

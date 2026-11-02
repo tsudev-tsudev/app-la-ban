@@ -39,6 +39,10 @@ class QuyenViTriNotifier extends AsyncNotifier<QuyenViTri> {
   }
 }
 
+/// Báo vị trí giả (app nối vào security_sdk: tín hiệu `MOCK_LOCATION`). Gói
+/// này không phụ thuộc security_sdk - mặc định không làm gì.
+final baoViTriGiaProvider = Provider<void Function(DocViTri)>((_) => (_) {});
+
 /// Luồng vị trí. autoDispose: chỉ chạy khi có màn đang thấy cần vị trí.
 /// Chưa có quyền -> không bao giờ phát (giao diện hiện lời mời bật).
 final StreamProvider<DocViTri> docViTriProvider = StreamProvider.autoDispose((
@@ -46,7 +50,16 @@ final StreamProvider<DocViTri> docViTriProvider = StreamProvider.autoDispose((
 ) {
   final q = ref.watch(quyenViTriProvider).value;
   if (q == null || !q.duocPhep) return const Stream.empty();
-  return ref.watch(nguonViTriProvider).theoDoi();
+  final bao = ref.watch(baoViTriGiaProvider);
+  var daBao = false;
+  return ref.watch(nguonViTriProvider).theoDoi().map((d) {
+    // Một lần mỗi lượt nghe - DichVuRasp còn lọc trùng theo loại.
+    if (d.gia && !daBao) {
+      daBao = true;
+      bao(d);
+    }
+    return d;
+  });
 }, retry: (_, _) => null);
 
 /// Tài nguyên tra cứu ngoại tuyến (asset), nạp một lần khi cần.

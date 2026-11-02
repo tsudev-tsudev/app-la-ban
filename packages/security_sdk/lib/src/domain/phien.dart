@@ -127,6 +127,14 @@ final class TinhTrangThietBi {
     this.banMoi,
   });
 
+  /// Server từ chối phiên vì thiết bị bị cấm: trạng thái `banned` + mã REF
+  /// tính từ id thiết bị theo đúng dạng Worker (`maRef`, `thuan/kenh.ts`).
+  factory biCam(PhienThietBi p) => TinhTrangThietBi(
+    trangThai: TrangThaiThietBi.banned,
+    mucTin: p.mucTin,
+    ref: maRefThietBi(p.thietBiId),
+  );
+
   final TrangThaiThietBi trangThai;
   final MucTin mucTin;
   final String? ref;
@@ -152,4 +160,13 @@ final class TinhTrangThietBi {
           : null,
     );
   }
+}
+
+/// Mã REF hiện trên màn khoá / dùng khiếu nại: 10 ký tự cuối của id thiết bị
+/// (ULID 26 ký tự Crockford) dạng `REF-XXXXX-XXXXX` - cùng công thức `maRef`
+/// của Worker. Id sai dạng -> null (màn khoá không hiện REF).
+String? maRefThietBi(String thietBiId) {
+  if (!RegExp(r'^[0-9A-HJKMNP-TV-Z]{26}$').hasMatch(thietBiId)) return null;
+  final d = thietBiId.substring(16);
+  return 'REF-${d.substring(0, 5)}-${d.substring(5)}';
 }

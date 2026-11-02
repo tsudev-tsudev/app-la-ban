@@ -235,6 +235,9 @@ if (process.argv.includes('--kill-switch') && quyen.includes('can-thiep')) {
 }
 kiem('CSRF: thiếu x-soc -> 403', (await fetch(`${GOC}/api/phien/bat-dau`, { method: 'POST', headers: tieuDe({ 'content-type': 'application/json' }), body: '{}' })).status === 403);
 
+// Làm ấm kết nối tới API trước khi bấm giờ: lần mở TCP + TLS đầu từ máy đo (WSL) có thể mất 1-4 s, không thuộc SOC.
+await fetch(`${API_STG}/v1/status`).catch(() => null);
+let treBay = 0;
 const ws = new WebSocket(`${GOC.replace('https', 'wss')}/api/ws`, { headers: tieuDe() });
 const moi = await new Promise((xong) => {
   const hen = setTimeout(() => xong(null), 10_000);
@@ -246,10 +249,11 @@ const moi = await new Promise((xong) => {
       xong({ tre: Date.now() - gui, tin: JSON.parse(String(e.data)) });
     });
     await fetch(`${API_STG}/wp-login.php`).catch(() => null);
+    treBay = Date.now() - gui;
   });
   ws.addEventListener('error', () => xong(null));
 });
-kiem('WebSocket: sự kiện bẫy quét tới SOC < 1,5 s', !!moi && moi.tre < 1500, moi ? `${moi.tre} ms, ${moi.tin.ds.map((x) => x.type).join(',')}` : 'không nhận được');
+kiem('WebSocket: sự kiện bẫy quét tới SOC < 1,5 s', !!moi && moi.tre < 1500, moi ? `${moi.tre} ms (request bẫy ${treBay} ms), ${moi.tin.ds.map((x) => x.type).join(',')}` : 'không nhận được');
 ws.close();
 kiem('đăng xuất', (await goi('/phien/ket-thuc', {})).status === 200);
 console.log(loi === 0 ? '\nTẤT CẢ ĐẠT' : `\n${loi} LỖI`);

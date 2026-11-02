@@ -13,6 +13,7 @@ import 'package:la_ban/src/dinh_danh.dart';
 import 'package:la_ban/src/flavor.dart';
 import 'package:la_ban/src/kenh.dart';
 import 'package:la_ban/src/phien_ban.dart';
+import 'package:location_feature/location_feature.dart' show DocViTri;
 import 'package:security_sdk/security_sdk.dart';
 import 'package:storage/storage.dart';
 
@@ -402,3 +403,14 @@ class _ManKhoaState extends State<ManKhoa> {
     );
   }
 }
+
+/// Vị trí giả (`DocViTri.gia`) -> tín hiệu `MOCK_LOCATION` (R3b, SEC-TEST):
+/// chỉ báo khi đã đồng ý trực tuyến; server chấm điểm / quyết định (Q8).
+void Function(DocViTri) baoViTriGia(DichVuRasp rasp, CongTrucTuyen cong) =>
+    (d) {
+      if (!cong.value) return;
+      rasp.nhan((
+        loai: LoaiTinHieu.giaViTri,
+        chiTiet: {'location_mock': true, 'provider': d.nguon.name},
+      ));
+    };
