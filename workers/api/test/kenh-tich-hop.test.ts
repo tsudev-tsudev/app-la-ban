@@ -106,6 +106,7 @@ describe('chữ ký request (SEC-NET)', () => {
     await new Promise((r) => setTimeout(r, 3_100)); // hết đệm danh sách chặn của isolate (DEM_CHAN_MS)
     const tieuDe = await tieuDeKy(t.tb, t.token, { phuongThuc: 'GET', duong: '/v1/device/me' });
     expect((await goi('/v1/device/me', { tieuDe: { ...tieuDe, 'cf-connecting-ip': ipXau } })).du).toMatchObject({ status: 403, code: 'bi-chan' });
+    expect((await goi('/v1/config', { tieuDe: { 'cf-connecting-ip': ipXau } })).du).toMatchObject({ status: 403, code: 'bi-chan' });
     await db.prepare("DELETE FROM enforcements WHERE id = 'E-R3C'").run();
     // Cùng nonce (chữ ký còn hạn) từ IP khác vẫn dùng được -> request bị chặn không đốt nonce.
     expect((await goi('/v1/device/me', { tieuDe })).status).toBe(200);

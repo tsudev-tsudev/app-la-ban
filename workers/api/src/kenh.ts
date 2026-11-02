@@ -7,6 +7,7 @@ import { z } from 'zod';
 import type { MoiTruongHono, Ngu } from './moi-truong';
 import { traVanDe } from './mw/co-ban';
 import { asnCua, docQuaColo, nen } from './mw/dich-vu';
+import { choKiemChan, DUONG_CHAN_SONG_SONG } from './mw/chan';
 import { gioiHanDocCongKhai } from './mw/gioi-han';
 import { dongBoLists } from './threat/dong-bo-lists';
 import { ghiSuKien } from './threat/dong-co';
@@ -44,6 +45,8 @@ async function banMoiNhat(c: Ngu, bayGio: number): Promise<BanMoi | null> {
 const schemaTrangThai = z.enum(['clean', 'suspicious', 'restricted', 'banned']);
 
 export function dangKyKenh(app: Hono<MoiTruongHono>, boTuyen: BoTuyen): void {
+  // Chỉ đọc, không tác dụng phụ: kiểm chặn chạy song song với đọc cache, chờ trước khi trả (R3c).
+  DUONG_CHAN_SONG_SONG.add('GET /v1/config');
   // Gói đã ký nằm ở KV; Worker chỉ kiểm hình dạng rồi trả nguyên văn. KV bị ghi bậy -> app từ chối chữ ký, giữ cấu hình cũ.
   app.get(
     '/v1/config',
@@ -56,6 +59,7 @@ export function dangKyKenh(app: Hono<MoiTruongHono>, boTuyen: BoTuyen): void {
       const tho = await doBuoc(c.get('dongHo'), 'luuTru', () =>
         docQuaColo(c, 'cau-hinh/app', 60, async () => (await c.env.CAU_HINH?.get(KHOA_KV_APP, { cacheTtl: 60 })) ?? null),
       );
+      await choKiemChan(c);
       const goi = goiCauHinhHopLe(tho, GOI_APP_TOI_DA);
       if (!goi) return traVanDe(c, 404);
       return c.body(goi, 200, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60' });
