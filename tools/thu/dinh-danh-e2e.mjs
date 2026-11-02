@@ -5,8 +5,10 @@
 // Thiết bị thử có model 'node' + os_version 'e2e' -> dọn sau khi thử (xoá sessions / device_ips / security_events /
 // device_links của chúng trước, rồi devices) để SOC không thấy dữ liệu rác.
 import { createHash, generateKeyPairSync, randomUUID, randomBytes, sign } from 'node:crypto';
+import { performance } from 'node:perf_hooks';
 
-const goc = process.argv[2] ?? 'https://compass-api-stg.tsudev.com';
+const goc = process.argv.slice(2).find((a) => a.startsWith('http')) ?? 'https://compass-api-stg.tsudev.com';
+const soP95 = Number(process.argv.find((a) => a.startsWith('--p95='))?.slice(6) ?? 0);
 const goi = goc.includes('-stg') ? 'com.tsudev.laban.stg' : 'com.tsudev.laban';
 const { privateKey, publicKey } = generateKeyPairSync('ec', { namedCurve: 'P-256' });
 const spki = publicKey.export({ type: 'spki', format: 'der' }).toString('base64url');
@@ -34,7 +36,7 @@ const goiKy = async (duong, body, bearer, o = {}) => {
       'x-nonce': nonce,
       'x-signature': (o.khoa ?? ky)(chuoi),
     },
-    body: body ? than : undefined,
+    body: body ? (o.thanGui ?? than) : undefined,
   });
   return { status: r.status, du: await r.json().catch(() => null) };
 };
@@ -68,6 +70,9 @@ const suKien = {
   event_id: randomUUID(), ts: new Date().toISOString(), type: 'E2E_TEST', severity: 'info', signals: { e2e: true },
   app: { version: '0.0.0', build: 1, install_source: null }, env: { os: 'android', os_ver: 'e2e', model: 'node', emulator: true, root: 'no' },
 };
+buoc('sửa thân sau ký -> 401', await goiKy('/v1/events', { events: [suKien] }, at, {
+  thanGui: JSON.stringify({ events: [{ ...suKien, severity: 'high' }] }),
+}), 401);
 buoc('events (ký) -> 202', await goiKy('/v1/events', { events: [suKien] }, at), 202);
 const cfg = await post('/v1/config');
 console.log(`${cfg.status === 200 || cfg.status === 404 ? 'DAT ' : 'TRUOT'} config: ${cfg.status}${cfg.du?.kid ? ` kid ${cfg.du.kid}` : ''}`);
@@ -81,4 +86,20 @@ buoc('refresh', lm, 200);
 buoc('refresh token cũ trong ân hạn -> 409', await lamMoi(dk.du.phien.refreshToken), 409);
 buoc('access token cũ sau xoay -> 401', await goiKy('/v1/device/me', null, dk.du.phien.accessToken), 401);
 buoc('access token mới', await goiKy('/v1/device/me', null, lm.du?.phien?.accessToken), 200);
+if (soP95 > 0) {
+  // p95 phía client (gồm mạng máy đo -> Cloudflare) của yêu cầu ký /v1/status, kết nối đã ấm (Spec §15: < 300 ms).
+  const at2 = lm.du?.phien?.accessToken;
+  const tre = [];
+  const loi = {};
+  for (let i = 0; i < soP95; i++) {
+    const t = performance.now();
+    const r = await goiKy('/v1/status', null, at2);
+    if (r.status === 200) tre.push(performance.now() - t);
+    else loi[`${r.status} ${r.du?.code ?? ''}`] = (loi[`${r.status} ${r.du?.code ?? ''}`] ?? 0) + 1;
+  }
+  if (Object.keys(loi).length) console.log('     lỗi khi đo:', JSON.stringify(loi));
+  tre.sort((a, b) => a - b);
+  const p = (q) => Math.round(tre[Math.min(tre.length - 1, Math.ceil(q * tre.length) - 1)]);
+  console.log(`${p(0.95) < 300 ? 'DAT ' : 'TRUOT'} p95 /v1/status ký: ${tre.length}/${soP95} lần 200, p50 ${p(0.5)} ms, p95 ${p(0.95)} ms`);
+}
 console.log('requestHash mẫu:', createHash('sha256').update(chuoi).digest('base64url'));

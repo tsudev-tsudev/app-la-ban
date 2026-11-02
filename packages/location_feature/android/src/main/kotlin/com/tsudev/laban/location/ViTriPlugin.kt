@@ -204,9 +204,14 @@ class ViTriPlugin :
                 v.time.toDouble(),
                 mucBien,
                 nguon,
+                if (laGia(v)) 1.0 else 0.0,
             ),
         )
     }
+
+    /** Vị trí từ nhà cung cấp thử / app giả vị trí: chỉ là TÍN HIỆU gửi server (R3b), app vẫn hiển thị. */
+    private fun laGia(v: Location): Boolean =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) v.isMock else @Suppress("DEPRECATION") v.isFromMockProvider
 
     private companion object {
         const val MA_YEU_CAU = 0x1ab4

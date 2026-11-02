@@ -23,7 +23,7 @@ lỗi), Trung tâm cảnh báo SOC, Workers Logs (`request_id`), báo cáo qua `
 - Thiết bị / IP / dải / ASN: SOC -> Can thiệp (kill-switch <= 5 s, Q47). Dải rộng cần four-eyes.
 - Tấn công diện rộng vào web: SOC -> Cài đặt -> Under Attack (S7b).
 - Tắt tính năng app: Remote Config ký số cờ `tat` (SOC four-eyes hoặc `tools/cau-hinh/ky-cau-hinh.mjs dua-len-app`).
-- Ép cập nhật: Remote Config `toiThieu` (không vượt bản đã phát hành).
+- Ép cập nhật: Remote Config `toiThieu` (không vượt bản đã phát hành). Gỡ ép = ký gói MỚI `--toi-thieu 1` (đặt lại gói cũ bị app từ chối - chống lùi cấu hình, R3b).
 - Lộ khoá: xoay ngay theo `xoay-khoa.md`. Nghi tài khoản quản trị bị chiếm: gỡ email khỏi Access policy
   (`tools/cloudflare/access.mjs`), thu hồi passkey + vô hiệu admin trong SOC.
 

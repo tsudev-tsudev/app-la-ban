@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:la_ban/src/cong_truc_tuyen.dart';
 import 'package:la_ban/src/kenh.dart';
 import 'package:la_ban/src/lam_cung.dart';
 import 'package:la_ban/src/luu_tru.dart';
+import 'package:location_feature/location_feature.dart';
 import 'package:security_sdk/security_sdk.dart';
 import 'package:storage/storage.dart';
 import 'package:test_kit/test_kit.dart';
@@ -193,6 +195,22 @@ void main() {
       expect(await apKhoa(rasp, dv, tt(TrangThaiThietBi.clean)), isFalse);
       expect(tepRasp.duLieu.containsKey('khoa'), isFalse);
       expect(tepDinhDanh.duLieu.containsKey('phien'), isTrue);
+    });
+
+    test('vị trí giả -> MOCK_LOCATION chỉ khi đã đồng ý trực tuyến', () async {
+      final d = DocViTri(
+        viDo: 21,
+        kinhDo: 105.8,
+        luc: DateTime.utc(2026, 11, 2),
+        nguon: NguonDocViTri.gps,
+        gia: true,
+      );
+      baoViTriGia(rasp, CongTrucTuyen(mo: false))(d);
+      expect(rasp.daThay, isEmpty);
+      baoViTriGia(rasp, CongTrucTuyen(mo: true))(d);
+      expect(rasp.daThay, {LoaiTinHieu.giaViTri});
+      await rasp.xa();
+      expect(daGui, ['MOCK_LOCATION']);
     });
   });
 
