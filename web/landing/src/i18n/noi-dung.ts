@@ -2,7 +2,7 @@
 
 export type NgonNgu = 'vi' | 'en';
 
-export type TrangId = 'chu' | 'tai' | 'huong' | 'rieng' | 'khoan' | 'khieu';
+export type TrangId = 'chu' | 'tai' | 'huong' | 'rieng' | 'khoan' | 'khieu' | 'loHong';
 
 /** Đường dẫn từng trang theo ngôn ngữ - nguồn duy nhất cho nav, hreflang, sitemap. */
 export const DUONG_DAN: Record<TrangId, Record<NgonNgu, string>> = {
@@ -12,6 +12,7 @@ export const DUONG_DAN: Record<TrangId, Record<NgonNgu, string>> = {
   rieng: { vi: '/quyen-rieng-tu/', en: '/en/privacy/' },
   khoan: { vi: '/dieu-khoan/', en: '/en/terms/' },
   khieu: { vi: '/khieu-nai/', en: '/en/appeal/' },
+  loHong: { vi: '/bao-cao-lo-hong/', en: '/en/security/' },
 };
 
 type Muc = { tieuDe: string; noiDung: string };
@@ -86,6 +87,7 @@ export type NoiDung = {
   huong: { tieuDe: string; moTa: string; muc: (Muc & { icon: Icon; buoc?: string[] })[] };
   rieng: { capNhat: string; moTa: string; muc: Muc[] };
   khoan: { capNhat: string; moTa: string; muc: Muc[] };
+  loHong: { capNhat: string; moTa: string; muc: Muc[] };
   khieu: {
     moTa: string;
     buoc: Muc[];
@@ -145,6 +147,7 @@ const vi: NoiDung = {
     rieng: { tieuDe: 'Chính sách quyền riêng tư - La bàn', moTa: 'La bàn thu thập gì, vì sao, lưu bao lâu và quyền của bạn theo Nghị định 13/2023/NĐ-CP.' },
     khoan: { tieuDe: 'Điều khoản sử dụng - La bàn', moTa: 'Điều khoản sử dụng ứng dụng La bàn và bản thử nghiệm.' },
     khieu: { tieuDe: 'Khiếu nại hạn chế tài khoản / thiết bị - La bàn', moTa: 'Gửi khiếu nại khi ứng dụng La bàn báo thiết bị bị hạn chế, kèm mã tham chiếu REF.' },
+    loHong: { tieuDe: 'Báo cáo lỗ hổng bảo mật - La bàn', moTa: 'Cách báo cáo lỗ hổng bảo mật của ứng dụng, API và trang web La bàn một cách có trách nhiệm.' },
   },
   chu: {
     nhan: 'Android · bản thử nghiệm',
@@ -297,6 +300,18 @@ const vi: NoiDung = {
       { tieuDe: '7. Luật áp dụng', noiDung: 'Điều khoản điều chỉnh bởi pháp luật Việt Nam. Liên hệ: contact@tsudev.com.' },
     ],
   },
+  loHong: {
+    capNhat: 'Cập nhật: 02/11/2026',
+    moTa: 'Chúng tôi hoan nghênh báo cáo lỗ hổng có trách nhiệm. Bạn báo riêng cho chúng tôi trước, chúng tôi xử lý nhanh và ghi nhận đóng góp của bạn.',
+    muc: [
+      { tieuDe: '1. Cách báo', noiDung: 'Gửi email tới security@tsudev.com (tiếng Việt hoặc tiếng Anh): mô tả lỗ hổng, các bước tái hiện, phiên bản ứng dụng hoặc URL bị ảnh hưởng và tác động bạn đánh giá. Không gửi dữ liệu cá nhân của người khác.' },
+      { tieuDe: '2. Phạm vi', noiDung: 'Ứng dụng La bàn cho Android (gói com.tsudev.laban), API compass-api.tsudev.com, trang compass.tsudev.com và compass-cdn.tsudev.com. Ngoài phạm vi: tấn công từ chối dịch vụ, gửi thư rác, lừa đảo phi kỹ thuật, kiểm thử vật lý và dịch vụ của bên thứ ba.' },
+      { tieuDe: '3. Thời hạn phản hồi', noiDung: 'Xác nhận đã nhận trong 3 ngày làm việc, đánh giá mức độ trong 10 ngày làm việc. Lỗi mức Nghiêm trọng / Cao được ưu tiên sửa trong 30 ngày; chúng tôi báo bạn khi bản sửa được phát hành.' },
+      { tieuDe: '4. Quy tắc kiểm thử', noiDung: 'Chỉ dùng tài khoản và thiết bị của chính bạn; không truy cập, sửa hay xoá dữ liệu của người khác; dừng lại và báo ngay khi chạm tới dữ liệu không phải của bạn; không công bố trước khi bản sửa được phát hành hoặc sau 90 ngày kể từ khi báo, tuỳ điều nào đến trước.' },
+      { tieuDe: '5. Cam kết của chúng tôi', noiDung: 'Nghiên cứu thiện chí tuân theo chính sách này sẽ không bị chúng tôi khiếu nại hay khởi kiện. Thiết bị thử của bạn có thể bị hệ thống bảo mật tự động hạn chế - hãy báo mã tham chiếu REF để được gỡ. Hiện chưa có chương trình thưởng bằng tiền; chúng tôi ghi nhận tên bạn nếu bạn muốn.' },
+      { tieuDe: '6. Rò rỉ dữ liệu cá nhân', noiDung: 'Nếu phát hiện dữ liệu cá nhân bị lộ, chúng tôi xử lý và thông báo theo Nghị định 13/2023/NĐ-CP. Bạn cũng có thể liên hệ contact@tsudev.com cho câu hỏi về quyền riêng tư.' },
+    ],
+  },
   khieu: {
     moTa: 'Nếu ứng dụng báo thiết bị của bạn bị hạn chế và hiển thị mã REF, bạn có thể khiếu nại. Chúng tôi xem xét thủ công, không tự động từ chối.',
     buoc: [
@@ -367,6 +382,7 @@ const en: NoiDung = {
     rieng: { tieuDe: 'Privacy policy - La bàn', moTa: 'What La bàn collects, why, how long it is kept, and your rights under Vietnam Decree 13/2023.' },
     khoan: { tieuDe: 'Terms of use - La bàn', moTa: 'Terms for using the La bàn app and its beta builds.' },
     khieu: { tieuDe: 'Appeal a device restriction - La bàn', moTa: 'Appeal when the La bàn app reports your device is restricted, using your REF code.' },
+    loHong: { tieuDe: 'Report a security vulnerability - La bàn', moTa: 'How to responsibly report a security vulnerability in the La bàn app, API and website.' },
   },
   chu: {
     nhan: 'Android · beta',
@@ -517,6 +533,18 @@ const en: NoiDung = {
       { tieuDe: '5. Intellectual property', noiDung: 'The La bàn name, logo and source code belong to TsuDev. Third-party open-source software follows its own licenses, listed in the app\'s Licenses screen.' },
       { tieuDe: '6. Limitation of liability', noiDung: 'To the extent permitted by law, TsuDev is not liable for indirect damages arising from use of the app.' },
       { tieuDe: '7. Governing law', noiDung: 'These terms are governed by the laws of Vietnam. Contact: contact@tsudev.com.' },
+    ],
+  },
+  loHong: {
+    capNhat: 'Updated: 2 November 2026',
+    moTa: 'We welcome responsible vulnerability reports. Tell us privately first; we will act quickly and credit your contribution.',
+    muc: [
+      { tieuDe: '1. How to report', noiDung: "Email security@tsudev.com (English or Vietnamese) with a description of the issue, steps to reproduce, the affected app version or URL, and the impact you assess. Do not include other people's personal data." },
+      { tieuDe: '2. Scope', noiDung: 'The La bàn Android app (package com.tsudev.laban), the API at compass-api.tsudev.com, compass.tsudev.com and compass-cdn.tsudev.com. Out of scope: denial of service, spam, social engineering, physical testing and third-party services.' },
+      { tieuDe: '3. Response times', noiDung: 'We acknowledge reports within 3 business days and assess severity within 10 business days. Critical / High issues are prioritised for a fix within 30 days; we will tell you when the fix ships.' },
+      { tieuDe: '4. Testing rules', noiDung: "Use only your own accounts and devices; do not access, modify or delete other people's data; stop and report as soon as you reach data that is not yours; do not disclose publicly before a fix ships or 90 days after your report, whichever comes first." },
+      { tieuDe: '5. Our commitment', noiDung: 'We will not pursue claims or legal action against good-faith research that follows this policy. Your test device may be restricted automatically by our security system - send us the REF code to have it lifted. There is no paid bounty programme yet; we will credit you by name if you wish.' },
+      { tieuDe: '6. Personal data exposure', noiDung: 'If personal data is exposed, we handle and notify it in line with Vietnam Decree 13/2023/ND-CP. Privacy questions can also go to contact@tsudev.com.' },
     ],
   },
   khieu: {

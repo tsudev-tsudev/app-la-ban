@@ -10,6 +10,8 @@ import { xoaDem } from '../../src/threat/nap';
 import { kiemChuoiAudit } from '../../src/thuan/audit';
 import { KHOA_CONG_KHAI } from '../../src/thuan/cau-hinh-tu-xa';
 import { taoUlid } from '../../src/thuan/dinh-danh';
+import { xuatNhatKy } from '../../src/van-hanh/nhat-ky';
+import { saoLuuD1 } from '../../src/van-hanh/sao-luu';
 
 export { KhoNonce, GioiHanToc, PhongSoc } from '../../src/index';
 
@@ -41,6 +43,22 @@ boTuyen.dangKy(
     throw new Error('BI_MAT_NOI_BO stack');
   },
 );
+app.post('/thu/nhat-ky', async (c) => c.json(await xuatNhatKy(c.env, Number(c.req.query('bayGio')))));
+app.post('/thu/sao-luu', async (c) => c.json(await saoLuuD1(c.env, Number(c.req.query('bayGio')))));
+app.get('/thu/r2', async (c) => {
+  const r2 = c.env.NHAT_KY;
+  if (!r2) throw new Error('thiếu NHAT_KY');
+  const k = c.req.query('k');
+  if (k) {
+    const v = await r2.get(k);
+    return v ? c.newResponse(v.body, 200, { 'x-meta': JSON.stringify(v.customMetadata ?? {}) }) : c.notFound();
+  }
+  return c.json((await r2.list()).objects.map((o) => o.key));
+});
+app.put('/thu/r2', async (c) => {
+  await c.env.NHAT_KY?.put(c.req.query('k') ?? '', await c.req.text());
+  return c.body(null, 204);
+});
 app.get('/thu/dem', (c) => c.json({ soLanXuLy }));
 app.post('/thu/audit', async (c) => {
   const b = (await c.req.json()) as { actor: string; ts: number };
