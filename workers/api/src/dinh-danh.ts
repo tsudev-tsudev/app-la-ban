@@ -18,6 +18,7 @@ import { chuoiDangKy, chuoiLamMoi, chuoiXacThuc } from './thuan/ma-hoa';
 import { laNonceHopLe } from './thuan/nonce';
 import { ACCESS_TTL_MS, LECH_TS_MS, quyetDinhLamMoi, REFRESH_TTL_MS, taoClaim, type DongPhien } from './thuan/phien';
 import { danhGiaPhanQuyet, MUC_TIN, type KetQuaDanhGia, type MucTin } from './thuan/play-integrity';
+import { doBuoc } from './thuan/do-tre';
 import type { BoTuyen } from './tuyen';
 
 export const THACH_THUC_TTL_MS = 5 * 60 * 1000;
@@ -202,13 +203,15 @@ export function dangKyDinhDanh(_app: Hono<MoiTruongHono>, boTuyen: BoTuyen): voi
       const k = await canKhoaPhien(c.env);
       const bayGio = Date.now();
       if (Math.abs(bayGio - b.ts) > LECH_TS_MS) throw new LoiApi(401, 'lech-gio');
-      const d = await db
+      const dh = c.get('dongHo');
+      const bamRt = await sha256Hex(b.refreshToken);
+      const d = await doBuoc(dh, 'phien', () => db
         .prepare(
           `SELECT s.id, s.device_id, s.chuoi, s.expires_at, s.revoked_at, s.thay_boi, s.xoay_luc, d.public_key, d.status, d.attestation_level
            FROM sessions s JOIN devices d ON d.id = s.device_id WHERE s.refresh_hash = ?`,
         )
-        .bind(await sha256Hex(b.refreshToken))
-        .first<DongPhien & { public_key: string | null; status: string; attestation_level: MucTin }>();
+        .bind(bamRt)
+        .first<DongPhien & { public_key: string | null; status: string; attestation_level: MucTin }>());
       if (!d) throw new LoiApi(401, 'refresh-sai');
       const khoa = d.public_key ? await nhapKhoaThietBi(d.public_key) : null;
       // Chữ ký trước phát hiện dùng lại: kẻ chỉ lấy được refresh token (không có khoá phần cứng) không kích hoạt thu hồi.
@@ -216,7 +219,7 @@ export function dangKyDinhDanh(_app: Hono<MoiTruongHono>, boTuyen: BoTuyen): voi
         baoSuKien(c, d.device_id, 'SIGNATURE_MISMATCH', 'medium', { buoc: 'lam-moi' });
         throw new LoiApi(401, 'chu-ky');
       }
-      if (!(await goiNonce(c.env, `thiet-bi:${d.device_id}`, '/nonce', { nonce: b.nonce, ttlMs: 2 * LECH_TS_MS }))) throw new LoiApi(401, 'nonce');
+      if (!(await doBuoc(dh, 'nonce', () => goiNonce(c.env, `thiet-bi:${d.device_id}`, '/nonce', { nonce: b.nonce, ttlMs: 2 * LECH_TS_MS })))) throw new LoiApi(401, 'nonce');
       if (d.status === 'banned') throw new LoiApi(403, 'thiet-bi-bi-cam');
 
       const qd = quyetDinhLamMoi(d, bayGio);
@@ -242,14 +245,14 @@ export function dangKyDinhDanh(_app: Hono<MoiTruongHono>, boTuyen: BoTuyen): voi
       }
       const ph = await capPhien(c.env, k, db, { thietBi: d.device_id, jkt: khoa.jkt, muc: d.attestation_level, bayGio, chuoi: d.chuoi ?? d.id });
       // Một giao dịch: chỉ dòng chưa xoay mới được xoay; dòng mới chỉ chèn khi chính lệnh này xoay được (chống đua).
-      const [xoay] = await db.batch([
+      const [xoay] = await doBuoc(dh, 'd1', () => db.batch([
         db.prepare('UPDATE sessions SET revoked_at = ?, thay_boi = ?, xoay_luc = ? WHERE id = ? AND thay_boi IS NULL AND revoked_at IS NULL').bind(bayGio, ph.id, bayGio, d.id),
         ph.lenh,
         db.prepare('DELETE FROM sessions WHERE id = ? AND NOT EXISTS (SELECT 1 FROM sessions WHERE id = ? AND thay_boi = ?)').bind(ph.id, d.id, ph.id),
         db.prepare('UPDATE devices SET last_seen = ? WHERE id = ?').bind(bayGio, d.device_id),
-      ]);
+      ]));
       if (!xoay?.meta.changes) throw new LoiApi(409, 'dang-xoay');
-      await ghiIp(c, db, d.device_id, bayGio);
+      await doBuoc(dh, 'd1', () => ghiIp(c, db, d.device_id, bayGio));
       return c.json({ mucTin: d.attestation_level, phien: ph.phien });
     },
   );

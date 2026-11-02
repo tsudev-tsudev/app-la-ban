@@ -11,6 +11,7 @@ import { gioiHanRoute } from './mw/gioi-han';
 import { dongBoLists } from './threat/dong-bo-lists';
 import { xuLySuKien } from './threat/dong-co';
 import { docLatest, docPhienBanApp, GOI_APP_TOI_DA, GOP_LOAI_MS, KHOA_KV_APP, LOAI_CHI_SERVER, refChoTrangThai, type BanMoi } from './thuan/kenh';
+import { doBuoc } from './thuan/do-tre';
 import { goiCauHinhHopLe } from './thuan/khien-web';
 import { LoiApi } from './thuan/loi';
 import { schemaLoSuKien, tinHieuLuu, LO_TOI_DA } from './thuan/su-kien';
@@ -45,7 +46,8 @@ export function dangKyKenh(app: Hono<MoiTruongHono>, boTuyen: BoTuyen): void {
     },
     gioiHanRoute([{ chieu: 'ip', gioiHan: 60, cuaSoMs: 60_000 }]),
     async (c) => {
-      const goi = goiCauHinhHopLe((await c.env.CAU_HINH?.get(KHOA_KV_APP, { cacheTtl: 60 })) ?? null, GOI_APP_TOI_DA);
+      const tho = await doBuoc(c.get('dongHo'), 'luuTru', async () => (await c.env.CAU_HINH?.get(KHOA_KV_APP, { cacheTtl: 60 })) ?? null);
+      const goi = goiCauHinhHopLe(tho, GOI_APP_TOI_DA);
       if (!goi) return traVanDe(c, 404);
       return c.body(goi, 200, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=60' });
     },
@@ -86,7 +88,7 @@ export function dangKyKenh(app: Hono<MoiTruongHono>, boTuyen: BoTuyen): void {
         trangThai,
         mucTin: c.get('mucTin') ?? 'unverified',
         ref: refChoTrangThai(trangThai, thietBi),
-        banMoi: await banMoiNhat(c.env, Date.now()),
+        banMoi: await doBuoc(c.get('dongHo'), 'luuTru', () => banMoiNhat(c.env, Date.now())),
       });
     },
   );
@@ -108,7 +110,7 @@ export function dangKyKenh(app: Hono<MoiTruongHono>, boTuyen: BoTuyen): void {
       if (!c.env.DB) throw new LoiApi(503, 'chua-cau-hinh', { thieu: 'DB' });
       if (body.events.some((e) => LOAI_CHI_SERVER.has(e.type))) throw new LoiApi(422, 'loai-chi-server');
       const bayGio = Date.now();
-      const kq = await xuLySuKien(
+      const kq = await doBuoc(c.get('dongHo'), 'd1', () => xuLySuKien(
         c.env,
         {
           thietBi: c.get('thietBi') as string,
@@ -119,7 +121,7 @@ export function dangKyKenh(app: Hono<MoiTruongHono>, boTuyen: BoTuyen): void {
         },
         body.events.map((e) => ({ id: e.event_id, type: e.type, severity: e.severity, signals: tinHieuLuu(e, bayGio) })),
         bayGio,
-      );
+      ));
       if (kq.canDongBo) nen(c, dongBoLists(c.env), 'dong-bo-lists');
       return c.json({ nhan: kq.nhan, trung: kq.trung }, 202);
     },

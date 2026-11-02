@@ -139,11 +139,11 @@ describe('rule engine shadow / active', () => {
     let kq: Kq | null = null;
     for (let i = 0; i < 3; i++) kq = await guiLo({ thietBi: null, ip: ipXau }, [sk('RATE_ABUSE')]);
     expect(kq).toMatchObject({ kichHoat: ['R-001'], canDongBo: true, diem: null });
-    const res = await mf.dispatchFetch(`${goc}/v1/health`, { headers: { 'cf-connecting-ip': ipXau } });
+    const res = await mf.dispatchFetch(`${goc}/v1/khong-co`, { headers: { 'cf-connecting-ip': ipXau } });
     expect(res.status).toBe(403);
     expect(await res.json()).toMatchObject({ status: 403, code: 'bi-chan' });
-    const ok = await mf.dispatchFetch(`${goc}/v1/health`, { headers: { 'cf-connecting-ip': '198.51.100.78' } });
-    expect(ok.status).toBe(200);
+    const ok = await mf.dispatchFetch(`${goc}/v1/khong-co`, { headers: { 'cf-connecting-ip': '198.51.100.78' } });
+    expect(ok.status).toBe(404);
   });
 
   it('R-002: 5 thiết bị bị cấm chung /24 -> chỉ ĐỀ XUẤT chặn dải (chờ duyệt, không chặn); Under Attack -> có hiệu lực', async () => {
@@ -158,12 +158,12 @@ describe('rule engine shadow / active', () => {
     };
     const [de] = await dai(1);
     expect(de).toMatchObject({ target_type: 'cidr', pending_approval: 1, action: 'block', rule_id: 'R-002' });
-    expect((await mf.dispatchFetch(`${goc}/v1/health`, { headers: { 'cf-connecting-ip': '100.64.1.200' } })).status).toBe(200);
+    expect((await mf.dispatchFetch(`${goc}/v1/khong-co`, { headers: { 'cf-connecting-ip': '100.64.1.200' } })).status).toBe(404);
     expect(await db.prepare("SELECT COUNT(*) AS n FROM audit_logs WHERE action = 'enforcement.propose'").first()).toEqual({ n: 1 });
 
     const [ua] = await dai(2, { ...CAU_HINH_MAC_DINH, underAttack: true });
     expect(ua).toMatchObject({ pending_approval: 0 });
-    expect((await mf.dispatchFetch(`${goc}/v1/health`, { headers: { 'cf-connecting-ip': '100.64.2.200' } })).status).toBe(403);
+    expect((await mf.dispatchFetch(`${goc}/v1/khong-co`, { headers: { 'cf-connecting-ip': '100.64.2.200' } })).status).toBe(403);
   });
 });
 
@@ -186,7 +186,7 @@ describe('S8: bẫy quét + báo cáo CSP', () => {
     let kq: Kq | null = null;
     for (let i = 0; i < 3; i++) kq = await guiLo({ thietBi: null, ip: ipQuet }, [sk('HONEYPOT_HIT')]);
     expect(kq).toMatchObject({ kichHoat: ['R-006'], canDongBo: true });
-    const res = await mf.dispatchFetch(`${goc}/v1/health`, { headers: { 'cf-connecting-ip': ipQuet } });
+    const res = await mf.dispatchFetch(`${goc}/v1/khong-co`, { headers: { 'cf-connecting-ip': ipQuet } });
     expect(res.status).toBe(403);
     await datLuat('R-006', 'shadow');
   });

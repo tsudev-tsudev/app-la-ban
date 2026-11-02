@@ -1,5 +1,6 @@
 import type { VaiTro } from './thuan/soc';
 import type { Context } from 'hono';
+import type { DongHo } from './thuan/do-tre';
 
 // Binding khai báo ở wrangler.toml. Tuỳ chọn (?) để test đơn vị dựng được app thiếu binding; middleware xử lý khi thiếu.
 export type Env = {
@@ -61,6 +62,8 @@ export type Env = {
 
 export type BienYeuCau = {
   requestId: string;
+  /** R3c: thời gian chờ I/O theo bước -> doubles AE (mw/co-ban.ts). */
+  dongHo?: DongHo;
   ip: string;
   /** Phạm vi khoá idempotency: thiết bị / phiên khi đã xác thực (S2), mặc định theo IP. */
   phamViIdem?: string;

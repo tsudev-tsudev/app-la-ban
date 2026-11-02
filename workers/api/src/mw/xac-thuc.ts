@@ -2,6 +2,7 @@ import type { MiddlewareHandler } from 'hono';
 import { kiemChuKyThietBi, kiemJwt, napKhoaPhien, nhapKhoaThietBi } from '../attest/khoa';
 import { nenBao } from '../thuan/bay';
 import { sha256HexByte } from '../thuan/bam';
+import { doBuoc } from '../thuan/do-tre';
 import {
   chuoiYeuCau,
   docTieuDeKy,
@@ -34,7 +35,8 @@ export function taoXacThuc(o: { choPhepBiCam?: boolean } = {}): MiddlewareHandle
     const bayGio = Date.now();
     const claim = await kiemJwt(await napKhoaPhien(c.env.KHOA_PHIEN), token, c.env.MOI_TRUONG, bayGio);
     if (!claim) throw new LoiApi(401, 'token-sai', undefined, TOKEN_SAI);
-    const d = await c.env.DB.prepare(
+    const db = c.env.DB;
+    const d = await doBuoc(c.get('dongHo'), 'phien', () => db.prepare(
       'SELECT s.revoked_at, d.status, d.attestation_level, d.public_key FROM sessions s JOIN devices d ON d.id = s.device_id WHERE s.id = ? AND s.device_id = ?',
     )
       .bind(claim.sid, claim.sub)
@@ -43,7 +45,7 @@ export function taoXacThuc(o: { choPhepBiCam?: boolean } = {}): MiddlewareHandle
         status: string;
         attestation_level: string;
         public_key: string | null;
-      }>();
+      }>());
     if (!d || d.revoked_at !== null) throw new LoiApi(401, 'phien-thu-hoi', undefined, TOKEN_SAI);
     if (d.status === 'banned' && !o.choPhepBiCam) throw new LoiApi(403, 'thiet-bi-bi-cam');
 
@@ -86,10 +88,12 @@ export function taoXacThuc(o: { choPhepBiCam?: boolean } = {}): MiddlewareHandle
       throw new LoiApi(401, 'chu-ky');
     }
     if (
-      !(await goiNonce(c.env, `thiet-bi:${claim.sub}`, '/nonce', {
-        nonce: tieuDe.nonce,
-        ttlMs: NONCE_YEU_CAU_TTL_MS,
-      }))
+      !(await doBuoc(c.get('dongHo'), 'nonce', () =>
+        goiNonce(c.env, `thiet-bi:${claim.sub}`, '/nonce', {
+          nonce: tieuDe.nonce,
+          ttlMs: NONCE_YEU_CAU_TTL_MS,
+        }),
+      ))
     ) {
       c.env.SU_KIEN?.writeDataPoint({
         indexes: ['phat-lai'],

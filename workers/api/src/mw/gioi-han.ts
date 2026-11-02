@@ -4,6 +4,7 @@ import { xuLySuKien } from '../threat/dong-co';
 import { dongBoLists } from '../threat/dong-bo-lists';
 import { rutGonIp } from '../thuan/che-pii';
 import { taoUlid } from '../thuan/dinh-danh';
+import { doBuoc } from '../thuan/do-tre';
 import { khoaGioiHan, type LuatGioiHan } from '../thuan/gioi-han';
 import { LoiApi } from '../thuan/loi';
 import type { MoiTruongHono, Ngu } from '../moi-truong';
@@ -17,7 +18,7 @@ export const gioiHanThoIp: MiddlewareHandler<MoiTruongHono> = async (c, next) =>
     if (!daBaoThieuRl && c.env.MOI_TRUONG !== 'test') ghiLog('warn', 'thieu-binding-RL_IP');
     daBaoThieuRl = true;
   } else if (c.get('ip')) {
-    const { success } = await rl.limit({ key: c.get('ip') });
+    const { success } = await doBuoc(c.get('dongHo'), 'rlIp', () => rl.limit({ key: c.get('ip') }));
     if (!success) throw new LoiApi(429, 'qua-nhieu-yeu-cau', { lop: 'RL_IP' }, { 'retry-after': '60' });
   }
   await next();
@@ -47,7 +48,7 @@ export function gioiHanRoute(dsLuat: LuatGioiHan[]): MiddlewareHandler<MoiTruong
   return async (c, next) => {
     const ns = c.env.GIOI_HAN_TOC;
     if (ns && dsLuat.length) {
-      const kq = await Promise.all(
+      const kq = await doBuoc(c.get('dongHo'), 'gioiHan', () => Promise.all(
         dsLuat.map(async (l) => {
           const gt = giaTriChieu(c, l.chieu);
           if (gt === null) return null;
@@ -63,7 +64,7 @@ export function gioiHanRoute(dsLuat: LuatGioiHan[]): MiddlewareHandler<MoiTruong
             return null;
           }
         }),
-      );
+      ));
       const bi = kq.filter((k) => k && !k.choPhep);
       if (bi.length) {
         if (bi.some((k) => k?.lanDauVuot)) baoLamDung(c);
