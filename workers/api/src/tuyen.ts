@@ -8,6 +8,7 @@ import { LoiApi } from './thuan/loi';
 import type { MoiTruongHono, Ngu } from './moi-truong';
 import { gioiHanRoute } from './mw/gioi-han';
 import { idempotency } from './mw/idempotency';
+import { choKiemChan, DUONG_CHAN_SONG_SONG } from './mw/chan';
 import { taoXacThuc } from './mw/xac-thuc';
 
 export type DinhNghiaTuyen<B extends z.ZodType = z.ZodType, P extends z.ZodType = z.ZodType> = {
@@ -64,7 +65,11 @@ export class BoTuyen {
     chuoi.push(gioiHanRoute(dsLuat.filter((l) => !luatThietBi.includes(l))));
     if (d.body) chuoi.push(docBody(d.body, d.bodyToiDa));
     if (d.phuongThuc === 'post' && d.idempotent !== false) chuoi.push(idempotency);
-    const cuoi: MiddlewareHandler<MoiTruongHono> = async (c) => xuLy(c, c.get('body') as z.infer<B>);
+    if (d.xacThuc) DUONG_CHAN_SONG_SONG.add(`${d.phuongThuc.toUpperCase()} ${d.duongDan}`);
+    const cuoi: MiddlewareHandler<MoiTruongHono> = async (c) => {
+      await choKiemChan(c);
+      return xuLy(c, c.get('body') as z.infer<B>);
+    };
     // Ép kiểu: overload của Hono.on không nhận mảng handler trải ra (...chuoi).
     const dangKyHono = this.app.on.bind(this.app) as unknown as (
       m: string,

@@ -96,6 +96,21 @@ describe('chữ ký request (SEC-NET)', () => {
     expect((await goi('/v1/device/me', { tieuDe })).du).toMatchObject({ status: 401, code: 'nonce' });
   });
 
+  it('R3c: IP bị chặn gọi route có xác thực -> 403 bi-chan (kiểm song song phiên), nonce KHÔNG bị đốt', async () => {
+    const t = await dangKy();
+    const ipXau = '203.0.113.201';
+    await db
+      .prepare("INSERT INTO enforcements (id, target_type, target_value, action, reason, created_by, created_at, expires_at, source) VALUES ('E-R3C', 'ip', ?, 'block', 'thu', 'a', 1, ?, 'manual')")
+      .bind(ipXau, Date.now() + 3_600_000)
+      .run();
+    await new Promise((r) => setTimeout(r, 3_100)); // hết đệm danh sách chặn của isolate (DEM_CHAN_MS)
+    const tieuDe = await tieuDeKy(t.tb, t.token, { phuongThuc: 'GET', duong: '/v1/device/me' });
+    expect((await goi('/v1/device/me', { tieuDe: { ...tieuDe, 'cf-connecting-ip': ipXau } })).du).toMatchObject({ status: 403, code: 'bi-chan' });
+    await db.prepare("DELETE FROM enforcements WHERE id = 'E-R3C'").run();
+    // Cùng nonce (chữ ký còn hạn) từ IP khác vẫn dùng được -> request bị chặn không đốt nonce.
+    expect((await goi('/v1/device/me', { tieuDe })).status).toBe(200);
+  }, 15_000);
+
   it('R3c: luật theo thiết bị đếm chung batch nonce - vượt 60 / phút ở /v1/device/me -> 429 + Retry-After; thiết bị khác không bị', async () => {
     const t = await dangKy();
     const ma: number[] = [];
