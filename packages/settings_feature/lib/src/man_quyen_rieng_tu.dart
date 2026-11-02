@@ -63,7 +63,7 @@ class ManQuyenRiengTu extends ConsumerWidget {
             key: const ValueKey('bao-loi'),
             value: trucTuyen && baoLoi,
             onChanged: trucTuyen
-                ? (v) => ref.read(caiDatProvider.notifier).datBaoLoi(v)
+                ? (v) => ref.read(caiDatProvider.notifier).datBaoLoi(bat: v)
                 : null,
             title: Text(l10n.privacyCrash),
             subtitle: Text(
