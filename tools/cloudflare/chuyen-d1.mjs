@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 // Chuyển D1 sang database mới GIỮ NGUYÊN rowid (QUYET_DINH Q53). `wrangler d1 export` không xuất rowid -> bảng không có
 // INTEGER PRIMARY KEY bị đánh số lại khi nạp, làm lệch con trỏ rowid của chuỗi nhật ký bất biến S10a (rowid nằm trong băm).
 //
@@ -8,6 +9,8 @@
 // Cần CLOUDFLARE_ACCOUNT_ID + CLOUDFLARE_API_TOKEN (set -a; . ~/.config/la-ban/cf.env; set +a). Gọi D1 REST API trực tiếp.
 // Thứ tự dựng: bảng (theo thứ tự tạo = thứ tự migration, bảng cha trước) -> dữ liệu -> chỉ mục -> trigger (trigger
 // chặn sửa / xoá audit_logs tạo SAU khi nạp) -> sqlite_sequence.
+
+import { setTimeout as nghi } from 'node:timers/promises';
 
 const acc = process.env.CLOUDFLARE_ACCOUNT_ID;
 const token = process.env.CLOUDFLARE_API_TOKEN;
@@ -31,7 +34,7 @@ async function hoi(uuid, sql, params = []) {
     if (res.ok && du?.success) return du.result;
     const loi = JSON.stringify(du?.errors ?? res.status);
     if (lan >= 3 || (res.status < 500 && res.status !== 429)) throw new Error(`D1 ${uuid.slice(0, 8)}: ${loi} :: ${sql.slice(0, 160)}`);
-    await new Promise((r) => setTimeout(r, 1000 * lan));
+    await nghi(1000 * lan);
   }
 }
 const dong = async (uuid, sql, params) => (await hoi(uuid, sql, params))[0]?.results ?? [];
