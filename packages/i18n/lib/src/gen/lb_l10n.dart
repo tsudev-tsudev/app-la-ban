@@ -1868,6 +1868,24 @@ abstract class LbL10n {
   /// **'Gửi dữ liệu bảo mật kỹ thuật và nhận cấu hình ký số. Tắt là rút lại đồng ý; thư viện bảo mật dừng hẳn từ lần mở ứng dụng sau.'**
   String get privacyOnlineHint;
 
+  /// Công tắc gửi báo cáo lỗi / treo ứng dụng
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi báo cáo sự cố'**
+  String get privacyCrash;
+
+  /// Mô tả dữ liệu báo cáo sự cố
+  ///
+  /// In vi, this message translates to:
+  /// **'Khi ứng dụng gặp lỗi, gửi loại lỗi, dấu vết mã đã mã hoá, phiên bản ứng dụng và Android để chúng tôi sửa. Không gửi vị trí, điểm mốc hay nội dung bạn nhập; lưu 90 ngày.'**
+  String get privacyCrashHint;
+
+  /// Lý do công tắc báo cáo sự cố bị khoá
+  ///
+  /// In vi, this message translates to:
+  /// **'Cần bật Kết nối bảo mật trực tuyến trước.'**
+  String get privacyCrashNeedsOnline;
+
   /// Thời điểm người dùng chọn đồng ý / từ chối
   ///
   /// In vi, this message translates to:

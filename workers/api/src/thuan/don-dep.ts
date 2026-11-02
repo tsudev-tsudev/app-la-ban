@@ -3,6 +3,8 @@
 const NGAY = 24 * 60 * 60 * 1000;
 export const LUU_SU_KIEN_MS = 180 * NGAY;
 export const LUU_IP_CHI_TIET_MS = 90 * NGAY;
+/** S10b: báo cáo sự cố app (QUYET_DINH Q49). */
+export const LUU_SU_CO_MS = 90 * NGAY;
 
 export type CauLenh = { sql: string; thamSo: (string | number | null)[] };
 
@@ -20,6 +22,7 @@ export function cauLenhDonDep(bayGio: number): CauLenh[] {
       sql: "UPDATE appeals SET contact = NULL, ip = NULL WHERE status <> 'open' AND reviewed_at < ? AND (contact IS NOT NULL OR ip IS NOT NULL)",
       thamSo: [bayGio - LUU_IP_CHI_TIET_MS],
     },
+    { sql: 'DELETE FROM app_crashes WHERE ts < ?', thamSo: [bayGio - LUU_SU_CO_MS] },
   ];
 }
 

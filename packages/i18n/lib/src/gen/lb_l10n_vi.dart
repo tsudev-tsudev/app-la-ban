@@ -1127,6 +1127,17 @@ class LbL10nVi extends LbL10n {
       'Gửi dữ liệu bảo mật kỹ thuật và nhận cấu hình ký số. Tắt là rút lại đồng ý; thư viện bảo mật dừng hẳn từ lần mở ứng dụng sau.';
 
   @override
+  String get privacyCrash => 'Gửi báo cáo sự cố';
+
+  @override
+  String get privacyCrashHint =>
+      'Khi ứng dụng gặp lỗi, gửi loại lỗi, dấu vết mã đã mã hoá, phiên bản ứng dụng và Android để chúng tôi sửa. Không gửi vị trí, điểm mốc hay nội dung bạn nhập; lưu 90 ngày.';
+
+  @override
+  String get privacyCrashNeedsOnline =>
+      'Cần bật Kết nối bảo mật trực tuyến trước.';
+
+  @override
   String privacyChoiceAt(String date) {
     return 'Lựa chọn ghi lúc $date';
   }

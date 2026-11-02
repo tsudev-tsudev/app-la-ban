@@ -29,6 +29,7 @@ class ManQuyenRiengTu extends ConsumerWidget {
     final hd = ref.watch(hanhDongRiengTuProvider);
     final dongY = ref.watch(caiDatProvider.select((c) => c.dongY));
     final trucTuyen = ref.watch(caiDatProvider.select((c) => c.trucTuyen));
+    final baoLoi = ref.watch(caiDatProvider.select((c) => c.baoLoi));
     final soDiem = ref.watch(_soDiemProvider).value;
     final ma = hd.maThietBi?.call();
     return Scaffold(
@@ -56,6 +57,17 @@ class ManQuyenRiengTu extends ConsumerWidget {
                         .formatMediumDate(dongY.luc.toLocal()),
                   ),
               ].join('\n'),
+            ),
+          ),
+          SwitchListTile(
+            key: const ValueKey('bao-loi'),
+            value: trucTuyen && baoLoi,
+            onChanged: trucTuyen
+                ? (v) => ref.read(caiDatProvider.notifier).datBaoLoi(bat: v)
+                : null,
+            title: Text(l10n.privacyCrash),
+            subtitle: Text(
+              trucTuyen ? l10n.privacyCrashHint : l10n.privacyCrashNeedsOnline,
             ),
           ),
           const Divider(),

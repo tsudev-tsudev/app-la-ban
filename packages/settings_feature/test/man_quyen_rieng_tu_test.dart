@@ -84,6 +84,11 @@ void main() {
     expect(find.byKey(const ValueKey('xoa-het')), findsNothing);
     expect(find.byKey(const ValueKey('yeu-cau-xoa')), findsNothing);
     expect(find.byKey(const ValueKey('cai-dat-he-thong')), findsNothing);
+    expect(find.byKey(const ValueKey('bao-loi')), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Thiết bị chưa đăng ký với máy chủ'),
+      120,
+    );
     expect(find.text('Thiết bị chưa đăng ký với máy chủ'), findsOneWidget);
     // Chưa trả lời -> công tắc tắt, không có dòng thời điểm.
     expect(find.textContaining('Lựa chọn ghi lúc'), findsNothing);
@@ -107,7 +112,6 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.textContaining('Lựa chọn ghi lúc'), findsOneWidget);
-    expect(find.text('3 điểm mốc đã lưu'), findsOneWidget);
     await tester.tap(find.byKey(const ValueKey('truc-tuyen')));
     await tester.pump();
     expect(c.read(caiDatProvider).trucTuyen, isFalse);
@@ -115,6 +119,24 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('truc-tuyen')));
     await tester.pump();
     expect(c.read(caiDatProvider).trucTuyen, isTrue);
+    // S10b: báo cáo sự cố mặc định tắt, bật riêng; rút đồng ý trực tuyến thì
+    // công tắc khoá + không gửi dù cờ còn lưu.
+    expect(c.read(caiDatProvider).guiBaoLoi, isFalse);
+    await tester.tap(find.byKey(const ValueKey('bao-loi')));
+    await tester.pump();
+    expect(c.read(caiDatProvider).guiBaoLoi, isTrue);
+    await tester.tap(find.byKey(const ValueKey('truc-tuyen')));
+    await tester.pump();
+    expect(c.read(caiDatProvider).guiBaoLoi, isFalse);
+    expect(
+      find.text('Cần bật Kết nối bảo mật trực tuyến trước.'),
+      findsOneWidget,
+    );
+    await tester.tap(find.byKey(const ValueKey('bao-loi')));
+    await tester.pump();
+    expect(c.read(caiDatProvider).baoLoi, isTrue);
+    await tester.scrollUntilVisible(find.text('3 điểm mốc đã lưu'), 120);
+    expect(find.text('3 điểm mốc đã lưu'), findsOneWidget);
   });
 
   testWidgets('xuất dữ liệu báo kết quả', (tester) async {

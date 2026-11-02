@@ -70,7 +70,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 19 | S8 | Bảo vệ edge web (CSP, header, WAF as code) | R1 | ✅ 29/10 (CSP nghiêm Report-Only tới 05/11; Access ở S6, Turnstile ở S7) |
 | 20 | S9 | Lớp bảo vệ nội dung web + build sạch | S8 | ✅ 29/10 (bdbd740; CSV audit ở S6) |
 | 21 | A8 | Cài đặt, quyền riêng tư, trợ năng, hiệu năng (chia A8a / A8b) | A7, S4 | 🟨 A8a ✅ 31/10 (0191b2d PR #34: quyền riêng tư + đồng ý NĐ 13, Q43; máy thật M32 đạt; chưa phát hành APK - gộp A8b) · A8b ✅ 31/10 (trợ năng + Reduce motion, Q45; v0.1.0-beta.10) |
-| 22 | S10 | Giám sát, log bất biến, backup, ứng phó sự cố (chia S10a / S10b) | S7 | 🟨 S10a ✅ 02/11 (máy chủ: nhật ký bất biến R2 + mốc neo audit, sao lưu mã hoá + diễn tập, đột biến -> Telegram, security.txt, runbook IR, Q48) · S10b ⛔ chờ chốt SDK crash app |
+| 22 | S10 | Giám sát, log bất biến, backup, ứng phó sự cố (chia S10a / S10b) | S7 | ✅ S10a ✅ 02/11 (máy chủ: nhật ký bất biến R2 + mốc neo audit, sao lưu mã hoá + diễn tập, đột biến -> Telegram, security.txt, runbook IR, Q48) · S10b ✅ 02/11 (báo cáo sự cố tự xây, 0 đồng, đồng ý riêng, Q49) |
 | 23 | R2 | Sẵn sàng store | A8, S4 | 🟡 R2a 31/10 (AAB + Data Safety + listing + ảnh store, Q46) · R2b chờ Play Console (05/11) |
 | 24 | R3 | QA tổng + kiểm thử bảo mật | R2, S9, S10 | ⬜ |
 | 25 | R4 | Phát hành v1.0.0 + OTA | R3 | ⬜ |
@@ -630,6 +630,13 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   dòng, RTO 52 s; **prod đạt** (bản 02/11 kích tay `cron=thu:sao-luu`): 13 bảng, RTO 35 s; chuỗi nhật ký nguyên vẹn cả hai. Test mới: 11 Worker (thuần + tích hợp workerd) + 2 tools.
   CHƯA (người dùng): bot Telegram (`TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID`) + token chỉ Account Analytics Read
   (`CF_AE_TOKEN`) -> mới đo được "cảnh báo thử < 2 phút"; sao lưu khoá riêng ra ngoài máy.
+- Kết quả S10b (02/11, QUYET_DINH Q49 - người dùng giao chọn, chi phí 0): báo cáo sự cố TỰ XÂY thay Sentry / Crashlytics.
+  App: `packages/core` `BaoCaoLoi` (che + cắt + bỏ trùng), `app/lib/src/bao_loi.dart` (bắt lỗi Flutter / isolate, hàng đợi
+  tệp, gửi lô ký thiết bị khi cổng trực tuyến mở + công tắc riêng "Gửi báo cáo sự cố" mặc định TẮT ở Quyền riêng tư, rút
+  thì xoá hàng đợi). Worker: migration 0010 `app_crashes` (90 ngày, vào bản sao lưu), `POST /v1/app/su-co`, SOC
+  `/su-co-app` (nhóm + tỷ lệ không lỗi) + trang admin "Sự cố app". `tools/build/giai-ngan-xep.sh` (flutter symbolize với
+  symbol ngoài repo). Landing Quyền riêng tư mục 3 / 4 + Data Safety "Crash logs". Crash native / ANR + crash-free cho R4 =
+  Android vitals Play Console. Phiên bản app 0.1.0-beta.12 (APK do người dùng chạy `phat-hanh-apk.sh`).
 
 ### R2 - Sẵn sàng store
 - Làm: khóa upload Android (ngoài repo) + Play App Signing; scheme/configuration flavor iOS dev/staging/prod (Xcode trên Codemagic/Mac); Codemagic cho iOS (App Store Connect API key); Privacy Manifest +

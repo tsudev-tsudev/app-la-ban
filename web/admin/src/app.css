@@ -1953,3 +1953,13 @@ a.o-dem {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+.sc-mau {
+  margin-top: 8px;
+}
+.sc-ngan-xep {
+  max-height: 320px;
+  overflow: auto;
+  font-size: 12px;
+  white-space: pre;
+}
