@@ -39,3 +39,14 @@ describe('S10b: sự cố app (thuần)', () => {
     expect(coQuyen('analyst', 'su-co:chi-tiet')).toBe(true);
   });
 });
+
+describe('docPhienBanApp', () => {
+  it('nhận dạng pubspec, từ chối dạng lạ', async () => {
+    const { docPhienBanApp } = await import('../src/thuan/kenh');
+    expect(docPhienBanApp('0.1.0-beta.12+12')).toEqual({ phienBan: '0.1.0-beta.12', build: 12 });
+    expect(docPhienBanApp('1.0.0+100')).toEqual({ phienBan: '1.0.0', build: 100 });
+    expect(docPhienBanApp('1.0.0')).toBeNull();
+    expect(docPhienBanApp(undefined)).toBeNull();
+    expect(docPhienBanApp("1.0.0+1'")).toBeNull();
+  });
+});
