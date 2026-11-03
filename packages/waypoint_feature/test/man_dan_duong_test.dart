@@ -99,6 +99,27 @@ void main() {
     expect(find.text('Đang chờ vị trí GPS...'), findsOneWidget);
   });
 
+  testWidgets('A9a: không la bàn nhưng đã tự đặt hướng -> có chỉ dẫn + nguồn', (
+    tester,
+  ) async {
+    datManHinh(tester, o.manHinh);
+    await tester.pumpWidget(
+      dung(dich, o, [
+        ...ghiDe(
+          viTri: nhaHat,
+          luongHuong: Stream<HuongDoc>.error(
+            const NgoaiLeCamBien(LoiCamBien.khongCoLaBan),
+          ),
+        ),
+        neoHuongProvider.overrideWith(_Neo309.new),
+      ]),
+    );
+    await tester.pumpAndSettle();
+    // Mép trên máy chỉ 309° = đúng hướng đích (bắc thực).
+    expect(find.text('Đi thẳng'), findsOneWidget);
+    expect(find.text('Nguồn: Tự đặt · ±10°'), findsOneWidget);
+  });
+
   testWidgets('đã tới nơi', (tester) async {
     datManHinh(tester, o.manHinh);
     await tester.pumpWidget(
@@ -117,4 +138,20 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Đã tới nơi'), findsOneWidget);
   });
+}
+
+class _Neo309 extends NeoHuongNotifier {
+  @override
+  NeoHuong? build() => NeoHuong.tu(
+    (
+      phuongVi: 309,
+      bacThuc: true,
+      nguon: NguonChiHuong.thuCong,
+      saiSoDo: 10,
+      theoConQuay: false,
+    ),
+    phuongViTuongDoi: 0,
+    tNs: 0,
+    tinh: true,
+  );
 }

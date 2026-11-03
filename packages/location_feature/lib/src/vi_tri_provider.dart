@@ -189,4 +189,14 @@ void dayViTri(WidgetRef ref, DocViTri d) {
     );
   }
   ref.read(tuyChonViTriProvider.notifier).nhoViTri(d.viDo, d.kinhDo);
+  // A9a: hướng di chuyển cho máy không la bàn (chuỗi nguồn hướng).
+  ref.read(chuyenDongGpsProvider.notifier).nap((
+    viDo: d.viDo,
+    kinhDo: d.kinhDo,
+    tocDo: d.tocDo,
+    huongDi: d.huongDi,
+    saiSoTocDo: d.saiSoTocDo,
+    saiSoHuongDi: d.saiSoHuongDi,
+    luc: d.luc,
+  ));
 }

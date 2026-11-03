@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:i18n/i18n.dart';
+import 'package:sensors/sensors.dart';
 import 'package:waypoint_feature/src/domain/diem_moc.dart';
 import 'package:waypoint_feature/src/domain/token_chia_se.dart';
 import 'package:waypoint_feature/src/providers.dart';
@@ -80,4 +81,17 @@ class ChuChonDuoc extends StatelessWidget {
       child: SelectableText(chu, style: style, textAlign: textAlign),
     ),
   );
+}
+
+/// Tên nguồn hướng (A9a) - bản sao nhỏ của compass_feature (tính năng không
+/// gọi nhau).
+String tenNguonHuong(LbL10n l, HuongUocLuong u) {
+  final goc = switch (u.nguon) {
+    NguonChiHuong.tuKe => l.a9SrcCompass,
+    NguonChiHuong.gps => l.a9SrcGps,
+    NguonChiHuong.matTroi => l.a9SrcSun,
+    NguonChiHuong.matTrang => l.a9SrcMoon,
+    NguonChiHuong.thuCong => l.a9SrcManual,
+  };
+  return u.theoConQuay ? l.a9SrcWithGyro(goc) : goc;
 }

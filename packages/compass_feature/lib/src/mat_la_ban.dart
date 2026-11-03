@@ -81,10 +81,15 @@ class MatLaBan extends StatefulWidget {
     required this.canh,
     required this.nhan8,
     required this.mau,
+    this.nhe = false,
     super.key,
   });
 
   final double phuongVi;
+
+  /// Chế độ nhẹ (máy cũ / yếu, A9a): nhảy thẳng tới hướng mới như Reduce
+  /// motion - không chạy ticker 60 khung/giây.
+  final bool nhe;
   final double canh;
 
   /// Ký hiệu 8 hướng theo chiều kim đồng hồ từ Bắc (đã dịch).
@@ -150,7 +155,7 @@ class _MatLaBanState extends State<MatLaBan>
     super.didUpdateWidget(old);
     if (widget.phuongVi == old.phuongVi) return;
     // Reduce motion: mặt số nhảy thẳng tới hướng mới, không quay trượt.
-    if (MediaQuery.disableAnimationsOf(context)) {
+    if (MediaQuery.disableAnimationsOf(context) || widget.nhe) {
       _nhip.stop();
       _noiSuy.nhay(widget.phuongVi, _bayGioUs);
       _goc.value = _noiSuy.giaTri(_bayGioUs);

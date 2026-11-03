@@ -4,6 +4,8 @@ import 'package:compass_feature/src/bac_thuc_provider.dart';
 import 'package:compass_feature/src/domain/huong_hien_thi.dart';
 import 'package:compass_feature/src/domain/moc_rung.dart';
 import 'package:compass_feature/src/man_hieu_chuan.dart';
+import 'package:compass_feature/src/man_khong_tu_ke.dart';
+import 'package:compass_feature/src/man_thiet_bi.dart';
 import 'package:compass_feature/src/mat_la_ban.dart';
 import 'package:compass_feature/src/tuy_chon_provider.dart';
 import 'package:design_system/design_system.dart';
@@ -79,14 +81,18 @@ class _ManLaBanState extends ConsumerState<ManLaBan> {
       than = switch (ref.watch(huongProvider)) {
         AsyncData(:final value) => _DocHuong(
           h: value,
+          nhe: ref.watch(cheDoNheProvider),
           hh: doi(value),
           theDuoi: widget.theDuoi,
         ),
-        AsyncError(:final error) => LbTrangTrong(
+        // A9a: máy không có từ kế -> chuỗi nguồn GPS / thiên thể / tự đặt.
+        AsyncError(:final error)
+            when error is NgoaiLeCamBien &&
+                error.loi == LoiCamBien.khongCoLaBan =>
+          ManKhongTuKe(theDuoi: widget.theDuoi),
+        AsyncError() => LbTrangTrong(
           hinh: const LbIcon(LbIcons.laBanHoaGio, size: 96),
-          moTa: error is NgoaiLeCamBien && error.loi == LoiCamBien.khongCoLaBan
-              ? l10n.compassNoSensor
-              : l10n.compassError,
+          moTa: l10n.compassError,
         ),
         _ => LbTrangTrong(
           hinh: const SizedBox.square(
@@ -171,6 +177,11 @@ class BangTuyChon extends ConsumerWidget {
               title: Text(l10n.compassOptionHaptic),
               subtitle: Text(l10n.compassOptionHapticHint),
             ),
+            ListTile(
+              leading: const LbIcon(LbIcons.caiDat),
+              title: Text(l10n.a9BtnDevice),
+              onTap: () => moThietBi(context),
+            ),
           ],
         ),
       ),
@@ -207,8 +218,14 @@ String tenMuc(LbL10n l, MucTinCay m) => switch (m) {
 };
 
 class _DocHuong extends StatelessWidget {
-  const new({required this.h, required this.hh, this.theDuoi});
+  const new({
+    required this.h,
+    required this.hh,
+    this.theDuoi,
+    this.nhe = false,
+  });
 
+  final bool nhe;
   final HuongDoc h;
   final HuongHienThi hh;
   final Widget? theDuoi;
@@ -235,6 +252,7 @@ class _DocHuong extends StatelessWidget {
             canh: math.max(120, math.min(380, canh)),
             nhan8: [for (final c in HuongChinh.values) tenNgan(l10n, c)],
             mau: MauMatLaBan.tuTheme(context),
+            nhe: nhe,
           ),
         );
         final thongTin = theDuoi == null

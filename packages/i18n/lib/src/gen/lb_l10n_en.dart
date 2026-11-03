@@ -1268,6 +1268,132 @@ class LbL10nEn extends LbL10n {
 
   @override
   String get a9FieldNormal => 'Field normal - no magnetic interference nearby.';
+
+  @override
+  String get a9SrcCompass => 'Compass (magnetometer)';
+
+  @override
+  String get a9SrcGps => 'GPS course';
+
+  @override
+  String get a9SrcSun => 'Sun';
+
+  @override
+  String get a9SrcMoon => 'Moon';
+
+  @override
+  String get a9SrcManual => 'Set by hand';
+
+  @override
+  String a9SrcWithGyro(String nguon) {
+    return '$nguon + gyro';
+  }
+
+  @override
+  String a9SrcLine(String nguon, int saiSo) {
+    return 'Source: $nguon · ±$saiSo°';
+  }
+
+  @override
+  String get a9NoMagTitle => 'This phone has no magnetic compass';
+
+  @override
+  String get a9NoMagBody =>
+      'You can still get a direction: walk a few steps to use the GPS course, or set it from the Sun, the Moon or a landmark whose direction you know.';
+
+  @override
+  String get a9BtnSun => 'Use the Sun\'s shadow';
+
+  @override
+  String get a9BtnMoon => 'Point at the Moon';
+
+  @override
+  String get a9BtnManual => 'Set direction by hand';
+
+  @override
+  String get a9BtnDevice => 'Your device';
+
+  @override
+  String get a9BtnSet => 'Set direction';
+
+  @override
+  String get a9SunHelp =>
+      'Stand something upright (a pen, a stick). Lay the phone flat along its shadow, top edge pointing away from the object, then tap Set direction. Never look straight at the Sun.';
+
+  @override
+  String get a9MoonHelp =>
+      'Point the top edge of the phone straight at the Moon, then tap Set direction.';
+
+  @override
+  String get a9ManualHelp =>
+      'Point the top edge of the phone at a landmark whose direction you know (e.g. a road running north), drag to that bearing, then tap Set direction.';
+
+  @override
+  String get a9SkyLow =>
+      'The Sun and Moon are below the horizon or your location is unknown - use GPS or set the direction by hand.';
+
+  @override
+  String get a9SetFailed => 'Couldn\'t set it: the Sun or Moon is too low now.';
+
+  @override
+  String get a9Reanchor =>
+      'It\'s been a while - the direction may have drifted. Set it again.';
+
+  @override
+  String get a9StaticAnchor =>
+      'No gyroscope: keep the phone exactly as aligned; set it again after turning.';
+
+  @override
+  String get a9Walking => 'Walking: the GPS course is used automatically.';
+
+  @override
+  String get a9DeviceTitle => 'Your device';
+
+  @override
+  String get a9DeviceIntro =>
+      'The app checks once which sensors this phone has (yes / no only, no device IDs) to pick the best way to find a direction.';
+
+  @override
+  String get a9DeviceProbing => 'Checking sensors…';
+
+  @override
+  String get a9SensMag => 'Magnetometer (compass)';
+
+  @override
+  String get a9SensGyro => 'Gyroscope';
+
+  @override
+  String get a9SensAccel => 'Accelerometer';
+
+  @override
+  String get a9SensGameRot => 'System rotation fusion';
+
+  @override
+  String get a9SensBaro => 'Barometer (altitude)';
+
+  @override
+  String get a9SensGps => 'GPS';
+
+  @override
+  String get a9SensCamera => 'Rear camera';
+
+  @override
+  String get a9Yes => 'Yes';
+
+  @override
+  String get a9No => 'No';
+
+  @override
+  String get a9SourcesTitle =>
+      'Direction sources available (in priority order)';
+
+  @override
+  String get a9LiteOn =>
+      'Lite mode is on: the dial skips smooth rotation so the phone stays responsive.';
+
+  @override
+  String get a9LiteOff =>
+      'Lite mode: off - this phone handles the full effects.';
 }
 
 /// The translations for English (`en_XA`).
@@ -2551,4 +2677,133 @@ class LbL10nEnXa extends LbL10nEn {
   @override
   String get a9FieldNormal =>
       '[Fỉẽłđ ñởřmảł - ñở mảğñẽťỉç ỉñťẽřfẽřẽñçẽ ñẽảřbỹ. ···················]';
+
+  @override
+  String get a9SrcCompass => '[Çởmpảšš (mảğñẽťởmẽťẽř) ·········]';
+
+  @override
+  String get a9SrcGps => '[ĞPŠ çởữřšẽ ····]';
+
+  @override
+  String get a9SrcSun => '[Šữñ ··]';
+
+  @override
+  String get a9SrcMoon => '[Mởởñ ··]';
+
+  @override
+  String get a9SrcManual => '[Šẽť bỹ hảñđ ·····]';
+
+  @override
+  String a9SrcWithGyro(String nguon) {
+    return '[$nguon + ğỹřở ···]';
+  }
+
+  @override
+  String a9SrcLine(String nguon, int saiSo) {
+    return '[Šởữřçẽ: $nguon · ±$saiSo° ······]';
+  }
+
+  @override
+  String get a9NoMagTitle =>
+      '[Ťhỉš phởñẽ hảš ñở mảğñẽťỉç çởmpảšš ··············]';
+
+  @override
+  String get a9NoMagBody =>
+      '[Ỹởữ çảñ šťỉłł ğẽť ả đỉřẽçťỉởñ: ŵảłk ả fẽŵ šťẽpš ťở ữšẽ ťhẽ ĞPŠ çởữřšẽ, ởř šẽť ỉť fřởm ťhẽ Šữñ, ťhẽ Mởởñ ởř ả łảñđmảřk ŵhởšẽ đỉřẽçťỉởñ ỹởữ kñởŵ. ··························································]';
+
+  @override
+  String get a9BtnSun => '[Ữšẽ ťhẽ Šữñ\'š šhảđởŵ ········]';
+
+  @override
+  String get a9BtnMoon => '[Pởỉñť ảť ťhẽ Mởởñ ·······]';
+
+  @override
+  String get a9BtnManual => '[Šẽť đỉřẽçťỉởñ bỹ hảñđ ·········]';
+
+  @override
+  String get a9BtnDevice => '[Ỹởữř đẽvỉçẽ ·····]';
+
+  @override
+  String get a9BtnSet => '[Šẽť đỉřẽçťỉởñ ······]';
+
+  @override
+  String get a9SunHelp =>
+      '[Šťảñđ šởmẽťhỉñğ ữpřỉğhť (ả pẽñ, ả šťỉçk). Łảỹ ťhẽ phởñẽ fłảť ảłởñğ ỉťš šhảđởŵ, ťởp ẽđğẽ pởỉñťỉñğ ảŵảỹ fřởm ťhẽ ởbjẽçť, ťhẽñ ťảp Šẽť đỉřẽçťỉởñ. Ñẽvẽř łởởk šťřảỉğhť ảť ťhẽ Šữñ. ······································································]';
+
+  @override
+  String get a9MoonHelp =>
+      '[Pởỉñť ťhẽ ťởp ẽđğẽ ởf ťhẽ phởñẽ šťřảỉğhť ảť ťhẽ Mởởñ, ťhẽñ ťảp Šẽť đỉřẽçťỉởñ. ·······························]';
+
+  @override
+  String get a9ManualHelp =>
+      '[Pởỉñť ťhẽ ťởp ẽđğẽ ởf ťhẽ phởñẽ ảť ả łảñđmảřk ŵhởšẽ đỉřẽçťỉởñ ỹởữ kñởŵ (ẽ.ğ. ả řởảđ řữññỉñğ ñởřťh), đřảğ ťở ťhảť bẽảřỉñğ, ťhẽñ ťảp Šẽť đỉřẽçťỉởñ. ··························································]';
+
+  @override
+  String get a9SkyLow =>
+      '[Ťhẽ Šữñ ảñđ Mởởñ ảřẽ bẽłởŵ ťhẽ hởřỉžởñ ởř ỹởữř łởçảťỉởñ ỉš ữñkñởŵñ - ữšẽ ĞPŠ ởř šẽť ťhẽ đỉřẽçťỉởñ bỹ hảñđ. ···········································]';
+
+  @override
+  String get a9SetFailed =>
+      '[Çởữłđñ\'ť šẽť ỉť: ťhẽ Šữñ ởř Mởởñ ỉš ťởở łởŵ ñởŵ. ····················]';
+
+  @override
+  String get a9Reanchor =>
+      '[Ỉť\'š bẽẽñ ả ŵhỉłẽ - ťhẽ đỉřẽçťỉởñ mảỹ hảvẽ đřỉfťẽđ. Šẽť ỉť ảğảỉñ. ··························]';
+
+  @override
+  String get a9StaticAnchor =>
+      '[Ñở ğỹřởšçởpẽ: kẽẽp ťhẽ phởñẽ ẽxảçťłỹ ảš ảłỉğñẽđ; šẽť ỉť ảğảỉñ ảfťẽř ťữřñỉñğ. ·······························]';
+
+  @override
+  String get a9Walking =>
+      '[Ŵảłkỉñğ: ťhẽ ĞPŠ çởữřšẽ ỉš ữšẽđ ảữťởmảťỉçảłłỹ. ···················]';
+
+  @override
+  String get a9DeviceTitle => '[Ỹởữř đẽvỉçẽ ·····]';
+
+  @override
+  String get a9DeviceIntro =>
+      '[Ťhẽ ảpp çhẽçkš ởñçẽ ŵhỉçh šẽñšởřš ťhỉš phởñẽ hảš (ỹẽš / ñở ởñłỹ, ñở đẽvỉçẽ ỈĐš) ťở pỉçk ťhẽ bẽšť ŵảỹ ťở fỉñđ ả đỉřẽçťỉởñ. ·················································]';
+
+  @override
+  String get a9DeviceProbing => '[Çhẽçkỉñğ šẽñšởřš… ·······]';
+
+  @override
+  String get a9SensMag => '[Mảğñẽťởmẽťẽř (çởmpảšš) ·········]';
+
+  @override
+  String get a9SensGyro => '[Ğỹřởšçởpẽ ····]';
+
+  @override
+  String get a9SensAccel => '[Ảççẽłẽřởmẽťẽř ······]';
+
+  @override
+  String get a9SensGameRot => '[Šỹšťẽm řởťảťỉởñ fữšỉởñ ·········]';
+
+  @override
+  String get a9SensBaro => '[Bảřởmẽťẽř (ảłťỉťữđẽ) ········]';
+
+  @override
+  String get a9SensGps => '[ĞPŠ ··]';
+
+  @override
+  String get a9SensCamera => '[Řẽảř çảmẽřả ·····]';
+
+  @override
+  String get a9Yes => '[Ỹẽš ··]';
+
+  @override
+  String get a9No => '[Ñở ··]';
+
+  @override
+  String get a9SourcesTitle =>
+      '[Đỉřẽçťỉởñ šởữřçẽš ảvảỉłảbłẽ (ỉñ přỉởřỉťỹ ởřđẽř) ···················]';
+
+  @override
+  String get a9LiteOn =>
+      '[Łỉťẽ mởđẽ ỉš ởñ: ťhẽ đỉảł škỉpš šmởởťh řởťảťỉởñ šở ťhẽ phởñẽ šťảỹš řẽšpởñšỉvẽ. ································]';
+
+  @override
+  String get a9LiteOff =>
+      '[Łỉťẽ mởđẽ: ởff - ťhỉš phởñẽ hảñđłẽš ťhẽ fữłł ẽffẽçťš. ······················]';
 }
