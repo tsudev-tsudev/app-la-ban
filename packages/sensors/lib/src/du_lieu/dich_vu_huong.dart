@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:sensors/src/domain/bo_hop_nhat.dart';
 import 'package:sensors/src/domain/mau_cam_bien.dart';
+import 'package:sensors/src/domain/nguon_chi_huong.dart';
 import 'package:sensors/src/du_lieu/nguon_cam_bien.dart';
 
 /// Lý do không đọc được hướng.
@@ -93,6 +94,23 @@ final class DichVuHuong {
       },
     );
     return ra.stream;
+  }
+
+  /// Hướng TƯƠNG ĐỐI không cần từ kế (A9a): game rotation vector hoặc con
+  /// quay + gia tốc. Máy không giữ được hướng -> luồng đóng ngay, không lỗi.
+  /// Xử lý tại chỗ (phép tính nhẹ hơn hợp nhất đầy đủ, không cần isolate).
+  Stream<({double phuongVi, int tNs})> theoDoiTuongDoi() async* {
+    final kn = await _nguon.khaNang();
+    if (!(kn.xoayGame || (kn.conQuay && kn.giaToc))) return;
+    final bo = BoHuongTuongDoi();
+    final chuKy = kn.xoayGame ? chuKyChamUs : chuKyNhanhUs;
+    await for (final lo in _nguon.lo(chuKyUs: chuKy)) {
+      ({double phuongVi, int tNs})? cuoi;
+      for (final m in giaiMaLo(lo)) {
+        cuoi = bo.nap(m) ?? cuoi;
+      }
+      if (cuoi != null) yield cuoi;
+    }
   }
 }
 

@@ -176,6 +176,17 @@ void main() {
         giaiMaDocViTri([21.0, 105.8, 0, 0, 0, 0, 0, 1.7e12, 0, 0, 1])!.gia,
         isTrue,
       );
+      // A9a: sai số tốc độ / hướng ở đuôi; bản cũ (11 số) -> null.
+      final a9 = giaiMaDocViTri([
+        21.0, 105.8, 0, 0, 0, 2.0, 80.0, 1.7e12, 0, 0, 0, 0.4, 7.5, //
+      ])!;
+      expect(a9.saiSoTocDo, 0.4);
+      expect(a9.saiSoHuongDi, 7.5);
+      expect(
+        giaiMaDocViTri([21.0, 105.8, 0, 0, 0, 0, 0, 1.7e12, 0, 0, 1])!
+            .saiSoTocDo,
+        isNull,
+      );
       expect(
         giaiMaDocViTri([21.0, 105.8, 0, 0, 0, 0, 0, 1.7e12, 0, 0, 0])!.gia,
         isFalse,

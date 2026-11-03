@@ -2089,6 +2089,228 @@ abstract class LbL10n {
   /// In vi, this message translates to:
   /// **'Từ trường bình thường - không thấy nhiễu từ gần máy.'**
   String get a9FieldNormal;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'La bàn (từ kế)'**
+  String get a9SrcCompass;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Hướng di chuyển GPS'**
+  String get a9SrcGps;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Mặt Trời'**
+  String get a9SrcSun;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Mặt Trăng'**
+  String get a9SrcMoon;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Tự đặt'**
+  String get a9SrcManual;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'{nguon} + con quay'**
+  String a9SrcWithGyro(String nguon);
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Nguồn: {nguon} · ±{saiSo}°'**
+  String a9SrcLine(String nguon, int saiSo);
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Máy không có la bàn từ'**
+  String get a9NoMagTitle;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Vẫn lấy được hướng: đi bộ vài bước để dùng hướng di chuyển GPS, hoặc neo theo Mặt Trời, Mặt Trăng hay một mốc bạn biết hướng.'**
+  String get a9NoMagBody;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Theo bóng Mặt Trời'**
+  String get a9BtnSun;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Ngắm Mặt Trăng'**
+  String get a9BtnMoon;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Tự đặt hướng'**
+  String get a9BtnManual;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Thiết bị của bạn'**
+  String get a9BtnDevice;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Neo hướng'**
+  String get a9BtnSet;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Dựng một vật thẳng đứng (bút, que). Đặt máy nằm ngang dọc theo bóng của nó, mép trên hướng ra xa gốc vật, rồi bấm Neo hướng. Đừng nhìn thẳng vào Mặt Trời.'**
+  String get a9SunHelp;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Chĩa mép trên máy thẳng về phía Mặt Trăng rồi bấm Neo hướng.'**
+  String get a9MoonHelp;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Chĩa mép trên máy về một mốc bạn biết hướng (vd con đường chạy hướng Bắc), kéo tới đúng số độ rồi bấm Neo hướng.'**
+  String get a9ManualHelp;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Mặt Trời và Mặt Trăng đang dưới chân trời hoặc chưa có vị trí - hãy dùng GPS hoặc tự đặt hướng.'**
+  String get a9SkyLow;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Không neo được: thiên thể đã xuống quá thấp.'**
+  String get a9SetFailed;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã lâu, hướng có thể trôi - hãy neo lại.'**
+  String get a9Reanchor;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Máy không có con quay: giữ nguyên tư thế đã căn; xoay máy thì neo lại.'**
+  String get a9StaticAnchor;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang đi: hướng di chuyển GPS được dùng tự động.'**
+  String get a9Walking;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Thiết bị của bạn'**
+  String get a9DeviceTitle;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'La bàn dò cảm biến của máy một lần (chỉ có / không, không đọc mã thiết bị) để chọn cách lấy hướng tốt nhất.'**
+  String get a9DeviceIntro;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang dò cảm biến…'**
+  String get a9DeviceProbing;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Từ kế (la bàn)'**
+  String get a9SensMag;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Con quay hồi chuyển'**
+  String get a9SensGyro;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Gia tốc kế'**
+  String get a9SensAccel;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Hợp nhất xoay của hệ thống'**
+  String get a9SensGameRot;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Khí áp kế (độ cao)'**
+  String get a9SensBaro;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'GPS'**
+  String get a9SensGps;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Camera sau'**
+  String get a9SensCamera;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Có'**
+  String get a9Yes;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Không'**
+  String get a9No;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Nguồn hướng dùng được (theo thứ tự ưu tiên)'**
+  String get a9SourcesTitle;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Chế độ nhẹ đang bật: mặt la bàn bỏ hiệu ứng quay trượt để máy chạy mượt.'**
+  String get a9LiteOn;
+
+  /// A9a
+  ///
+  /// In vi, this message translates to:
+  /// **'Chế độ nhẹ: tắt - máy đủ mạnh cho hiệu ứng đầy đủ.'**
+  String get a9LiteOff;
 }
 
 class _LbL10nDelegate extends LocalizationsDelegate<LbL10n> {

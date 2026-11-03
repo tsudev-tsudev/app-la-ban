@@ -26,8 +26,9 @@ import io.flutter.plugin.common.PluginRegistry
  * ảnh hưởng Data Safety). Android 12+ dùng FUSED_PROVIDER của chính LocationManager; máy cũ nghe GPS + mạng.
  *
  * Quyền chỉ xin khi người dùng bấm (just-in-time), chỉ "khi đang dùng". Huỷ nghe EventChannel -> thôi cập nhật.
- * Sự kiện: DoubleArray 10 số khớp `giaiMaDocViTri` phía Dart:
- * [vĩ, kinh, cao elipxoit, ±ngang, ±dọc, tốc độ, hướng, ms epoch, cao mực biển, nguồn]; NaN = không có.
+ * Sự kiện: DoubleArray 13 số khớp `giaiMaDocViTri` phía Dart:
+ * [vĩ, kinh, cao elipxoit, ±ngang, ±dọc, tốc độ, hướng, ms epoch, cao mực biển, nguồn, giả, ±tốc độ, ±hướng];
+ * NaN = không có. ±tốc độ / ±hướng (A9a): độ tin cậy hướng di chuyển khi máy không có la bàn.
  * Vị trí KHÔNG ghi log, không gửi ra khỏi máy.
  */
 class ViTriPlugin :
@@ -205,6 +206,8 @@ class ViTriPlugin :
                 mucBien,
                 nguon,
                 if (laGia(v)) 1.0 else 0.0,
+                if (v.hasSpeedAccuracy()) v.speedAccuracyMetersPerSecond.toDouble() else nan,
+                if (v.hasBearingAccuracy()) v.bearingAccuracyDegrees.toDouble() else nan,
             ),
         )
     }

@@ -45,6 +45,9 @@ class _ManDanDuongState extends ConsumerState<ManDanDuong> {
     final v = ref.watch(viTriDiemProvider);
     final huong = ref.watch(huongProvider);
     final coLaBan = !huong.hasError;
+    // A9a: chuỗi nguồn hướng (từ kế > GPS > Mặt Trời / Mặt Trăng / tự đặt
+    // + con quay) - máy không la bàn vẫn có mũi tên khi đã có nguồn.
+    final uoc = ref.watch(huongDaNguonProvider);
     Widget than;
     if (v is! ViTriCo) {
       than = Column(
@@ -73,8 +76,9 @@ class _ManDanDuongState extends ConsumerState<ManDanDuong> {
         dichViDo: viDo,
         dichKinhDo: kinhDo,
         saiSoM: vt.saiSoM,
-        huongTu: huong.value?.phuongVi,
-        doLech: doLech.isFinite ? doLech : 0,
+        huongTu: uoc?.phuongVi,
+        // Nguồn đã theo bắc thực (GPS, thiên thể, từ kế có WMM) -> không cộng.
+        doLech: uoc == null || uoc.bacThuc || !doLech.isFinite ? 0 : doLech,
         daToiTruoc: _daToi,
       );
       _daToi = dd.daToi;
@@ -125,6 +129,12 @@ class _ManDanDuongState extends ConsumerState<ManDanDuong> {
             style: chu.titleMedium,
             textAlign: TextAlign.center,
           ),
+          if (uoc != null && uoc.nguon != NguonChiHuong.tuKe)
+            Text(
+              l.a9SrcLine(tenNguonHuong(l, uoc), uoc.saiSoDo.round()),
+              style: chu.bodyMedium?.copyWith(color: mau.onSurfaceVariant),
+              textAlign: TextAlign.center,
+            ),
           const SizedBox(height: LbSpacing.xs),
           Text(
             l.wpBearing(dd.phuongVi.round() % 360),

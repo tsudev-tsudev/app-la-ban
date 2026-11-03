@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:i18n/i18n.dart';
 import 'package:location_feature/src/domain/doc_vi_tri.dart';
-import 'package:location_feature/src/domain/thien_van.dart';
 import 'package:location_feature/src/domain/toa_do.dart';
 import 'package:sensors/sensors.dart';
 

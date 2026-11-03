@@ -1262,4 +1262,127 @@ class LbL10nVi extends LbL10n {
   @override
   String get a9FieldNormal =>
       'Từ trường bình thường - không thấy nhiễu từ gần máy.';
+
+  @override
+  String get a9SrcCompass => 'La bàn (từ kế)';
+
+  @override
+  String get a9SrcGps => 'Hướng di chuyển GPS';
+
+  @override
+  String get a9SrcSun => 'Mặt Trời';
+
+  @override
+  String get a9SrcMoon => 'Mặt Trăng';
+
+  @override
+  String get a9SrcManual => 'Tự đặt';
+
+  @override
+  String a9SrcWithGyro(String nguon) {
+    return '$nguon + con quay';
+  }
+
+  @override
+  String a9SrcLine(String nguon, int saiSo) {
+    return 'Nguồn: $nguon · ±$saiSo°';
+  }
+
+  @override
+  String get a9NoMagTitle => 'Máy không có la bàn từ';
+
+  @override
+  String get a9NoMagBody =>
+      'Vẫn lấy được hướng: đi bộ vài bước để dùng hướng di chuyển GPS, hoặc neo theo Mặt Trời, Mặt Trăng hay một mốc bạn biết hướng.';
+
+  @override
+  String get a9BtnSun => 'Theo bóng Mặt Trời';
+
+  @override
+  String get a9BtnMoon => 'Ngắm Mặt Trăng';
+
+  @override
+  String get a9BtnManual => 'Tự đặt hướng';
+
+  @override
+  String get a9BtnDevice => 'Thiết bị của bạn';
+
+  @override
+  String get a9BtnSet => 'Neo hướng';
+
+  @override
+  String get a9SunHelp =>
+      'Dựng một vật thẳng đứng (bút, que). Đặt máy nằm ngang dọc theo bóng của nó, mép trên hướng ra xa gốc vật, rồi bấm Neo hướng. Đừng nhìn thẳng vào Mặt Trời.';
+
+  @override
+  String get a9MoonHelp =>
+      'Chĩa mép trên máy thẳng về phía Mặt Trăng rồi bấm Neo hướng.';
+
+  @override
+  String get a9ManualHelp =>
+      'Chĩa mép trên máy về một mốc bạn biết hướng (vd con đường chạy hướng Bắc), kéo tới đúng số độ rồi bấm Neo hướng.';
+
+  @override
+  String get a9SkyLow =>
+      'Mặt Trời và Mặt Trăng đang dưới chân trời hoặc chưa có vị trí - hãy dùng GPS hoặc tự đặt hướng.';
+
+  @override
+  String get a9SetFailed => 'Không neo được: thiên thể đã xuống quá thấp.';
+
+  @override
+  String get a9Reanchor => 'Đã lâu, hướng có thể trôi - hãy neo lại.';
+
+  @override
+  String get a9StaticAnchor =>
+      'Máy không có con quay: giữ nguyên tư thế đã căn; xoay máy thì neo lại.';
+
+  @override
+  String get a9Walking => 'Đang đi: hướng di chuyển GPS được dùng tự động.';
+
+  @override
+  String get a9DeviceTitle => 'Thiết bị của bạn';
+
+  @override
+  String get a9DeviceIntro =>
+      'La bàn dò cảm biến của máy một lần (chỉ có / không, không đọc mã thiết bị) để chọn cách lấy hướng tốt nhất.';
+
+  @override
+  String get a9DeviceProbing => 'Đang dò cảm biến…';
+
+  @override
+  String get a9SensMag => 'Từ kế (la bàn)';
+
+  @override
+  String get a9SensGyro => 'Con quay hồi chuyển';
+
+  @override
+  String get a9SensAccel => 'Gia tốc kế';
+
+  @override
+  String get a9SensGameRot => 'Hợp nhất xoay của hệ thống';
+
+  @override
+  String get a9SensBaro => 'Khí áp kế (độ cao)';
+
+  @override
+  String get a9SensGps => 'GPS';
+
+  @override
+  String get a9SensCamera => 'Camera sau';
+
+  @override
+  String get a9Yes => 'Có';
+
+  @override
+  String get a9No => 'Không';
+
+  @override
+  String get a9SourcesTitle => 'Nguồn hướng dùng được (theo thứ tự ưu tiên)';
+
+  @override
+  String get a9LiteOn =>
+      'Chế độ nhẹ đang bật: mặt la bàn bỏ hiệu ứng quay trượt để máy chạy mượt.';
+
+  @override
+  String get a9LiteOff => 'Chế độ nhẹ: tắt - máy đủ mạnh cho hiệu ứng đầy đủ.';
 }

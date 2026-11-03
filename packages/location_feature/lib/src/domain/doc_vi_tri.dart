@@ -38,6 +38,8 @@ final class DocViTri {
     this.doChinhXacDung,
     this.tocDo,
     this.huongDi,
+    this.saiSoTocDo,
+    this.saiSoHuongDi,
     this.nguon = NguonDocViTri.khac,
     this.gia = false,
   });
@@ -65,6 +67,10 @@ final class DocViTri {
 
   /// Hướng di chuyển (độ, bắc thực).
   final double? huongDi;
+
+  /// Sai số tốc độ (m/s, 68%) và hướng di chuyển (độ) - Android 8+ (A9a).
+  final double? saiSoTocDo;
+  final double? saiSoHuongDi;
   final NguonDocViTri nguon;
 
   @override
@@ -82,9 +88,9 @@ final class DocViTri {
 
 double? _soHuuHan(Object? v) => v is num && v.isFinite ? v.toDouble() : null;
 
-/// Giải mã sự kiện nền tảng: danh sách 10 số
+/// Giải mã sự kiện nền tảng: danh sách 10-13 số
 /// [vĩ, kinh, cao elip, ±ngang, ±dọc, tốc độ, hướng, ms epoch, cao mực biển,
-/// nguồn]; NaN = không có.
+/// nguồn, giả, ±tốc độ, ±hướng]; NaN = không có (bản cũ thiếu đuôi).
 DocViTri? giaiMaDocViTri(Object? e) {
   if (e is! List || e.length < 10) return null;
   final vi = _soHuuHan(e[0]);
@@ -105,6 +111,8 @@ DocViTri? giaiMaDocViTri(Object? e) {
     doCaoMucBien: _soHuuHan(e[8]),
     nguon: NguonDocViTri.values[nguon.clamp(0, 3)],
     gia: e.length > 10 && _soHuuHan(e[10]) == 1,
+    saiSoTocDo: e.length > 11 ? _soHuuHan(e[11]) : null,
+    saiSoHuongDi: e.length > 12 ? _soHuuHan(e[12]) : null,
   );
 }
 

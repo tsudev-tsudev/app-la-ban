@@ -226,7 +226,9 @@ void main() {
       ]),
     );
     await tester.pump();
-    expect(find.textContaining('không có cảm biến la bàn'), findsOneWidget);
+    // A9a: không còn ngõ cụt - màn chuỗi nguồn (GPS / thiên thể / tự đặt).
+    expect(find.byType(ManKhongTuKe), findsOneWidget);
+    expect(find.text('Máy không có la bàn từ'), findsOneWidget);
 
     await tester.pumpWidget(const SizedBox.shrink());
     await tester.pumpWidget(
