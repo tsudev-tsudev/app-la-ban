@@ -28,6 +28,10 @@ export const BANG_SAO_LUU = [
   'config_requests',
   'config_versions',
   'app_crashes',
+  // M1a (Q55): quyền lợi Pro - cha trước con (khôi phục theo thứ tự này).
+  'quyen_loi',
+  'quyen_loi_devices',
+  'quyen_loi_events',
 ] as const;
 export type BangSaoLuu = (typeof BANG_SAO_LUU)[number];
 

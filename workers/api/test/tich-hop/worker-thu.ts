@@ -14,6 +14,7 @@ import { laNonceHopLe } from '../../src/thuan/nonce';
 import { goiNonce } from '../../src/mw/dich-vu';
 import { xuatNhatKy } from '../../src/van-hanh/nhat-ky';
 import { saoLuuD1 } from '../../src/van-hanh/sao-luu';
+import { quetQuyenLoi } from '../../src/mua';
 
 export { PhongSoc } from '../../src/index';
 
@@ -46,6 +47,7 @@ boTuyen.dangKy(
   },
 );
 app.post('/thu/nhat-ky', async (c) => c.json(await xuatNhatKy(c.env, Number(c.req.query('bayGio')))));
+app.post('/thu/quet-quyen-loi', async (c) => c.json(await quetQuyenLoi(c.env, Number(c.req.query('bayGio')) || Date.now())));
 app.post('/thu/sao-luu', async (c) => c.json(await saoLuuD1(c.env, Number(c.req.query('bayGio')))));
 app.get('/thu/r2', async (c) => {
   const r2 = c.env.NHAT_KY;

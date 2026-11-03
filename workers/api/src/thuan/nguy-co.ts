@@ -54,6 +54,9 @@ export const CAU_HINH_MAC_DINH: CauHinhNguyCo = Object.freeze({
     AUTOMATION: 10,
     BOOTLOADER_UNLOCKED: 10,
     TIME_SPOOFING: 5,
+    // M1a (SEC-IAP): token giả / chia sẻ token vượt ngưỡng. PRO_UNLICENSED 0 điểm (IAP-05: không ban tự động).
+    PURCHASE_TOKEN_INVALID: 10,
+    PURCHASE_TOKEN_SHARED: 20,
   }),
   nguong: Object.freeze({ suspicious: 30, restricted: 60, banned: 90 }),
   hoiPhuc: Object.freeze({ diemMoiTuan: 5, san: 0 }),

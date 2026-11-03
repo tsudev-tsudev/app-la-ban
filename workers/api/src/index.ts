@@ -9,6 +9,7 @@ import { dangKyKenh } from './kenh';
 import { dangKyKhienWeb } from './khien-web';
 import { dangKyKhieuNai } from './khieu-nai';
 import { dangKySuCoApp } from './su-co-app';
+import { dangKyMua, quetQuyenLoi } from './mua';
 import type { Env, MoiTruongHono } from './moi-truong';
 import { bayQuet } from './mw/bay';
 import { chanTheoThucThi } from './mw/chan';
@@ -78,6 +79,7 @@ dangKyDinhDanh(app, boTuyen);
 dangKyKenh(app, boTuyen);
 dangKyKhieuNai(app, boTuyen);
 dangKySuCoApp(app, boTuyen);
+dangKyMua(boTuyen);
 // Admin SOC (S6): Access JWT + vai trò + phiên passkey - xem src/admin/.
 app.route('/admin/v1', taoAdmin());
 
@@ -103,7 +105,10 @@ export default {
       ['dot-bien', () => kiemDotBien(env)],
       ['don-dem', () => donDem(env.DB as D1Database)],
     ];
-    if (laLuotHangNgay(su.scheduledTime)) viec.push(['don-dep', () => donDep(env.DB as D1Database)]);
+    if (laLuotHangNgay(su.scheduledTime)) {
+      viec.push(['don-dep', () => donDep(env.DB as D1Database)]);
+      viec.push(['quyen-loi', () => quetQuyenLoi(env)]);
+    }
     // 'thu:sao-luu' = kích tay khi diễn tập (`wrangler dev --remote --test-scheduled`, /__scheduled?cron=thu:sao-luu):
     // handler scheduled chỉ Cloudflare gọi được, cron thật không bao giờ có chuỗi này.
     if (laLuotSaoLuu(su.scheduledTime) || su.cron === 'thu:sao-luu') viec.push(['sao-luu', () => saoLuuD1(env)]);

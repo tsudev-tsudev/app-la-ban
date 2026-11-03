@@ -18,6 +18,11 @@ export const LOAI_CHI_SERVER: ReadonlySet<string> = new Set([
   'RATE_ABUSE',
   'HONEYPOT_HIT',
   'WEB_DEVTOOLS',
+  // M1a (SEC-IAP): chỉ Worker biết sau khi hỏi Google.
+  'PURCHASE_TOKEN_INVALID',
+  'PURCHASE_TOKEN_SHARED',
+  'PRO_UNLICENSED',
+  'RTDN_INVALID',
 ]);
 
 /** Lô sự kiện từ app: mỗi loại tính điểm tối đa một lần / thiết bị / 24 giờ (`diemTheoLo`). */

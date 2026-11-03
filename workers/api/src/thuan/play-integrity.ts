@@ -104,11 +104,15 @@ export function duTinCay(muc: MucTin): boolean {
 }
 
 /** Claim JWT service account đổi lấy access token Google (RFC 7523). */
-export function claimGoogle(email: string, bayGio: number): Record<string, string | number> {
+export const PHAM_VI_INTEGRITY = 'https://www.googleapis.com/auth/playintegrity';
+/** M1a (Q55): Google Play Developer API - xác minh mua hàng / Voided Purchases (cùng service account). */
+export const PHAM_VI_PUBLISHER = 'https://www.googleapis.com/auth/androidpublisher';
+
+export function claimGoogle(email: string, bayGio: number, phamVi: string = PHAM_VI_INTEGRITY): Record<string, string | number> {
   const iat = Math.floor(bayGio / 1000);
   return {
     iss: email,
-    scope: 'https://www.googleapis.com/auth/playintegrity',
+    scope: phamVi,
     aud: 'https://oauth2.googleapis.com/token',
     iat,
     exp: iat + 3600,

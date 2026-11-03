@@ -68,3 +68,24 @@ gỡ ghi audit `cho-phep:them` / `cho-phep:go`.
 
 - Trang `/tai-ve` landing: đổi nút "Google Play - sắp có" thành link Play (agent-laban).
 - Bản APK tải trực tiếp vẫn phát hành song song (Q34) - cùng `versionCode` tăng dần với bản Play.
+
+## 6. Gói Pro + RTDN (M1a bước 3 - máy chủ xong 03/11/2026, Q55)
+
+Worker đã có `POST /v1/mua/xac-minh`, `POST /v1/play/rtdn`, cron hằng ngày (Voided Purchases + hỏi lại gói sắp hết hạn) và
+`quyenLoi` trong `/v1/status`. Bí mật `KHOA_QUYEN_LOI` (AES-GCM, bản sao `~/.config/la-ban/quyen-loi/` NGOÀI repo) đã đặt
+cho staging + prod. Người dùng làm (sau khi tài khoản Play được duyệt + hồ sơ thanh toán):
+
+1. **Quyền service account** (Play Console -> Người dùng và quyền -> mời email service account đang dùng cho Play
+   Integrity): quyền ứng dụng "Xem dữ liệu tài chính" + "Quản lý đơn hàng và gói thuê bao" cho `com.tsudev.laban`
+   (và `com.tsudev.laban.pro` khi có). Thiếu quyền -> `/v1/mua/xac-minh` trả 503 `google-loi` (`google-403`).
+2. **Pub/Sub** (Cloud project 930761930572, gói miễn phí 10 GB/tháng - RTDN chỉ vài KB):
+   - Tạo topic `play-rtdn`; cấp `google-play-developer-notifications@system.gserviceaccount.com` vai trò *Pub/Sub Publisher* trên topic.
+   - Tạo service account `rtdn-day` (không cần khoá JSON) để Pub/Sub ký JWT OIDC.
+   - Tạo subscription **Push**: endpoint `https://compass-api.tsudev.com/v1/play/rtdn`, bật *Authentication* với service
+     account `rtdn-day`, audience = đúng URL endpoint (khớp `RTDN_AUD` trong `wrangler.toml`).
+   - Báo agent email `rtdn-day@...iam.gserviceaccount.com` -> agent đặt `RTDN_EMAIL` (biến thường) + deploy. Chưa đặt -> route trả 503 (Pub/Sub tự gửi lại tối đa 7 ngày).
+3. **Play Console -> Kiếm tiền -> Thiết lập kiếm tiền**: dán topic `projects/930761930572/topics/play-rtdn` -> *Gửi thông
+   báo thử* -> agent kiểm sự kiện `rtdn-thu` trong D1 `quyen_loi_events`.
+4. Tạo sản phẩm `pro_thang`, `pro_nam` (base plan + dùng thử 7 ngày), `pro_vinh_vien` theo giá Q55; thêm license tester.
+
+Kiểm nhanh (agent): `npx wrangler d1 execute la-ban-prod --remote --command "SELECT kind, count(*) FROM quyen_loi_events GROUP BY kind"`.

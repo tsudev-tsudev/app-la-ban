@@ -58,6 +58,17 @@ export type Env = {
   /** Phát hiện đột biến (S10a): token CHỈ quyền Account Analytics Read (`wrangler secret`) + tên dataset AE. Thiếu -> bỏ. */
   CF_AE_TOKEN?: string;
   AE_BANG?: string;
+  /** M1a (Q55): khoá AES-GCM 256 (base64 32 byte, `wrangler secret`) mã hoá purchase token. Thiếu -> /v1/mua/* 503. */
+  KHOA_QUYEN_LOI?: string;
+  /** IAP-04: số cài đặt hoạt động tối đa / token (mặc định 5). */
+  QL_THIET_BI_TOI_DA?: string;
+  /** IAP-05: '1' = chỉ cấp quyền lợi cho bản do Play cài (appRecognitionVerdict PLAY_RECOGNIZED). Staging '0'. */
+  QL_YEU_CAU_PLAY?: string;
+  /** Q56: gói app Pro (dấu phẩy) - Play Integrity LICENSED -> quyền lợi `pro_app`. */
+  PI_GOI_PRO?: string;
+  /** RTDN (IAP-02): audience JWT OIDC đặt ở Pub/Sub push subscription + email service account đẩy. Thiếu -> 503. */
+  RTDN_AUD?: string;
+  RTDN_EMAIL?: string;
 };
 
 export type BienYeuCau = {

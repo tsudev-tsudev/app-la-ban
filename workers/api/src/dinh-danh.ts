@@ -9,6 +9,7 @@ import { giaiMaToken, LoiDichVu } from './attest/google';
 import { kiemChuKyThietBi, kyJwt, napKhoaPhien, ngauNhienB64url, nhapKhoaThietBi, sha256B64url, type KhoaPhien } from './attest/khoa';
 import type { Env, MoiTruongHono, Ngu } from './moi-truong';
 import { baoSuKien, goiNonce, nen } from './mw/dich-vu';
+import { capNhatProApp } from './mua';
 import { ghiLog } from './mw/ghi-log';
 import { lienKetThietBi } from './threat/lien-ket';
 import { sha256Hex } from './thuan/bam';
@@ -186,6 +187,7 @@ export function dangKyDinhDanh(_app: Hono<MoiTruongHono>, boTuyen: BoTuyen): voi
       await ghiIp(c, db, dong.id, bayGio);
       if (dg.muc === 'failed') baoSuKien(c, dong.id, 'ATTEST_FAIL', 'high', { ly_do: dg.lyDo.join(','), buoc: 'dang-ky', ...dg.tinHieu });
       nen(c, lienKetThietBi(db, dong.id, bayGio), 'lien-ket');
+      if (dg.muc !== 'failed') nen(c, capNhatProApp(c, dong.id, b.goi, dg.tinHieu), 'pro-app');
       return c.json({ thietBiId: dong.id, trangThai: dong.status, mucTin: dg.muc, phien: ph.phien }, 201);
     },
   );
@@ -298,6 +300,7 @@ export function dangKyDinhDanh(_app: Hono<MoiTruongHono>, boTuyen: BoTuyen): voi
         .bind(dg.muc, bayGio, JSON.stringify({ ...dg.tinHieu, ly_do: dg.lyDo.join(',') || null }), bayGio, thietBi)
         .run();
       if (dg.muc === 'failed') baoSuKien(c, thietBi, 'ATTEST_FAIL', 'high', { ly_do: dg.lyDo.join(','), buoc: 'xac-thuc', ...dg.tinHieu });
+      else nen(c, capNhatProApp(c, thietBi, b.goi, dg.tinHieu), 'pro-app');
       return c.json({ mucTin: dg.muc });
     },
   );

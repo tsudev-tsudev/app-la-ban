@@ -3,7 +3,7 @@
 // (ID-05), không bao giờ coi là đạt.
 import type { Env } from '../moi-truong';
 import { b64urlTuByte, b64urlTuChuoi } from '../thuan/ma-hoa';
-import { claimGoogle, pemSangDer, schemaPhanQuyet, schemaServiceAccount, type PhanQuyet } from '../thuan/play-integrity';
+import { claimGoogle, PHAM_VI_INTEGRITY, pemSangDer, schemaPhanQuyet, schemaServiceAccount, type PhanQuyet } from '../thuan/play-integrity';
 
 export class LoiDichVu extends Error {
   constructor(readonly lyDo: string) {
@@ -13,19 +13,21 @@ export class LoiDichVu extends Error {
 }
 
 const HET_GIO_MS = 5000;
-let demToken: { email: string; token: string; het: number } | null = null;
+const demToken = new Map<string, { email: string; token: string; het: number }>();
 
-async function layAccessToken(saJson: string, bayGio: number): Promise<string> {
+/** Access token OAuth của service account cho phạm vi [phamVi] (đệm theo isolate tới ~1 phút trước khi hết hạn). */
+export async function layAccessToken(saJson: string, bayGio: number, phamVi: string = PHAM_VI_INTEGRITY): Promise<string> {
   let sa;
   try {
     sa = schemaServiceAccount.parse(JSON.parse(saJson));
   } catch {
     throw new LoiDichVu('sa-sai-dang');
   }
-  if (demToken && demToken.email === sa.client_email && demToken.het > bayGio + 60_000) return demToken.token;
+  const dem = demToken.get(phamVi);
+  if (dem && dem.email === sa.client_email && dem.het > bayGio + 60_000) return dem.token;
   const khoa = await crypto.subtle.importKey('pkcs8', pemSangDer(sa.private_key), { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['sign']);
   const header = b64urlTuChuoi(JSON.stringify({ alg: 'RS256', typ: 'JWT', ...(sa.private_key_id ? { kid: sa.private_key_id } : {}) }));
-  const dau = `${header}.${b64urlTuChuoi(JSON.stringify(claimGoogle(sa.client_email, bayGio)))}`;
+  const dau = `${header}.${b64urlTuChuoi(JSON.stringify(claimGoogle(sa.client_email, bayGio, phamVi)))}`;
   const chuKy = b64urlTuByte(await crypto.subtle.sign('RSASSA-PKCS1-v1_5', khoa, new TextEncoder().encode(dau)));
   const res = await fetch('https://oauth2.googleapis.com/token', {
     method: 'POST',
@@ -37,7 +39,7 @@ async function layAccessToken(saJson: string, bayGio: number): Promise<string> {
   const du = (await res.json()) as { access_token?: unknown; expires_in?: unknown };
   if (typeof du.access_token !== 'string') throw new LoiDichVu('oauth-thieu-token');
   const songGiay = typeof du.expires_in === 'number' ? du.expires_in : 3600;
-  demToken = { email: sa.client_email, token: du.access_token, het: bayGio + songGiay * 1000 };
+  demToken.set(phamVi, { email: sa.client_email, token: du.access_token, het: bayGio + songGiay * 1000 });
   return du.access_token;
 }
 
@@ -58,7 +60,7 @@ export async function giaiMaToken(env: Env, goi: string, token: string, bayGio =
     throw new LoiDichVu('mang');
   }
   if (res.status === 401 || res.status === 403) {
-    demToken = null;
+    demToken.delete(PHAM_VI_INTEGRITY);
     throw new LoiDichVu(`google-${res.status}`);
   }
   if (res.status >= 500 || res.status === 429) throw new LoiDichVu(`google-${res.status}`);
@@ -72,4 +74,9 @@ export async function giaiMaToken(env: Env, goi: string, token: string, bayGio =
   const du = (await res.json().catch(() => null)) as { tokenPayloadExternal?: unknown } | null;
   const kq = schemaPhanQuyet.safeParse(du?.tokenPayloadExternal);
   return kq.success ? kq.data : null;
+}
+
+/** Quên access token đã đệm của phạm vi (Google trả 401 / 403 - token bị thu hồi / quyền đổi). */
+export function quenAccessToken(phamVi: string): void {
+  demToken.delete(phamVi);
 }

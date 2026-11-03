@@ -874,6 +874,187 @@
         }
       }
     },
+    "/v1/mua/xac-minh": {
+      "post": {
+        "summary": "Xác minh giao dịch Play (gói đăng ký / mua một lần) với Google -> quyền lợi Pro của thiết bị",
+        "responses": {
+          "200": {
+            "description": "Thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "trangThai": {
+                      "type": "string"
+                    },
+                    "quyenLoi": {
+                      "type": "object",
+                      "properties": {
+                        "pro": {
+                          "type": "boolean"
+                        },
+                        "khongQuangCao": {
+                          "type": "boolean"
+                        },
+                        "hetHan": {
+                          "anyOf": [
+                            {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "pro",
+                        "khongQuangCao",
+                        "hetHan"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "trangThai",
+                    "quyenLoi"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Lỗi RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VanDe"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "phienThietBi": [],
+            "kyThietBi": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "sanPham": {
+                    "type": "string",
+                    "enum": [
+                      "pro_thang",
+                      "pro_nam",
+                      "pro_vinh_vien"
+                    ]
+                  },
+                  "token": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9._-]{16,2048}$"
+                  },
+                  "goi": {
+                    "type": "string",
+                    "pattern": "^[a-z][a-z0-9_.]{2,100}$"
+                  }
+                },
+                "required": [
+                  "sanPham",
+                  "token",
+                  "goi"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/play/rtdn": {
+      "post": {
+        "summary": "Google Play RTDN qua Pub/Sub push (JWT OIDC) - cập nhật gia hạn / huỷ / tạm giữ / hoàn tiền",
+        "responses": {
+          "200": {
+            "description": "Thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "xuLy": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "xuLy"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "Lỗi RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VanDe"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "string",
+                        "maxLength": 16384
+                      },
+                      "messageId": {
+                        "type": "string",
+                        "maxLength": 128
+                      }
+                    },
+                    "required": [
+                      "data"
+                    ]
+                  },
+                  "subscription": {
+                    "type": "string",
+                    "maxLength": 512
+                  }
+                },
+                "required": [
+                  "message"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/session/refresh": {
       "post": {
         "summary": "Xoay refresh token (ký bằng khoá thiết bị); dùng lại token đã xoay -> thu hồi cả chuỗi",
@@ -1035,13 +1216,43 @@
                           "type": "null"
                         }
                       ]
+                    },
+                    "quyenLoi": {
+                      "type": "object",
+                      "properties": {
+                        "pro": {
+                          "type": "boolean"
+                        },
+                        "khongQuangCao": {
+                          "type": "boolean"
+                        },
+                        "hetHan": {
+                          "anyOf": [
+                            {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "pro",
+                        "khongQuangCao",
+                        "hetHan"
+                      ],
+                      "additionalProperties": false
                     }
                   },
                   "required": [
                     "trangThai",
                     "mucTin",
                     "ref",
-                    "banMoi"
+                    "banMoi",
+                    "quyenLoi"
                   ],
                   "additionalProperties": false
                 }

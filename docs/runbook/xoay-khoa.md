@@ -11,6 +11,7 @@ Nguyên tắc: khoá mới thêm TRƯỚC, khoá cũ gỡ SAU (chồng lấp) ->
 | Pin TLS app | Remote Config `pin` | chọn pin trong 5 CA đóng gói (>= 2) ở SOC four-eyes; CA mới phải theo bản app | app không kết nối được (pin sai) |
 | `TELEGRAM_BOT_TOKEN` | secret | @BotFather `/revoke` -> secret mới | gửi tin giả vào nhóm SOC |
 | `CF_LISTS_TOKEN`, `CF_AE_TOKEN` | secret | tạo token mới cùng quyền hẹp ở dashboard -> secret mới -> xoá token cũ | sửa danh sách chặn / đọc số liệu |
+| `KHOA_QUYEN_LOI` (AES-GCM purchase token, M1a) | `wrangler secret` + `~/.config/la-ban/quyen-loi/` | chưa hỗ trợ hai khoá song song: đặt khoá mới -> các `token_enc` cũ không giải mã được (cron chỉ bỏ qua dòng đó); token mới ghi lại khi app xác minh / RTDN gửi tới. Chỉ xoay khi lộ | đọc purchase token từ bản sao lưu D1 |
 | `TURNSTILE_SECRET` | secret | Turnstile -> Rotate secret -> secret mới | bỏ qua Turnstile ở form khiếu nại |
 | `PLAY_INTEGRITY_SA_JSON` | secret | Cloud Console: tạo key mới cho service account -> secret -> xoá key cũ | giải mã phán quyết Play Integrity |
 | Sao lưu `KHOA_SAO_LUU` (RSA-OAEP) | công khai trong `wrangler.toml`, riêng ở `~/.config/la-ban/sao-luu/` | sinh cặp mới, đổi biến công khai, deploy; GIỮ khoá riêng cũ tới khi bản cũ hết hạn (90 ngày) - tiêu đề tệp có `kid` | lộ khoá riêng = đọc được bản sao lưu: xoay ngay, xoá các bản cũ khi hết khoá R2 |

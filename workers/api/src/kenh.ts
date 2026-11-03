@@ -17,6 +17,7 @@ import { goiCauHinhHopLe } from './thuan/khien-web';
 import { LoiApi } from './thuan/loi';
 import { schemaLoSuKien, tinHieuLuu, LO_TOI_DA } from './thuan/su-kien';
 import type { BoTuyen } from './tuyen';
+import { quyenLoiThietBi, schemaQuyenLoi } from './mua';
 
 const LATEST_DEM_MS = 5 * 60 * 1000;
 let demLatest: { luc: number; ban: BanMoi | null } | null = null;
@@ -76,6 +77,8 @@ export function dangKyKenh(app: Hono<MoiTruongHono>, boTuyen: BoTuyen): void {
         mucTin: z.string(),
         ref: z.string().nullable(),
         banMoi: z.object({ phienBan: z.string(), maPhienBan: z.number().int() }).nullable(),
+        /** M1a (Q55): quyền lợi do Worker xác minh với Google - app chỉ hiển thị / bỏ quảng cáo theo trường này. */
+        quyenLoi: schemaQuyenLoi,
       }),
       xacThuc: 'ke-ca-bi-cam',
       gioiHan: [{ chieu: 'thiet-bi', gioiHan: 30, cuaSoMs: 60_000 }],
@@ -97,12 +100,12 @@ export function dangKyKenh(app: Hono<MoiTruongHono>, boTuyen: BoTuyen): void {
           'thiet-bi-thay',
         );
       }
-      return c.json({
-        trangThai,
-        mucTin: c.get('mucTin') ?? 'unverified',
-        ref: refChoTrangThai(trangThai, thietBi),
-        banMoi: await doBuoc(c.get('dongHo'), 'luuTru', () => banMoiNhat(c, Date.now())),
-      });
+      const bayGio = Date.now();
+      const [banMoi, quyenLoi] = await Promise.all([
+        doBuoc(c.get('dongHo'), 'luuTru', () => banMoiNhat(c, bayGio)),
+        doBuoc(c.get('dongHo'), 'd1', () => quyenLoiThietBi(db, thietBi, bayGio)),
+      ]);
+      return c.json({ trangThai, mucTin: c.get('mucTin') ?? 'unverified', ref: refChoTrangThai(trangThai, thietBi), banMoi, quyenLoi });
     },
   );
 
