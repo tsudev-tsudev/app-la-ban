@@ -16,6 +16,17 @@ node tools/build/kiem-listing.mjs   # độ dài tên / mô tả ngắn / mô t�
 - Ảnh điện thoại: tải bộ `light-1..6` (thứ tự = tên tệp), tối đa 8 ảnh / ngôn ngữ.
 - Listing: `docs/store/play-listing.md`; Data Safety: `docs/store/data-safety.md`; App access: `docs/store/ghi-chu-reviewer.md`.
 
+## 1b. Trạng thái tài khoản (03/11/2026)
+
+- Người dùng đã tạo tài khoản nhà phát triển **cá nhân** "TsuDev" (mã tài khoản 6673606179625007616) và thanh toán
+  25 USD thành công 03/11.
+- Thứ tự xác minh thật của Play Console: **danh tính (CCCD) trước** -> mới mở xác minh số điện thoại -> thiết bị Android
+  thật (app Play Console trên M32) -> nút "Tạo ứng dụng" sáng. 03/11 17:04: danh tính đang chờ Google duyệt (vài giờ - vài
+  ngày); số điện thoại hiện "Việc cần làm" nhưng bị khoá chờ - không phải lỗi.
+- Tài khoản cá nhân (tạo sau 13/11/2023): trước production phải **thử nghiệm kín >= 12 người kiểm thử liên tục 14 ngày**
+  rồi "Đăng ký quyền truy cập bản phát hành công khai". Internal testing không bị điều kiện này -> R2b làm được ngay khi
+  xác minh xong; R4 phụ thuộc thêm 14 ngày thử kín. Người dùng gom >= 12 Gmail.
+
 ## 2. Tạo ứng dụng + Play App Signing (người dùng, một lần)
 
 1. Play Console > Create app: tên "La bàn - TsuDev Compass", ngôn ngữ mặc định Tiếng Việt, App, Free.
