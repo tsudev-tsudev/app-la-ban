@@ -39,3 +39,26 @@ Headless Chromium trên compass.tsudev.com thấy vi phạm REPORT-ONLY từ scr
 Trusted Types của JS detections. Trước khi chuyển `strict-dynamic` sang header chặn: tắt Email Obfuscation cho compass-*
 bằng Config Rule (`email_obfuscation: off`, thêm vào `tools/cloudflare` zone.json, người dùng chạy `ap-dung --apply`) - trang
 chỉ có email liên hệ dạng văn bản, không cần làm rối. Trusted Types của script Cloudflare: giữ Report-Only nếu còn vi phạm.
+
+## Ghi chú 03/11 (chuẩn bị bật chặn)
+
+Báo cáo 29/10 - 03/11 (AE, theo `blob6` nguồn): KHÔNG có vi phạm từ script của mình.
+
+| Chế độ | Chỉ thị | Bị chặn | Nguồn thật | Số |
+|---|---|---|---|---|
+| report | `script-src-elem` | `https://compass.tsudev.com` | `email-decode.min.js` của Email Obfuscation (thẻ không nonce) | ~167 |
+| report | `require-trusted-types-for` | `trusted-types-sink` | script JS detections Cloudflare (`d.innerHTML`, `a.src`) | ~170 |
+| enforce + report | `script-src-elem` | `inline` | trang admin: script nội tuyến Cloudflare chèn, không nonce -> bị chặn, vô hại | 23 |
+| enforce + report | `connect-src` | `https://compass-admin.tsudev.com` | admin 30/10 (trước khi xong Access / S7) | 9 |
+
+- 03/11 15:00: Config Rule sẵn có (`tools/cloudflare/zone.json`, rule "tắt Web Analytics (RUM)") thêm
+  `email_obfuscation: false` -> `ap-dung.mjs --apply`; trang không còn `email-decode`, email liên hệ dạng văn bản.
+- Thử trước ở preview `csp-chan.la-ban-landing.pages.dev`: header CHẶN `script-src 'self' 'strict-dynamic' 'nonce-X'`
+  -> Chromium headless 10 trang (vi / en), `data-khien="chat"` (khiên chạy), 0 vi phạm CSP. Lưu ý: `pages.dev` không có
+  script Cloudflare chèn ở mức zone -> phải kiểm lại headless trên compass.tsudev.com sau khi deploy main.
+- Kiểm headless: `chrome --headless=new --enable-logging=stderr --v=0 --virtual-time-budget=6000 --dump-dom <url>` rồi
+  `grep CONSOLE` (thông điệp Trusted Types là `requires 'TrustedHTML'`, KHÔNG chứa "Content Security Policy").
+- 05/11: đọc lại bảng - kỳ vọng `script-src-elem https://compass.tsudev.com` về 0 kể từ 03/11 15:00 -> đổi dòng 4
+  `web/landing/public/_headers` thành `script-src 'self' 'strict-dynamic'` (worker tự thêm nonce), GIỮ Trusted Types ở
+  Report-Only (vi phạm từ script Cloudflare). Cùng PR: bỏ `interest-cohort=()` khỏi `Permissions-Policy` (landing
+  `_headers` + admin `worker/tieu-de.ts`) - Chromium báo lỗi console "Unrecognized feature".
