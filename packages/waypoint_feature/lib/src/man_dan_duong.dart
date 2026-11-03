@@ -11,12 +11,9 @@ import 'package:waypoint_feature/src/icon_diem.dart';
 import 'package:waypoint_feature/src/providers.dart';
 import 'package:waypoint_feature/src/the_vi_tri_diem.dart';
 
-/// Góc quay coi như "đi thẳng" (độ).
-const _thang = 10.0;
-
 /// Dẫn đường tới một điểm: mũi tên theo la bàn (bắc thực, Vincenty trên
 /// WGS84), khoảng cách, sai số GPS.
-class ManDanDuong extends ConsumerWidget {
+class ManDanDuong extends ConsumerStatefulWidget {
   const new({
     required this.ten,
     required this.viDo,
@@ -29,7 +26,19 @@ class ManDanDuong extends ConsumerWidget {
   final double kinhDo;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ManDanDuong> createState() => _ManDanDuongState();
+}
+
+class _ManDanDuongState extends ConsumerState<ManDanDuong> {
+  /// Trạng thái lần trước cho trễ hai ngưỡng (A9c).
+  var _daToi = false;
+  var _thang = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final ten = widget.ten;
+    final viDo = widget.viDo;
+    final kinhDo = widget.kinhDo;
     final l = context.l10n;
     final chu = Theme.of(context).textTheme;
     final mau = Theme.of(context).colorScheme;
@@ -66,14 +75,17 @@ class ManDanDuong extends ConsumerWidget {
         saiSoM: vt.saiSoM,
         huongTu: huong.value?.phuongVi,
         doLech: doLech.isFinite ? doLech : 0,
+        daToiTruoc: _daToi,
       );
+      _daToi = dd.daToi;
       final kc = khoangCach(l, dd.khoangCachM);
       final goc = dd.gocQuay;
       final String? chiDan;
       if (dd.daToi) {
         chiDan = l.wpArrived;
       } else if (goc != null) {
-        chiDan = goc.abs() <= _thang
+        _thang = diThang(goc, truoc: _thang);
+        chiDan = _thang
             ? l.wpAhead
             : l.wpTurn(goc.abs().round(), goc > 0 ? l.wpRight : l.wpLeft);
       } else {
@@ -106,8 +118,13 @@ class ManDanDuong extends ConsumerWidget {
           const SizedBox(height: LbSpacing.md),
           Text(kc, style: chu.displaySmall, textAlign: TextAlign.center),
           const SizedBox(height: LbSpacing.xs),
-          if (chiDan != null)
-            Text(chiDan, style: chu.titleMedium, textAlign: TextAlign.center),
+          // Luôn giữ một dòng (kể cả khi chưa có chỉ dẫn lúc cảm biến khởi
+          // động) để các dòng bên dưới không nhảy.
+          Text(
+            chiDan ?? ' ',
+            style: chu.titleMedium,
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: LbSpacing.xs),
           Text(
             l.wpBearing(dd.phuongVi.round() % 360),

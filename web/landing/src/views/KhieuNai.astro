@@ -54,8 +54,8 @@ const mailto = `mailto:security@tsudev.com?subject=${encodeURIComponent(k.chuDeE
           </label>
           <div class="o-turnstile" data-o="turnstile" />
           <noscript><p class="mo">{f.canJs}</p></noscript>
-          <button class="nut nut-chinh" type="submit" data-o="gui" data-gui={f.gui} data-dang-gui={f.dangGui}>{f.gui}</button>
-          <p class="trang-thai-kn" data-o="trang-thai" role="status" aria-live="polite" hidden />
+          <button class="nut nut-chinh" type="submit" data-o="gui">{f.gui}</button>
+          <p class="trang-thai-kn" data-o="trang-thai" role="status" aria-live="polite" />
         </form>
       )
     }
@@ -140,6 +140,8 @@ const mailto = `mailto:security@tsudev.com?subject=${encodeURIComponent(k.chuDeE
   .trang-thai-kn {
     font: var(--lb-type-body-small);
     margin: 0;
+    /* Chỗ dành sẵn 2 dòng (A9c): đang gửi -> lỗi / xong không đẩy phần dưới. */
+    min-block-size: 2lh;
   }
   .trang-thai-kn[data-loai='loi'] {
     color: var(--lb-color-danger-strong);

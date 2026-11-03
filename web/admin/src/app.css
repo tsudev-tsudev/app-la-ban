@@ -917,6 +917,8 @@ kbd {
 .chan-bang {
   margin: 0;
   padding: var(--lb-space-xs) var(--lb-space-sm);
+  /* Giữ một dòng kể cả khi rỗng (giữa "đang tải thêm" và "hết dữ liệu") để bảng không nhảy. */
+  min-block-size: calc(1lh + 2 * var(--lb-space-xs));
 }
 
 .loi-the {
@@ -1287,8 +1289,23 @@ button.o-dem:hover {
   max-block-size: calc(100vh - 220px);
 }
 
-.bang-khung[aria-busy='true'] {
+.bang-khung,
+.bao-cao-noi-dung {
+  transition: opacity var(--lb-motion-normal, 200ms) ease;
+}
+
+/* A9c: chỉ làm mờ khi tải lâu hơn 400 ms - tải nhanh / làm mới nền không làm bảng nháy. */
+.bang-khung[aria-busy='true'],
+.bao-cao-noi-dung[aria-busy='true'] {
   opacity: 0.7;
+  transition-delay: 400ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bang-khung,
+  .bao-cao-noi-dung {
+    transition-duration: 0s;
+  }
 }
 
 .bang-khung .bang thead th {

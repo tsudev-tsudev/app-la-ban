@@ -1,8 +1,7 @@
-// Thông báo nổi (toast) dùng chung: một vùng aria-live, tự ẩn sau 5 giây (lỗi: 8 giây), tối đa 4 cái.
+// Thông báo nổi (toast) dùng chung: một vùng aria-live, tự ẩn sau 5 giây (lỗi: 8 giây), tối đa 4 cái, gộp trùng.
 import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from 'react';
+import { themThongBao, type LoaiThongBao as Loai, type MotThongBao } from './thong-bao-ds';
 
-type Loai = 'ok' | 'loi' | 'tin';
-type MotThongBao = { id: number; loai: Loai; noiDung: string };
 type HamBao = (noiDung: string, loai?: Loai) => void;
 
 const Ctx = createContext<HamBao>(() => undefined);
@@ -18,7 +17,7 @@ export function NguonThongBao({ children, nhanDong }: { children: ReactNode; nha
   const bao = useCallback<HamBao>(
     (noiDung, loai = 'ok') => {
       const id = ++so.current;
-      datDs((d) => [...d.slice(-3), { id, loai, noiDung }]);
+      datDs((d) => themThongBao(d, { id, loai, noiDung }));
       setTimeout(() => bo(id), loai === 'loi' ? 8000 : 5000);
     },
     [bo],
@@ -29,7 +28,7 @@ export function NguonThongBao({ children, nhanDong }: { children: ReactNode; nha
       {children}
       <div className="vung-thong-bao" aria-live="polite" aria-relevant="additions">
         {ds.map((x) => (
-          <div key={x.id} className={`thong-bao tb-${x.loai}`} role={x.loai === 'loi' ? 'alert' : 'status'}>
+          <div key={`${x.loai}:${x.noiDung}`} className={`thong-bao tb-${x.loai}`} role={x.loai === 'loi' ? 'alert' : 'status'}>
             <span>{x.noiDung}</span>
             <button type="button" className="nut-bieu-tuong" aria-label={nhanDong} onClick={() => bo(x.id)}>
               ×

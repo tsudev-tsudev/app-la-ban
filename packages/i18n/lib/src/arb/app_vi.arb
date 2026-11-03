@@ -661,5 +661,7 @@
   "devModeRecheck": "Kiểm tra lại",
   "@devModeRecheck": {"description": "Nút kiểm tra lại"},
   "devModeServerOnly": "Máy chủ vẫn ghi nhận chế độ Nhà phát triển - hãy kết nối mạng rồi bấm Kiểm tra lại.",
-  "@devModeServerOnly": {"description": "Khi máy đã tắt nhưng máy chủ chưa cập nhật"}
+  "@devModeServerOnly": {"description": "Khi máy đã tắt nhưng máy chủ chưa cập nhật"},
+  "a9FieldNormal": "Từ trường bình thường - không thấy nhiễu từ gần máy.",
+  "@a9FieldNormal": {"description": "A9c: ghi chú cố định khi từ trường bình thường (giữ chỗ cho cảnh báo)"}
 }

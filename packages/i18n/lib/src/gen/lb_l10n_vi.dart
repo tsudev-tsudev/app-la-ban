@@ -1258,4 +1258,8 @@ class LbL10nVi extends LbL10n {
   @override
   String get devModeServerOnly =>
       'Máy chủ vẫn ghi nhận chế độ Nhà phát triển - hãy kết nối mạng rồi bấm Kiểm tra lại.';
+
+  @override
+  String get a9FieldNormal =>
+      'Từ trường bình thường - không thấy nhiễu từ gần máy.';
 }

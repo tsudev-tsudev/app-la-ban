@@ -286,16 +286,35 @@ class _MucDoCao extends ConsumerWidget {
   }
 }
 
-class _MucTuTruong extends ConsumerWidget {
+class _MucTuTruong extends ConsumerStatefulWidget {
   const new();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_MucTuTruong> createState() => _MucTuTruongState();
+}
+
+class _MucTuTruongState extends ConsumerState<_MucTuTruong> {
+  /// Cảnh báo có trễ hai ngưỡng + giữ tối thiểu: nam châm dao động quanh
+  /// ngưỡng không làm cảnh báo bật / tắt liên tục (A9c).
+  var _tre = const TreCanhBao();
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final ut = ref.watch(huongProvider.select((h) => h.value?.cuongDoTu));
+    final mau = ref.watch(
+      huongProvider.select(
+        (h) => h.value == null ? null : (h.value!.cuongDoTu, h.value!.tNs),
+      ),
+    );
     final mh = ref.watch(tuTruongProvider);
+    final ut = mau?.$1;
     if (ut == null || !ut.isFinite) return const SizedBox.shrink();
     final dg = danhGiaTuTruong(ut, moHinhNt: mh?.f);
+    _tre = _tre.capNhat(
+      vuotNguongBat: dg.batThuong,
+      duoiNguongTat: dg.yen,
+      luc: DateTime.fromMicrosecondsSinceEpoch(mau!.$2 ~/ 1000),
+    );
     double mot(double v) => double.parse(v.toStringAsFixed(1));
     return _Muc(
       tieuDe: l10n.locSectionField,
@@ -311,7 +330,13 @@ class _MucTuTruong extends ConsumerWidget {
                 l10n.locFieldDeviation(p.round()),
             ].join(' · '),
           ),
-        if (dg.batThuong) _GhiChu(l10n.locFieldAbnormal, canhBao: true),
+        LbOCoDinh(
+          chiSo: _tre.dangBat ? 1 : 0,
+          phuongAn: [
+            _GhiChu(l10n.a9FieldNormal),
+            _GhiChu(l10n.locFieldAbnormal, canhBao: true),
+          ],
+        ),
       ],
     );
   }

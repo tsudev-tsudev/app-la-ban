@@ -1265,6 +1265,9 @@ class LbL10nEn extends LbL10n {
   @override
   String get devModeServerOnly =>
       'The server still sees developer mode - connect to the internet, then tap Check again.';
+
+  @override
+  String get a9FieldNormal => 'Field normal - no magnetic interference nearby.';
 }
 
 /// The translations for English (`en_XA`).
@@ -2544,4 +2547,8 @@ class LbL10nEnXa extends LbL10nEn {
   @override
   String get devModeServerOnly =>
       '[Ťhẽ šẽřvẽř šťỉłł šẽẽš đẽvẽłởpẽř mởđẽ - çởññẽçť ťở ťhẽ ỉñťẽřñẽť, ťhẽñ ťảp Çhẽçk ảğảỉñ. ··································]';
+
+  @override
+  String get a9FieldNormal =>
+      '[Fỉẽłđ ñởřmảł - ñở mảğñẽťỉç ỉñťẽřfẽřẽñçẽ ñẽảřbỹ. ···················]';
 }

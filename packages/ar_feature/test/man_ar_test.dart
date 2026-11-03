@@ -98,6 +98,44 @@ void main() {
     );
   });
 
+  testWidgets('A9c: cờ hiệu chuẩn / dựng đứng dao động - nhắc không nhấp '
+      'nháy, số độ không nhảy', (tester) async {
+    await tester.pumpWidget(arThu(o: oChup.first));
+    await tester.pump(const Duration(seconds: 1));
+    final so = find.text('20°');
+    final viTri = tester.getRect(so);
+    final nhac = find.text(
+      'Độ chính xác la bàn thấp - hãy hiệu chuẩn hình số 8.',
+    );
+    double mo() => tester
+        .widget<AnimatedOpacity>(
+          find.ancestor(of: nhac, matching: find.byType(AnimatedOpacity)),
+        )
+        .opacity;
+    expect(mo(), 0);
+    var doi = 0;
+    var truoc = mo();
+    for (var i = 1; i <= 50; i++) {
+      final xau = i.isOdd;
+      await tester.pumpWidget(
+        arThu(
+          o: oChup.first,
+          doc: (
+            camera: (phuongVi: 20, ngoc: 2, lan: 0),
+            dungDung: !xau,
+            canHieuChuan: xau,
+          ),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(tester.getRect(so), viTri, reason: 'mẫu $i');
+      if (mo() != truoc) doi++;
+      truoc = mo();
+    }
+    expect(doi, 1);
+    expect(mo(), 1);
+  });
+
   testWidgets('điểm trong khung có nhãn, điểm ngoài khung ở mép', (
     tester,
   ) async {

@@ -5,6 +5,7 @@ import 'package:ar_feature/src/du_lieu/camera_ar.dart';
 import 'package:ar_feature/src/providers.dart';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:i18n/i18n.dart';
@@ -533,46 +534,78 @@ class _MuiTenDiem extends StatelessWidget {
   }
 }
 
-class _ChanDuoi extends StatelessWidget {
+class _ChanDuoi extends StatefulWidget {
   const new({required this.doc, required this.coViTri});
 
   final DocAr? doc;
   final bool coViTri;
 
   @override
+  State<_ChanDuoi> createState() => _ChanDuoiState();
+}
+
+/// Nhắc giữ thẳng / hiệu chuẩn có trễ + giữ tối thiểu và mỗi nhắc một ô dành
+/// sẵn (trong suốt khi ẩn) - cờ thô đổi theo từng mẫu cảm biến không làm số
+/// độ bên dưới nhảy lên xuống (A9c).
+class _ChanDuoiState extends State<_ChanDuoi> {
+  var _treNghieng = const TreCanhBao();
+  var _treHieuChuan = const TreCanhBao();
+
+  @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final chu = Theme.of(context).textTheme;
-    final d = doc;
-    final nhac = [
-      if (d != null && !d.dungDung) l10n.arHoldUpright,
-      if (d != null && d.canHieuChuan) l10n.arCalibrate,
-      if (!coViTri) l10n.arNoLocation,
-    ];
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (final n in nhac)
-          Padding(
-            padding: const EdgeInsets.only(bottom: LbSpacing.xs),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.7),
-                borderRadius: BorderRadius.circular(LbRadius.sm),
+    final d = widget.doc;
+    // Đồng hồ khung hình: đơn điệu, test giả lập được bằng pump.
+    final luc = DateTime.fromMicrosecondsSinceEpoch(
+      SchedulerBinding.instance.currentSystemFrameTimeStamp.inMicroseconds,
+    );
+    final nghieng = d != null && !d.dungDung;
+    final hieuChuan = d != null && d.canHieuChuan;
+    _treNghieng = _treNghieng.capNhat(
+      vuotNguongBat: nghieng,
+      duoiNguongTat: !nghieng,
+      luc: luc,
+    );
+    _treHieuChuan = _treHieuChuan.capNhat(
+      vuotNguongBat: hieuChuan,
+      duoiNguongTat: !hieuChuan,
+      luc: luc,
+    );
+    Widget nhac(String n, {required bool hien}) => LbOCoDinh(
+      chiSo: hien ? 1 : 0,
+      canh: Alignment.bottomCenter,
+      phuongAn: [
+        const SizedBox.shrink(),
+        Padding(
+          padding: const EdgeInsets.only(bottom: LbSpacing.xs),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.7),
+              borderRadius: BorderRadius.circular(LbRadius.sm),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: LbSpacing.sm,
+                vertical: LbSpacing.xs,
               ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: LbSpacing.sm,
-                  vertical: LbSpacing.xs,
-                ),
-                child: Text(
-                  n,
-                  textAlign: TextAlign.center,
-                  style: chu.bodyMedium?.copyWith(color: _mauChu),
-                ),
+              child: Text(
+                n,
+                textAlign: TextAlign.center,
+                style: chu.bodyMedium?.copyWith(color: _mauChu),
               ),
             ),
           ),
+        ),
+      ],
+    );
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        nhac(l10n.arHoldUpright, hien: _treNghieng.dangBat),
+        nhac(l10n.arCalibrate, hien: _treHieuChuan.dangBat),
+        // Thiếu vị trí là trạng thái bền (không dao động) - không cần ô sẵn.
+        if (!widget.coViTri) nhac(l10n.arNoLocation, hien: true),
         if (d != null)
           Semantics(
             liveRegion: false,

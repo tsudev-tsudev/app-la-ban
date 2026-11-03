@@ -2,6 +2,13 @@
 const tuTruongThapNhat = 25.0;
 const tuTruongCaoNhat = 65.0;
 
+/// Ngưỡng TẮT cảnh báo (hẹp hơn ngưỡng bật - trễ hai ngưỡng chống nhấp nháy):
+/// chỉ coi là yên khi về hẳn trong 27-62 µT và lệch mô hình <= 15%.
+const tuTruongYenThapNhat = 27.0;
+const tuTruongYenCaoNhat = 62.0;
+const lechBatPhanTram = 20.0;
+const lechYenPhanTram = 15.0;
+
 /// So cường độ đo được với mô hình.
 typedef DanhGiaTuTruong = ({
   double doDuoc,
@@ -14,6 +21,10 @@ typedef DanhGiaTuTruong = ({
 
   /// Ngoài dải 25-65 µT hoặc lệch mô hình > 20%: có nhiễu từ gần máy.
   bool batThuong,
+
+  /// Đủ yên để TẮT cảnh báo đang bật (ngưỡng hẹp hơn [batThuong]). Giữa hai
+  /// ngưỡng: không bật mới, không tắt - xem `TreCanhBao`.
+  bool yen,
 });
 
 /// [moHinhNt] = `TuTruongDiaCau.f` (nT).
@@ -27,6 +38,10 @@ DanhGiaTuTruong danhGiaTuTruong(double doDuocUt, {double? moHinhNt}) {
     batThuong:
         doDuocUt < tuTruongThapNhat ||
         doDuocUt > tuTruongCaoNhat ||
-        (lech != null && lech.abs() > 20),
+        (lech != null && lech.abs() > lechBatPhanTram),
+    yen:
+        doDuocUt >= tuTruongYenThapNhat &&
+        doDuocUt <= tuTruongYenCaoNhat &&
+        (lech == null || lech.abs() <= lechYenPhanTram),
   );
 }
