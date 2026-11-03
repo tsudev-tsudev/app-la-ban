@@ -67,7 +67,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 16 | A6 | Waypoint, chia sẻ, deep link | A5, S3 | ✅ 30/10 (53e946b + cf74304, v0.1.0-beta.8) · máy thật M32: App Links `verified`, link /w/ mở thẳng app (cold 1,5 s) |
 | 17 | A7 | Bản đồ offline + Camera AR (chia A7a / A7b / A7c) | A6 | ✅ 30/10 · A7a (a0e1d1b: tile VN trên R2 + Worker /ban-do) · A7b (d6de6a2: màn bản đồ + vùng offline) · A7c (62e4cab PR #33: Camera AR Camera2 nội bộ, v0.1.0-beta.9 đã phát hành) · máy thật M32 31/10: chế độ máy bay hiển thị bản đồ từ vùng offline, đổi Sáng / Tối không mạng |
 | 18 | R1 | Landing hoàn chỉnh (kéo lên làm cùng R0 theo yêu cầu người dùng) | N2 | ✅ 28/10 |
-| 19 | S8 | Bảo vệ edge web (CSP, header, WAF as code) | R1 | ✅ 29/10 (CSP nghiêm Report-Only tới 05/11; Access ở S6, Turnstile ở S7) |
+| 19 | S8 | Bảo vệ edge web (CSP, header, WAF as code) | R1 | ✅ 29/10 (CSP `strict-dynamic` chặn từ 03/11, Trusted Types Report-Only; Access ở S6, Turnstile ở S7) |
 | 20 | S9 | Lớp bảo vệ nội dung web + build sạch | S8 | ✅ 29/10 (bdbd740; CSV audit ở S6) |
 | 21 | A8 | Cài đặt, quyền riêng tư, trợ năng, hiệu năng (chia A8a / A8b) | A7, S4 | 🟨 A8a ✅ 31/10 (0191b2d PR #34: quyền riêng tư + đồng ý NĐ 13, Q43; máy thật M32 đạt; chưa phát hành APK - gộp A8b) · A8b ✅ 31/10 (trợ năng + Reduce motion, Q45; v0.1.0-beta.10) |
 | 22 | S10 | Giám sát, log bất biến, backup, ứng phó sự cố (chia S10a / S10b) | S7 | ✅ S10a ✅ 02/11 (máy chủ: nhật ký bất biến R2 + mốc neo audit, sao lưu mã hoá + diễn tập, đột biến -> Telegram, security.txt, runbook IR, Q48) · S10b ✅ 02/11 (báo cáo sự cố tự xây, 0 đồng, đồng ý riêng, Q49) |
@@ -549,9 +549,9 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
 - Phát sinh (từ S8) -> 05/11/2026: đọc báo cáo CSP 7 ngày, chuyển `strict-dynamic` sang header chặn (runbook csp-bao-cao).
   -> S6: Access chặn admin (cần Zero Trust) + CSP nonce cho admin (dùng lại `web/landing/edge` qua gói chung khi admin có
   HTML thật). -> S7: Turnstile (widget + `siteverify` ở Worker) cùng form khiếu nại. -> S10: bảng CSP / honeypot trong SOC.
-- Tiến độ phát sinh 05/11 (03/11): báo cáo 6 ngày không có vi phạm từ script của mình; đã tắt Email Obfuscation (Config
-  Rule, zone.json); preview `strict-dynamic` chặn đạt 0 vi phạm. Còn: 05/11 xác nhận báo cáo sạch -> đổi header chặn (runbook
-  csp-bao-cao mục Ghi chú 03/11).
+- Kết quả phát sinh CSP (03/11, người dùng cho bật sớm, #56 + #58): tắt Email Obfuscation (Config Rule zone.json);
+  header CHẶN landing `script-src 'self' 'strict-dynamic' 'nonce-X'`, Trusted Types giữ Report-Only (script Cloudflare);
+  bỏ `interest-cohort` khỏi Permissions-Policy. Prod headless 10 trang 0 vi phạm chặn (runbook csp-bao-cao).
 
 ### S9 - Bảo vệ nội dung web + build sạch
 - Đọc thêm: SEC-WEB-SHIELD, SEC-WEB-BUILD.
