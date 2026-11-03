@@ -73,3 +73,14 @@ Báo cáo 29/10 - 03/11 (AE, theo `blob6` nguồn): KHÔNG có vi phạm từ sc
   `'strict-dynamic'` ở dòng 4 `_headers` rồi deploy landing.
 - Turnstile (`/khieu-nai/`) chưa có site key nên chưa hiện form; thẻ `<script>` Turnstile được worker gắn nonce như mọi
   thẻ khác -> khi có site key, kiểm headless `/khieu-nai/?ref=...` không vi phạm.
+
+## Theo dõi 03/11 17:15 (sau bật chặn 2 h)
+
+- AE: 0 báo cáo `csp` kể từ 07:28 UTC (cả `enforce` lẫn Trusted Types Report-Only). KHÔNG phải hỏng: header prod còn
+  đủ `report-uri` / `report-to csp` / `Reporting-Endpoints` (PR #58 chỉ thêm `'strict-dynamic'`), preflight
+  `OPTIONS /v1/web/csp` 204, `POST` `application/reports+json` và `application/csp-report` 204 và có dòng route trong AE.
+- Lịch sử 7 ngày: báo cáo đến theo đợt khi có người xem thật (VN, lẻ tẻ US / DE / RO), khoảng trống 5-13 h là bình thường.
+- Bẫy: Chromium headless (`--headless=new`, cả khi giữ trang 100 s và đóng êm qua CDP `Browser.close`) KHÔNG gửi báo cáo
+  Reporting API - net-log không có request tới `/v1/web/csp`. Kiểm vi phạm bằng `grep CONSOLE`, kiểm đường gửi bằng
+  `curl` ở trên hoặc trình duyệt thật (DevTools > Application > Reporting API).
+- Hành động: tiếp tục đọc bảng 7 ngày vào 05/11 - 10/11; rollback chỉ khi có `enforce` `script-src-elem` từ origin mình.
