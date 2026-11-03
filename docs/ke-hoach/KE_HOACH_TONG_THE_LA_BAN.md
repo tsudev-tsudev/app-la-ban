@@ -78,7 +78,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 26 | M1 | Gói Pro trong app + quảng cáo (chia M1a quyền lợi + Play Billing / M1b quảng cáo), v1.1.0 sau Release Gate | R4 | ⬜ |
 | 27 | R0 | Bản APK thử: khoá ký, script phát hành GitHub Release + R2, trang tải | A5 | ✅ 28/10 |
 | 28 | I1 | iOS (đầu 2027): build, App Attest, Privacy Manifest, TestFlight, App Store | R4, máy Mac | ⬜ |
-| 29 | M2 | App song song "La bàn Pro" trả phí một lần, không quảng cáo (Q56) | R2b, M1a bước 3 (bảng `quyen_loi`) | ⬜ (có thể kéo M1a bước 3 + M2 lên chạy cùng R4 để dùng chung cửa sổ thử kín 14 ngày) |
+| 29 | M2 | App song song "La bàn Pro" trả phí một lần, không quảng cáo (Q56) | R2b, M1a bước 3 (bảng `quyen_loi`) | ⬜ chạy CÙNG R4 (người dùng chốt 03/11: dùng chung cửa sổ thử kín 14 ngày; M1a bước 3 phần máy chủ làm trước) · logo Pro ✅ 03/11 |
 
 Có thể giao agent thứ hai song song: S1 với A2-A3 · A5 với A4 · S5 với S4 · A6 với S6-S7 · R1 với A7 · A8 với S8-S9.
 
@@ -86,7 +86,7 @@ Có thể giao agent thứ hai song song: S1 với A2-A3 · A5 với A4 · S5 v�
 `~/.config/la-ban/cf.env` · trước A2 bật Wireless debugging trên 1 điện thoại Android · trước S2 Google Cloud project + Play
 Integrity API + service account (Apple Team ID dời sang I1) · trước S6 bật Cloudflare Zero Trust · trước R2 tài khoản Play Console (hoãn ~7 ngày từ 29/10 do lỗi thanh toán - dự kiến từ 05/11/2026), duyệt Privacy
 Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer · trước R4 chốt đơn vị pentest, bấm phát hành · trước M1 / M2: hồ sơ thanh toán Play (merchant) + khai báo
-nhà giao dịch (trader - địa chỉ / điện thoại có thể hiện công khai trên Play), chốt giá (Q55 / Q56 `[CẦN CHỐT]`), Pub/Sub
+nhà giao dịch (trader - địa chỉ / điện thoại có thể hiện công khai trên Play), giá đã chốt 03/11 (Q55 / Q56), Pub/Sub
 cho RTDN trong dự án Cloud 930761930572, cấp service account quyền "Xem dữ liệu tài chính / quản lý đơn hàng" trong Play
 Console · trước M1b tài khoản AdMob (RevenueCat KHÔNG còn cần - Q55).
 
@@ -739,6 +739,8 @@ Console · trước M1b tài khoản AdMob (RevenueCat KHÔNG còn cần - Q55).
 ### R4 - Phát hành v1.0.0
 - Làm: staged rollout Play (1->5->20->50->100%) (iOS phased ở I1); Shorebird kênh staging -> stable; theo dõi crash-free, ANR, chặn
   nhầm; runbook trực.
+- Song song (người dùng chốt 03/11): M1a bước 3 (máy chủ quyền lợi) -> M2 app "La bàn Pro"; thử kín app chính và app Pro
+  cùng 12 tester trong CÙNG cửa sổ 14 ngày (tài khoản cá nhân), production hai app cùng đợt.
 - Cổng: crash-free >= 99,8%; không sự cố mở. Bắt đầu đếm 4 tuần Release Gate.
 
 ### M1 - Gói Pro trong app + quảng cáo (chia M1a / M1b)
@@ -749,7 +751,7 @@ Console · trước M1b tài khoản AdMob (RevenueCat KHÔNG còn cần - Q55).
   khoản người dùng: quyền lợi gắn với tài khoản Google trên Play, khôi phục bằng Restore trên máy mới.
 - **M1a - Quyền lợi + Google Play Billing** (làm trước, có thể phát hành trước khi bật quảng cáo):
   1. Sản phẩm Play (người dùng tạo trong Play Console theo runbook): gói đăng ký `pro_thang`, `pro_nam` (base plan +
-     dùng thử 7 ngày cho `pro_nam`) và sản phẩm mua một lần `pro_vinh_vien` (non-consumable) - giá `[CẦN CHỐT]` Q55.
+     dùng thử 7 ngày cho `pro_nam`) và sản phẩm mua một lần `pro_vinh_vien` (non-consumable) - giá chốt 03/11 (Q55): 19.000 đ / tháng, 99.000 đ / năm, 149.000 đ vĩnh viễn.
   2. App: gói `packages/quyen_loi` (thay phần IAP của `ads_iap`) dùng plugin chính chủ `in_app_purchase` (Play Billing
      Library, không SDK bên thứ ba); `obfuscatedAccountId` = băm định danh cài đặt (không định danh phần cứng); màn Paywall
      vi / en, giá lấy từ Play (`ProductDetails`, không ghi cứng), nút Khôi phục, Quản lý gói (deep link Play subscriptions),
@@ -778,13 +780,15 @@ Console · trước M1b tài khoản AdMob (RevenueCat KHÔNG còn cần - Q55).
 
 ### M2 - App song song "La bàn Pro" (trả phí một lần, không quảng cáo - Q56)
 - Đọc thêm: SEC-IAP; QUYET_DINH Q56.
-- Mục tiêu: listing Play riêng `com.tsudev.laban.pro`, tên `La bàn Pro - TsuDev Compass`, giá một lần `[CẦN CHỐT]` Q56;
+- Mục tiêu: listing Play riêng `com.tsudev.laban.pro`, tên `La bàn Pro - TsuDev Compass`, giá một lần 99.000 đ (chốt 03/11, Q56); chạy CÙNG R4;
   đủ mọi tính năng Pro, KHÔNG chứa SDK quảng cáo trong APK (Data Safety không có Advertising ID). Cùng mã nguồn, cùng Worker.
 - Làm:
   1. Tách vỏ app: chuyển entry / DI / router / theme từ `app/lib` sang gói `packages/app_shell` nhận `CauHinhSanPham`
      (`mienPhi` / `pro`); `app/` (miễn phí, phụ thuộc `quang_cao`) và `app_pro/` mới (KHÔNG phụ thuộc `quang_cao`) chỉ còn
      `main` + Android (applicationId, icon / tên riêng, flavor dev / staging / prod). Golden + test chung vẫn xanh. Cập nhật
-     cấu trúc thư mục ở CLAUDE.md + AGENTS.md trong cùng PR.
+     cấu trúc thư mục ở CLAUDE.md + AGENTS.md trong cùng PR. Icon: chép `design/logo/pro/android/res/mipmap-*` vào
+     `app_pro/android/app/src/main/res` (adaptive XML, nền, monochrome dùng chung bản miễn phí; flavor dev / staging của
+     app Pro giữ nhãn DEV / STG) - logo đã sinh 03/11: icon bản DEV với viên nhãn `PRO` nền xanh lá token `success`.
   2. Bản quyền: app Pro gửi Play Integrity như S2; Worker thêm `com.tsudev.laban.pro` vào danh sách gói (biến môi trường
      sẵn có) và cấp quyền lợi `pro_app` khi `accountDetails.appLicensingVerdict = LICENSED`. `UNLICENSED` (bản sao tải
      ngoài) -> tín hiệu `PRO_UNLICENSED`, app hiện hộp thoại khắc phục GET_LICENSED của Play Integrity, chỉ còn tính năng
