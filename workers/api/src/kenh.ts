@@ -18,6 +18,7 @@ import { LoiApi } from './thuan/loi';
 import { schemaLoSuKien, tinHieuLuu, LO_TOI_DA } from './thuan/su-kien';
 import type { BoTuyen } from './tuyen';
 import { quyenLoiThietBi, schemaQuyenLoi } from './mua';
+import { biChanPhatTrien, capNhatPhatTrien } from './thuan/che-do-phat-trien';
 
 const LATEST_DEM_MS = 5 * 60 * 1000;
 let demLatest: { luc: number; ban: BanMoi | null } | null = null;
@@ -79,6 +80,8 @@ export function dangKyKenh(app: Hono<MoiTruongHono>, boTuyen: BoTuyen): void {
         banMoi: z.object({ phienBan: z.string(), maPhienBan: z.number().int() }).nullable(),
         /** M1a (Q55): quyền lợi do Worker xác minh với Google - app chỉ hiển thị / bỏ quảng cáo theo trường này. */
         quyenLoi: schemaQuyenLoi,
+        /** S11 (Q57): true = Worker đang chặn vì Developer options / ADB -> app hiện màn chặn toàn phần. */
+        cheDoPhatTrien: z.boolean(),
       }),
       xacThuc: 'ke-ca-bi-cam',
       gioiHan: [{ chieu: 'thiet-bi', gioiHan: 30, cuaSoMs: 60_000 }],
@@ -101,11 +104,14 @@ export function dangKyKenh(app: Hono<MoiTruongHono>, boTuyen: BoTuyen): void {
         );
       }
       const bayGio = Date.now();
+      // S11: ghi ngay (không nền) để route nghiệp vụ gọi liền sau khi người dùng tắt Developer options không bị 403.
+      const pt = capNhatPhatTrien(c.get('devModeAt') ?? null, c.req.query('pt'), bayGio);
+      if (db && pt.doi) await db.prepare('UPDATE devices SET dev_mode_at = ? WHERE id = ?').bind(pt.moi, thietBi).run();
       const [banMoi, quyenLoi] = await Promise.all([
         doBuoc(c.get('dongHo'), 'luuTru', () => banMoiNhat(c, bayGio)),
         doBuoc(c.get('dongHo'), 'd1', () => quyenLoiThietBi(db, thietBi, bayGio)),
       ]);
-      return c.json({ trangThai, mucTin: c.get('mucTin') ?? 'unverified', ref: refChoTrangThai(trangThai, thietBi), banMoi, quyenLoi });
+      return c.json({ trangThai, mucTin: c.get('mucTin') ?? 'unverified', ref: refChoTrangThai(trangThai, thietBi), banMoi, quyenLoi, cheDoPhatTrien: biChanPhatTrien(c.env.CHAN_DEV_MODE, pt.moi) });
     },
   );
 
@@ -121,6 +127,7 @@ export function dangKyKenh(app: Hono<MoiTruongHono>, boTuyen: BoTuyen): void {
       bodyToiDa: 64 * 1024,
       xacThuc: true,
       gioiHan: [{ chieu: 'thiet-bi', gioiHan: 20, cuaSoMs: 60_000 }],
+      choPhepDevMode: true,
     },
     async (c, body) => {
       if (!c.env.DB) throw new LoiApi(503, 'chua-cau-hinh', { thieu: 'DB' });

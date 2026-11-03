@@ -319,5 +319,16 @@
   "privacyMailFailed": "Couldn't open a mail app - please write to {email}",
   "privacyPermissions": "System permissions",
   "privacyPermissionsBody": "Location and camera are managed by the system - revoke them any time in the app settings.",
-  "privacyOpenSettings": "Open app settings"
+  "privacyOpenSettings": "Open app settings",
+  "devModeBlockedTitle": "Turn off developer mode",
+  "devModeBlockedBody": "To protect your data and account, Compass doesn't run while Developer options or USB / wireless debugging are on. Turn them off, then come back to the app.",
+  "devModeStatusTitle": "Currently on",
+  "devModeItemOptions": "Developer options",
+  "devModeItemUsb": "USB debugging",
+  "devModeItemWifi": "Wireless debugging",
+  "devModeHowTo": "Settings > System (or Additional settings) > Developer options > switch the top toggle off.",
+  "devModeOpenSettings": "Open Developer options",
+  "devModeOpenFailed": "Couldn't open settings - open your phone's Settings app.",
+  "devModeRecheck": "Check again",
+  "devModeServerOnly": "The server still sees developer mode - connect to the internet, then tap Check again."
 }

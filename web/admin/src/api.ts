@@ -12,7 +12,33 @@ export class LoiSoc extends Error {
 
 export type TuyChonGoi = { body?: unknown; nen?: boolean; signal?: AbortSignal };
 
+const CHO_KHIEN_TOI_DA_MS = 3000;
+
+/**
+ * S11 (Q58, SH-07): chỉ gọi API sau khi khiên (/js/khien.js) kiểm xong lần đầu (`data-khien-san`) và không đang nghi
+ * (`data-khien-nghi`) - dữ liệu thật không xuống trình duyệt đang bị soi. Khiên không nạp được (mạng / bị chặn) thì sau 3
+ * giây vẫn gọi: chốt chặn thật ở Worker (từ chối 10 phút theo IP sau tín hiệu khiên).
+ */
+export async function choKhien(goc: HTMLElement = document.documentElement, toiDaMs = CHO_KHIEN_TOI_DA_MS): Promise<void> {
+  if (!goc.hasAttribute('data-khien-san')) {
+    await new Promise<void>((xong) => {
+      const quan = new MutationObserver(() => {
+        if (goc.hasAttribute('data-khien-san')) ket();
+      });
+      const hen = setTimeout(ket, toiDaMs);
+      function ket() {
+        quan.disconnect();
+        clearTimeout(hen);
+        xong();
+      }
+      quan.observe(goc, { attributes: true, attributeFilter: ['data-khien-san'] });
+    });
+  }
+  if (goc.hasAttribute('data-khien-nghi')) throw new LoiSoc(0, 'khien-nghi');
+}
+
 export async function goi<T>(duong: string, tc: TuyChonGoi = {}): Promise<T> {
+  await choKhien();
   const h: Record<string, string> = { accept: 'application/json' };
   if (tc.nen) h['x-soc-nen'] = '1';
   let res: Response;

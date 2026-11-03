@@ -69,6 +69,8 @@ export type Env = {
   /** RTDN (IAP-02): audience JWT OIDC đặt ở Pub/Sub push subscription + email service account đẩy. Thiếu -> 503. */
   RTDN_AUD?: string;
   RTDN_EMAIL?: string;
+  /** S11 (Q57): '1' = chặn route nghiệp vụ khi app báo Developer options / ADB đang bật (prod). Staging '0' chỉ ghi nhận. */
+  CHAN_DEV_MODE?: string;
 };
 
 export type BienYeuCau = {
@@ -89,6 +91,8 @@ export type BienYeuCau = {
   mucTin?: string;
   /** Trạng thái thiết bị (clean / suspicious / restricted / banned), đặt bởi xacThuc. */
   trangThai?: string;
+  /** S11: devices.dev_mode_at (ms, null = sạch), đặt bởi xacThuc. */
+  devModeAt?: number | null;
   /** Admin SOC (S6), đặt bởi middleware src/admin/xac-thuc.ts. */
   quanTri?: { email: string; vaiTro: VaiTro };
   phienSoc?: { idHash: string; stepUpAt: number; expiresAt: number };

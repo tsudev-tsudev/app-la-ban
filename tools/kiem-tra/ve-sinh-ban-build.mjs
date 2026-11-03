@@ -63,6 +63,11 @@ for (const goc of thuMuc) {
     if (!ds) continue;
     let noiDung = readFileSync(tep, 'utf8');
     if (ext === '.js' || ext === '.mjs') noiDung = boChuoiJs(noiDung);
+    // S11 (QUYET_DINH Q58): khiên cố ý dùng ĐÚNG MỘT câu lệnh `debugger` để dò công cụ đang gắn - miễn trừ hẹp cho
+    // `js/khien.js`; lần xuất hiện thứ hai (hoặc ở tệp khác) vẫn đỏ.
+    if (/[\\/]js[\\/]khien\.js$/.test(tep) && (noiDung.match(/\bdebugger\s*;/g) ?? []).length === 1) {
+      noiDung = noiDung.replace(/\bdebugger\s*;/, ';');
+    }
     for (const [mau, ten] of ds) {
       const m = mau.exec(noiDung);
       if (m) loi.push(`${tep}: ${ten} -> ${m[0].slice(0, 80).replace(/\s+/g, ' ')}`);

@@ -480,6 +480,28 @@ void main() {
         },
       );
 
+      test(
+        'S11: pt nằm trong chuỗi ký; cheDoPhatTrien đọc từ phản hồi',
+        () async {
+          final d = dv();
+          await d.tinhTrang(phatTrien: const TrangThaiPhatTrien(adbWifi: true));
+          expect(nt.daKy.last, contains('\n/v1/status\npt=1\n'));
+          await d.tinhTrang(phatTrien: TrangThaiPhatTrien.sach);
+          expect(nt.daKy.last, contains('\n/v1/status\npt=0\n'));
+          final t = TinhTrangThietBi.tuJson({
+            'trangThai': 'clean',
+            'mucTin': 'device',
+            'cheDoPhatTrien': true,
+          })!;
+          expect(t.cheDoPhatTrien, isTrue);
+          expect(t.voiPhatTrien(chan: false).cheDoPhatTrien, isFalse);
+          expect(
+            TinhTrangThietBi.tuJson({'trangThai': 'clean'})!.cheDoPhatTrien,
+            isFalse,
+          );
+        },
+      );
+
       test('tình trạng + bản mới; gửi lô sự kiện', () async {
         final d = dv();
         final t = (await d.tinhTrang() as Ok<TinhTrangThietBi>).value;

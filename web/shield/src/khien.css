@@ -29,15 +29,27 @@ html[data-khien-nghi] [data-nhay-cam] {
   gap: var(--lb-space-sm, 12px);
   padding: var(--lb-space-lg, 24px);
   text-align: center;
-  background: #0b1220;
-  color: #e8eef7;
+  /* Q60: xanh dương + trắng. Chữ #0B1220 / tiêu đề #1A56DB trên nền sáng đạt AA. */
+  background: linear-gradient(160deg, #ffffff 0%, #eef4ff 55%, #dbe8ff 100%);
+  color: #0b1220;
   font: var(--lb-type-body, 400 1rem/1.5rem system-ui, sans-serif);
 }
 
 .khien-phu h2 {
   margin: 0;
   font: var(--lb-type-headline, 700 1.75rem/2.25rem system-ui, sans-serif);
-  color: #00e5ff;
+  color: #1a56db;
+}
+
+@media (prefers-color-scheme: dark) {
+  .khien-phu {
+    background: linear-gradient(160deg, #0b1220 0%, #0f1f3d 60%, #13306b 100%);
+    color: #e8eef7;
+  }
+
+  .khien-phu h2 {
+    color: #8ab4ff;
+  }
 }
 
 .khien-phu p {

@@ -12,6 +12,7 @@ import 'package:la_ban/src/cong_truc_tuyen.dart';
 import 'package:la_ban/src/dinh_danh.dart';
 import 'package:la_ban/src/flavor.dart';
 import 'package:la_ban/src/kenh.dart';
+import 'package:la_ban/src/phat_trien.dart';
 import 'package:la_ban/src/phien_ban.dart';
 import 'package:location_feature/location_feature.dart' show DocViTri;
 import 'package:security_sdk/security_sdk.dart';
@@ -182,6 +183,11 @@ class KhungRuiRo extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final rr = ref.watch(ruiRoProvider);
+    // S11 (Q57): bật chế độ Nhà phát triển -> chặn toàn phần (sau màn khoá
+    // `banned`, vốn ưu tiên cao nhất).
+    if (rr.muc != MucRuiRo.nghiemTrong && ref.watch(chanPhatTrienProvider)) {
+      return Overlay.wrap(child: const ManChanPhatTrien());
+    }
     // Nằm trên Navigator (MaterialApp.builder): màn khoá tự có Overlay để
     // chọn chữ REF; băng chỉ có chữ thường + nút chép.
     return switch (rr.muc) {

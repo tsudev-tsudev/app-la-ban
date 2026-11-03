@@ -78,7 +78,7 @@ function dangGo(e: KeyboardEvent): boolean {
   return !!el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName));
 }
 
-type TrangThai = { loai: 'tai' } | { loai: 'loi'; ma: 'vai-tro' | 'access' | 'chung' } | { loai: 'can-passkey'; toi: Toi; khoa: boolean } | { loai: 'vao'; toi: Toi };
+type TrangThai = { loai: 'tai' } | { loai: 'loi'; ma: 'vai-tro' | 'access' | 'chung' | 'khien' } | { loai: 'can-passkey'; toi: Toi; khoa: boolean } | { loai: 'vao'; toi: Toi };
 
 export function App() {
   const [nn, datNn] = useState<NgonNgu>(() => ngonNgu(docKho('soc-nn') ?? document.documentElement.lang));
@@ -117,7 +117,9 @@ export function App() {
       datTt(toi.phien && !khoa ? { loai: 'vao', toi } : { loai: 'can-passkey', toi, khoa });
     } catch (e) {
       const s = e instanceof LoiSoc ? e.status : 0;
-      datTt({ loai: 'loi', ma: s === 403 ? 'vai-tro' : s === 401 ? 'access' : 'chung' });
+      // S11 (Q58): khiên đang nghi / Worker từ chối 10 phút sau tín hiệu DevTools của IP này.
+      const khien = e instanceof LoiSoc && (e.ma === 'khien-nghi' || e.ma === 'khien-devtools');
+      datTt({ loai: 'loi', ma: khien ? 'khien' : s === 403 ? 'vai-tro' : s === 401 ? 'access' : 'chung' });
     }
   }, []);
   useEffect(() => void napToi(), [napToi]);
@@ -314,7 +316,7 @@ export function App() {
     return (
       <main className="giua the-don" role="alert">
         <h1>{t.tieuDe}</h1>
-        <p>{tt.ma === 'vai-tro' ? t.khongCoVaiTro : tt.ma === 'access' ? t.accessLoi : t.loiChung}</p>
+        <p>{tt.ma === 'khien' ? t.khienChan : tt.ma === 'vai-tro' ? t.khongCoVaiTro : tt.ma === 'access' ? t.accessLoi : t.loiChung}</p>
         <button type="button" className="nut" onClick={() => location.reload()}>
           {t.thuLai}
         </button>

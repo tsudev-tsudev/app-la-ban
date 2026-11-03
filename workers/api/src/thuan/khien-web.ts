@@ -30,18 +30,24 @@ export function goiCauHinhHopLe(raw: string | null, duLieuToiDa = 4096): string 
 
 export const schemaTinHieuWeb = z.strictObject({
   trang: z.enum(['landing', 'admin']),
-  loai: z.enum(['devtools']),
+  // S11 (Q58): thêm tự động hoá (webdriver / headless) và debugger (DevTools / remote debugging qua USB đang gắn).
+  loai: z.enum(['devtools', 'tu-dong-hoa', 'debugger']),
   duongDan: z.string().max(128).regex(/^\/[A-Za-z0-9/._-]*$/),
   tinHieu: z.strictObject({
     kich_thuoc: z.boolean(),
     diem: z.number().int().min(0).max(1000),
     phim: z.number().int().min(0).max(10_000),
     menu: z.number().int().min(0).max(10_000),
+    debugger: z.boolean().optional(),
+    tu_dong: z.boolean().optional(),
   }),
 });
 export type TinHieuWeb = z.infer<typeof schemaTinHieuWeb>;
 
 export const LOAI_SU_KIEN_WEB = 'WEB_DEVTOOLS';
+
+/** S11 (Q58): sau tín hiệu khiên từ trang admin, API admin từ chối cùng IP trong cửa sổ này. */
+export const CUA_SO_KHOA_ADMIN_MS = 10 * 60 * 1000;
 
 /** Tín hiệu web -> sự kiện Threat Engine (theo IP, severity low). Đường dẫn trang là của site mình, không phải PII. */
 export function suKienTuTinHieu(t: TinHieuWeb, id: string): { id: string; type: string; severity: string; signals: Record<string, unknown> } {
@@ -49,6 +55,6 @@ export function suKienTuTinHieu(t: TinHieuWeb, id: string): { id: string; type: 
     id,
     type: LOAI_SU_KIEN_WEB,
     severity: 'low',
-    signals: { trang: t.trang, duong_dan: t.duongDan, ...t.tinHieu },
+    signals: { trang: t.trang, loai: t.loai, duong_dan: t.duongDan, ...t.tinHieu },
   };
 }

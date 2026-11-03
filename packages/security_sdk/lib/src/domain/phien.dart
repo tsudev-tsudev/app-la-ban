@@ -125,6 +125,7 @@ final class TinhTrangThietBi {
     required this.mucTin,
     this.ref,
     this.banMoi,
+    this.cheDoPhatTrien = false,
   });
 
   /// Server từ chối phiên vì thiết bị bị cấm: trạng thái `banned` + mã REF
@@ -139,6 +140,19 @@ final class TinhTrangThietBi {
   final MucTin mucTin;
   final String? ref;
   final ({String phienBan, int maPhienBan})? banMoi;
+
+  /// S11 (Q57): Worker đang chặn vì Developer options / ADB bật.
+  final bool cheDoPhatTrien;
+
+  /// Bản sao với [cheDoPhatTrien] mới (app vừa thấy người dùng tắt - không
+  /// giữ màn chặn theo phản hồi cũ trong lúc chờ `/v1/status` mới).
+  TinhTrangThietBi voiPhatTrien({required bool chan}) => TinhTrangThietBi(
+    trangThai: trangThai,
+    mucTin: mucTin,
+    ref: ref,
+    banMoi: banMoi,
+    cheDoPhatTrien: chan,
+  );
 
   /// Thân JSON -> tình trạng; sai dạng -> null.
   static TinhTrangThietBi? tuJson(Map<String, Object?>? j) {
@@ -158,6 +172,7 @@ final class TinhTrangThietBi {
               maPhienBan: b['maPhienBan']! as int,
             )
           : null,
+      cheDoPhatTrien: j['cheDoPhatTrien'] == true,
     );
   }
 }

@@ -34,7 +34,7 @@ export async function dongGoi() {
   const ra = await minify(ma, {
     ecma: 2020,
     toplevel: true,
-    compress: { passes: 3, drop_console: true, drop_debugger: true, unsafe_arrows: true },
+    compress: { passes: 3, drop_console: true, drop_debugger: false, unsafe_arrows: true },
     mangle: { toplevel: true, properties: { regex: new RegExp(`^(${THUOC_TINH_NOI_BO.join('|')})$`) } },
     format: { comments: false, ascii_only: true },
     sourceMap: false,

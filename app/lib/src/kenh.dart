@@ -57,14 +57,28 @@ final class KenhApp extends ChangeNotifier {
 
   /// Tải Remote Config rồi hỏi tình trạng thiết bị (cần phiên). Lỗi mạng bỏ
   /// qua: app chạy tiếp với cấu hình đang có.
-  Future<void> lamMoi(DichVuDinhDanh? dinhDanh) async {
+  /// [phatTrien]: trạng thái Developer options gửi kèm (`pt`, S11).
+  Future<void> lamMoi(
+    DichVuDinhDanh? dinhDanh, {
+    TrangThaiPhatTrien? phatTrien,
+  }) async {
     await cauHinh.lamMoi();
     _apDung();
     if (dinhDanh == null) return;
-    if (await dinhDanh.tinhTrang() case Ok(:final value)) {
+    if (await dinhDanh.tinhTrang(phatTrien: phatTrien) case Ok(:final value)) {
       _tinhTrang = value;
       notifyListeners();
     }
+  }
+
+  /// Người dùng vừa tắt Developer options: bỏ cờ chặn của phản hồi CŨ để màn
+  /// chặn không treo trong lúc chờ `/v1/status` mới (server vẫn chặn API tới
+  /// khi nhận `pt=0`).
+  void boChanMayChu() {
+    final t = _tinhTrang;
+    if (t == null || !t.cheDoPhatTrien) return;
+    _tinhTrang = t.voiPhatTrien(chan: false);
+    notifyListeners();
   }
 }
 
@@ -111,6 +125,7 @@ void batDauKenh(
   CongTrucTuyen cong, {
   Duration cho = const Duration(seconds: 3),
   Duration khoang = const Duration(minutes: 15),
+  TrangThaiPhatTrien Function()? phatTrien,
 }) {
   DateTime? lanCuoi;
   void chay() {
@@ -118,7 +133,7 @@ void batDauKenh(
     final bayGio = DateTime.now();
     if (lanCuoi != null && bayGio.difference(lanCuoi!) < khoang) return;
     lanCuoi = bayGio;
-    unawaited(k.lamMoi(dinhDanh));
+    unawaited(k.lamMoi(dinhDanh, phatTrien: phatTrien?.call()));
   }
 
   WidgetsBinding.instance.addPostFrameCallback(

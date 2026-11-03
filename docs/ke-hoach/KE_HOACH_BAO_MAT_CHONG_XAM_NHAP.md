@@ -22,7 +22,7 @@ log-only / shadow mode -> tinh chỉnh -> thực thi); mọi chặn có TTL, lý
 | B-02 | CSS (lightningcss/cssnano) và HTML (html-minifier-terser / Astro compressHTML) xoá comment | P0 |
 | B-03 | Không sourcemap công khai; nếu cần thì chỉ upload Sentry | P0 |
 | B-04 | Comment không chứa bí mật / đường dẫn nội bộ / ghi chú bypass (ghi ở CONTRIBUTING.md) | P0 |
-| B-05 | `tools/kiem-tra/ve-sinh-ban-build.mjs`: quét `dist/` - comment, console, `.map`, `*.LICENSE.txt` -> đỏ là chặn deploy | P0 |
+| B-05 | `tools/kiem-tra/ve-sinh-ban-build.mjs`: quét `dist/` - comment, console, `.map`, `*.LICENSE.txt` , `debugger` -> đỏ là chặn deploy (miễn trừ duy nhất: đúng một `debugger` dò công cụ trong `js/khien.js`, S11 / Q58) | P0 |
 | B-06 | `npm run dev` giữ nguyên comment | P0 |
 
 ## SEC-EDGE, SEC-TLS, SEC-HDR - Edge và header (N2, S8)

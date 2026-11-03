@@ -18,6 +18,8 @@ import {
   phanTichNoiDung,
   soO,
   TRANG_THAI_DAU,
+  debuggerDangGan,
+  laTuDongHoa,
   type DoKichThuoc,
   type NoiDungCauHinh,
   type PhimNhan,
@@ -112,7 +114,7 @@ describe('capNhatDo / ketLuan', () => {
     const mot = lap(TRANG_THAI_DAU, [mo]);
     expect(ketLuan(mot).nghi).toBe(false);
     const hai = lap(mot, [mo]);
-    expect(ketLuan(hai)).toEqual({ nghi: true, kichThuoc: true, diem: 0 });
+    expect(ketLuan(hai)).toEqual({ nghi: true, kichThuoc: true, diem: 0, tuDong: false });
     expect(ketLuan(lap(hai, [dong])).nghi).toBe(false);
     expect(ketLuan(lap(TRANG_THAI_DAU, [mo, dong, mo])).nghi).toBe(false);
   });
@@ -120,10 +122,36 @@ describe('capNhatDo / ketLuan', () => {
     expect(ketLuan(lap(TRANG_THAI_DAU, [{ loai: 'phimDevtools' }])).nghi).toBe(false);
     expect(ketLuan(lap(TRANG_THAI_DAU, [{ loai: 'menuChuot' }, { loai: 'menuChuot' }, { loai: 'menuChuot' }])).nghi).toBe(false);
     const t = lap(TRANG_THAI_DAU, [{ loai: 'phimDevtools' }, { loai: 'phimDevtools' }], 1_000);
-    expect(ketLuan(t)).toEqual({ nghi: true, kichThuoc: false, diem: 4 });
+    expect(ketLuan(t)).toEqual({ nghi: true, kichThuoc: false, diem: 4, tuDong: false });
     expect(ketLuan(capNhatDo(t, dong, 11_000)).diem).toBe(3);
     expect(ketLuan(capNhatDo(t, dong, 41_000)).diem).toBe(0);
     expect(ketLuan(capNhatDo(t, dong, 999_000)).diem).toBe(0);
+  });
+  it('S11: debugger dừng -> nghi ngay, đóng công cụ thì tự hết sau ~50 giây; tự động hoá -> chặn cả phiên', () => {
+    const d = lap(TRANG_THAI_DAU, [{ loai: 'debugger' }], 1_000);
+    expect(ketLuan(d).nghi).toBe(true);
+    expect(ketLuan(capNhatDo(d, dong, 61_000)).nghi).toBe(false);
+    const td = lap(TRANG_THAI_DAU, [{ loai: 'tuDong' }]);
+    expect(ketLuan(td)).toMatchObject({ nghi: true, tuDong: true });
+    expect(ketLuan(capNhatDo(td, dong, 999_000)).nghi).toBe(true);
+  });
+});
+
+describe('S11: debuggerDangGan / laTuDongHoa', () => {
+  it('ngưỡng thời gian quanh debugger', () => {
+    expect(debuggerDangGan(100, 100.4)).toBe(false);
+    expect(debuggerDangGan(100, 179)).toBe(false);
+    expect(debuggerDangGan(100, 500)).toBe(true);
+  });
+  it('webdriver / headless UA / brand headless -> tự động hoá; trình duyệt thường -> không', () => {
+    const ua = 'Mozilla/5.0 (Linux; Android 13; SM-M325FV) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0 Mobile Safari/537.36';
+    expect(laTuDongHoa({ webdriver: false, ua, brands: ['Chromium', 'Google Chrome'] })).toBe(false);
+    expect(laTuDongHoa({ webdriver: true, ua, brands: [] })).toBe(true);
+    expect(laTuDongHoa({ webdriver: false, ua: ua.replace('Chrome/', 'HeadlessChrome/'), brands: [] })).toBe(true);
+    expect(laTuDongHoa({ webdriver: false, ua, brands: ['HeadlessChrome'] })).toBe(true);
+    // Bot tìm kiếm / Lighthouse render headless: không xoá nội dung (giữ SEO).
+    expect(laTuDongHoa({ webdriver: true, ua: `${ua} (compatible; Googlebot/2.1; +http://www.google.com/bot.html)`, brands: [] })).toBe(false);
+    expect(laTuDongHoa({ webdriver: false, ua: 'Mozilla/5.0 HeadlessChrome/141.0 Chrome-Lighthouse', brands: [] })).toBe(false);
   });
 });
 
@@ -194,8 +222,8 @@ describe('watermark + chuỗi', () => {
     expect(soO(0, 720)).toBe(0);
   });
   it('vi mặc định, en theo lang', () => {
-    expect(chuoiTheoNgonNgu('en-US').tieuDe).toMatch(/hidden/);
-    expect(chuoiTheoNgonNgu('vi').tieuDe).toMatch(/ẩn/);
+    expect(chuoiTheoNgonNgu('en-US').tieuDe).toMatch(/paused/);
+    expect(chuoiTheoNgonNgu('vi').tieuDe).toMatch(/tạm dừng/);
     expect(chuoiTheoNgonNgu(null)).toBe(chuoiTheoNgonNgu('vi'));
   });
 });

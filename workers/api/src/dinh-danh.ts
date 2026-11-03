@@ -272,6 +272,7 @@ export function dangKyDinhDanh(_app: Hono<MoiTruongHono>, boTuyen: BoTuyen): voi
       phanHoi: z.object({ mucTin: schemaMuc }),
       idempotent: false,
       xacThuc: true,
+      choPhepDevMode: true,
       gioiHan: [{ chieu: 'thiet-bi', gioiHan: 10, cuaSoMs: 3_600_000 }],
     },
     async (c, b) => {

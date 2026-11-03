@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:compass_feature/compass_feature.dart';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/widgets.dart';
@@ -14,6 +16,7 @@ import 'package:la_ban/src/flavor.dart';
 import 'package:la_ban/src/kenh.dart';
 import 'package:la_ban/src/lam_cung.dart';
 import 'package:la_ban/src/luu_tru.dart';
+import 'package:la_ban/src/phat_trien.dart';
 import 'package:la_ban/src/phien_ban.dart';
 import 'package:la_ban/src/rieng_tu.dart';
 import 'package:location_feature/location_feature.dart';
@@ -74,7 +77,17 @@ Future<Widget> dungApp(
     batLoi(hang, duoc, phienBanApp);
     if (dv != null) batDauGuiBaoLoi(hang, dv, cong!, duoc);
   }
-  if (kenh != null) batDauKenh(kenh, dv, cong!);
+  // S11 (Q57): theo dõi Developer options cả khi chưa đồng ý trực tuyến (màn
+  // chặn cục bộ không cần mạng); báo server chỉ khi cổng trực tuyến mở.
+  final phatTrien = dinhDanh ? GiamSatPhatTrien() : null;
+  if (kenh != null) {
+    batDauKenh(kenh, dv, cong!, phatTrien: () => phatTrien!.hienTai);
+    phatTrien!.khiDoi = (moi) {
+      if (!moi.bat) kenh.boChanMayChu();
+      if (cong.value) unawaited(kenh.lamMoi(dv, phatTrien: moi));
+    };
+  }
+  phatTrien?.batDau();
   // S4: kiểm tra môi trường + freeRASP, chỉ báo server (SEC-APP).
   final rasp = kho != null && dv != null ? taoDichVuRasp(kho, dv) : null;
   if (rasp != null) batDauRasp(rasp, flavor, cong!, dinhDanh: dv, kenh: kenh);
@@ -83,6 +96,8 @@ Future<Widget> dungApp(
       khoLuuTruProvider.overrideWithValue(kho),
       dichVuDinhDanhProvider.overrideWithValue(dv),
       kenhProvider.overrideWithValue(kenh),
+      giamSatPhatTrienProvider.overrideWithValue(phatTrien),
+      banProdProvider.overrideWithValue(flavor == Flavor.prod),
       dichVuRaspProvider.overrideWithValue(rasp),
       congTrucTuyenProvider.overrideWithValue(cong),
       // R3b: vị trí giả (Location.isMock) -> tín hiệu MOCK_LOCATION, chỉ báo.

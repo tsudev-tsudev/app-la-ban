@@ -4,12 +4,12 @@ export type ChuoiKhien = { tieuDe: string; moTa: string };
 
 const CHUOI: Readonly<Record<'vi' | 'en', ChuoiKhien>> = Object.freeze({
   vi: {
-    tieuDe: 'Nội dung tạm ẩn',
-    moTa: 'Trang phát hiện công cụ nhà phát triển đang mở. Hãy đóng công cụ để tiếp tục xem.',
+    tieuDe: 'Đã tạm dừng hiển thị',
+    moTa: 'Trang phát hiện công cụ nhà phát triển, gỡ lỗi từ xa hoặc phần mềm điều khiển trình duyệt. Hãy đóng các công cụ này (và tắt gỡ lỗi USB / không dây trên điện thoại) để tiếp tục.',
   },
   en: {
-    tieuDe: 'Content temporarily hidden',
-    moTa: 'Developer tools appear to be open. Close them to continue.',
+    tieuDe: 'Display paused',
+    moTa: 'Developer tools, remote debugging or browser automation was detected. Close these tools (and turn off USB / wireless debugging on your phone) to continue.',
   },
 });
 

@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.provider.Settings
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyInfo
 import android.security.keystore.KeyProperties
@@ -118,6 +119,10 @@ class ThietBiPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAw
             }
             // Đọc /proc, thử cổng frida (<= 120 ms) -> ngoài luồng UI.
             "moiTruong" -> ngoaiLuong(result, "moiTruong.loi") { MoiTruong.kiemTra(ngucanh) }
+            // S11 (Q57): Developer options / USB debugging / Wireless debugging - đọc Settings.Global (không cần quyền,
+            // < 1 ms) nên gọi được mỗi lần resume / mỗi 2 giây khi đang hiện màn chặn.
+            "cheDoPhatTrien" -> result.success(cheDoPhatTrien())
+            "moCaiDatPhatTrien" -> result.success(moCaiDatPhatTrien())
             "cheManHinh" -> {
                 cheBat = call.argument<Boolean>("bat") == true
                 apCheManHinh()
@@ -125,6 +130,34 @@ class ThietBiPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAw
             }
             else -> result.notImplemented()
         }
+    }
+
+    private fun caiDatBat(ten: String): Boolean = try {
+        Settings.Global.getInt(ngucanh.contentResolver, ten, 0) != 0
+    } catch (_: Exception) {
+        false
+    }
+
+    private fun cheDoPhatTrien(): Map<String, Boolean> = mapOf(
+        "devMode" to caiDatBat(Settings.Global.DEVELOPMENT_SETTINGS_ENABLED),
+        "adb" to caiDatBat(Settings.Global.ADB_ENABLED),
+        // Settings.Global.ADB_WIFI_ENABLED là @hide - dùng tên khoá (Android 11+).
+        "adbWifi" to caiDatBat("adb_wifi_enabled"),
+    )
+
+    /** Mở thẳng màn Tùy chọn nhà phát triển; máy chặn intent này thì mở Cài đặt chung. */
+    private fun moCaiDatPhatTrien(): Boolean {
+        val ds = listOf(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS, Settings.ACTION_SETTINGS)
+        for (hd in ds) {
+            try {
+                val y = Intent(hd).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                (activity ?: ngucanh).startActivity(y)
+                return true
+            } catch (_: ActivityNotFoundException) {
+            } catch (_: SecurityException) {
+            }
+        }
+        return false
     }
 
     private fun ngoaiLuong(result: MethodChannel.Result, maLoi: String, viec: () -> Any?) {
