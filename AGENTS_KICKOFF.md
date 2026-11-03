@@ -9,6 +9,7 @@ Luật kỹ thuật ở `CLAUDE.md` (= `AGENTS.md`). Tệp này chỉ nói BƯ�
 | `agent-laban` | mặc định - toàn repo (một agent thi công trọn MỘT phase mỗi phiên) |
 | `agent-laban-may-chu` | `workers/`, `web/admin/`, `tools/cloudflare/` (chỉ khi người dùng chạy song song hai agent) |
 | `agent-laban-app` | `app/`, `packages/`, `native/` (chỉ khi chạy song song) |
+| `agent-laban-a9` | phiên song song A9 ở worktree `../app-la-ban-a9` - vùng ĐƯỢC / CẤM sửa ghi ở thẻ A9; lock + log + phiếu ghi vào repo CHÍNH (`cd ~/projects/app-la-ban && ./agents.sh ...`) |
 
 Không biết mình là agent nào thì là `agent-laban`.
 
