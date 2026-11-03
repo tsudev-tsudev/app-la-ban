@@ -80,7 +80,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 28 | I1 | iOS (đầu 2027): build, App Attest, Privacy Manifest, TestFlight, App Store | R4, máy Mac | ⬜ |
 | 29 | M2 | App song song "La bàn Pro" trả phí một lần, không quảng cáo (Q56) | R2b, M1a bước 3 (bảng `quyen_loi`) | ⬜ chạy CÙNG R4 (người dùng chốt 03/11: dùng chung cửa sổ thử kín 14 ngày; M1a bước 3 phần máy chủ làm trước) · logo Pro ✅ 03/11 |
 | 30 | A9 | Thiết bị thiếu phần cứng + làm mới giao diện web / nút app + chống nhấp nháy (chia A9a / A9b / A9c) - PHIÊN SONG SONG `../app-la-ban-a9` | A8 | ⬜ giao `agent-laban-a9` 03/11 |
-| 31 | S11 | Chặn chế độ Nhà phát triển (app) + khiên web mạnh (Q57, Q58) | S4, S9, M1a bước 3 (cùng Worker) | 🟨 03/11 mã + test xong, deploy Worker / web; chờ phát hành APK + thử máy thật M32 |
+| 31 | S11 | Chặn chế độ Nhà phát triển (app) + khiên web mạnh (Q57, Q58) | S4, S9, M1a bước 3 (cùng Worker) | 🟨 03/11 (adf3102 PR #67, v0.1.0-beta.15 PR #68): Worker staging + prod, landing + admin, APK đã phát hành · ⛔ chờ nghiệm thu máy thật M32 (bản prod bật ADB -> màn chặn; staging không chặn) |
 
 Có thể giao agent thứ hai song song: S1 với A2-A3 · A5 với A4 · S5 với S4 · A6 với S6-S7 · R1 với A7 · A8 với S8-S9.
 
