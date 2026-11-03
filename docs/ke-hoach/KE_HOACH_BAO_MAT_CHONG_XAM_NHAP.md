@@ -115,6 +115,17 @@ hành động hàng loạt; audit bất biến (không ai sửa/xóa); CSV có k
 | MON-04 | IR playbook: phát hiện -> cô lập -> loại bỏ -> khôi phục -> rút kinh nghiệm; thông báo theo NĐ 13/2023 | P0 |
 | MON-05 | `security.txt` + chính sách báo lỗ hổng | P1 |
 
+## SEC-IAP - Mua hàng và quyền lợi (M1a, M2 - Q55, Q56)
+| Mã | Yêu cầu |
+|---|---|
+| IAP-01 | Quyền lợi chỉ do Worker cấp sau khi xác minh với Google (Play Developer API / Play Integrity `appLicensingVerdict`); client không tự mở khoá từ kết quả Billing Library |
+| IAP-02 | RTDN chỉ nhận qua Pub/Sub push có JWT OIDC của Google đúng audience + email service account; sai -> 401, ghi sự kiện |
+| IAP-03 | Token mua hàng lưu mã hoá AES-GCM (khoá `wrangler secret`) + băm SHA-256 để tra trùng; không ghi token vào log / AE |
+| IAP-04 | Một token tối đa N cài đặt đang hoạt động; vượt -> `PURCHASE_TOKEN_SHARED` vào Threat Engine; hoàn tiền / chargeback (Voided Purchases) -> thu hồi trong 24 h |
+| IAP-05 | Bản không phải Play (`appRecognitionVerdict` != `PLAY_RECOGNIZED`) không được cấp quyền lợi mới; app Pro `UNLICENSED` -> `PRO_UNLICENSED`, không ban tự động |
+| IAP-06 | Thu hồi / cấp tay quyền lợi ở SOC: four-eyes + passkey + audit chuỗi bất biến |
+| IAP-07 | Có `khongQuangCao` -> 0 request tới máy chủ quảng cáo; APK Pro không chứa lớp SDK quảng cáo |
+
 ## SEC-TEST - Kiểm thử và nghiệm thu (R3)
 | Hạng mục | Tiêu chí |
 |---|---|

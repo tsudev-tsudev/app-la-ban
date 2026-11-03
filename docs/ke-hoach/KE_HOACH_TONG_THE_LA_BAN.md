@@ -13,7 +13,8 @@ World Editor 3D. Yêu cầu bảo mật chi tiết (mã `SEC-...`): `KE_HOACH_BA
 1. Mục tiêu bảo mật là **phòng thủ nhiều lớp, đo được**; server quyết định tin cậy, client chỉ gửi tín hiệu (Spec §0, §15).
 2. Backend Cloudflare thay cho K8s/Postgres của spec (QUYET_DINH Q3); bảng dữ liệu giữ đúng tên trường Spec §6.4.
 3. Bảo vệ giao diện web (chống sao chép, chuột phải, DevTools) là lớp răn đe có bật/tắt từ xa, không thay kiểm soát server.
-4. Quảng cáo / IAP chỉ bật sau Release Gate (Spec §12.1).
+4. Quảng cáo / IAP chỉ bật sau Release Gate (Spec §12.1). Người dùng có quyền lợi `khongQuangCao` (gói Pro trong app hoặc
+   app trả phí "La bàn Pro") KHÔNG BAO GIỜ khởi tạo SDK quảng cáo; quyền lợi do Worker xác minh với Google Play (Q55, Q56).
 5. Mọi tính năng: vi + en, light + dark, không overflow, có test.
 6. **Android trước** (QUYET_DINH Q33, chốt 28/10/2026): mọi phase chỉ thi công + nghiệm thu phần Android; phần iOS gom vào
    phase I1 (đầu năm 2027, khi có máy Mac + Apple Developer). Bản thử phát hành dạng APK tải trực tiếp (R0, Q34) trước khi lên Play.
@@ -74,16 +75,20 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 23 | R2 | Sẵn sàng store | A8, S4 | ⛔ R2a ✅ 31/10 (AAB + Data Safety + listing + ảnh store, Q46) · R2b: tài khoản Play cá nhân đã tạo 03/11, chờ Google duyệt danh tính (runbook phat-hanh-play mục 1b) |
 | 24 | R3 | QA tổng + kiểm thử bảo mật (chia R3a / R3b) | R2, S9, S10 | ✅ 03/11 (0 Critical / High mở) · R3a ✅ 02/11 (gitleaks / osv-scanner / Semgrep vào cổng, ZAP + MobSF + SSL Labs A+, 0 High, minSdk 26, Q50) · R3b ✅ 02/11 (E2E + nâng cấp beta.7->13 + 5 kịch bản SEC-TEST trên M32, sửa 2 lỗi, Q51) · R3c ✅ 03/11 (#48-#50, Q52: DO -> D1 nonce + giới hạn; staging p95 < 300 ms; D1 prod chuyển ICN -> SIN (Q53): prod p50 8-49 ms, p95 < 250 ms mẫu nhỏ - đo lại 24 h) |
 | 25 | R4 | Phát hành v1.0.0 + OTA | R3 | ⬜ (tài khoản cá nhân: cần thử kín >= 12 người x 14 ngày trước production) |
-| 26 | M1 | Quảng cáo + IAP (v1.1.0) sau Release Gate | R4 | ⬜ |
+| 26 | M1 | Gói Pro trong app + quảng cáo (chia M1a quyền lợi + Play Billing / M1b quảng cáo), v1.1.0 sau Release Gate | R4 | ⬜ |
 | 27 | R0 | Bản APK thử: khoá ký, script phát hành GitHub Release + R2, trang tải | A5 | ✅ 28/10 |
 | 28 | I1 | iOS (đầu 2027): build, App Attest, Privacy Manifest, TestFlight, App Store | R4, máy Mac | ⬜ |
+| 29 | M2 | App song song "La bàn Pro" trả phí một lần, không quảng cáo (Q56) | R2b, M1a bước 3 (bảng `quyen_loi`) | ⬜ (có thể kéo M1a bước 3 + M2 lên chạy cùng R4 để dùng chung cửa sổ thử kín 14 ngày) |
 
 Có thể giao agent thứ hai song song: S1 với A2-A3 · A5 với A4 · S5 với S4 · A6 với S6-S7 · R1 với A7 · A8 với S8-S9.
 
 **Việc người dùng:** trước N2 tạo API token Cloudflare (zone tsudev.com: DNS, WAF, Lists; Workers, Pages, D1, R2) lưu ở
 `~/.config/la-ban/cf.env` · trước A2 bật Wireless debugging trên 1 điện thoại Android · trước S2 Google Cloud project + Play
 Integrity API + service account (Apple Team ID dời sang I1) · trước S6 bật Cloudflare Zero Trust · trước R2 tài khoản Play Console (hoãn ~7 ngày từ 29/10 do lỗi thanh toán - dự kiến từ 05/11/2026), duyệt Privacy
-Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer · trước R4 chốt đơn vị pentest, bấm phát hành · trước M1 tài khoản AdMob + RevenueCat.
+Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer · trước R4 chốt đơn vị pentest, bấm phát hành · trước M1 / M2: hồ sơ thanh toán Play (merchant) + khai báo
+nhà giao dịch (trader - địa chỉ / điện thoại có thể hiện công khai trên Play), chốt giá (Q55 / Q56 `[CẦN CHỐT]`), Pub/Sub
+cho RTDN trong dự án Cloud 930761930572, cấp service account quyền "Xem dữ liệu tài chính / quản lý đơn hàng" trong Play
+Console · trước M1b tài khoản AdMob (RevenueCat KHÔNG còn cần - Q55).
 
 ## 4. Thẻ phase
 
@@ -736,12 +741,65 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
   nhầm; runbook trực.
 - Cổng: crash-free >= 99,8%; không sự cố mở. Bắt đầu đếm 4 tuần Release Gate.
 
-### M1 - Quảng cáo + IAP
-- Đọc thêm: Spec §12.
-- Làm: AdMob + UMP + ATT; banner thích ứng có chỗ dành sẵn; interstitial giới hạn tần suất; rewarded xác minh SSV ở Worker;
-  RevenueCat Pro + webhook + Restore; thiết bị restricted/banned không nhận quảng cáo/thưởng; kill-switch từng loại quảng cáo;
-  cập nhật Data Safety / Privacy Label.
-- Cổng: chênh FPS có/không quảng cáo < 2%; không che la bàn; v1.1.0.
+### M1 - Gói Pro trong app + quảng cáo (chia M1a / M1b)
+- Đọc thêm: Spec §12; SEC-IAP; QUYET_DINH Q17, Q55.
+- Nguyên tắc: (1) quyền lợi (entitlement) do Worker quyết - app chỉ hiển thị theo `/v1/status` đã ký; (2) có quyền lợi
+  `khongQuangCao` thì KHÔNG khởi tạo AdMob / UMP (không chỉ ẩn banner); (3) KHÔNG khoá lại tính năng đang miễn phí ở bản beta
+  (la bàn, toạ độ, điểm mốc, chia sẻ, bản đồ offline, Camera AR) - giới hạn miễn phí chỉ áp cho tính năng MỚI; (4) không tài
+  khoản người dùng: quyền lợi gắn với tài khoản Google trên Play, khôi phục bằng Restore trên máy mới.
+- **M1a - Quyền lợi + Google Play Billing** (làm trước, có thể phát hành trước khi bật quảng cáo):
+  1. Sản phẩm Play (người dùng tạo trong Play Console theo runbook): gói đăng ký `pro_thang`, `pro_nam` (base plan +
+     dùng thử 7 ngày cho `pro_nam`) và sản phẩm mua một lần `pro_vinh_vien` (non-consumable) - giá `[CẦN CHỐT]` Q55.
+  2. App: gói `packages/quyen_loi` (thay phần IAP của `ads_iap`) dùng plugin chính chủ `in_app_purchase` (Play Billing
+     Library, không SDK bên thứ ba); `obfuscatedAccountId` = băm định danh cài đặt (không định danh phần cứng); màn Paywall
+     vi / en, giá lấy từ Play (`ProductDetails`, không ghi cứng), nút Khôi phục, Quản lý gói (deep link Play subscriptions),
+     hiển thị điều khoản tự gia hạn đúng chính sách Play. Domain thuần: máy trạng thái quyền lợi + thời gian ân hạn offline.
+  3. Worker: `POST /v1/mua/xac-minh` (ký request như S3) -> Google Play Developer API (`purchases.subscriptionsv2.get` /
+     `purchases.products.get`) bằng service account sẵn có -> acknowledge trong 3 ngày -> ghi D1 bảng mới `quyen_loi`
+     (migration mới: nguồn `play_sub` / `play_inapp` / `pro_app`, sản phẩm, trạng thái, hết hạn, băm token, token mã hoá
+     AES-GCM khoá `wrangler secret`, thiết bị gắn). `/v1/status` trả `quyenLoi { pro, khongQuangCao, hetHan }` trong phản hồi
+     đã ký. RTDN: Pub/Sub push -> `POST /v1/play/rtdn` (xác minh JWT OIDC của Google, audience riêng) cập nhật gia hạn / huỷ /
+     tạm giữ / thu hồi; cron hằng ngày đọc Voided Purchases API -> thu hồi khi hoàn tiền / chargeback.
+  4. Chống gian lận: một token tối đa N cài đặt đang hoạt động (mặc định 5, Remote Config), token dùng lại vượt ngưỡng ->
+     sự kiện `PURCHASE_TOKEN_SHARED` vào Threat Engine; giao dịch từ bản không phải Play (`appRecognitionVerdict` khác
+     `PLAY_RECOGNIZED`) không cấp quyền; thiết bị `banned` không mua / không nhận quyền lợi mới (quyền lợi cũ giữ nguyên để
+     xử lý hoàn tiền qua khiếu nại).
+  5. SOC: trang Quyền lợi (tra theo thiết bị / băm token, lịch sử RTDN, thu hồi thủ công four-eyes + audit), số liệu doanh
+     thu ước tính từ AE (không PII). Data Safety: thêm "Lịch sử mua hàng" (thu thập, không chia sẻ); chính sách quyền riêng tư.
+- **M1b - Quảng cáo** (chỉ bật qua Remote Config khi đạt Release Gate §12.1): gói `packages/quang_cao` (AdMob + UMP; ATT ở
+  I1) CHỈ app miễn phí phụ thuộc; khởi tạo lười sau đồng ý UMP VÀ khi `khongQuangCao = false`; banner thích ứng chỗ dành
+  sẵn, không che la bàn / telemetry, ẩn trong AR; interstitial giới hạn tần suất (<= 1 / 5 phút, <= 3 / phiên, không bao
+  giờ khi đang đo / điều hướng); rewarded xác minh SSV ở Worker; thiết bị restricted / banned không nhận quảng cáo / thưởng;
+  kill-switch từng loại quảng cáo; Paywall có lối "Gỡ quảng cáo" từ banner.
+- Cổng M1a: mua / gia hạn / huỷ / hoàn tiền / khôi phục trên máy thật bằng tài khoản thử license tester đúng trạng thái ở
+  app + D1 + SOC; RTDN tới Worker < 1 phút; test thuần + tích hợp Worker (token giả, JWT RTDN sai -> 401).
+- Cổng M1b: chênh FPS có / không quảng cáo < 2 %; không che la bàn; người có `khongQuangCao` không có request nào tới
+  máy chủ quảng cáo (kiểm bằng proxy); v1.1.0.
+
+### M2 - App song song "La bàn Pro" (trả phí một lần, không quảng cáo - Q56)
+- Đọc thêm: SEC-IAP; QUYET_DINH Q56.
+- Mục tiêu: listing Play riêng `com.tsudev.laban.pro`, tên `La bàn Pro - TsuDev Compass`, giá một lần `[CẦN CHỐT]` Q56;
+  đủ mọi tính năng Pro, KHÔNG chứa SDK quảng cáo trong APK (Data Safety không có Advertising ID). Cùng mã nguồn, cùng Worker.
+- Làm:
+  1. Tách vỏ app: chuyển entry / DI / router / theme từ `app/lib` sang gói `packages/app_shell` nhận `CauHinhSanPham`
+     (`mienPhi` / `pro`); `app/` (miễn phí, phụ thuộc `quang_cao`) và `app_pro/` mới (KHÔNG phụ thuộc `quang_cao`) chỉ còn
+     `main` + Android (applicationId, icon / tên riêng, flavor dev / staging / prod). Golden + test chung vẫn xanh. Cập nhật
+     cấu trúc thư mục ở CLAUDE.md + AGENTS.md trong cùng PR.
+  2. Bản quyền: app Pro gửi Play Integrity như S2; Worker thêm `com.tsudev.laban.pro` vào danh sách gói (biến môi trường
+     sẵn có) và cấp quyền lợi `pro_app` khi `accountDetails.appLicensingVerdict = LICENSED`. `UNLICENSED` (bản sao tải
+     ngoài) -> tín hiệu `PRO_UNLICENSED`, app hiện hộp thoại khắc phục GET_LICENSED của Play Integrity, chỉ còn tính năng
+     của bản miễn phí (không khoá cứng ở client - server quyết). KHÔNG phát hành APK Pro trên GitHub / CDN (R0 chỉ bản miễn phí).
+  3. Chuyển dữ liệu từ bản miễn phí: Content Provider trong app miễn phí bảo vệ bằng permission `signature` (hai app cùng
+     khoá ký - Play App Signing dùng chung khoá upload R0 qua PEPK) -> app Pro nhập điểm mốc / vùng offline / cài đặt một
+     lần, có màn xác nhận; dự phòng: tệp xuất mã hoá chia sẻ qua Android Sharesheet. App miễn phí thấy app Pro đã cài (khai
+     báo `<queries>` đúng một gói) -> gợi ý mở app Pro, không hiện quảng cáo.
+  4. Store: listing vi / en riêng nêu rõ quan hệ bản miễn phí / bản Pro (tránh vi phạm chính sách nội dung lặp lại), ảnh store
+     sinh bằng `anh-store.sh` với cờ Pro, Data Safety riêng, ghi chú reviewer, miễn trừ ASN Google áp chung. Tài khoản cá nhân:
+     thử kín >= 12 người x 14 ngày RIÊNG cho app này - dùng chung 12 tester, chạy cùng lúc với app chính nếu kéo M2 lên.
+  5. SOC: lọc thiết bị theo gói; báo cáo tách bản miễn phí / Pro.
+- Cổng: APK Pro không chứa lớp `com.google.android.gms.ads` (kiểm bằng `apkanalyzer dex packages`); bản cài từ Play nhận
+  `LICENSED` + quyền lợi `pro_app`, bản sideload nhận `UNLICENSED` + hộp thoại; chuyển dữ liệu từ bản miễn phí trên máy
+  thật đủ 100 % điểm mốc; golden + cổng `day-du` xanh.
 
 ### R0 - Bản APK thử nghiệm (Android, QUYET_DINH Q34)
 - Làm: khoá upload RSA 4096 ngoài repo (`~/.config/la-ban/android/upload.jks` + `key.properties`, người dùng sao lưu);
