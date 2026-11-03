@@ -10,10 +10,12 @@ import { xoaDem } from '../../src/threat/nap';
 import { kiemChuoiAudit } from '../../src/thuan/audit';
 import { KHOA_CONG_KHAI } from '../../src/thuan/cau-hinh-tu-xa';
 import { taoUlid } from '../../src/thuan/dinh-danh';
+import { laNonceHopLe } from '../../src/thuan/nonce';
+import { goiNonce } from '../../src/mw/dich-vu';
 import { xuatNhatKy } from '../../src/van-hanh/nhat-ky';
 import { saoLuuD1 } from '../../src/van-hanh/sao-luu';
 
-export { KhoNonce, GioiHanToc, PhongSoc } from '../../src/index';
+export { PhongSoc } from '../../src/index';
 
 let soLanXuLy = 0;
 
@@ -68,10 +70,9 @@ app.post('/thu/audit', async (c) => {
 app.get('/thu/audit', async (c) => c.json({ loi: await kiemChuoiAudit(await docChuoiAudit(db(c))) }));
 app.post('/thu/don-dep', async (c) => c.json(await donDep(db(c), Number(c.req.query('bayGio')))));
 app.post('/thu/nonce', async (c) => {
-  const ns = c.env.KHO_NONCE;
-  if (!ns) throw new Error('thiếu KHO_NONCE');
-  const res = await ns.get(ns.idFromName('thiet-bi:thu')).fetch('https://do/nonce', { method: 'POST', body: await c.req.text() });
-  return c.newResponse(res.body, res.status as 200);
+  const b = (await c.req.json()) as { nonce: unknown };
+  if (!laNonceHopLe(b.nonce)) return c.body(null, 400);
+  return c.body(null, (await goiNonce(c.env, 'thiet-bi:thu', '/nonce', b)) ? 200 : 409);
 });
 
 app.post('/thu/su-kien', async (c) => {

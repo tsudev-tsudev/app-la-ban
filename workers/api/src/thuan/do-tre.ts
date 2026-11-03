@@ -11,9 +11,9 @@ export const BUOC_DO = [
   'rlIp',
   /** D1 phiên + thiết bị (mw/xac-thuc.ts). */
   'phien',
-  /** DO KhoNonce (chống phát lại, thách thức). */
+  /** Kho nonce D1 (chống phát lại, thách thức). */
   'nonce',
-  /** DO GioiHanToc theo route. */
+  /** Giới hạn theo route (D1). */
   'gioiHan',
   /** KV / R2 của handler (Remote Config, latest.json). */
   'luuTru',

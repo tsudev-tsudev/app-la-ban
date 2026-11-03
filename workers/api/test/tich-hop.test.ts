@@ -100,7 +100,7 @@ describe('Idempotency-Key (API-03) trên D1 thật', () => {
 });
 
 describe('giới hạn tốc độ (API-01)', () => {
-  it('DO GioiHanToc: quá 4/phút theo IP -> 429 + Retry-After', async () => {
+  it('giới hạn theo route (D1): quá 4/phút theo IP -> 429 + Retry-After', async () => {
     const kq: number[] = [];
     let thuLai = '';
     for (let i = 0; i < 6; i++) {
@@ -126,7 +126,7 @@ describe('giới hạn tốc độ (API-01)', () => {
   }, 60_000);
 });
 
-describe('KhoNonce (chống replay)', () => {
+describe('kho nonce D1 (chống replay)', () => {
   it('nonce dùng một lần', async () => {
     const n = { nonce: crypto.randomUUID().replace(/-/g, '') };
     expect((await post('/thu/nonce', n, ip(5))).status).toBe(200);

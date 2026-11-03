@@ -1,4 +1,4 @@
-// Tiện ích dùng chung cho route cần DO KhoNonce / Threat Engine (S2, S3).
+// Tiện ích dùng chung cho route cần kho nonce (D1) / Threat Engine (S2, S3).
 import type { Env, Ngu } from '../moi-truong';
 import { dongBoLists } from '../threat/dong-bo-lists';
 import { xuLySuKien, type SuKienVao } from '../threat/dong-co';

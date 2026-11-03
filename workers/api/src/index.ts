@@ -28,8 +28,6 @@ import { xuatNhatKy } from './van-hanh/nhat-ky';
 import { saoLuuD1 } from './van-hanh/sao-luu';
 import { baoVanHanh, kiemDotBien } from './van-hanh/canh-bao';
 
-export { KhoNonce } from './do/kho-nonce';
-export { GioiHanToc } from './do/gioi-han-toc';
 export { PhongSoc } from './do/phong-soc';
 export type { Env } from './moi-truong';
 
