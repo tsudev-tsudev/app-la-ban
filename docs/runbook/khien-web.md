@@ -78,3 +78,13 @@ GROUP BY quoc_gia ORDER BY so DESC
 - Header CSP landing có `connect-src 'self' https://compass-api.tsudev.com`.
 - Chromium headless: `document.documentElement.dataset.khien` = mức trong gói, 0 vi phạm CSP enforce.
 - `node tools/kiem-tra/ve-sinh-ban-build.mjs web/landing/dist web/admin/dist` xanh.
+
+## S11 - khiên mạnh (03/11/2026, Q58)
+
+- Dò thêm: câu lệnh `debugger` mỗi 2 giây (bắt DevTools tách cửa sổ + remote debugging qua USB / Wi-Fi từ điện thoại),
+  `navigator.webdriver` / headless (chặn cả phiên, miễn UA bot tìm kiếm + Lighthouse để giữ SEO).
+- Khi nghi: toàn bộ con của `body` bị gỡ khỏi DOM (giữ trong bộ nhớ, trả lại khi sạch ~40-60 giây sau khi đóng công cụ).
+- Admin: `api.ts` chờ `data-khien-san` (tối đa 3 giây), không gọi khi `data-khien-nghi`; Worker từ chối API admin 10 phút
+  (403 `khien-devtools`, `retry-after: 600`) sau tín hiệu `WEB_DEVTOOLS` có `trang=admin` từ cùng IP.
+- Gỡ lỗi landing / admin của chính mình: đặt mức `tat` cho trang qua gói cấu hình ký số `web-khien` (four-eyes ở SOC), hoặc
+  chạy bản dev cục bộ (`npm run dev` - khiên không nạp ở dev). Bị khoá 10 phút ở admin: chờ hết hạn, không có lệnh mở khoá tay.

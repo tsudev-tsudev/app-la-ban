@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:core/core.dart';
+import 'package:security_sdk/src/domain/che_do_phat_trien.dart';
 import 'package:security_sdk/src/domain/chuoi_ky.dart';
 import 'package:security_sdk/src/domain/phien.dart';
 import 'package:security_sdk/src/du_lieu/cong.dart';
@@ -176,8 +177,16 @@ final class DichVuDinhDanh {
   /// thường gặp khi app mở lại sau khi access token hết hạn) cũng là trạng
   /// thái `banned` do SERVER trả -> app hiện màn khoá như `/v1/status`
   /// (R3b: bản đóng gói lại bị cấm nhưng mở lại vẫn vào la bàn).
-  Future<Result<TinhTrangThietBi>> tinhTrang() => _boc(() async {
-    final kq = await goiKy('GET', '/v1/status');
+  ///
+  /// [phatTrien]: trạng thái Developer options hiện tại -> tham số `pt` (nằm
+  /// trong chuỗi ký) để Worker quyết định chặn (S11, Q57).
+  Future<Result<TinhTrangThietBi>> tinhTrang({
+    TrangThaiPhatTrien? phatTrien,
+  }) => _boc(() async {
+    final kq = await goiKy(
+      'GET',
+      phatTrien == null ? '/v1/status' : '/v1/status?pt=${phatTrien.thamSo}',
+    );
     if (kq case Err(:final failure)) {
       final p = phien;
       if (failure.code == 'dinhDanh.biCam' && p != null) {

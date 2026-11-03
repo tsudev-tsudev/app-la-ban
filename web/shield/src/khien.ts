@@ -2,7 +2,7 @@
 // Quyết định nằm ở các hàm thuần (muc / phim / devtools / cau-hinh); ở đây chỉ nối vào trình duyệt. Không innerHTML,
 // không eval, không style nội tuyến -> chạy được dưới CSP nonce + Trusted Types.
 import { kiemGoi, mucChoTrang, phanTichGoi } from './cau-hinh';
-import { capNhatDo, ketLuan, TRANG_THAI_DAU, type SuKienDo, type TrangThaiDo } from './devtools';
+import { capNhatDo, debuggerDangGan, ketLuan, laTuDongHoa, TRANG_THAI_DAU, type KetLuan, type SuKienDo, type TrangThaiDo } from './devtools';
 import { KHOA_CONG_KHAI } from './khoa';
 import { hanhViTheoMuc, type HanhVi, type MucBaoVe, type Trang } from './muc';
 import { chuoiTheoNgonNgu } from './ngon-ngu';
@@ -34,9 +34,13 @@ export function khoiDong(tc: TuyChonKhien): () => void {
   let hv: HanhVi = hanhViTheoMuc('chat');
   let trangThai: TrangThaiDo = TRANG_THAI_DAU;
   let dangNghi = false;
-  let daBao = false;
+  const daBao = new Set<string>();
   let phu: HTMLElement | null = null;
+  // S11 (Q58): nội dung trang được GỠ khỏi DOM khi nghi ngờ (Elements không còn gì để xem), giữ ngoài cây để trả lại.
+  let giuLai: DocumentFragment | null = null;
   let hen: ReturnType<typeof setInterval> | null = null;
+  let henDebugger: ReturnType<typeof setInterval> | null = null;
+  let suKienCuoi: SuKienDo['loai'] = 'do';
   const dem = { phim: 0, menu: 0 };
 
   const chan = (e: Event) => {
@@ -44,9 +48,10 @@ export function khoiDong(tc: TuyChonKhien): () => void {
     e.stopPropagation();
   };
 
-  const baoTinHieu = (kichThuoc: boolean, diem: number) => {
-    if (daBao) return;
-    daBao = true;
+  const baoTinHieu = (kl: KetLuan) => {
+    const loai = kl.tuDong ? 'tu-dong-hoa' : suKienCuoi === 'debugger' ? 'debugger' : 'devtools';
+    if (daBao.has(loai)) return;
+    daBao.add(loai);
     void fetch(`${tc.api}/v1/web/signals`, {
       method: 'POST',
       mode: 'cors',
@@ -55,9 +60,16 @@ export function khoiDong(tc: TuyChonKhien): () => void {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         trang: tc.trang,
-        loai: 'devtools',
+        loai,
         duongDan: location.pathname.slice(0, 128),
-        tinHieu: { kich_thuoc: kichThuoc, diem, phim: dem.phim, menu: dem.menu },
+        tinHieu: {
+          kich_thuoc: kl.kichThuoc,
+          diem: kl.diem,
+          phim: dem.phim,
+          menu: dem.menu,
+          debugger: loai === 'debugger',
+          tu_dong: kl.tuDong,
+        },
       }),
     }).catch(() => undefined);
   };
@@ -65,8 +77,13 @@ export function khoiDong(tc: TuyChonKhien): () => void {
   const datNghi = (nghi: boolean) => {
     if (nghi === dangNghi) return;
     dangNghi = nghi;
+    const than = document.body;
     if (nghi) {
       html.setAttribute('data-khien-nghi', '');
+      if (than && !giuLai) {
+        giuLai = document.createDocumentFragment();
+        while (than.firstChild) giuLai.append(than.firstChild);
+      }
       const c = chuoiTheoNgonNgu(html.lang);
       phu = document.createElement('div');
       phu.className = 'khien-phu';
@@ -79,19 +96,22 @@ export function khoiDong(tc: TuyChonKhien): () => void {
       const p = document.createElement('p');
       p.textContent = c.moTa;
       phu.append(h, p);
-      document.body.append(phu);
+      than?.append(phu);
     } else {
       html.removeAttribute('data-khien-nghi');
       phu?.remove();
       phu = null;
+      if (than && giuLai) than.append(giuLai);
+      giuLai = null;
     }
   };
 
   const xet = (e: SuKienDo) => {
     if (!hv.doDevtools) return;
+    if (e.loai !== 'do') suKienCuoi = e.loai;
     trangThai = capNhatDo(trangThai, e, Date.now());
     const kl = ketLuan(trangThai);
-    if (kl.nghi) baoTinHieu(kl.kichThuoc, kl.diem);
+    if (kl.nghi) baoTinHieu(kl);
     datNghi(kl.nghi);
   };
 
@@ -107,6 +127,15 @@ export function khoiDong(tc: TuyChonKhien): () => void {
         camUng: coarse?.matches === true,
       },
     });
+
+  // Chỉ dừng khi có công cụ gắn vào (DevTools, kể cả tách cửa sổ; remote debugging qua USB từ máy tính). Không công cụ:
+  // câu lệnh không làm gì, < 1 ms - không ảnh hưởng người dùng thường.
+  const kiemDebugger = () => {
+    const truoc = performance.now();
+    // eslint-disable-next-line no-debugger -- S11: dò công cụ đang gắn (Q58)
+    debugger;
+    if (debuggerDangGan(truoc, performance.now())) xet({ loai: 'debugger' });
+  };
 
   const onKey = (e: KeyboardEvent) => {
     if (!hv.phimTat) return;
@@ -141,13 +170,23 @@ export function khoiDong(tc: TuyChonKhien): () => void {
     html.setAttribute('data-khien', muc);
     if (hv.doDevtools && hen === null) {
       hen = setInterval(doKichThuoc, tc.chuKyDoMs ?? 1000);
+      henDebugger = setInterval(kiemDebugger, 2000);
+      const nav = navigator as Navigator & { userAgentData?: { brands?: { brand: string }[] } };
+      if (laTuDongHoa({ webdriver: nav.webdriver === true, ua: nav.userAgent, brands: (nav.userAgentData?.brands ?? []).map((b) => b.brand) })) {
+        xet({ loai: 'tuDong' });
+      }
       doKichThuoc();
+      kiemDebugger();
     } else if (!hv.doDevtools && hen !== null) {
       clearInterval(hen);
       hen = null;
+      if (henDebugger !== null) clearInterval(henDebugger);
+      henDebugger = null;
       trangThai = TRANG_THAI_DAU;
       datNghi(false);
     }
+    // Admin chỉ tải dữ liệu sau lần kiểm đầu (SH-07, Q58): giao diện chờ thuộc tính này + không có `data-khien-nghi`.
+    html.setAttribute('data-khien-san', '');
   };
 
   const tuyChonNghe = { capture: true };
@@ -179,6 +218,7 @@ export function khoiDong(tc: TuyChonKhien): () => void {
     document.removeEventListener('copy', onChep, tuyChonNghe);
     document.removeEventListener('cut', onChep, tuyChonNghe);
     if (hen !== null) clearInterval(hen);
+    if (henDebugger !== null) clearInterval(henDebugger);
     datNghi(false);
     html.removeAttribute('data-khien');
   };

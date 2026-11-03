@@ -2,7 +2,7 @@
 // gửi dữ liệu nhạy cảm xuống client khi chưa đủ quyền).
 export { chuanHoaMuc, chuanHoaTrang, hanhViTheoMuc, type HanhVi, type MucBaoVe, type Trang } from './muc';
 export { phanLoaiPhim, type LoaiPhim, type PhimNhan } from './phim';
-export { capNhatDo, ketLuan, kichThuocBatThuong, NGUONG, TRANG_THAI_DAU, type DoKichThuoc, type TrangThaiDo } from './devtools';
+export { capNhatDo, debuggerDangGan, ketLuan, kichThuocBatThuong, laTuDongHoa, NGUONG, TRANG_THAI_DAU, type DoKichThuoc, type TrangThaiDo } from './devtools';
 export { giaiB64url, kiemGoi, maB64url, mucChoTrang, phanTichGoi, phanTichNoiDung, type GoiCauHinh, type NoiDungCauHinh } from './cau-hinh';
 export { noiDungWatermark, soO } from './watermark';
 export { chuoiTheoNgonNgu } from './ngon-ngu';

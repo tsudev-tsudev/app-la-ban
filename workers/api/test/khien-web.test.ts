@@ -29,7 +29,12 @@ describe('tín hiệu web', () => {
   });
   it('-> sự kiện WEB_DEVTOOLS', () => {
     const e = suKienTuTinHieu(schemaTinHieuWeb.parse(TIN_HIEU), 'id1');
-    expect(e).toEqual({ id: 'id1', type: 'WEB_DEVTOOLS', severity: 'low', signals: { trang: 'landing', duong_dan: '/tai-ve', kich_thuoc: true, diem: 0, phim: 1, menu: 0 } });
+    expect(e).toEqual({ id: 'id1', type: 'WEB_DEVTOOLS', severity: 'low', signals: { trang: 'landing', loai: 'devtools', duong_dan: '/tai-ve', kich_thuoc: true, diem: 0, phim: 1, menu: 0 } });
+    // S11: loại mới + trường tuỳ chọn; trường lạ vẫn bị từ chối.
+    expect(schemaTinHieuWeb.safeParse({ ...TIN_HIEU, loai: 'debugger', tinHieu: { ...TIN_HIEU.tinHieu, debugger: true } }).success).toBe(true);
+    expect(schemaTinHieuWeb.safeParse({ ...TIN_HIEU, loai: 'tu-dong-hoa', tinHieu: { ...TIN_HIEU.tinHieu, tu_dong: true } }).success).toBe(true);
+    expect(schemaTinHieuWeb.safeParse({ ...TIN_HIEU, loai: 'khac' }).success).toBe(false);
+    expect(schemaTinHieuWeb.safeParse({ ...TIN_HIEU, tinHieu: { ...TIN_HIEU.tinHieu, la: 1 } }).success).toBe(false);
   });
 });
 

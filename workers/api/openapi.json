@@ -1245,6 +1245,9 @@
                         "hetHan"
                       ],
                       "additionalProperties": false
+                    },
+                    "cheDoPhatTrien": {
+                      "type": "boolean"
                     }
                   },
                   "required": [
@@ -1252,7 +1255,8 @@
                     "mucTin",
                     "ref",
                     "banMoi",
-                    "quyenLoi"
+                    "quyenLoi",
+                    "cheDoPhatTrien"
                   ],
                   "additionalProperties": false
                 }
@@ -1332,7 +1336,9 @@
                   "loai": {
                     "type": "string",
                     "enum": [
-                      "devtools"
+                      "devtools",
+                      "tu-dong-hoa",
+                      "debugger"
                     ]
                   },
                   "duongDan": {
@@ -1360,6 +1366,12 @@
                         "type": "integer",
                         "minimum": 0,
                         "maximum": 10000
+                      },
+                      "debugger": {
+                        "type": "boolean"
+                      },
+                      "tu_dong": {
+                        "type": "boolean"
                       }
                     },
                     "required": [

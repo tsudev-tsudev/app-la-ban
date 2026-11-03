@@ -2017,6 +2017,72 @@ abstract class LbL10n {
   /// In vi, this message translates to:
   /// **'Mở cài đặt ứng dụng'**
   String get privacyOpenSettings;
+
+  /// Tiêu đề màn chặn khi bật Tùy chọn nhà phát triển (S11)
+  ///
+  /// In vi, this message translates to:
+  /// **'Hãy tắt chế độ Nhà phát triển'**
+  String get devModeBlockedTitle;
+
+  /// Giải thích màn chặn
+  ///
+  /// In vi, this message translates to:
+  /// **'Để bảo vệ dữ liệu và tài khoản của bạn, La bàn không chạy khi thiết bị đang bật Tùy chọn nhà phát triển hoặc gỡ lỗi USB / không dây. Hãy tắt chúng rồi quay lại ứng dụng.'**
+  String get devModeBlockedBody;
+
+  /// Tiêu đề danh sách công tắc đang bật
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang bật trên thiết bị'**
+  String get devModeStatusTitle;
+
+  /// Công tắc Developer options
+  ///
+  /// In vi, this message translates to:
+  /// **'Tùy chọn nhà phát triển'**
+  String get devModeItemOptions;
+
+  /// Công tắc USB debugging
+  ///
+  /// In vi, this message translates to:
+  /// **'Gỡ lỗi USB'**
+  String get devModeItemUsb;
+
+  /// Công tắc Wireless debugging
+  ///
+  /// In vi, this message translates to:
+  /// **'Gỡ lỗi không dây'**
+  String get devModeItemWifi;
+
+  /// Hướng dẫn tắt
+  ///
+  /// In vi, this message translates to:
+  /// **'Cài đặt > Hệ thống (hoặc Cài đặt bổ sung) > Tùy chọn nhà phát triển > gạt công tắc trên cùng sang Tắt.'**
+  String get devModeHowTo;
+
+  /// Nút mở cài đặt
+  ///
+  /// In vi, this message translates to:
+  /// **'Mở Tùy chọn nhà phát triển'**
+  String get devModeOpenSettings;
+
+  /// Lỗi mở cài đặt
+  ///
+  /// In vi, this message translates to:
+  /// **'Không mở được cài đặt - hãy mở ứng dụng Cài đặt của máy.'**
+  String get devModeOpenFailed;
+
+  /// Nút kiểm tra lại
+  ///
+  /// In vi, this message translates to:
+  /// **'Kiểm tra lại'**
+  String get devModeRecheck;
+
+  /// Khi máy đã tắt nhưng máy chủ chưa cập nhật
+  ///
+  /// In vi, this message translates to:
+  /// **'Máy chủ vẫn ghi nhận chế độ Nhà phát triển - hãy kết nối mạng rồi bấm Kiểm tra lại.'**
+  String get devModeServerOnly;
 }
 
 class _LbL10nDelegate extends LocalizationsDelegate<LbL10n> {

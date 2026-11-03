@@ -4,6 +4,7 @@ import type { MiddlewareHandler } from 'hono';
 import type { MoiTruongHono, Ngu } from '../moi-truong';
 import { kidCua, kiemJwtAccess, LoiJwtAccess, tachDs } from '../thuan/access-jwt';
 import { sha256Hex } from '../thuan/bam';
+import { CUA_SO_KHOA_ADMIN_MS } from '../thuan/khien-web';
 import { LoiApi } from '../thuan/loi';
 import { canGhiHoatDong, coQuyen, conStepUp, docCookie, laVaiTro, PHIEN, tinhTrangPhien, type DongPhien, type Quyen } from '../thuan/soc';
 
@@ -62,6 +63,18 @@ export const danhTinh: MiddlewareHandler<MoiTruongHono> = async (c, next) => {
     .bind(email)
     .first<{ role: string }>();
   if (!nd || !laVaiTro(nd.role)) throw new LoiApi(403, 'khong-co-vai-tro', { email });
+  // S11 (Q58): khiên trang admin vừa báo DevTools / debugger / tự động hoá từ IP này -> không trả dữ liệu trong 10 phút
+  // (dữ liệu thật không xuống trình duyệt đang bị soi - SH-07). Giao diện hiện màn chặn của khiên.
+  const ip = c.get('ip');
+  if (ip) {
+    const vuaBao = await dbCua(c)
+      .prepare(
+        "SELECT 1 AS c FROM security_events WHERE ip = ? AND ts > ? AND type = 'WEB_DEVTOOLS' AND json_extract(signals, '$.trang') = 'admin' LIMIT 1",
+      )
+      .bind(ip, Date.now() - CUA_SO_KHOA_ADMIN_MS)
+      .first();
+    if (vuaBao) throw new LoiApi(403, 'khien-devtools', undefined, { 'retry-after': String(CUA_SO_KHOA_ADMIN_MS / 1000) });
+  }
   c.set('quanTri', { email, vaiTro: nd.role });
   c.set('phamViIdem', `soc:${email}`);
   await next();

@@ -10,6 +10,7 @@ const VI = {
   loiMang: 'Mất kết nối tới máy chủ.',
   khongCoVaiTro: 'Tài khoản này chưa được cấp vai trò trong SOC. Liên hệ Super Admin.',
   accessLoi: 'Phiên Cloudflare Access không hợp lệ. Tải lại trang để đăng nhập lại.',
+  khienChan: 'Đã phát hiện công cụ nhà phát triển, gỡ lỗi từ xa hoặc phần mềm điều khiển trình duyệt. Đóng các công cụ này, chờ 10 phút rồi tải lại trang.',
   // đăng nhập
   xacThucTieuDe: 'Xác thực bằng passkey',
   xacThucMoTa: 'SOC yêu cầu passkey (vân tay, khuôn mặt hoặc PIN thiết bị) cho mỗi phiên làm việc.',
@@ -594,6 +595,7 @@ const EN: Chuoi = {
   loiMang: 'Lost connection to the server.',
   khongCoVaiTro: 'This account has no SOC role yet. Contact a Super Admin.',
   accessLoi: 'Cloudflare Access session is invalid. Reload the page to sign in again.',
+  khienChan: 'Developer tools, remote debugging or browser automation was detected. Close them, wait 10 minutes, then reload the page.',
   xacThucTieuDe: 'Verify with a passkey',
   xacThucMoTa: 'The SOC requires a passkey (fingerprint, face or device PIN) for every working session.',
   dangKyTieuDe: 'Create a SOC passkey',

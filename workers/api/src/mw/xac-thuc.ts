@@ -1,3 +1,4 @@
+import { biChanPhatTrien } from '../thuan/che-do-phat-trien';
 import type { MiddlewareHandler } from 'hono';
 import { kiemChuKyThietBi, kiemJwt, napKhoaPhien, nhapKhoaThietBi } from '../attest/khoa';
 import { nenBao } from '../thuan/bay';
@@ -31,7 +32,9 @@ const daBaoKy = new Map<string, number>();
  * [gioiHan]: luật chiều 'thiet-bi' của route - đếm chung batch với nonce (BoTuyen tách ra khỏi gioiHanRoute).
  * [choPhepBiCam]: chỉ /v1/status - thiết bị bị cấm vẫn đọc được trạng thái + mã REF để hiện màn khoá / khiếu nại.
  */
-export function taoXacThuc(o: { choPhepBiCam?: boolean; gioiHan?: readonly LuatGioiHan[] } = {}): MiddlewareHandler<MoiTruongHono> {
+export function taoXacThuc(
+  o: { choPhepBiCam?: boolean; choPhepDevMode?: boolean; gioiHan?: readonly LuatGioiHan[] } = {},
+): MiddlewareHandler<MoiTruongHono> {
   return async (c, next) => {
     const token = docBearer(c.req.header('authorization'));
     if (!token) throw new LoiApi(401, 'can-xac-thuc', undefined, { 'www-authenticate': 'Bearer' });
@@ -42,7 +45,7 @@ export function taoXacThuc(o: { choPhepBiCam?: boolean; gioiHan?: readonly LuatG
     if (!claim) throw new LoiApi(401, 'token-sai', undefined, TOKEN_SAI);
     const db = c.env.DB;
     const [d] = await Promise.all([doBuoc(c.get('dongHo'), 'phien', () => db.prepare(
-      'SELECT s.revoked_at, d.status, d.attestation_level, d.public_key FROM sessions s JOIN devices d ON d.id = s.device_id WHERE s.id = ? AND s.device_id = ?',
+      'SELECT s.revoked_at, d.status, d.attestation_level, d.public_key, d.dev_mode_at FROM sessions s JOIN devices d ON d.id = s.device_id WHERE s.id = ? AND s.device_id = ?',
     )
       .bind(claim.sid, claim.sub)
       .first<{
@@ -50,6 +53,7 @@ export function taoXacThuc(o: { choPhepBiCam?: boolean; gioiHan?: readonly LuatG
         status: string;
         attestation_level: string;
         public_key: string | null;
+        dev_mode_at: number | null;
       }>()), choKiemChan(c)]);
     if (!d || d.revoked_at !== null) throw new LoiApi(401, 'phien-thu-hoi', undefined, TOKEN_SAI);
     if (d.status === 'banned' && !o.choPhepBiCam) throw new LoiApi(403, 'thiet-bi-bi-cam');
@@ -113,6 +117,10 @@ export function taoXacThuc(o: { choPhepBiCam?: boolean; gioiHan?: readonly LuatG
       throw new LoiApi(401, 'nonce');
     }
     apKetQuaGioiHan(c, apDung, ds.slice(1).map((r) => r.results[0]), bayGio);
+    // S11 (Q57): sau chữ ký + nonce (kẻ không có khoá không dò được trạng thái). /v1/status, /v1/events... vẫn qua để app
+    // nhận màn chặn và báo đã tắt.
+    if (!o.choPhepDevMode && biChanPhatTrien(c.env.CHAN_DEV_MODE, d.dev_mode_at)) throw new LoiApi(403, 'che-do-nha-phat-trien');
+    c.set('devModeAt', d.dev_mode_at);
     c.set('thietBi', claim.sub);
     c.set('phien', claim.sid);
     c.set('mucTin', d.attestation_level);

@@ -1221,4 +1221,41 @@ class LbL10nVi extends LbL10n {
 
   @override
   String get privacyOpenSettings => 'Mở cài đặt ứng dụng';
+
+  @override
+  String get devModeBlockedTitle => 'Hãy tắt chế độ Nhà phát triển';
+
+  @override
+  String get devModeBlockedBody =>
+      'Để bảo vệ dữ liệu và tài khoản của bạn, La bàn không chạy khi thiết bị đang bật Tùy chọn nhà phát triển hoặc gỡ lỗi USB / không dây. Hãy tắt chúng rồi quay lại ứng dụng.';
+
+  @override
+  String get devModeStatusTitle => 'Đang bật trên thiết bị';
+
+  @override
+  String get devModeItemOptions => 'Tùy chọn nhà phát triển';
+
+  @override
+  String get devModeItemUsb => 'Gỡ lỗi USB';
+
+  @override
+  String get devModeItemWifi => 'Gỡ lỗi không dây';
+
+  @override
+  String get devModeHowTo =>
+      'Cài đặt > Hệ thống (hoặc Cài đặt bổ sung) > Tùy chọn nhà phát triển > gạt công tắc trên cùng sang Tắt.';
+
+  @override
+  String get devModeOpenSettings => 'Mở Tùy chọn nhà phát triển';
+
+  @override
+  String get devModeOpenFailed =>
+      'Không mở được cài đặt - hãy mở ứng dụng Cài đặt của máy.';
+
+  @override
+  String get devModeRecheck => 'Kiểm tra lại';
+
+  @override
+  String get devModeServerOnly =>
+      'Máy chủ vẫn ghi nhận chế độ Nhà phát triển - hãy kết nối mạng rồi bấm Kiểm tra lại.';
 }

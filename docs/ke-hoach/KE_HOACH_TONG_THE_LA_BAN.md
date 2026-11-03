@@ -75,12 +75,12 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 23 | R2 | Sẵn sàng store | A8, S4 | ⛔ R2a ✅ 31/10 (AAB + Data Safety + listing + ảnh store, Q46) · R2b: tài khoản Play cá nhân đã tạo 03/11, chờ Google duyệt danh tính (runbook phat-hanh-play mục 1b) |
 | 24 | R3 | QA tổng + kiểm thử bảo mật (chia R3a / R3b) | R2, S9, S10 | ✅ 03/11 (0 Critical / High mở) · R3a ✅ 02/11 (gitleaks / osv-scanner / Semgrep vào cổng, ZAP + MobSF + SSL Labs A+, 0 High, minSdk 26, Q50) · R3b ✅ 02/11 (E2E + nâng cấp beta.7->13 + 5 kịch bản SEC-TEST trên M32, sửa 2 lỗi, Q51) · R3c ✅ 03/11 (#48-#50, Q52: DO -> D1 nonce + giới hạn; staging p95 < 300 ms; D1 prod chuyển ICN -> SIN (Q53): prod p50 8-49 ms, p95 < 250 ms mẫu nhỏ - đo lại 24 h) |
 | 25 | R4 | Phát hành v1.0.0 + OTA | R3 | ⬜ (tài khoản cá nhân: cần thử kín >= 12 người x 14 ngày trước production) |
-| 26 | M1 | Gói Pro trong app + quảng cáo (chia M1a quyền lợi + Play Billing / M1b quảng cáo), v1.1.0 sau Release Gate | R4 | ⬜ |
+| 26 | M1 | Gói Pro trong app + quảng cáo (chia M1a quyền lợi + Play Billing / M1b quảng cáo), v1.1.0 sau Release Gate | R4 | 🟨 M1a bước 3 (máy chủ) ✅ 03/11 (b145e92, PR #66) · còn bước 1 (người dùng tạo sản phẩm), 2 (app), 4 phần SOC, 5 |
 | 27 | R0 | Bản APK thử: khoá ký, script phát hành GitHub Release + R2, trang tải | A5 | ✅ 28/10 |
 | 28 | I1 | iOS (đầu 2027): build, App Attest, Privacy Manifest, TestFlight, App Store | R4, máy Mac | ⬜ |
 | 29 | M2 | App song song "La bàn Pro" trả phí một lần, không quảng cáo (Q56) | R2b, M1a bước 3 (bảng `quyen_loi`) | ⬜ chạy CÙNG R4 (người dùng chốt 03/11: dùng chung cửa sổ thử kín 14 ngày; M1a bước 3 phần máy chủ làm trước) · logo Pro ✅ 03/11 |
 | 30 | A9 | Thiết bị thiếu phần cứng + làm mới giao diện web / nút app + chống nhấp nháy (chia A9a / A9b / A9c) - PHIÊN SONG SONG `../app-la-ban-a9` | A8 | ⬜ giao `agent-laban-a9` 03/11 |
-| 31 | S11 | Chặn chế độ Nhà phát triển (app) + khiên web mạnh (Q57, Q58) | S4, S9, M1a bước 3 (cùng Worker) | ⬜ phiên chính, sau M1a bước 3 |
+| 31 | S11 | Chặn chế độ Nhà phát triển (app) + khiên web mạnh (Q57, Q58) | S4, S9, M1a bước 3 (cùng Worker) | 🟨 03/11 mã + test xong, deploy Worker / web; chờ phát hành APK + thử máy thật M32 |
 
 Có thể giao agent thứ hai song song: S1 với A2-A3 · A5 với A4 · S5 với S4 · A6 với S6-S7 · R1 với A7 · A8 với S8-S9.
 
@@ -775,6 +775,15 @@ Console · trước M1b tài khoản AdMob (RevenueCat KHÔNG còn cần - Q55).
   sẵn, không che la bàn / telemetry, ẩn trong AR; interstitial giới hạn tần suất (<= 1 / 5 phút, <= 3 / phiên, không bao
   giờ khi đang đo / điều hướng); rewarded xác minh SSV ở Worker; thiết bị restricted / banned không nhận quảng cáo / thưởng;
   kill-switch từng loại quảng cáo; Paywall có lối "Gỡ quảng cáo" từ banner.
+- Kết quả M1a bước 3 (03/11, PR #66, main `b145e92`): migration 0013 `quyen_loi` + `quyen_loi_devices` + `quyen_loi_events`
+  (vào bản sao lưu D1); `POST /v1/mua/xac-minh` (ký S3; hỏi `subscriptionsv2` / `products` bằng service account sẵn có, phạm vi
+  androidpublisher; acknowledge nền; token AES-GCM `KHOA_QUYEN_LOI` + SHA-256; `linkedPurchaseToken` -> thu hồi token cũ; tối
+  đa `QL_THIET_BI_TOI_DA`=5 cài đặt / 30 ngày -> 403 + `PURCHASE_TOKEN_SHARED`; prod `QL_YEU_CAU_PLAY=1` chỉ nhận bản
+  `PLAY_RECOGNIZED`); `POST /v1/play/rtdn` (JWT OIDC Google: iss / aud `RTDN_AUD` / email `RTDN_EMAIL` / email_verified, sai -> 401 +
+  `RTDN_INVALID`; Google lỗi -> 503 để Pub/Sub gửi lại); cron 02:15 VN: Voided Purchases 3 ngày -> thu hồi, hỏi lại gói sắp hết
+  hạn; `/v1/status.quyenLoi {pro, khongQuangCao, hetHan}`; app Pro LICENSED + PLAY_RECOGNIZED -> `pro_app`, UNLICENSED ->
+  thu hồi + `PRO_UNLICENSED` (0 điểm). 29 test mới. Staging + prod đã deploy; `RTDN_EMAIL` chờ người dùng tạo Pub/Sub
+  (runbook phat-hanh-play mục 6) - tới lúc đó route RTDN trả 503.
 - Cổng M1a: mua / gia hạn / huỷ / hoàn tiền / khôi phục trên máy thật bằng tài khoản thử license tester đúng trạng thái ở
   app + D1 + SOC; RTDN tới Worker < 1 phút; test thuần + tích hợp Worker (token giả, JWT RTDN sai -> 401).
 - Cổng M1b: chênh FPS có / không quảng cáo < 2 %; không che la bàn; người có `khongQuangCao` không có request nào tới
@@ -854,6 +863,18 @@ Console · trước M1b tài khoản AdMob (RevenueCat KHÔNG còn cần - Q55).
 - Làm (web): `web/shield` thêm dò CDP / webdriver / headless / debugger timing, gỡ nội dung khỏi DOM khi nghi ngờ (không
   chỉ phủ), màn chặn; admin chỉ nạp dữ liệu sau khiên sạch, Worker chặn API admin cửa sổ ngắn sau `WEB_DEVTOOLS` cùng
   phiên; closed shadow DOM cho bảng nhạy cảm. Không nới CSP, không ảnh hưởng trợ năng.
+- Kết quả (03/11, nhánh `phase/s11`): Worker - migration 0014 `devices.dev_mode_at`; app báo `pt=0|1` trong `GET /v1/status`
+  (nằm trong chuỗi ký S3 - sửa query -> 401); `CHAN_DEV_MODE=1` (prod) -> mọi route có phiên trả 403 `che-do-nha-phat-trien`,
+  trừ `/v1/status`, `/v1/events`, `/v1/app/su-co`, `/v1/device/attest`; `/v1/status.cheDoPhatTrien`; staging `0` chỉ ghi
+  nhận. App - `ThietBiPlugin` đọc `Settings.Global` DEVELOPMENT_SETTINGS_ENABLED / ADB_ENABLED / adb_wifi_enabled (không
+  quyền, < 1 ms), mở thẳng Tùy chọn nhà phát triển; `GiamSatPhatTrien` kiểm lúc mở, khi resume, mỗi 2 s khi đang chặn, mỗi
+  phút khi sạch; `ManChanPhatTrien` (vi / en, liệt kê công tắc đang bật, chỗ dành sẵn cố định, golden + ma trận + trợ năng);
+  chỉ bản prod; kill-switch `chanDevMode` trong `tat` Remote Config ký số. Web - khiên: câu lệnh `debugger` mỗi 2 s (bắt
+  DevTools kể cả tách cửa sổ và remote debugging qua USB / Wi-Fi từ điện thoại), webdriver / headless -> chặn cả phiên
+  (miễn UA bot tìm kiếm / Lighthouse để giữ SEO), GỠ toàn bộ nội dung `body` khỏi DOM khi nghi (trả lại khi sạch), màn chặn
+  xanh - trắng, tín hiệu `debugger` / `tu-dong-hoa`; admin chỉ gọi API sau `data-khien-san`, Worker từ chối API admin 10 phút
+  (403 `khien-devtools`) sau tín hiệu từ trang admin cùng IP. Rủi ro đã nêu ở Q57: thiết bị pre-launch / reviewer của Play
+  bật ADB -> bật kill-switch đúng lúc duyệt.
 - Cổng: máy thật M32 bản prod bật ADB -> màn chặn + 403; tắt Developer options -> dùng lại trong <= 5 s; staging không
   chặn; web: mở DevTools -> nội dung bị gỡ khỏi DOM; 0 báo nhầm ở zoom 80-125% / toàn màn hình; `day-du` xanh.
 

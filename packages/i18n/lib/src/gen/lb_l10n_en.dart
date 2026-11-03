@@ -1228,6 +1228,43 @@ class LbL10nEn extends LbL10n {
 
   @override
   String get privacyOpenSettings => 'Open app settings';
+
+  @override
+  String get devModeBlockedTitle => 'Turn off developer mode';
+
+  @override
+  String get devModeBlockedBody =>
+      'To protect your data and account, Compass doesn\'t run while Developer options or USB / wireless debugging are on. Turn them off, then come back to the app.';
+
+  @override
+  String get devModeStatusTitle => 'Currently on';
+
+  @override
+  String get devModeItemOptions => 'Developer options';
+
+  @override
+  String get devModeItemUsb => 'USB debugging';
+
+  @override
+  String get devModeItemWifi => 'Wireless debugging';
+
+  @override
+  String get devModeHowTo =>
+      'Settings > System (or Additional settings) > Developer options > switch the top toggle off.';
+
+  @override
+  String get devModeOpenSettings => 'Open Developer options';
+
+  @override
+  String get devModeOpenFailed =>
+      'Couldn\'t open settings - open your phone\'s Settings app.';
+
+  @override
+  String get devModeRecheck => 'Check again';
+
+  @override
+  String get devModeServerOnly =>
+      'The server still sees developer mode - connect to the internet, then tap Check again.';
 }
 
 /// The translations for English (`en_XA`).
@@ -2470,4 +2507,41 @@ class LbL10nEnXa extends LbL10nEn {
 
   @override
   String get privacyOpenSettings => '[Ởpẽñ ảpp šẽťťỉñğš ·······]';
+
+  @override
+  String get devModeBlockedTitle => '[Ťữřñ ởff đẽvẽłởpẽř mởđẽ ··········]';
+
+  @override
+  String get devModeBlockedBody =>
+      '[Ťở přởťẽçť ỹởữř đảťả ảñđ ảççởữñť, Çởmpảšš đởẽšñ\'ť řữñ ŵhỉłẽ Đẽvẽłởpẽř ởpťỉởñš ởř ỮŠB / ŵỉřẽłẽšš đẽbữğğỉñğ ảřẽ ởñ. Ťữřñ ťhẽm ởff, ťhẽñ çởmẽ bảçk ťở ťhẽ ảpp. ······························································]';
+
+  @override
+  String get devModeStatusTitle => '[Çữřřẽñťłỹ ởñ ·····]';
+
+  @override
+  String get devModeItemOptions => '[Đẽvẽłởpẽř ởpťỉởñš ·······]';
+
+  @override
+  String get devModeItemUsb => '[ỮŠB đẽbữğğỉñğ ······]';
+
+  @override
+  String get devModeItemWifi => '[Ŵỉřẽłẽšš đẽbữğğỉñğ ········]';
+
+  @override
+  String get devModeHowTo =>
+      '[Šẽťťỉñğš > Šỹšťẽm (ởř Ảđđỉťỉởñảł šẽťťỉñğš) > Đẽvẽłởpẽř ởpťỉởñš > šŵỉťçh ťhẽ ťởp ťởğğłẽ ởff. ·····································]';
+
+  @override
+  String get devModeOpenSettings => '[Ởpẽñ Đẽvẽłởpẽř ởpťỉởñš ·········]';
+
+  @override
+  String get devModeOpenFailed =>
+      '[Çởữłđñ\'ť ởpẽñ šẽťťỉñğš - ởpẽñ ỹởữř phởñẽ\'š Šẽťťỉñğš ảpp. ·······················]';
+
+  @override
+  String get devModeRecheck => '[Çhẽçk ảğảỉñ ·····]';
+
+  @override
+  String get devModeServerOnly =>
+      '[Ťhẽ šẽřvẽř šťỉłł šẽẽš đẽvẽłởpẽř mởđẽ - çởññẽçť ťở ťhẽ ỉñťẽřñẽť, ťhẽñ ťảp Çhẽçk ảğảỉñ. ··································]';
 }

@@ -29,6 +29,8 @@ export type DinhNghiaTuyen<B extends z.ZodType = z.ZodType, P extends z.ZodType 
    * `thiet-bi` / idempotency theo thiết bị có hiệu lực. 'ke-ca-bi-cam': thiết bị bị cấm vẫn qua (chỉ /v1/status).
    */
   xacThuc?: boolean | 'ke-ca-bi-cam';
+  /** S11 (Q57): route vẫn dùng được khi thiết bị đang bị chặn vì Developer options (sự kiện, báo lỗi, xác minh lại). */
+  choPhepDevMode?: boolean;
 };
 
 export type XuLy<B extends z.ZodType> = (c: Ngu, body: z.infer<B>) => Response | Promise<Response>;
@@ -61,7 +63,7 @@ export class BoTuyen {
     const dsLuat = d.gioiHan ?? [];
     // Route có xác thực: luật theo thiết bị đếm chung batch D1 với nonce (R3c) - không đếm lại ở gioiHanRoute.
     const luatThietBi = d.xacThuc ? dsLuat.filter((l) => l.chieu === 'thiet-bi') : [];
-    if (d.xacThuc) chuoi.push(taoXacThuc({ choPhepBiCam: d.xacThuc === 'ke-ca-bi-cam', gioiHan: luatThietBi }));
+    if (d.xacThuc) chuoi.push(taoXacThuc({ choPhepBiCam: d.xacThuc === 'ke-ca-bi-cam', choPhepDevMode: d.xacThuc === 'ke-ca-bi-cam' || d.choPhepDevMode === true, gioiHan: luatThietBi }));
     chuoi.push(gioiHanRoute(dsLuat.filter((l) => !luatThietBi.includes(l))));
     if (d.body) chuoi.push(docBody(d.body, d.bodyToiDa));
     if (d.phuongThuc === 'post' && d.idempotent !== false) chuoi.push(idempotency);

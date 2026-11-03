@@ -20,6 +20,7 @@ export function dangKySuCoApp(_app: Hono<MoiTruongHono>, boTuyen: BoTuyen): void
       idempotent: false,
       bodyToiDa: 96 * 1024,
       xacThuc: true,
+      choPhepDevMode: true,
       gioiHan: [{ chieu: 'thiet-bi', gioiHan: 10, cuaSoMs: 3_600_000 }],
     },
     async (c, body) => {

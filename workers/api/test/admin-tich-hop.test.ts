@@ -135,6 +135,26 @@ describe('lớp Access + vai trò', () => {
     expect(r.json.code).toBe('can-phien');
   });
 
+  it('S11: khiên trang admin vừa báo DevTools từ IP này -> 403 khien-devtools 10 phút; IP khác / quá hạn / trang landing -> qua', async () => {
+    const jwt = await access.jwt({ email: 'viewer@thu.vn' });
+    const tu = (ip: string) => mf.dispatchFetch(`${GOC}/toi`, { headers: { 'cf-access-jwt-assertion': jwt, 'cf-connecting-ip': ip } });
+    const ghi = (ip: string, trang: string, ts: number) =>
+      db
+        .prepare("INSERT INTO security_events (id, type, severity, signals, ip, ts) VALUES (?, 'WEB_DEVTOOLS', 'low', ?, ?, ?)")
+        .bind(crypto.randomUUID(), JSON.stringify({ trang, loai: 'debugger' }), ip, ts)
+        .run();
+    await ghi('198.51.100.77', 'admin', Date.now());
+    await ghi('198.51.100.78', 'admin', Date.now() - 11 * 60_000);
+    await ghi('198.51.100.79', 'landing', Date.now());
+    const r = await tu('198.51.100.77');
+    expect(r.status).toBe(403);
+    expect(((await r.json()) as { code: string }).code).toBe('khien-devtools');
+    expect(r.headers.get('retry-after')).toBe('600');
+    expect((await tu('198.51.100.78')).status).toBe(200);
+    expect((await tu('198.51.100.79')).status).toBe(200);
+    expect((await tu('198.51.100.80')).status).toBe(200);
+  });
+
   it('chống CSRF: thiếu x-soc / sai Origin -> 403', async () => {
     const jwt = await access.jwt({ email: 'viewer@thu.vn' });
     expect((await goi('/phien/bat-dau', { jwt, body: {}, xSoc: false })).status).toBe(403);
