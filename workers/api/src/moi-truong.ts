@@ -10,8 +10,6 @@ export type Env = {
   CAU_HINH?: KVNamespace;
   CDN?: R2Bucket;
   NHAT_KY?: R2Bucket;
-  KHO_NONCE?: DurableObjectNamespace;
-  GIOI_HAN_TOC?: DurableObjectNamespace;
   PHONG_SOC?: DurableObjectNamespace;
   SU_KIEN?: AnalyticsEngineDataset;
   /** Rate Limiting binding: lớp thô theo IP trước mọi route. */

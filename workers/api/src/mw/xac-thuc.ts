@@ -26,7 +26,7 @@ const daBaoKy = new Map<string, number>();
 /**
  * Phiên thiết bị (S2, ID-04) + chữ ký request (S3, SEC-NET). Thứ tự: JWT ES256 hợp lệ -> phiên chưa thu hồi + thiết bị
  * không bị cấm (đọc D1 MỖI yêu cầu để thu hồi / cấm có hiệu lực ngay) -> header ký đủ + ts lệch <= 60 s -> khoá thiết bị
- * đang lưu khớp `cnf.jkt` của JWT -> chữ ký đúng trên chuỗi chuẩn -> nonce chưa dùng (DO KhoNonce, 5 phút). Nonce kiểm
+ * đang lưu khớp `cnf.jkt` của JWT -> chữ ký đúng trên chuỗi chuẩn -> nonce chưa dùng (D1, 5 phút). Nonce kiểm
  * SAU chữ ký để kẻ không có khoá không đốt được nonce của thiết bị. Đặt thietBi / phien / mucTin / trangThai + phamViIdem.
  * [gioiHan]: luật chiều 'thiet-bi' của route - đếm chung batch với nonce (BoTuyen tách ra khỏi gioiHanRoute).
  * [choPhepBiCam]: chỉ /v1/status - thiết bị bị cấm vẫn đọc được trạng thái + mã REF để hiện màn khoá / khiếu nại.

@@ -55,7 +55,7 @@ bucket_name = "la-ban-nhat-ky"
 binding = "SU_KIEN"
 dataset = "la_ban_su_kien"
 
-# Lớp giới hạn thô theo IP (SEC-API API-01). Rộng tay vì CGNAT ở VN (QUYET_DINH Q12); giới hạn chặt theo route ở DO GioiHanToc.
+# Lớp giới hạn thô theo IP (SEC-API API-01). Rộng tay vì CGNAT ở VN (QUYET_DINH Q12); giới hạn chặt theo route ở D1 (mw/gioi-han.ts, R3c).
 [[r2_buckets]]
 binding = "BAN_DO"
 bucket_name = "la-ban-cdn"
@@ -82,20 +82,17 @@ simple = { limit = 60, period = 60 }
 crons = ["*/5 * * * *"]
 
 [[durable_objects.bindings]]
-name = "KHO_NONCE"
-class_name = "KhoNonce"
-
-[[durable_objects.bindings]]
-name = "GIOI_HAN_TOC"
-class_name = "GioiHanToc"
-
-[[durable_objects.bindings]]
 name = "PHONG_SOC"
 class_name = "PhongSoc"
 
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["KhoNonce", "GioiHanToc", "PhongSoc"]
+
+# R3c (Q52/Q54): nonce + gioi han theo route da chuyen sang D1 -> xoa hai lop DO (va du lieu cua chung).
+[[migrations]]
+tag = "v2"
+deleted_classes = ["KhoNonce", "GioiHanToc"]
 
 # ---------------------------------------------------------------- staging
 [env.staging]
@@ -168,14 +165,6 @@ simple = { limit = 60, period = 60 }
 crons = ["*/5 * * * *"]
 
 [[env.staging.durable_objects.bindings]]
-name = "KHO_NONCE"
-class_name = "KhoNonce"
-
-[[env.staging.durable_objects.bindings]]
-name = "GIOI_HAN_TOC"
-class_name = "GioiHanToc"
-
-[[env.staging.durable_objects.bindings]]
 name = "PHONG_SOC"
 class_name = "PhongSoc"
 
@@ -226,14 +215,6 @@ simple = { limit = 600, period = 60 }
 name = "RL_DOC_CONG_KHAI"
 namespace_id = "1023"
 simple = { limit = 60, period = 60 }
-
-[[env.dev.durable_objects.bindings]]
-name = "KHO_NONCE"
-class_name = "KhoNonce"
-
-[[env.dev.durable_objects.bindings]]
-name = "GIOI_HAN_TOC"
-class_name = "GioiHanToc"
 
 [[env.dev.durable_objects.bindings]]
 name = "PHONG_SOC"

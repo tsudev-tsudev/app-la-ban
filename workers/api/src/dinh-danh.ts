@@ -1,5 +1,5 @@
 // S2 - định danh thiết bị + attestation + phiên (SEC-ID). Luồng:
-//   1. POST /v1/device/challenge {installationId}        -> thách thức 5 phút (DO KhoNonce, dùng một lần)
+//   1. POST /v1/device/challenge {installationId}        -> thách thức 5 phút (D1, dùng một lần)
 //   2. POST /v1/device/register  {khoá, chữ ký, token}    -> thiết bị + mức tin cậy + phiên (JWT 15 phút + refresh)
 //   3. POST /v1/session/refresh  {refresh, ts, nonce, ký}  -> xoay refresh; dùng lại token đã xoay -> thu hồi cả chuỗi
 //   4. POST /v1/device/attest    (phiên) {thách thức mới}  -> xác minh lại định kỳ / trước thao tác nhạy cảm

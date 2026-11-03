@@ -62,7 +62,7 @@ export async function taoMf(rl: { limit: number; period: 10 | 60 } = { limit: 10
         d1Databases: { DB: 'db-thu' },
         kvNamespaces: ['CAU_HINH'],
         r2Buckets: ['CDN', 'BAN_DO', 'NHAT_KY'],
-        durableObjects: { KHO_NONCE: 'KhoNonce', GIOI_HAN_TOC: 'GioiHanToc', PHONG_SOC: 'PhongSoc' },
+        durableObjects: { PHONG_SOC: 'PhongSoc' },
         ratelimits: { RL_IP: { namespace_id: '1001', simple: rl } },
       },
     ],
