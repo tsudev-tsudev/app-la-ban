@@ -286,20 +286,69 @@ class _DocHuong extends StatelessWidget {
   }
 }
 
-class _ThongTin extends StatelessWidget {
+class _ThongTin extends StatefulWidget {
   const new({required this.h, required this.hh});
 
   final HuongDoc h;
   final HuongHienThi hh;
 
   @override
+  State<_ThongTin> createState() => _ThongTinState();
+}
+
+/// Cảnh báo nhiễu từ / hiệu chuẩn và nhãn độ tin cậy được làm ổn định theo
+/// thời gian (A9c): cờ thô đổi theo từng mẫu cảm biến khi nam châm ở gần, nếu
+/// vẽ thẳng sẽ nhấp nháy và đẩy mặt la bàn lên xuống.
+class _ThongTinState extends State<_ThongTin> {
+  var _treNhieu = const TreCanhBao();
+  var _treHieuChuan = const TreCanhBao();
+  OnDinhBac? _muc;
+
+  static int _bac(MucTinCay m) => switch (m) {
+    MucTinCay.thap => 0,
+    MucTinCay.trungBinh => 1,
+    MucTinCay.cao => 2,
+  };
+
+  void _napMau(HuongDoc h) {
+    final luc = DateTime.fromMicrosecondsSinceEpoch(h.tNs ~/ 1000);
+    _treNhieu = _treNhieu.capNhat(
+      vuotNguongBat: h.nhieuTu,
+      duoiNguongTat: !h.nhieuTu,
+      luc: luc,
+    );
+    _treHieuChuan = _treHieuChuan.capNhat(
+      vuotNguongBat: h.canHieuChuan,
+      duoiNguongTat: !h.canHieuChuan,
+      luc: luc,
+    );
+    final m = _muc;
+    _muc = m == null ? OnDinhBac(_bac(h.muc)) : m.capNhat(_bac(h.muc), luc);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _napMau(widget.h);
+  }
+
+  @override
+  void didUpdateWidget(_ThongTin cu) {
+    super.didUpdateWidget(cu);
+    if (!identical(cu.h, widget.h)) _napMau(widget.h);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final h = widget.h;
+    final hh = widget.hh;
     final l10n = context.l10n;
     final theme = Theme.of(context);
     final mau = theme.colorScheme;
     final tk = LbThemeExt.of(context).colors;
     final huong = huongChinh(hh.phuongVi);
-    final mauMuc = switch (h.muc) {
+    final muc = MucTinCay.values.firstWhere((m) => _bac(m) == _muc!.bac);
+    final mauMuc = switch (muc) {
       MucTinCay.cao => tk.successStrong,
       MucTinCay.trungBinh => tk.warningStrong,
       MucTinCay.thap => tk.dangerStrong,
@@ -348,29 +397,40 @@ class _ThongTin extends StatelessWidget {
           spacing: LbSpacing.xs,
           runSpacing: LbSpacing.xs,
           children: [
-            _Nhan(cham: mauMuc, chu: l10n.compassAccuracy(tenMuc(l10n, h.muc))),
+            _Nhan(cham: mauMuc, chu: l10n.compassAccuracy(tenMuc(l10n, muc))),
             if (h.cuongDoTu.isFinite)
               _Nhan(chu: l10n.compassFieldStrength(h.cuongDoTu.round())),
             _Nhan(chu: l10n.compassTilt(h.doc.round(), h.lan.round())),
             if (h.theoCamera) _Nhan(chu: l10n.compassCameraMode),
           ],
         ),
-        if (h.nhieuTu)
-          _CanhBao(
-            icon: LbIcons.khien,
-            noiDung: l10n.compassInterference,
-            hanhDong: l10n.compassCalibrateAction,
-          )
-        else if (h.canHieuChuan)
-          _CanhBao(
-            icon: LbIcons.hieuChuanSo8,
-            noiDung: l10n.compassCalibrate,
-            hanhDong: l10n.compassCalibrateAction,
-          ),
         if (hh.thieuViTri)
           _GhiChu(icon: LbIcons.ghimGps, noiDung: l10n.compassNeedLocation)
         else if (hh.moHinhCu)
           _GhiChu(icon: LbIcons.bacThuc, noiDung: l10n.compassModelExpired),
+        // Ô dành sẵn (cuối cột, sau ghi chú bền để ghi chú luôn thấy): luôn
+        // cao bằng cảnh báo dài nhất nên cảnh báo hiện / ẩn không đẩy mặt la
+        // bàn.
+        LbOCoDinh(
+          chiSo: _treNhieu.dangBat
+              ? 1
+              : _treHieuChuan.dangBat
+              ? 2
+              : 0,
+          phuongAn: [
+            const SizedBox.shrink(),
+            _CanhBao(
+              icon: LbIcons.khien,
+              noiDung: l10n.compassInterference,
+              hanhDong: l10n.compassCalibrateAction,
+            ),
+            _CanhBao(
+              icon: LbIcons.hieuChuanSo8,
+              noiDung: l10n.compassCalibrate,
+              hanhDong: l10n.compassCalibrateAction,
+            ),
+          ],
+        ),
       ],
     );
   }

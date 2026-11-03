@@ -2083,6 +2083,12 @@ abstract class LbL10n {
   /// In vi, this message translates to:
   /// **'Máy chủ vẫn ghi nhận chế độ Nhà phát triển - hãy kết nối mạng rồi bấm Kiểm tra lại.'**
   String get devModeServerOnly;
+
+  /// A9c: ghi chú cố định khi từ trường bình thường (giữ chỗ cho cảnh báo)
+  ///
+  /// In vi, this message translates to:
+  /// **'Từ trường bình thường - không thấy nhiễu từ gần máy.'**
+  String get a9FieldNormal;
 }
 
 class _LbL10nDelegate extends LocalizationsDelegate<LbL10n> {

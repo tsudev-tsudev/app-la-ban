@@ -120,6 +120,22 @@ void main() {
     expect(danhGiaTuTruong(60, moHinhNt: 45000).batThuong, isTrue);
   });
 
+  test('từ trường: ngưỡng tắt hẹp hơn ngưỡng bật (trễ hai ngưỡng)', () {
+    expect(danhGiaTuTruong(45).yen, isTrue);
+    // 64 µT: chưa bất thường nhưng cũng chưa đủ yên để tắt cảnh báo.
+    expect(danhGiaTuTruong(64).batThuong, isFalse);
+    expect(danhGiaTuTruong(64).yen, isFalse);
+    expect(danhGiaTuTruong(26).yen, isFalse);
+    // Lệch 18%: vùng giữa; lệch 10%: yên.
+    expect(danhGiaTuTruong(53.1, moHinhNt: 45000).batThuong, isFalse);
+    expect(danhGiaTuTruong(53.1, moHinhNt: 45000).yen, isFalse);
+    expect(danhGiaTuTruong(49.5, moHinhNt: 45000).yen, isTrue);
+    for (var ut = 0.0; ut < 120; ut += 0.5) {
+      final d = danhGiaTuTruong(ut, moHinhNt: 45000);
+      expect(d.batThuong && d.yen, isFalse, reason: '$ut µT');
+    }
+  });
+
   group('đọc vị trí', () {
     test('giải mã sự kiện nền tảng', () {
       final d = giaiMaDocViTri([

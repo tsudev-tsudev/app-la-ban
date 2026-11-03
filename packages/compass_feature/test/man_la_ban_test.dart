@@ -13,6 +13,7 @@ HuongDoc doc({
   MucTinCay muc = MucTinCay.cao,
   bool nhieuTu = false,
   bool canHieuChuan = false,
+  int ms = 0,
 }) => HuongDoc(
   phuongVi: phuongVi,
   phuongViTho: phuongVi,
@@ -25,7 +26,7 @@ HuongDoc doc({
   cuongDoTu: 45,
   nguon: NguonHuong.madgwick,
   dungYen: false,
-  tNs: 0,
+  tNs: ms * 1000000,
 );
 
 Widget dung(OMaTran o, List<Override> ghiDe) => ProviderScope(
@@ -89,6 +90,67 @@ void main() {
       (o) => dung(o, ghiDe),
       dsO: [oChup.first],
     );
+  });
+
+  testWidgets('A9c: nhiễu từ bật / tắt theo từng mẫu - cảnh báo và nhãn độ '
+      'tin cậy không nhấp nháy, mặt la bàn không nhảy', (tester) async {
+    final ctl = StreamController<HuongDoc>();
+    addTearDown(() => unawaited(ctl.close()));
+    await tester.pumpWidget(
+      dung(oChup.first, [
+        huongProvider.overrideWith((ref) => ctl.stream),
+        ...coViTri,
+      ]),
+    );
+    ctl.add(doc());
+    await tester.pump(const Duration(seconds: 1));
+    final mat = find.byType(MatLaBan);
+    final canhBao = find.text(
+      'Nhiễu từ: tránh xa nam châm, loa, ốp lưng có nam châm hoặc vật kim '
+      'loại lớn.',
+    );
+    double? mo() => tester
+        .widget<AnimatedOpacity>(
+          find.ancestor(of: canhBao, matching: find.byType(AnimatedOpacity)),
+        )
+        .opacity;
+    final viTriMat = tester.getRect(mat);
+    expect(mo(), 0);
+    expect(find.text('Độ tin cậy: Cao'), findsOneWidget);
+
+    var doiCanhBao = 0;
+    var doiNhan = 0;
+    var truocMo = mo();
+    var truocCao = true;
+    for (var ms = 100; ms <= 5000; ms += 100) {
+      final nhieu = (ms ~/ 100).isOdd;
+      ctl.add(
+        doc(
+          muc: nhieu ? MucTinCay.thap : MucTinCay.cao,
+          nhieuTu: nhieu,
+          ms: ms,
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(tester.getRect(mat), viTriMat, reason: '$ms ms');
+      if (mo() != truocMo) doiCanhBao++;
+      truocMo = mo();
+      final cao = find.text('Độ tin cậy: Cao').evaluate().isNotEmpty;
+      if (cao != truocCao) doiNhan++;
+      truocCao = cao;
+    }
+    expect(doiCanhBao, 1);
+    expect(doiNhan, 1);
+
+    // Hết nhiễu hẳn: tắt sau giữ tối thiểu + chờ, mặt vẫn đứng yên.
+    for (var ms = 5100; ms <= 8000; ms += 100) {
+      ctl.add(doc(ms: ms));
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(tester.getRect(mat), viTriMat);
+    }
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(mo(), 0);
+    expect(find.text('Độ tin cậy: Cao'), findsOneWidget);
   });
 
   testWidgets('hiện số độ, hướng, độ tin cậy, góc nghiêng (vi)', (
@@ -368,7 +430,9 @@ void main() {
       dung(oChup.first, [coHuong(doc(muc: MucTinCay.thap, nhieuTu: true))]),
     );
     await tester.pump();
-    await tester.tap(find.widgetWithText(TextButton, 'Hiệu chuẩn'));
+    await tester.tap(
+      find.widgetWithText(TextButton, 'Hiệu chuẩn').hitTestable(),
+    );
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 500));
     expect(find.byType(ManHieuChuan), findsOneWidget);

@@ -56,6 +56,21 @@ function useLuongSoc(): { ds: TinHien[]; ketNoi: boolean } {
   return { ds, ketNoi };
 }
 
+/** Đèn kết nối có trễ (A9c): nối lại chớp nhoáng (backoff 1-2 giây) không làm đèn nháy cam; chỉ báo mất khi rớt quá
+ * [choMs]. Có kết nối thì xanh ngay. Chỉ ảnh hưởng HIỂN THỊ - luồng WebSocket giữ nguyên. */
+function useKetNoiOnDinh(ketNoi: boolean, choMs = 3000): boolean {
+  const [hien, datHien] = useState(true);
+  useEffect(() => {
+    if (ketNoi) {
+      datHien(true);
+      return;
+    }
+    const hen = setTimeout(() => datHien(false), choMs);
+    return () => clearTimeout(hen);
+  }, [ketNoi, choMs]);
+  return hien;
+}
+
 function CotTheoGio({ ds }: { ds: { k: string | number | null; n: number }[] }) {
   const { t, nn } = useSoc();
   const gioHienTai = Math.floor(Date.now() / 3_600_000);
@@ -121,6 +136,7 @@ export function TongQuan() {
   const tq = useTai<DuLieuTongQuan>('/tong-quan', 30_000);
   const cb = useTai<{ ds: CanhBao[] }>('/canh-bao?limit=12', 30_000);
   const luong = useLuongSoc();
+  const ketNoi = useKetNoiOnDinh(luong.ketNoi);
   const soTinTruoc = useRef(0);
   const { napLai: napTq } = tq;
   const { napLai: napCb } = cb;
@@ -157,7 +173,7 @@ export function TongQuan() {
       <section className="the rong-2 hang-2">
         <div className="tieu-de-the">
           <h2>{t.realtime}</h2>
-          <span className={luong.ketNoi ? 'den-xanh' : 'den-cam'}>{luong.ketNoi ? t.ketNoi : t.matKetNoi}</span>
+          <span className={ketNoi ? 'den-xanh' : 'den-cam'}>{ketNoi ? t.ketNoi : t.matKetNoi}</span>
         </div>
         {luong.ds.length === 0 ? (
           <p className="trong">{t.realtimeTrong}</p>

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -53,10 +54,11 @@ List<Override> ghiDe({
   NguonViTri? nguon,
   ViTriDiaLy? viTri = const ViTriDiaLy(viDo: 21.0285, kinhDo: 105.8542),
   KhoViTri? kho,
+  Stream<HuongDoc>? huong,
 }) => [
   nguonViTriProvider.overrideWithValue(nguon ?? NguonViTriGhiSan([_doc])),
   taiNguyenViTriProvider.overrideWith((_) => SynchronousFuture(_taiNguyen)),
-  huongProvider.overrideWith((_) => Stream.value(_huong)),
+  huongProvider.overrideWith((_) => huong ?? Stream.value(_huong)),
   phutProvider.overrideWith((_) => Stream.value(_luc)),
   dongHoProvider.overrideWithValue(() => _luc),
   lechMuiGioProvider.overrideWithValue((_) => const Duration(hours: 7)),
@@ -110,6 +112,86 @@ void main() {
       (o) => dung(o, const ManViTri(), ghiDe()),
       dsO: [oChup.first, oChup.last],
     );
+  });
+
+  testWidgets('A9c: nam châm dao động quanh ngưỡng - cảnh báo không nhấp '
+      'nháy, thẻ Thước thuỷ bên dưới không nhảy', (tester) async {
+    final ctl = StreamController<HuongDoc>();
+    addTearDown(() => unawaited(ctl.close()));
+    HuongDoc mau(double ut, int ms) => HuongDoc(
+      phuongVi: 42,
+      phuongViTho: 42,
+      doc: 2,
+      lan: -1,
+      theoCamera: false,
+      muc: MucTinCay.cao,
+      nhieuTu: false,
+      canHieuChuan: false,
+      cuongDoTu: ut,
+      nguon: NguonHuong.madgwick,
+      dungYen: false,
+      tNs: ms * 1000000,
+      apSuat: 1009.6,
+    );
+    await tester.pumpWidget(
+      dung(oChup.first, const ManViTri(), ghiDe(huong: ctl.stream)),
+    );
+    ctl.add(mau(44.2, 0));
+    // Chờ mô hình WMM / vị trí nạp xong (hàng "Mô hình" xuất hiện một lần).
+    await tester.pump(const Duration(seconds: 1));
+    final canhBao = find.text(
+      'Từ trường bất thường (bình thường 25-65 µT): có thể có nam châm hoặc '
+      'kim loại gần máy.',
+    );
+    // Cuộn tới cảnh báo; thẻ Thước thuỷ ngay dưới (có thể ngoài màn nhưng
+    // vẫn dựng trong vùng đệm của ListView).
+    await tester.scrollUntilVisible(canhBao, 100);
+    final thuoc = find.text('Thước thuỷ', skipOffstage: false);
+    await tester.pump(const Duration(seconds: 1));
+    // Đo tương đối (vị trí cuộn có thể bị kẹp ở cuối danh sách): chiều cao
+    // thẻ Từ trường + khoảng cách từ đỉnh thẻ tới tiêu đề Thước thuỷ.
+    final the = find.ancestor(of: canhBao, matching: find.byType(Card));
+    (double, double) y() {
+      final r = tester.getRect(the);
+      return (r.height, tester.getTopLeft(thuoc).dy - r.top);
+    }
+
+    final y0 = y();
+    bool hien() =>
+        tester
+            .widget<AnimatedOpacity>(
+              find.ancestor(
+                of: canhBao,
+                matching: find.byType(AnimatedOpacity),
+              ),
+            )
+            .opacity ==
+        1;
+    expect(hien(), isFalse);
+
+    // 66 / 63 µT xen kẽ mỗi 100 ms trong 5 s: vượt ngưỡng bật rồi lơ lửng
+    // giữa hai ngưỡng -> bật một lần và giữ, layout không đổi.
+    var doi = 0;
+    var truoc = hien();
+    for (var ms = 100; ms <= 5000; ms += 100) {
+      ctl.add(mau((ms ~/ 100).isEven ? 66 : 63, ms));
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(y(), y0, reason: '$ms ms');
+      if (hien() != truoc) doi++;
+      truoc = hien();
+    }
+    expect(doi, 1);
+    expect(hien(), isTrue);
+
+    // Rút nam châm: yên 44 µT -> tắt sau khi đủ giữ + chờ, vẫn không nhảy.
+    for (var ms = 5100; ms <= 7000; ms += 100) {
+      ctl.add(mau(44, ms));
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(y(), y0);
+    }
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(hien(), isFalse);
+    expect(y(), y0);
   });
 
   testWidgets('màn chi tiết hiện đủ số liệu', (tester) async {

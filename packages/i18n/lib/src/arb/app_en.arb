@@ -330,5 +330,6 @@
   "devModeOpenSettings": "Open Developer options",
   "devModeOpenFailed": "Couldn't open settings - open your phone's Settings app.",
   "devModeRecheck": "Check again",
-  "devModeServerOnly": "The server still sees developer mode - connect to the internet, then tap Check again."
+  "devModeServerOnly": "The server still sees developer mode - connect to the internet, then tap Check again.",
+  "a9FieldNormal": "Field normal - no magnetic interference nearby."
 }

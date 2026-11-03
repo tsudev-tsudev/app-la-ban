@@ -24,7 +24,6 @@ if (form) {
     if (!trangThai) return;
     trangThai.textContent = chu;
     trangThai.dataset.loai = loai;
-    trangThai.hidden = false;
   };
   const loi = (ma: string) => bao(form.dataset[`loi${ma.replace(/(^|-)([a-z])/g, (_, _g, c: string) => c.toUpperCase())}`] ?? form.dataset.loiChung ?? '', 'loi');
 
@@ -67,10 +66,9 @@ if (form) {
         ngonNgu: lang,
         turnstile: token,
       };
-      if (nut) {
-        nut.disabled = true;
-        nut.textContent = nut.dataset.dangGui ?? nut.textContent;
-      }
+      // A9c: nút giữ nguyên chữ (đổi chữ làm nút đổi bề rộng) - trạng thái "đang gửi" nằm ở dòng trạng thái dành sẵn.
+      if (nut) nut.disabled = true;
+      form.setAttribute('aria-busy', 'true');
       bao(form.dataset.dangGui ?? '', 'tin');
       void fetch(API_KHIEU_NAI, { method: 'POST', mode: 'cors', credentials: 'omit', headers: { 'content-type': 'application/json' }, body: JSON.stringify(than) })
         .then(async (res) => {
@@ -86,10 +84,8 @@ if (form) {
         .finally(() => {
           token = '';
           ts.reset(idTs);
-          if (nut) {
-            nut.disabled = false;
-            nut.textContent = nut.dataset.gui ?? nut.textContent;
-          }
+          if (nut) nut.disabled = false;
+          form.removeAttribute('aria-busy');
         });
     });
   }
