@@ -31,6 +31,10 @@ final class LbColors {
     required this.successStrong,
     required this.onSuccess,
     required this.scrim,
+    required this.gradientStart,
+    required this.gradientEnd,
+    required this.onGradient,
+    required this.tint,
   });
 
   static const light = LbColors(
@@ -59,6 +63,10 @@ final class LbColors {
     successStrong: Color(0xFF007A34),
     onSuccess: Color(0xFF0B1220),
     scrim: Color(0x990B1220),
+    gradientStart: Color(0xFF1A56DB),
+    gradientEnd: Color(0xFF0E7490),
+    onGradient: Color(0xFFFFFFFF),
+    tint: Color(0xFFEAF2FF),
   );
 
   static const dark = LbColors(
@@ -87,6 +95,10 @@ final class LbColors {
     successStrong: Color(0xFF3DDC84),
     onSuccess: Color(0xFF0B1220),
     scrim: Color(0xB3000000),
+    gradientStart: Color(0xFF4C8DFF),
+    gradientEnd: Color(0xFF22D3EE),
+    onGradient: Color(0xFF0B1220),
+    tint: Color(0xFF12213D),
   );
 
   final Color primary;
@@ -114,6 +126,10 @@ final class LbColors {
   final Color successStrong;
   final Color onSuccess;
   final Color scrim;
+  final Color gradientStart;
+  final Color gradientEnd;
+  final Color onGradient;
+  final Color tint;
 }
 
 /// Thang khoảng cách 8pt (chỉ dùng các giá trị này).

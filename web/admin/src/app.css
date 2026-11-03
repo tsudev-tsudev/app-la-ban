@@ -8,7 +8,8 @@
 html,
 body {
   margin: 0;
-  background: var(--lb-color-bg);
+  /* Q60: nền trắng với dải tint xanh nhạt phía trên. */
+  background: linear-gradient(180deg, var(--lb-color-tint), var(--lb-color-bg) 360px) no-repeat, var(--lb-color-bg);
   color: var(--lb-color-text);
   font: var(--lb-type-body);
   -webkit-text-size-adjust: 100%;
@@ -90,9 +91,10 @@ h2 {
 }
 
 .nut-chinh {
-  background: var(--lb-color-primary-deep);
-  border-color: var(--lb-color-primary-deep);
-  color: var(--lb-color-on-primary-deep);
+  /* Q60: nút chính gradient xanh dương -> cyan, chữ on-gradient (AA cả hai đầu). */
+  background: linear-gradient(135deg, var(--lb-color-gradient-start), var(--lb-color-gradient-end));
+  border-color: transparent;
+  color: var(--lb-color-on-gradient);
 }
 
 .nut-phu {
@@ -221,7 +223,7 @@ h2 {
   inset-block: 8px;
   inline-size: 3px;
   border-radius: 2px;
-  background: var(--lb-color-primary-deep);
+  background: linear-gradient(180deg, var(--lb-color-gradient-start), var(--lb-color-gradient-end));
 }
 
 .huy-hieu {
@@ -563,7 +565,7 @@ kbd {
   block-size: 100%;
   min-inline-size: 2px;
   border-radius: 0 4px 4px 0;
-  background: var(--lb-color-primary-deep);
+  background: linear-gradient(90deg, var(--lb-color-gradient-start), var(--lb-color-gradient-end));
 }
 
 .xh-so {
@@ -1622,7 +1624,7 @@ input.o-ngan {
   min-block-size: 1px;
   align-self: end;
   border-radius: var(--lb-radius-sm) var(--lb-radius-sm) 0 0;
-  background: var(--lb-color-primary-deep);
+  background: linear-gradient(0deg, var(--lb-color-gradient-start), var(--lb-color-gradient-end));
 }
 
 .cot-ngay-so {

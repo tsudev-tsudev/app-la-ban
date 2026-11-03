@@ -23,20 +23,29 @@ class ManViTri extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    // Q60: header mờ khi các thẻ cuộn bên dưới (tắt blur ở máy yếu).
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.locTitle)),
+      extendBodyBehindAppBar: true,
+      appBar: LbHeaderMo(
+        title: Text(l10n.locTitle),
+        tatMo: ref.watch(cheDoNheProvider),
+      ),
       body: SafeArea(
         top: false,
-        child: ListView(
-          padding: const EdgeInsets.all(LbSpacing.md),
-          children: const [
-            _GiuaHep(child: _MucToaDo()),
-            _GiuaHep(child: _MucDoCao()),
-            _GiuaHep(child: _MucTuTruong()),
-            _GiuaHep(child: _MucThuocThuy()),
-            _GiuaHep(child: _MucThienVan(matTrang: false)),
-            _GiuaHep(child: _MucThienVan(matTrang: true)),
-          ],
+        // MediaQuery TRONG body (Scaffold đã cộng chiều cao header mờ).
+        child: Builder(
+          builder: (context) => ListView(
+            padding: const EdgeInsets.all(LbSpacing.md)
+                .add(EdgeInsets.only(top: MediaQuery.paddingOf(context).top)),
+            children: const [
+              _GiuaHep(child: _MucToaDo()),
+              _GiuaHep(child: _MucDoCao()),
+              _GiuaHep(child: _MucTuTruong()),
+              _GiuaHep(child: _MucThuocThuy()),
+              _GiuaHep(child: _MucThienVan(matTrang: false)),
+              _GiuaHep(child: _MucThienVan(matTrang: true)),
+            ],
+          ),
         ),
       ),
     );
