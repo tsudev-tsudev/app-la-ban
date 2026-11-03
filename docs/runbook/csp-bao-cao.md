@@ -62,3 +62,14 @@ Báo cáo 29/10 - 03/11 (AE, theo `blob6` nguồn): KHÔNG có vi phạm từ sc
   `web/landing/public/_headers` thành `script-src 'self' 'strict-dynamic'` (worker tự thêm nonce), GIỮ Trusted Types ở
   Report-Only (vi phạm từ script Cloudflare). Cùng PR: bỏ `interest-cohort=()` khỏi `Permissions-Policy` (landing
   `_headers` + admin `worker/tieu-de.ts`) - Chromium báo lỗi console "Unrecognized feature".
+
+## Đã bật chặn 03/11 (người dùng yêu cầu, không chờ 05/11 - PR #58, main d276f27)
+
+- Header CHẶN landing: `script-src 'self' 'strict-dynamic' 'nonce-X'`. Trusted Types GIỮ ở Report-Only (vi phạm từ script
+  JS detections Cloudflare). Bỏ `interest-cohort=()` khỏi `Permissions-Policy` landing + admin.
+- Đo prod (headless, compass.tsudev.com có script Cloudflare chèn): 10 trang vi / en, khiên chạy, `jsd/main.js` của Cloudflare
+  vẫn nạp (do script có nonce tạo), 0 vi phạm chặn, 3 thông điệp Report-Only Trusted Types / trang (Cloudflare).
+- Theo dõi: báo cáo `enforce` từ landing trong vài ngày tới - có `script-src-elem` từ origin mình -> rollback bằng cách bỏ
+  `'strict-dynamic'` ở dòng 4 `_headers` rồi deploy landing.
+- Turnstile (`/khieu-nai/`) chưa có site key nên chưa hiện form; thẻ `<script>` Turnstile được worker gắn nonce như mọi
+  thẻ khác -> khi có site key, kiểm headless `/khieu-nai/?ref=...` không vi phạm.
