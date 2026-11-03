@@ -41,6 +41,9 @@ bằng font khác.
   (biểu tượng 60dp, trong vùng an toàn 66dp), **monochrome** cho themed icon Android 13+; legacy `ic_launcher` /
   `ic_launcher_round` cho API 24-25. Flavor `dev` / `staging` ghi đè tiền cảnh + legacy bằng nhãn **DEV** (coral) /
   **STG** (amber) để không nhầm bản cài.
+- App trả phí "La bàn Pro" (QUYET_DINH Q56, người dùng chốt 03/11/2026): cùng icon, viên nhãn **PRO** nền xanh lá
+  (token `success` #00C853, chữ #0B1220) để phân biệt với bản miễn phí có quảng cáo. Tài nguyên: `design/logo/pro/`
+  (mipmap Android + icon 1024), `design/store/pro/play-icon-512.png`.
 - Store: `design/store/play-icon-512.png` (Play, không alpha). Xem trước trên nền sáng / tối / ảnh với mặt nạ tròn,
   squircle, bo góc, themed: `design/logo/xem-truoc-launcher.png`.
 

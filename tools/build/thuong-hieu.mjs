@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Xuất toàn bộ tài sản thương hiệu từ logo đã chốt (phương án B, chốt 28/10/2026 - xem design/BRAND.md):
-// logo SVG/PNG, app icon iOS + Android (adaptive, monochrome, legacy, nhãn flavor dev/stg), splash Android/iOS,
+// logo SVG/PNG, app icon iOS + Android (adaptive, monochrome, legacy, nhãn flavor dev/stg, app Pro), splash Android/iOS,
 // favicon + apple-touch + OG image cho web, ảnh xem trước launcher.
 //   node tools/build/thuong-hieu.mjs
 import { Buffer } from 'node:buffer';
@@ -22,11 +22,24 @@ const ghi = (tep, noiDung) => {
 
 const NEN_ICON = ['#FFFFFF', '#DCE9FF'];
 const DPI = { mdpi: 1, hdpi: 1.5, xhdpi: 2, xxhdpi: 3, xxxhdpi: 4 };
-const NHAN = { dev: { chu: 'DEV', mau: MAU.coral }, staging: { chu: 'STG', mau: '#FFB300' } };
+// Pro (QUYET_DINH Q56): app trả phí không quảng cáo - cùng kiểu nhãn DEV, viên nhãn xanh lá token success (chữ tối, AA).
+const NHAN = {
+  dev: { chu: 'DEV', mau: MAU.coral },
+  staging: { chu: 'STG', mau: '#FFB300' },
+  pro: { chu: 'PRO', mau: tokens.color.light.success },
+};
 
 /** PNG RGB không kênh alpha (App Store từ chối icon 1024 có alpha). Ảnh phải phủ kín nền. */
 function pngKhongAlpha(svgText, rong) {
-  const anh = new Resvg(svgText, { fitTo: { mode: 'width', value: rong } }).render();
+  // Cùng font với png() (anh.mjs): nhãn PRO trên icon store phải là Be Vietnam Pro, không phải font hệ thống.
+  const anh = new Resvg(svgText, {
+    fitTo: { mode: 'width', value: rong },
+    font: {
+      fontFiles: ['Bold', 'Regular'].map((w) => join(goc, `design/fonts/BeVietnamPro-${w}.ttf`)),
+      loadSystemFonts: false,
+      defaultFontFamily: 'Be Vietnam Pro',
+    },
+  }).render();
   const { width: w, height: h } = anh;
   const rgba = anh.pixels;
   const tho = Buffer.alloc((w * 3 + 1) * h);
@@ -67,7 +80,7 @@ const nenGradient = (id, w, h, rx = 0) =>
 const datGiua = (hop, co, noiDung, extra = '') =>
   `<g transform="translate(${(hop - co) / 2} ${(hop - co) / 2}) scale(${co / 512})"${extra}>${noiDung}</g>`;
 
-/** Nhãn flavor (DEV / STG) dạng viên thuốc ở dưới, trong vùng an toàn. `hop` = cạnh ảnh, `cy` = tâm nhãn. */
+/** Nhãn flavor (DEV / STG / PRO) dạng viên thuốc ở dưới, trong vùng an toàn. `hop` = cạnh ảnh, `cy` = tâm nhãn. */
 function nhanFlavor(flavor, hop, cy, cao) {
   if (!flavor) return '';
   const { chu, mau } = NHAN[flavor];
@@ -256,7 +269,23 @@ function xuatWeb() {
   ghi('design/store/play-feature-1024x500.png', pngKhongAlpha(noiBat, 1024));
 }
 
-/** Ảnh xem trước icon trên launcher: 3 nền (sáng, tối, ảnh) x mặt nạ tròn / squircle / themed + bản dev, stg. */
+/**
+ * App "La bàn Pro" (M2, Q56): icon riêng để người dùng phân biệt bản không quảng cáo. `app_pro/` chưa có (M2 bước 1
+ * tách vỏ app) nên tài nguyên Android đặt ở design/logo/pro/android/res - M2 chép sang `app_pro/android/app/src/main/res`
+ * (adaptive XML + nền + monochrome dùng chung bản miễn phí). Flavor dev / staging của app Pro giữ nhãn DEV / STG.
+ */
+function xuatPro() {
+  const res = 'design/logo/pro/android/res';
+  for (const [thuMuc, k] of Object.entries(DPI)) {
+    ghi(`${res}/mipmap-${thuMuc}/ic_launcher_foreground.png`, png(tienCanh('pro'), 108 * k));
+    ghi(`${res}/mipmap-${thuMuc}/ic_launcher.png`, png(iconLegacy(false, 'pro'), 48 * k));
+    ghi(`${res}/mipmap-${thuMuc}/ic_launcher_round.png`, png(iconLegacy(true, 'pro'), 48 * k));
+  }
+  ghi('design/logo/pro/bieu-tuong-pro-1024.png', pngKhongAlpha(iconKin(1024, 'pro'), 1024));
+  ghi('design/store/pro/play-icon-512.png', pngKhongAlpha(iconKin(512, 'pro'), 512));
+}
+
+/** Ảnh xem trước icon trên launcher: 3 nền (sáng, tối, ảnh) x mặt nạ tròn / squircle / themed + bản dev, stg, Pro. */
 function xuatXemTruoc() {
   const NEN = [
     ['Nền sáng', '<rect width="100%" height="100%" fill="#EEF2F7"/>', '#0B1220'],
@@ -268,7 +297,7 @@ function xuatXemTruoc() {
     ],
   ];
   const O = 132;
-  const W = 40 + 6 * (O + 40);
+  const W = 40 + 7 * (O + 40);
   const HANG = 230;
   const tienDich = (flavor) =>
     `<rect width="108" height="108" fill="url(#g)"/>` +
@@ -299,6 +328,7 @@ function xuatXemTruoc() {
     o.push(o1(3, `<g clip-path="url(#tron)"><rect width="108" height="108" fill="#D6E3FF"/>${mono}</g>`, 'Themed (A13+)'));
     o.push(o1(4, `<g clip-path="url(#tron)">${tienDich('dev')}</g>`, 'Flavor dev'));
     o.push(o1(5, `<g clip-path="url(#tron)">${tienDich('staging')}</g>`, 'Flavor staging'));
+    o.push(o1(6, `<g clip-path="url(#tron)">${tienDich('pro')}</g>`, 'La bàn Pro'));
     o.push('</svg>');
   });
   ghi('design/logo/xem-truoc-launcher.png', png(svg(W, NEN.length * HANG, o.join('')), W));
@@ -309,4 +339,5 @@ xuatAndroid();
 xuatIos();
 xuatWeb();
 xuatXemTruoc();
+xuatPro();
 console.log(`ghi logo, icon Android/iOS, splash, favicon/OG, xem trước launcher (wordmark rộng ${Math.round(wordmark(100).rong)})`);
