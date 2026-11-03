@@ -24,8 +24,11 @@
 :root {
   --rong: 1120px;
   --le: max(16px, calc((100% - var(--rong)) / 2));
-  --nen-hero: radial-gradient(1200px 600px at 85% -10%, rgb(0 229 255 / 0.18), transparent 60%),
-    radial-gradient(900px 500px at -10% 20%, rgb(41 98 255 / 0.14), transparent 60%);
+  /* Q60: xanh dương + trắng, gradient xanh dương -> cyan làm điểm nhấn (token gradient-start / gradient-end). */
+  --gradient: linear-gradient(135deg, var(--lb-color-gradient-start), var(--lb-color-gradient-end));
+  --nen-hero: radial-gradient(1200px 600px at 85% -10%, color-mix(in srgb, var(--lb-color-gradient-end) 22%, transparent), transparent 60%),
+    radial-gradient(900px 500px at -10% 20%, color-mix(in srgb, var(--lb-color-gradient-start) 18%, transparent), transparent 60%),
+    linear-gradient(180deg, var(--lb-color-tint), var(--lb-color-bg));
   --vien: 1px solid var(--lb-color-outline);
 }
 
@@ -114,7 +117,7 @@ code,
   padding-block: clamp(48px, 8vw, 96px);
 }
 .vung-phu {
-  background: var(--lb-color-surface);
+  background: var(--lb-color-tint);
 }
 .dau-vung {
   display: grid;
@@ -163,8 +166,8 @@ code,
   transform: translateY(-1px);
 }
 .nut-chinh {
-  background: var(--lb-color-primary-deep);
-  color: var(--lb-color-on-primary-deep);
+  background: var(--gradient);
+  color: var(--lb-color-on-gradient);
   box-shadow: var(--lb-shadow-md);
 }
 .nut-chinh:hover {
@@ -207,7 +210,7 @@ code,
   width: 48px;
   height: 48px;
   border-radius: var(--lb-radius-md);
-  background: linear-gradient(135deg, rgb(0 229 255 / 0.18), rgb(41 98 255 / 0.18));
+  background: color-mix(in srgb, var(--lb-color-gradient-start) 14%, var(--lb-color-surface-raised));
   color: var(--lb-color-primary-deep);
   flex: none;
 }

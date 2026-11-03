@@ -183,7 +183,7 @@ const ban = await napBanApk();
   }
   .nhan-mau {
     display: block;
-    background: linear-gradient(90deg, var(--lb-color-primary-deep), var(--lb-color-secondary) 55%, #00b8d4);
+    background: linear-gradient(90deg, var(--lb-color-gradient-start), var(--lb-color-gradient-end));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -249,7 +249,7 @@ const ban = await napBanApk();
     padding: 2px 10px;
     border-radius: 999px;
     font: var(--lb-type-caption);
-    color: var(--lb-color-accent-strong);
+    color: var(--lb-color-primary-deep);
     border: 1px solid currentColor;
   }
   .cac-buoc {
@@ -332,7 +332,7 @@ const ban = await napBanApk();
     background: var(--lb-color-success);
   }
   .lo-trinh .lt-dang::before {
-    background: linear-gradient(90deg, var(--lb-color-primary), var(--lb-color-secondary));
+    background: linear-gradient(90deg, var(--lb-color-gradient-start), var(--lb-color-gradient-end));
   }
   .lt-moc {
     font: var(--lb-type-caption);
@@ -382,16 +382,15 @@ const ban = await napBanApk();
     gap: var(--lb-space-lg);
     padding: clamp(24px, 5vw, 48px);
     border-radius: var(--lb-radius-xl);
-    background: linear-gradient(120deg, #1a56db, #2962ff 55%, #00b8d4);
-    color: #fff;
+    background: linear-gradient(120deg, var(--lb-color-gradient-start), var(--lb-color-gradient-end));
+    color: var(--lb-color-on-gradient);
     box-shadow: var(--lb-shadow-lg);
   }
   .cuoi p {
     margin-top: var(--lb-space-xs);
-    opacity: 0.92;
   }
   .nut-sang {
-    background: #fff;
-    color: #1a56db;
+    background: var(--lb-color-on-gradient);
+    color: var(--lb-color-gradient-start);
   }
 </style>

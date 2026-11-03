@@ -10,6 +10,8 @@ export 'src/icons/lb_icons.g.dart';
 export 'src/theme/giay_phep_font.dart';
 export 'src/theme/lb_theme.dart';
 export 'src/tokens/tokens.g.dart';
+export 'src/widgets/lb_header_mo.dart';
 export 'src/widgets/lb_logo.dart';
+export 'src/widgets/lb_nut_noi.dart';
 export 'src/widgets/lb_o_co_dinh.dart';
 export 'src/widgets/lb_trang_trong.dart';

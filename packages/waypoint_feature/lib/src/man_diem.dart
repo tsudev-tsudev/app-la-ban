@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:i18n/i18n.dart';
+import 'package:sensors/sensors.dart';
 import 'package:waypoint_feature/src/domain/diem_moc.dart';
 import 'package:waypoint_feature/src/domain/tep_diem.dart';
 import 'package:waypoint_feature/src/hien_thi.dart';
@@ -24,8 +25,12 @@ class ManDiem extends ConsumerWidget {
     final l = context.l10n;
     if (ref.watch(khoDiemProvider) == null) return const _XuatAnToan();
     final ds = ref.watch(dsDiemProvider).value ?? const <DiemMoc>[];
+    // Q60: header mờ khi danh sách cuộn bên dưới (tắt blur ở máy yếu).
+    final tatMo = ref.watch(cheDoNheProvider);
     return Scaffold(
-      appBar: AppBar(
+      extendBodyBehindAppBar: true,
+      appBar: LbHeaderMo(
+        tatMo: tatMo,
         title: Text(l.tabWaypoints),
         actions: [
           PopupMenuButton<_Menu>(
@@ -55,11 +60,12 @@ class ManDiem extends ConsumerWidget {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      // Q60: nút không nền (icon + nhãn), vùng chạm >= 48 dp.
+      floatingActionButton: LbNutNoi(
         key: const ValueKey('luu-vi-tri'),
+        icon: LbIcons.ghimGps,
+        nhan: l.wpSaveHere,
         onPressed: () => _moSua(context, dungViTri: true),
-        icon: const LbIcon(LbIcons.ghimGps),
-        label: Text(l.wpSaveHere),
       ),
       body: ds.isEmpty
           ? LbTrangTrong(
@@ -71,12 +77,18 @@ class ManDiem extends ConsumerWidget {
               tieuDe: l.waypointsEmptyTitle,
               moTa: l.waypointsEmptyBody,
             )
-          : ListView.separated(
-              // Chừa chỗ cho nút nổi ở cuối danh sách.
-              padding: const EdgeInsets.only(bottom: 96),
-              itemCount: ds.length,
-              separatorBuilder: (_, _) => const Divider(height: 1),
-              itemBuilder: (context, i) => _DongDiem(diem: ds[i]),
+          // MediaQuery TRONG body (Scaffold đã cộng chiều cao header mờ).
+          : Builder(
+              builder: (context) => ListView.separated(
+                // Dưới header mờ ở trên; chừa chỗ cho nút nổi ở cuối.
+                padding: EdgeInsets.only(
+                  top: MediaQuery.paddingOf(context).top,
+                  bottom: 96,
+                ),
+                itemCount: ds.length,
+                separatorBuilder: (_, _) => const Divider(height: 1),
+                itemBuilder: (context, i) => _DongDiem(diem: ds[i]),
+              ),
             ),
     );
   }

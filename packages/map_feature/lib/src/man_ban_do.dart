@@ -91,20 +91,18 @@ class _ManBanDoState extends ConsumerState<ManBanDo> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                FloatingActionButton.small(
-                  heroTag: 'ban-do-huong',
-                  tooltip: _theoHuong ? l10n.mapNorthUp : l10n.mapFollowHeading,
+                // Q60: nút không nền (icon + nhãn), nổi trên bản đồ nhờ
+                // quầng sáng / bóng chữ; vùng chạm >= 48 dp.
+                LbNutNoi(
+                  icon: _theoHuong ? LbIcons.bacThuc : LbIcons.laBanHoaGio,
+                  nhan: _theoHuong ? l10n.mapNorthUp : l10n.mapFollowHeading,
                   onPressed: _doiTheoHuong,
-                  child: LbIcon(
-                    _theoHuong ? LbIcons.bacThuc : LbIcons.laBanHoaGio,
-                  ),
                 ),
-                const SizedBox(height: LbSpacing.md),
-                FloatingActionButton(
-                  heroTag: 'ban-do-vi-tri',
-                  tooltip: l10n.mapMyLocation,
+                const SizedBox(height: LbSpacing.sm),
+                LbNutNoi(
+                  icon: LbIcons.ghimGps,
+                  nhan: l10n.mapMyLocation,
                   onPressed: _veViTri,
-                  child: const LbIcon(LbIcons.ghimGps),
                 ),
               ],
             ),
