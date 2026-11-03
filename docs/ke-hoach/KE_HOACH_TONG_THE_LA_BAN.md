@@ -79,6 +79,8 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 27 | R0 | Bản APK thử: khoá ký, script phát hành GitHub Release + R2, trang tải | A5 | ✅ 28/10 |
 | 28 | I1 | iOS (đầu 2027): build, App Attest, Privacy Manifest, TestFlight, App Store | R4, máy Mac | ⬜ |
 | 29 | M2 | App song song "La bàn Pro" trả phí một lần, không quảng cáo (Q56) | R2b, M1a bước 3 (bảng `quyen_loi`) | ⬜ chạy CÙNG R4 (người dùng chốt 03/11: dùng chung cửa sổ thử kín 14 ngày; M1a bước 3 phần máy chủ làm trước) · logo Pro ✅ 03/11 |
+| 30 | A9 | Thiết bị thiếu phần cứng + làm mới giao diện web / nút app + chống nhấp nháy (chia A9a / A9b / A9c) - PHIÊN SONG SONG `../app-la-ban-a9` | A8 | ⬜ giao `agent-laban-a9` 03/11 |
+| 31 | S11 | Chặn chế độ Nhà phát triển (app) + khiên web mạnh (Q57, Q58) | S4, S9, M1a bước 3 (cùng Worker) | ⬜ phiên chính, sau M1a bước 3 |
 
 Có thể giao agent thứ hai song song: S1 với A2-A3 · A5 với A4 · S5 với S4 · A6 với S6-S7 · R1 với A7 · A8 với S8-S9.
 
@@ -804,6 +806,56 @@ Console · trước M1b tài khoản AdMob (RevenueCat KHÔNG còn cần - Q55).
 - Cổng: APK Pro không chứa lớp `com.google.android.gms.ads` (kiểm bằng `apkanalyzer dex packages`); bản cài từ Play nhận
   `LICENSED` + quyền lợi `pro_app`, bản sideload nhận `UNLICENSED` + hộp thoại; chuyển dữ liệu từ bản miễn phí trên máy
   thật đủ 100 % điểm mốc; golden + cổng `day-du` xanh.
+
+### A9 - Thiết bị thiếu phần cứng + làm mới giao diện + chống nhấp nháy (PHIÊN SONG SONG, chia A9a / A9b / A9c)
+- Đọc thêm: QUYET_DINH Q59, Q60; thẻ A2, A3, A7, A8; `docs/BAY_DA_GAP.md` (golden, font).
+- Chạy ở worktree `../app-la-ban-a9` (cùng ổ đĩa), agent `agent-laban-a9`. Mỗi phần một nhánh từ `origin/main` mới nhất
+  (`phase/a9a`, `phase/a9b`, `phase/a9c`) -> PR -> squash merge. Rebase lên `origin/main` ngay trước mỗi PR (phiên chính
+  đang làm M1a bước 3 / S11 ở `workers/`, `web/shield/`, `packages/security_sdk/`).
+- **Vùng ĐƯỢC sửa**: `packages/{sensors,compass_feature,location_feature,map_feature,waypoint_feature,ar_feature,settings_feature,design_system}`,
+  `packages/i18n` (chuỗi mới gom MỘT khối cuối tệp ARB, tiền tố `a9`), `design/tokens.json` + `design/tools`, `web/landing/src`
+  (giao diện), `web/admin/src` CHỈ phần trình bày (CSS, theme, component hiển thị - không đổi luồng tải dữ liệu / auth),
+  golden trong các gói trên, `app/lib` chỉ khi bắt buộc (khai báo trong PR).
+- **CẤM sửa** (phiên chính giữ): `workers/**`, `web/shield/**`, `packages/{security_sdk,network,storage,ads_iap,core}`,
+  `native/**`, `app/lib/src/lam_cung.dart`, `tools/**`, `QUYET_DINH.md`, `docs/ke-hoach/**`, `CLAUDE.md` / `AGENTS.md`,
+  pubspec `version` + `phienBanApp` (phiên chính phát hành APK). Cần đổi vùng cấm -> ghi vào phiếu bàn giao, không tự làm.
+- **A9a - Thiết bị thiếu phần cứng (Q59)**: domain thuần `NangLucThietBi` (có từ kế / gyro / gia tốc / GPS / camera) +
+  `NguonHuong` theo thứ tự: từ kế (fusion A2) > GPS course (tốc độ >= ~1 m/s, độ tin cậy theo `speedAccuracy` / độ dài
+  vệt) > Mặt trời / Mặt trăng (phương vị + độ cao NOAA / Meeus thuần Dart, ngắm qua camera A7c hoặc theo bóng) > con quay
+  neo hướng (tích phân gyro sau khi neo, ước lượng trôi, nhắc neo lại) > xoay bản đồ thủ công. Mặt la bàn hiện nguồn đang
+  dùng + độ tin cậy + hướng dẫn; dẫn đường (`wpNoCompass`) dùng chuỗi nguồn mới; màn "Thiết bị của bạn" liệt kê năng lực.
+  Máy cũ / yếu: chế độ nhẹ tự bật (giảm tần số vẽ, tắt hiệu ứng nặng), không đổi minSdk 26. Test: thiên văn so bảng NOAA
+  (sai số <= 0,5°), máy trạng thái chọn nguồn, golden màn mới.
+- **A9b - Giao diện (Q60)**: token web xanh dương + trắng + gradient trong `design/tokens.json` -> landing + admin (trang
+  chủ, tải về, quyền riêng tư, khiếu nại, SOC) light / dark, tương phản AA; app: nút trên Bản đồ (Bắc lên trên, Vị trí của
+  tôi, ...) và Điểm mốc (Lưu vị trí, ...) chỉ còn icon (+ nhãn) không nền, vùng chạm >= 48 dp, màu nổi trên nền bản đồ
+  (viền / bóng chữ nhẹ khi cần); header mờ khi cuộn (widget dùng chung trong `design_system`, BackdropFilter + lớp phủ,
+  tắt blur khi Reduce motion / máy yếu, thay bằng nền đặc). Golden cập nhật có chủ ý.
+- **A9c - Rà nhấp nháy toàn bộ app + web**: lỗi đã biết - Vị trí & thông số > thẻ Từ trường: cảnh báo đỏ "Từ trường bất
+  thường" bật / tắt liên tục khi đưa nam châm lại gần làm thẻ Thước thuỷ / Mặt trời bên dưới nhảy. Sửa gốc: trễ hai ngưỡng +
+  giữ tối thiểu (domain thuần, có test), chỗ dành sẵn cố định, crossfade. Rà mọi thông báo / badge / snackbar / trạng thái
+  tải (app + landing + admin) theo cùng mẫu; liệt kê từng chỗ đã sửa trong PR. Test widget mô phỏng tín hiệu dao động:
+  không đổi kích thước layout.
+- Cổng mỗi phần: `cong.sh day-du` xanh trong worktree · golden không overflow · vi / en · Reduce motion · máy thật M32
+  (bản staging - Q57 chặn bản prod khi bật ADB) cho A9a / A9c.
+- Bàn giao: mỗi phần merge xong -> `cd ~/projects/app-la-ban && ./agents.sh log '...'` rồi cuối cùng
+  `./agents.sh handoff agent-laban-a9 agent-laban "A9 xong" "<tóm tắt + PR + việc cần phiên chính: phát hành APK, deploy web, cập nhật kế hoạch>"`
+  (ghi vào LOG của repo chính - phiên chính commit), nhả lock, tóm tắt cho người dùng và gợi ý đóng phiên.
+- Phát hành: agent A9 được deploy Pages landing / admin sau merge (preview `--branch` trước nếu đổi header / CSP - không
+  được đổi CSP); KHÔNG phát hành APK (phiên chính gom phiên bản).
+
+### S11 - Chặn chế độ Nhà phát triển + khiên web mạnh (phiên chính, Q57, Q58)
+- Đọc thêm: SEC-APP, SEC-WEB-SHIELD, SEC-DET; QUYET_DINH Q57, Q58; thẻ S4, S9.
+- Làm (app): tín hiệu `DEV_MODE` / `ADB_ENABLED` (freeRASP + `Settings.Global` ADB / Wi-Fi ADB qua `MoiTruong.kt`) kiểm
+  lúc mở app, resume, định kỳ; bản prod hiện màn chặn toàn phần (vi / en, hướng dẫn tắt Developer options, mở thẳng
+  Cài đặt nhà phát triển, nút Kiểm tra lại), không chạy tiếp tính năng; bản dev / staging chỉ ghi nhận.
+- Làm (Worker): luật `DEV_MODE` / `ADB_ENABLED` -> trạng thái `devmode` (không cộng điểm rủi ro, tự gỡ khi tín hiệu sạch
+  mới), `/v1/status` trả trạng thái đã ký, các route nghiệp vụ trả 403 `che-do-nha-phat-trien`; cờ Remote Config `chanDevMode`.
+- Làm (web): `web/shield` thêm dò CDP / webdriver / headless / debugger timing, gỡ nội dung khỏi DOM khi nghi ngờ (không
+  chỉ phủ), màn chặn; admin chỉ nạp dữ liệu sau khiên sạch, Worker chặn API admin cửa sổ ngắn sau `WEB_DEVTOOLS` cùng
+  phiên; closed shadow DOM cho bảng nhạy cảm. Không nới CSP, không ảnh hưởng trợ năng.
+- Cổng: máy thật M32 bản prod bật ADB -> màn chặn + 403; tắt Developer options -> dùng lại trong <= 5 s; staging không
+  chặn; web: mở DevTools -> nội dung bị gỡ khỏi DOM; 0 báo nhầm ở zoom 80-125% / toàn màn hình; `day-du` xanh.
 
 ### R0 - Bản APK thử nghiệm (Android, QUYET_DINH Q34)
 - Làm: khoá upload RSA 4096 ngoài repo (`~/.config/la-ban/android/upload.jks` + `key.properties`, người dùng sao lưu);
