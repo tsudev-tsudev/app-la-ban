@@ -549,6 +549,9 @@ Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer 
 - Phát sinh (từ S8) -> 05/11/2026: đọc báo cáo CSP 7 ngày, chuyển `strict-dynamic` sang header chặn (runbook csp-bao-cao).
   -> S6: Access chặn admin (cần Zero Trust) + CSP nonce cho admin (dùng lại `web/landing/edge` qua gói chung khi admin có
   HTML thật). -> S7: Turnstile (widget + `siteverify` ở Worker) cùng form khiếu nại. -> S10: bảng CSP / honeypot trong SOC.
+- Tiến độ phát sinh 05/11 (03/11): báo cáo 6 ngày không có vi phạm từ script của mình; đã tắt Email Obfuscation (Config
+  Rule, zone.json); preview `strict-dynamic` chặn đạt 0 vi phạm. Còn: 05/11 xác nhận báo cáo sạch -> đổi header chặn (runbook
+  csp-bao-cao mục Ghi chú 03/11).
 
 ### S9 - Bảo vệ nội dung web + build sạch
 - Đọc thêm: SEC-WEB-SHIELD, SEC-WEB-BUILD.

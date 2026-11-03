@@ -161,7 +161,8 @@
       "expression": "(http.host in {\"compass.tsudev.com\" \"compass-admin.tsudev.com\" \"compass-status.tsudev.com\"})",
       "action": "set_config",
       "action_parameters": {
-        "disable_rum": true
+        "disable_rum": true,
+        "email_obfuscation": false
       }
     }
   ]
