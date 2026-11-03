@@ -28,6 +28,11 @@ ACCESS_AUD = "f1dec48a71e9b10406ae9534bea272e055a6bcf58a302e8d9324286976641ed3"
 SOC_NGUON = "https://compass-admin.tsudev.com"
 # S7c1 khiếu nại: hostname trang có widget Turnstile (bí mật: `wrangler secret put TURNSTILE_SECRET`).
 TURNSTILE_TEN_MIEN = "compass.tsudev.com"
+# M1a (Q55, SEC-IAP): chỉ bản do Play cài nhận quyền lợi; gói app Pro (Q56 - thêm vào PI_GOI ở M2); audience JWT OIDC của
+# Pub/Sub push RTDN. Bí mật: `wrangler secret put KHOA_QUYEN_LOI` (base64 32 byte); RTDN_EMAIL đặt khi tạo Pub/Sub (runbook).
+QL_YEU_CAU_PLAY = "1"
+PI_GOI_PRO = "com.tsudev.laban.pro"
+RTDN_AUD = "https://compass-api.tsudev.com/v1/play/rtdn"
 AE_BANG = "la_ban_su_kien"
 # Khoá CÔNG KHAI sao lưu D1 (S10a, RSA-OAEP 4096 SPKI) - khoá riêng ngoài repo, xem runbook sao-luu-khoi-phuc.md.
 KHOA_SAO_LUU = "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAkoALyBfCtIxP6EwsCCwfMTpmfAq9lC4h8SNNSf4kpV8/MHSDPMihK9UvKGoMdLO16/Au4r7ttGIBq3Dc9HIFCJy4LZ2+VAgQmarzAC6qPYyzoGU7qNhnH+lFsyAtGtwa8ekeVwSDxaD8bsZn6xKkqEGL4iWKK3hv0X+hHHL/eQji85MGuSEAEupCujQPo8nuh/UwdDHTXaLOC8OxFjUIDW0whuEOUoAWHecKcIWq5TAnGKOVPbZBciyD1ZkLhMaqo3gyuwNkIPL/N+IifrlNyxIyvATB+VwddCrCq2s7RX/ANY4BPP0l/7xPQIzgGWHwlcepatWYcmP9QD/ImHS4kBQgXwauc736LhJdHbkVmnyAx/S+0yBEQUGgFElytwVRuZ0fHDbx8CzHtw1PaFt3aE35VFH4dF/fdhIpM9jGUuTfB24C5ndfQoyvI81tGoBI4lU1V6X6pobhVZKOLWkuOGF9DkUPTQMro9GPiW5dN4PbvQloujNOMAMFcIuvGDllYxSxgTo9ht9RmQesXtvnHnF1BpD78ntPfk1A0LDPd7rN5mahRWKoP7210mPLxmsoZBTRkakXe5IZITBF2ABKrjhoiDkMqyj5JUogsgIZoaG8ygCVOeggNovURxCZhrL44o97w3kYYPOZLKW/voXE5+Ek7Z/Oox984QWd+2Lmin8CAwEAAQ=="
@@ -113,6 +118,9 @@ PI_CHUNG_CHI = ""
 ACCESS_TEAM = "purple-cake-8f2a.cloudflareaccess.com"
 ACCESS_AUD = "f1dec48a71e9b10406ae9534bea272e055a6bcf58a302e8d9324286976641ed3"
 SOC_NGUON = "https://staging.la-ban-admin.pages.dev"
+QL_YEU_CAU_PLAY = "0"
+PI_GOI_PRO = "com.tsudev.laban.pro.stg,com.tsudev.laban.pro.dev,com.tsudev.laban.pro"
+RTDN_AUD = "https://compass-api-stg.tsudev.com/v1/play/rtdn"
 # Staging dùng khoá thử của Cloudflare (luôn đạt, hostname example.com) -> không kiểm hostname.
 TURNSTILE_TEN_MIEN = ""
 ACCESS_DICH_VU = "961951549f4f1b1786ccdfe3d53212bb.access"
