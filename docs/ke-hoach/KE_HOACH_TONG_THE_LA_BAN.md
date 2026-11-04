@@ -72,7 +72,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 20 | S9 | Lớp bảo vệ nội dung web + build sạch | S8 | ✅ 29/10 (bdbd740; CSV audit ở S6) |
 | 21 | A8 | Cài đặt, quyền riêng tư, trợ năng, hiệu năng (chia A8a / A8b) | A7, S4 | ✅ 31/10 · A8a ✅ 31/10 (0191b2d PR #34: quyền riêng tư + đồng ý NĐ 13, Q43; máy thật M32 đạt; chưa phát hành APK - gộp A8b) · A8b ✅ 31/10 (trợ năng + Reduce motion, Q45; v0.1.0-beta.10) |
 | 22 | S10 | Giám sát, log bất biến, backup, ứng phó sự cố (chia S10a / S10b) | S7 | ✅ 02/11 · S10a ✅ 02/11 (máy chủ: nhật ký bất biến R2 + mốc neo audit, sao lưu mã hoá + diễn tập, đột biến -> Telegram, security.txt, runbook IR, Q48) · S10b ✅ 02/11 (báo cáo sự cố tự xây, 0 đồng, đồng ý riêng, Q49) |
-| 23 | R2 | Sẵn sàng store | A8, S4 | ⛔ R2a ✅ 31/10 (AAB + Data Safety + listing + ảnh store, Q46) · R2b: tài khoản Play cá nhân duyệt 04/11, người dùng đang tạo app; AAB beta.16 sẵn sàng cho internal (runbook phat-hanh-play mục 2-3) |
+| 23 | R2 | Sẵn sàng store | A8, S4 | ⛔ R2a ✅ 31/10 (AAB + Data Safety + listing + ảnh store, Q46) · R2b: tài khoản Play cá nhân duyệt 04/11, app đã tạo, thiết lập 2/11; hướng dẫn từng trang `docs/store/huong-dan-play-console.md` (04/11); AAB beta.16 sẵn sàng cho internal (runbook phat-hanh-play mục 2-3) |
 | 24 | R3 | QA tổng + kiểm thử bảo mật (chia R3a / R3b) | R2, S9, S10 | ✅ 03/11 (0 Critical / High mở) · R3a ✅ 02/11 (gitleaks / osv-scanner / Semgrep vào cổng, ZAP + MobSF + SSL Labs A+, 0 High, minSdk 26, Q50) · R3b ✅ 02/11 (E2E + nâng cấp beta.7->13 + 5 kịch bản SEC-TEST trên M32, sửa 2 lỗi, Q51) · R3c ✅ 03/11 (#48-#50, Q52: DO -> D1 nonce + giới hạn; staging p95 < 300 ms; D1 prod chuyển ICN -> SIN (Q53): prod p50 8-49 ms, p95 < 250 ms mẫu nhỏ - đo lại 24 h) |
 | 25 | R4 | Phát hành v1.0.0 + OTA | R3 | ⬜ (tài khoản cá nhân: cần thử kín >= 12 người x 14 ngày trước production) |
 | 26 | M1 | Gói Pro trong app + quảng cáo (chia M1a quyền lợi + Play Billing / M1b quảng cáo), v1.1.0 sau Release Gate | R4 | 🟨 M1a bước 3 (máy chủ) ✅ 03/11 (b145e92, PR #66) · bước 2 (app) ✅ 04/11 (`packages/quyen_loi` + Paywall, Q61; prod chưa mở bán) · còn bước 1 (người dùng tạo sản phẩm), 4 phần SOC, 5, cổng máy thật license tester |
@@ -80,7 +80,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 28 | I1 | iOS (đầu 2027): build, App Attest, Privacy Manifest, TestFlight, App Store | R4, máy Mac | ⬜ |
 | 29 | M2 | App song song "La bàn Pro" trả phí một lần, không quảng cáo (Q56) | R2b, M1a bước 3 (bảng `quyen_loi`) | ⬜ chạy CÙNG R4 (người dùng chốt 03/11: dùng chung cửa sổ thử kín 14 ngày; M1a bước 3 phần máy chủ làm trước) · logo Pro ✅ 03/11 |
 | 30 | A9 | Thiết bị thiếu phần cứng + làm mới giao diện web / nút app + chống nhấp nháy (chia A9a / A9b / A9c) - PHIÊN SONG SONG `../app-la-ban-a9` | A8 | ✅ 04/11 · A9c #70 (3f7c3a6) · A9a #71 (b970562) · A9b #72 (e5bd627) · web đã deploy · APK gộp + thử M32 staging ở phiên chính |
-| 31 | S11 | Chặn chế độ Nhà phát triển (app) + khiên web mạnh (Q57, Q58) | S4, S9, M1a bước 3 (cùng Worker) | 🟨 03/11 (adf3102 PR #67, v0.1.0-beta.15 PR #68): Worker staging + prod, landing + admin, APK đã phát hành · ⛔ chờ nghiệm thu máy thật M32 (bản prod bật ADB -> màn chặn; staging không chặn) |
+| 31 | S11 | Chặn chế độ Nhà phát triển (app) + khiên web mạnh (Q57, Q58) | S4, S9, M1a bước 3 (cùng Worker) | 🟨 03/11 (adf3102 PR #67, v0.1.0-beta.15 PR #68): Worker staging + prod, landing + admin, APK đã phát hành · M32 04/11: prod bật ADB -> màn chặn ✅, staging không chặn ✅ · ⛔ còn tắt -> dùng lại <= 5 s + 403 ở SOC (người dùng) · kill-switch ký được từ Q62 |
 
 Có thể giao agent thứ hai song song: S1 với A2-A3 · A5 với A4 · S5 với S4 · A6 với S6-S7 · R1 với A7 · A8 với S8-S9.
 
@@ -889,6 +889,12 @@ Console · trước M1b tài khoản AdMob (RevenueCat KHÔNG còn cần - Q55).
   bật ADB -> bật kill-switch đúng lúc duyệt.
 - Cổng: máy thật M32 bản prod bật ADB -> màn chặn + 403; tắt Developer options -> dùng lại trong <= 5 s; staging không
   chặn; web: mở DevTools -> nội dung bị gỡ khỏi DOM; 0 báo nhầm ở zoom 80-125% / toàn màn hình; `day-du` xanh.
+- Kết quả máy thật (04/11, M32 SM-M325FV qua adb.exe Windows): cài APK prod beta.16 đè beta.15 -> bật Developer options + gỡ lỗi
+  USB -> màn "Hãy tắt chế độ Nhà phát triển" liệt kê đúng hai công tắc đang bật + nút Mở Tùy chọn nhà phát triển / Kiểm tra
+  lại; bản staging `com.tsudev.laban.stg` cùng máy chạy la bàn bình thường (chỉ ghi nhận). CHƯA đo (cần tay người dùng, vì tắt
+  Developer options là mất ADB): tắt -> dùng lại <= 5 s; 403 `che-do-nha-phat-trien` trong SOC (đọc D1 prod bị chế độ auto
+  chặn). Phát hiện khi viết hướng dẫn duyệt Play: kill-switch `chanDevMode` + `mua-pro` KHÔNG ký được (zod `TINH_NANG` của
+  Worker + công cụ `ky-cau-hinh.mjs` chỉ có 5 cờ tính năng) -> sửa ở PR r2b (Q62).
 
 ### R0 - Bản APK thử nghiệm (Android, QUYET_DINH Q34)
 - Làm: khoá upload RSA 4096 ngoài repo (`~/.config/la-ban/android/upload.jks` + `key.properties`, người dùng sao lưu);

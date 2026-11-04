@@ -20,6 +20,8 @@ No account or login is required. All features work without credentials.
    by our security team); it always shows a reference code
    (REF-...) and a link to the appeal form at https://compass.tsudev.com/en/appeal/.
    Google review and pre-launch test devices are allow-listed on the server and are never restricted.
+   The production build normally asks the user to turn off Developer options / USB debugging before use; this check is
+   switched off on our server for the whole review period, so review devices with debugging enabled can use every feature.
 4. Offline maps: Settings or the Map tab > download a region of Vietnam; the map then works in airplane mode.
 5. Privacy controls: Settings > Privacy (withdraw consent, export data as JSON, erase all data on the device).
 
@@ -34,10 +36,12 @@ Không cần tài khoản / đăng nhập.
 3. Cơ chế bảo mật: RASP (freeRASP + kiểm tra native tự viết) + Play Integrity; client chỉ gửi tín hiệu, máy chủ quyết định.
    Máy root / giả lập / bản sửa: băng thông báo + hạn chế tính năng trực tuyến; màn khoá CHỈ khi máy chủ cấm (điểm rủi ro vượt ngưỡng `banned`, vd bản đóng gói lại, hoặc SOC cấm tay), luôn có mã
    REF + link khiếu nại. Thiết bị duyệt / pre-launch của Google được miễn trừ ở máy chủ (xem runbook phat-hanh-play mục 4).
+   Màn chặn chế độ Nhà phát triển (Q57) được TẮT bằng kill-switch suốt kỳ duyệt (huong-dan-play-console.md mục E1).
 4. Bản đồ offline: tab Bản đồ > tải vùng; dùng được ở chế độ máy bay.
 5. Quyền riêng tư: Cài đặt > Quyền riêng tư.
 
 ## Kiểm trước khi gửi duyệt
+- [ ] Kill-switch `chanDevMode` (Remote Config ký số) + `CHAN_DEV_MODE = "0"` prod đã bật - `huong-dan-play-console.md` mục E1; duyệt xong làm E2.
 - [ ] Quy tắc miễn trừ thiết bị duyệt đã bật trên Worker prod (runbook mục 4) và đã thử một thiết bị giả lập không bị cấm.
 - [ ] Data Safety điền theo `docs/store/data-safety.md`; Privacy policy URL mở được (vi + en).
 - [ ] Nhãn nút ở mục 1 khớp chuỗi ARB hiện hành (`consentAccept` / `consentOffline`).

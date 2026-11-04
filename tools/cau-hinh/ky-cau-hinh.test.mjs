@@ -30,6 +30,7 @@ test('taoNoiDungApp: mặc định = mọi pin đóng gói; ràng buộc build /
   assert.throws(() => taoNoiDungApp({ ...co, pin: [pinDongGoi[0], 'D'.repeat(43) + '='] }), /goc-them/);
   assert.throws(() => taoNoiDungApp({ ...co, toiThieu: 6, khuyenNghi: 5 }));
   assert.throws(() => taoNoiDungApp({ ...co, tat: ['camera'] }), /cờ lạ/);
+  assert.deepEqual(taoNoiDungApp({ ...co, tat: ['mua-pro', 'chanDevMode'] }).tat, ['chanDevMode', 'mua-pro']);
   assert.throws(() => taoNoiDungApp({ ...co, ngay: 0 }));
 });
 

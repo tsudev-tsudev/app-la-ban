@@ -1,6 +1,6 @@
 # Google Play - trang ứng dụng (listing) vi / en
 
-Dán vào Play Console > Grow > Store presence > Main store listing. Mặc định: **vi-VN**, bản dịch thêm: **en-US**.
+Dán vào Play Console > Grow > Store presence > Main store listing (từng bước: `huong-dan-play-console.md` mục A11). Mặc định: **vi-VN**, bản dịch thêm: **en-US**.
 Giới hạn Play: tên <= 30, mô tả ngắn <= 80, mô tả đầy đủ <= 4000 ký tự (đếm ở `tools/build/kiem-listing.mjs`).
 Không dùng từ ngữ xếp hạng / khuyến mãi ("số 1", "tốt nhất", "miễn phí" trong tên), không emoji trong tên (chính sách Metadata).
 
@@ -14,7 +14,7 @@ Không dùng từ ngữ xếp hạng / khuyến mãi ("số 1", "tốt nhất", 
 | Website | https://compass.tsudev.com |
 | Chính sách quyền riêng tư | https://compass.tsudev.com/quyen-rieng-tu (en: https://compass.tsudev.com/en/privacy) |
 | Quảng cáo | Không (ads chỉ bật sau Release Gate M1) |
-| Mua trong ứng dụng | Không |
+| Mua trong ứng dụng | Có trong mã (gói La bàn Pro, Q55 / Q61) nhưng đóng ở prod tới R4; IARC khai sẵn "mua hàng kỹ thuật số" |
 | Biểu tượng 512 x 512 | `design/store/play-icon-512.png` |
 | Ảnh nổi bật 1024 x 500 | `design/store/play-feature-1024x500.png` (`node tools/build/thuong-hieu.mjs` sinh) |
 | Ảnh điện thoại | `design/store/play/<vi|en>/light-*.png` (6 ảnh 1080 x 1920, `./tools/build/anh-store.sh`); bộ `dark-*` dùng cho bài đăng / A-B |
