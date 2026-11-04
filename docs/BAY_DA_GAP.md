@@ -126,3 +126,9 @@ Kế thừa từ repo anh em (ban-do-3d / ubnd) - áp dụng vì cùng hạ tầ
   dump để lại `/sdcard/u.xml` CŨ -> `rm` trước mỗi lần dump. (A8b)
 - DO PIN KHI CAM CAP: `dumpsys battery unplug` + `batterystats --reset` cho số mAh ƯỚC TÍNH theo power profile (không phải
   pin thật); xong nhớ `dumpsys battery reset`. (A8b)
+- GIT ADD -A GOM TEP NGUOI DUNG: thư mục ảnh / tài liệu người dùng thả ở gốc repo (vd `ky-ung-dung-la-ban/` ảnh Play Console)
+  không nằm trong .gitignore -> `git add -A` gom vào commit phase. Luôn `git add <đường dẫn cụ thể>` hoặc xem `git status`
+  trước khi commit; đổi nhánh khi tệp đó đã nằm trong commit nhánh khác sẽ XOÁ khỏi đĩa -> khôi phục bằng
+  `git restore --source=<nhánh> --worktree -- <thư mục>`. Thư mục hiện tại đã thêm vào `.git/info/exclude` (cục bộ). (M1a 04/11)
+- BUILD-AAB KIỂM QUYỀN THEO TÊN NGẮN: `build-aab.sh` tìm `` `<đoạn cuối tên quyền>` `` trong `docs/store/data-safety.md`
+  (vd `` `BILLING` ``), ghi đủ tên gói trong backtick không khớp. (M1a 04/11)

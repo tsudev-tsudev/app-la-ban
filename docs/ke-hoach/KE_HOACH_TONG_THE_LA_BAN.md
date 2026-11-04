@@ -72,7 +72,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 20 | S9 | Lớp bảo vệ nội dung web + build sạch | S8 | ✅ 29/10 (bdbd740; CSV audit ở S6) |
 | 21 | A8 | Cài đặt, quyền riêng tư, trợ năng, hiệu năng (chia A8a / A8b) | A7, S4 | ✅ 31/10 · A8a ✅ 31/10 (0191b2d PR #34: quyền riêng tư + đồng ý NĐ 13, Q43; máy thật M32 đạt; chưa phát hành APK - gộp A8b) · A8b ✅ 31/10 (trợ năng + Reduce motion, Q45; v0.1.0-beta.10) |
 | 22 | S10 | Giám sát, log bất biến, backup, ứng phó sự cố (chia S10a / S10b) | S7 | ✅ 02/11 · S10a ✅ 02/11 (máy chủ: nhật ký bất biến R2 + mốc neo audit, sao lưu mã hoá + diễn tập, đột biến -> Telegram, security.txt, runbook IR, Q48) · S10b ✅ 02/11 (báo cáo sự cố tự xây, 0 đồng, đồng ý riêng, Q49) |
-| 23 | R2 | Sẵn sàng store | A8, S4 | ⛔ R2a ✅ 31/10 (AAB + Data Safety + listing + ảnh store, Q46) · R2b: tài khoản Play cá nhân đã tạo 03/11, chờ Google duyệt danh tính (runbook phat-hanh-play mục 1b) |
+| 23 | R2 | Sẵn sàng store | A8, S4 | ⛔ R2a ✅ 31/10 (AAB + Data Safety + listing + ảnh store, Q46) · R2b: tài khoản Play cá nhân duyệt 04/11, người dùng đang tạo app; AAB beta.16 sẵn sàng cho internal (runbook phat-hanh-play mục 2-3) |
 | 24 | R3 | QA tổng + kiểm thử bảo mật (chia R3a / R3b) | R2, S9, S10 | ✅ 03/11 (0 Critical / High mở) · R3a ✅ 02/11 (gitleaks / osv-scanner / Semgrep vào cổng, ZAP + MobSF + SSL Labs A+, 0 High, minSdk 26, Q50) · R3b ✅ 02/11 (E2E + nâng cấp beta.7->13 + 5 kịch bản SEC-TEST trên M32, sửa 2 lỗi, Q51) · R3c ✅ 03/11 (#48-#50, Q52: DO -> D1 nonce + giới hạn; staging p95 < 300 ms; D1 prod chuyển ICN -> SIN (Q53): prod p50 8-49 ms, p95 < 250 ms mẫu nhỏ - đo lại 24 h) |
 | 25 | R4 | Phát hành v1.0.0 + OTA | R3 | ⬜ (tài khoản cá nhân: cần thử kín >= 12 người x 14 ngày trước production) |
 | 26 | M1 | Gói Pro trong app + quảng cáo (chia M1a quyền lợi + Play Billing / M1b quảng cáo), v1.1.0 sau Release Gate | R4 | 🟨 M1a bước 3 (máy chủ) ✅ 03/11 (b145e92, PR #66) · bước 2 (app) ✅ 04/11 (`packages/quyen_loi` + Paywall, Q61; prod chưa mở bán) · còn bước 1 (người dùng tạo sản phẩm), 4 phần SOC, 5, cổng máy thật license tester |
@@ -735,6 +735,9 @@ Console · trước M1b tài khoản AdMob (RevenueCat KHÔNG còn cần - Q55).
     prod sang DC gần hơn chỉ khi người dùng duyệt (`docs/kiem-thu/R3c-20261103.md` mục 5).
   - Chuyển D1 prod sang SIN (03/11, Q53, #52, người dùng duyệt): `la-ban-prod`, chép giữ rowid, đối chiếu trùng 100 %;
     prod p50 8-49 ms, p95 45-246 ms mọi route (mẫu nhỏ). Xoá D1 cũ `la-ban` (ICN) sau 17/11.
+  - Đo 24 h prod (04/11): ~110 request / ngày, isolate lạnh 45-88 %, `luuTru` (KV / R2 khi Cache API trượt) 132-185 ms;
+    p95 `/v1/status` 728 ms (n 11) - mẫu lạnh, chưa đại diện tải. Đo lại khi có lưu lượng thử kín (R2b / R4)
+    (`docs/kiem-thu/R3c-20261103.md` mục 6).
   - Phát sinh: bỏ lớp DO `KhoNonce` / `GioiHanToc` (deleted_classes) ở bản Worker sau.
   - Cổng R3 = R3a + R3b + R3c đạt + 0 Critical / High mở. iOS ngoài phạm vi (I1).
 

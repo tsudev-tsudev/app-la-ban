@@ -89,3 +89,16 @@ cho staging + prod. Người dùng làm (sau khi tài khoản Play được duy�
 4. Tạo sản phẩm `pro_thang`, `pro_nam` (base plan + dùng thử 7 ngày), `pro_vinh_vien` theo giá Q55; thêm license tester.
 
 Kiểm nhanh (agent): `npx wrangler d1 execute la-ban-prod --remote --command "SELECT kind, count(*) FROM quyen_loi_events GROUP BY kind"`.
+
+### 6b. Thử mua trong app (M1a bước 2 - app xong 04/11/2026, v0.1.0-beta.16, Q61)
+
+- Mục **Cài đặt > La bàn Pro** chỉ hiện ở bản **staging / dev** (prod đóng tới R4: `moBanProTrongProd` trong
+  `app/lib/src/pro.dart`; tắt nhanh bằng `mua-pro` trong `tat` của Remote Config ký số). Đã có Pro thì luôn hiện.
+- Play Billing chỉ trả sản phẩm cho app có trên Play: bản staging `com.tsudev.laban.stg` KHÔNG có listing -> muốn thử thật
+  phải (a) tạm bật `moBanProTrongProd = true` trên một nhánh thử, build AAB prod tải lên **internal testing**, cài từ link
+  opt-in bằng tài khoản license tester; hoặc (b) chờ R4. Staging Worker (`QL_YEU_CAU_PLAY=0`) nhận cả bản không do Play cài.
+- Kịch bản: mua `pro_nam` (dùng thử) -> Paywall "Cảm ơn bạn" + D1 `quyen_loi` `active` + `/v1/status.quyenLoi.pro`; huỷ
+  trong Play -> RTDN `canceled` (vẫn Pro tới hết hạn); hoàn tiền -> cron Voided -> `revoked` -> app về miễn phí sau lần
+  `/v1/status` kế tiếp; cài lại app -> **Khôi phục giao dịch** -> Pro lại; thanh toán chờ (thẻ thử "chậm") -> thông báo chờ.
+- App chỉ acknowledge sau khi Worker cấp quyền lợi; Worker từ chối dứt khoát (`token-sai`, quá 5 thiết bị, bản không phải
+  Play) -> Play tự hoàn tiền sau 3 ngày.
