@@ -34,7 +34,7 @@ QL_YEU_CAU_PLAY = "1"
 PI_GOI_PRO = "com.tsudev.laban.pro"
 RTDN_AUD = "https://compass-api.tsudev.com/v1/play/rtdn"
 # S11 (Q57): chặn route nghiệp vụ khi app báo Developer options / ADB bật. Kill-switch: đặt "0" + deploy (<= 30 s).
-CHAN_DEV_MODE = "1"
+CHAN_DEV_MODE = "0"
 AE_BANG = "la_ban_su_kien"
 # Khoá CÔNG KHAI sao lưu D1 (S10a, RSA-OAEP 4096 SPKI) - khoá riêng ngoài repo, xem runbook sao-luu-khoi-phuc.md.
 KHOA_SAO_LUU = "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAkoALyBfCtIxP6EwsCCwfMTpmfAq9lC4h8SNNSf4kpV8/MHSDPMihK9UvKGoMdLO16/Au4r7ttGIBq3Dc9HIFCJy4LZ2+VAgQmarzAC6qPYyzoGU7qNhnH+lFsyAtGtwa8ekeVwSDxaD8bsZn6xKkqEGL4iWKK3hv0X+hHHL/eQji85MGuSEAEupCujQPo8nuh/UwdDHTXaLOC8OxFjUIDW0whuEOUoAWHecKcIWq5TAnGKOVPbZBciyD1ZkLhMaqo3gyuwNkIPL/N+IifrlNyxIyvATB+VwddCrCq2s7RX/ANY4BPP0l/7xPQIzgGWHwlcepatWYcmP9QD/ImHS4kBQgXwauc736LhJdHbkVmnyAx/S+0yBEQUGgFElytwVRuZ0fHDbx8CzHtw1PaFt3aE35VFH4dF/fdhIpM9jGUuTfB24C5ndfQoyvI81tGoBI4lU1V6X6pobhVZKOLWkuOGF9DkUPTQMro9GPiW5dN4PbvQloujNOMAMFcIuvGDllYxSxgTo9ht9RmQesXtvnHnF1BpD78ntPfk1A0LDPd7rN5mahRWKoP7210mPLxmsoZBTRkakXe5IZITBF2ABKrjhoiDkMqyj5JUogsgIZoaG8ygCVOeggNovURxCZhrL44o97w3kYYPOZLKW/voXE5+Ek7Z/Oox984QWd+2Lmin8CAwEAAQ=="
