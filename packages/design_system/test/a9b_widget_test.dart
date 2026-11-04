@@ -61,7 +61,8 @@ void main() {
           ),
         ),
       );
-      expect(find.text('Bắc lên trên'), findsOneWidget);
+      // Hai lớp: viền màu nền + chữ.
+      expect(find.text('Bắc lên trên'), findsNWidgets(2));
       expect(
         tester.getSemantics(find.byType(LbNutNoi)),
         matchesSemantics(
@@ -86,6 +87,23 @@ void main() {
     testWidgets('mặc định: kính mờ (BackdropFilter)', (tester) async {
       await tester.pumpWidget(man());
       expect(find.byType(BackdropFilter), findsOneWidget);
+      // Lớp kính phủ kín cả header (lỗi M32: DecoratedBox không con co 0x0).
+      final kinh = find.descendant(
+        of: find.byType(BackdropFilter),
+        matching: find.byType(DecoratedBox),
+      );
+      expect(
+        tester.getSize(kinh).height,
+        greaterThanOrEqualTo(kToolbarHeight),
+      );
+      // Chủ đề sáng: icon thanh trạng thái TỐI (lỗi thấy trên M32).
+      expect(
+        tester
+            .widget<AppBar>(find.byType(AppBar))
+            .systemOverlayStyle
+            ?.statusBarIconBrightness,
+        Brightness.dark,
+      );
       expect(find.text('Điểm'), findsOneWidget);
     });
 
@@ -94,6 +112,17 @@ void main() {
     ) async {
       await tester.pumpWidget(man(tatMo: true));
       expect(find.byType(BackdropFilter), findsNothing);
+      expect(
+        tester
+            .getSize(
+              find.descendant(
+                of: find.byType(AppBar),
+                matching: find.byType(ColoredBox),
+              ).first,
+            )
+            .height,
+        greaterThanOrEqualTo(kToolbarHeight),
+      );
       await tester.pumpWidget(man(giam: true));
       expect(find.byType(BackdropFilter), findsNothing);
     });
