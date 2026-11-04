@@ -171,7 +171,8 @@ export function dangKyCauHinhTuXa(r: Hono<MoiTruongHono>): void {
     if (b.dongY) {
       // Chuẩn bị + ký TRƯỚC khi giành quyền quyết: thiếu khoá / gói đã đổi -> yêu cầu vẫn chờ, người duyệt biết lý do.
       const khoa = await napKhoaKy(yc.target === 'app' ? c.env.KHOA_KY_APP : c.env.KHOA_KY_WEB, KID[yc.target]);
-      if (!khoa) throw new LoiApi(503, 'chua-co-khoa-ky');
+      // 409 (không 503): 5xx bị bỏ `code` ở problem+json -> SOC chỉ thấy lỗi chung (E1 04/11).
+      if (!khoa) throw new LoiApi(409, 'chua-co-khoa-ky');
       const ht = await goiHienTai(c, yc.target);
       if (phatHanhCua(ht.nd) !== yc.base_issued) throw new LoiApi(409, 'cau-hinh-da-doi');
       const phatHanh = phatHanhMoi(bayGio, phatHanhCua(ht.nd));

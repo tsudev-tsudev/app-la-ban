@@ -225,7 +225,13 @@ export function CauHinhTuXa() {
                       </>
                     ) : (
                       <>
-                        <button type="button" className="nut nut-chinh" onClick={() => datQuyet({ y, dongY: true })}>
+                        <button
+                          type="button"
+                          className="nut nut-chinh"
+                          disabled={!d.coKhoa[y.target]}
+                          title={d.coKhoa[y.target] ? undefined : t.chThieuKhoa}
+                          onClick={() => datQuyet({ y, dongY: true })}
+                        >
                           {t.chDuyet}
                         </button>
                         <button type="button" className="nut nut-phu" onClick={() => datQuyet({ y, dongY: false })}>
