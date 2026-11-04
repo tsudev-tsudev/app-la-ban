@@ -23,7 +23,7 @@ import { fileURLToPath } from 'node:url';
 export const KHOA_KV = 'web-khien';
 export const KHOA_KV_APP = 'app-cau-hinh';
 /** Tên cờ tắt từ xa app hiểu (khớp `CoTinhNang` ở packages/storage - app đổi `banDo` <-> `ban-do`). */
-export const TINH_NANG = ['ban-do', 'ar', 'chia-se', 'dong-bo', 'quang-cao'];
+export const TINH_NANG = ['ban-do', 'ar', 'chia-se', 'dong-bo', 'quang-cao', 'mua-pro', 'chanDevMode'];
 const MAU_PIN = /^[A-Za-z0-9+/]{43}=$/;
 const MUC = ['tat', 'nhe', 'chat'];
 const THU_MUC_KHOA = join(homedir(), '.config/la-ban/cau-hinh');

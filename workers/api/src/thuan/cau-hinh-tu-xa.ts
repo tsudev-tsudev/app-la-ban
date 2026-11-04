@@ -25,8 +25,12 @@ export const GOC_DONG_GOI: readonly { ten: string; pin: string; het: string }[] 
   { ten: 'ISRG_Root_X2', pin: 'diGVwiVYbubAI3RW4hB9xU8e/CH2GnkuvVFZE8zmgzI=', het: '2040-09-17' },
 ]);
 
-/** Cờ tắt từ xa app hiểu (khớp TINH_NANG của công cụ + CoTinhNang ở packages/storage). */
-export const TINH_NANG = ['ban-do', 'ar', 'chia-se', 'dong-bo', 'quang-cao'] as const;
+/**
+ * Cờ tắt từ xa app hiểu (khớp TINH_NANG của công cụ + CoTinhNang ở packages/storage). Hai kill-switch không phải tính năng:
+ * `mua-pro` (đóng Paywall, app/lib/src/pro.dart, Q61) và `chanDevMode` (bỏ màn chặn chế độ Nhà phát triển ở app prod, Q57 -
+ * bật trong kỳ Google duyệt / pre-launch report).
+ */
+export const TINH_NANG = ['ban-do', 'ar', 'chia-se', 'dong-bo', 'quang-cao', 'mua-pro', 'chanDevMode'] as const;
 export const MUC_KHIEN = ['tat', 'nhe', 'chat'] as const;
 export const YEU_CAU_CAU_HINH_HAN_MS = 24 * 60 * 60_000;
 const NGAY_MS = 86_400_000;

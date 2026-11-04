@@ -1,6 +1,8 @@
 # Runbook - phát hành Google Play (R2)
 
 Người dùng bấm trong Play Console (CLAUDE.md: agent KHÔNG tự đẩy lên store); agent chuẩn bị AAB + tài liệu.
+Hướng dẫn điền TỪNG TRANG Play Console (thiết lập 11 mục, thử nội bộ / kín, phát hành công khai, kill-switch kỳ duyệt):
+`docs/store/huong-dan-play-console.md`.
 Tài khoản nhà phát triển Play dự kiến có từ 05/11/2026 (QUYET_DINH Q19) - tới lúc đó dừng ở bước 1.
 
 ## 1. Chuẩn bị (agent, không cần Play Console)

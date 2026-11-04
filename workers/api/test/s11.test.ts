@@ -2,12 +2,19 @@
 // devices.dev_mode_at; prod (CHAN_DEV_MODE=1) chặn route nghiệp vụ 403, vẫn cho /v1/status + /v1/events; tắt -> dùng lại ngay.
 import type { Miniflare } from 'miniflare';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { SchemaDeXuatApp } from '../src/thuan/cau-hinh-tu-xa';
 import { biChanPhatTrien, capNhatPhatTrien } from '../src/thuan/che-do-phat-trien';
 import { chuoiDangKy } from '../src/thuan/ma-hoa';
 import { taoMf } from './tich-hop/mf';
 import { taoKhoaPhien, taoThietBiGia, tieuDeKy, type ThietBiGia } from './tich-hop/thiet-bi-gia';
 
 describe('hàm thuần', () => {
+  it('Remote Config SOC nhận kill-switch chanDevMode + mua-pro (Q57 / Q61), từ chối cờ lạ', () => {
+    const pin = ['A'.repeat(43) + '=', 'B'.repeat(43) + '='];
+    const co = { toiThieu: 1, khuyenNghi: 1, pin, ngay: 7 };
+    expect(SchemaDeXuatApp.safeParse({ ...co, tat: ['chanDevMode', 'mua-pro'] }).success).toBe(true);
+    expect(SchemaDeXuatApp.safeParse({ ...co, tat: ['camera'] }).success).toBe(false);
+  });
   it('capNhatPhatTrien: bật giữ mốc đầu, tắt xoá, thiếu / lạ giữ nguyên', () => {
     expect(capNhatPhatTrien(null, '1', 5)).toEqual({ moi: 5, doi: true });
     expect(capNhatPhatTrien(3, '1', 5)).toEqual({ moi: 3, doi: false });

@@ -52,6 +52,6 @@ describe('S7c2: Remote Config phía giao diện', () => {
     }
     expect(Object.keys(vi.chTtYeuCau)).toEqual(Object.keys(en.chTtYeuCau));
     expect(Object.keys(vi.bcLoai)).toEqual(Object.keys(en.bcLoai));
-    expect(Object.keys(vi.chTinhNang)).toEqual(['ban-do', 'ar', 'chia-se', 'dong-bo', 'quang-cao']);
+    expect(Object.keys(vi.chTinhNang)).toEqual(['ban-do', 'ar', 'chia-se', 'dong-bo', 'quang-cao', 'mua-pro', 'chanDevMode']);
   });
 });
