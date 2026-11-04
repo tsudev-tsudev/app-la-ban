@@ -502,6 +502,20 @@ void main() {
         },
       );
 
+      test('M1a: quyenLoi nguyên văn, giữ qua voiPhatTrien', () {
+        final t = TinhTrangThietBi.tuJson({
+          'trangThai': 'clean',
+          'quyenLoi': {'pro': true, 'khongQuangCao': true, 'hetHan': null},
+        })!;
+        expect(t.quyenLoi?['pro'], isTrue);
+        expect(t.voiPhatTrien(chan: true).quyenLoi, same(t.quyenLoi));
+        expect(
+          TinhTrangThietBi.tuJson({'trangThai': 'clean', 'quyenLoi': 1})!
+              .quyenLoi,
+          isNull,
+        );
+      });
+
       test('tình trạng + bản mới; gửi lô sự kiện', () async {
         final d = dv();
         final t = (await d.tinhTrang() as Ok<TinhTrangThietBi>).value;

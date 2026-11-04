@@ -8,10 +8,13 @@ import 'package:settings_feature/src/man_quyen_rieng_tu.dart';
 
 /// Tab Cài đặt: ngôn ngữ, giao diện, quyền riêng tư, giấy phép, phiên bản.
 class ManCaiDat extends ConsumerWidget {
-  const new({required this.phienBan, super.key});
+  const new({required this.phienBan, this.mucPro, super.key});
 
   /// Chuỗi phiên bản app (do app truyền vào, ví dụ `0.1.0+1`).
   final String phienBan;
+
+  /// Mục "La bàn Pro" (M1a) - app nối (tính năng không gọi nhau).
+  final Widget? mucPro;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -64,6 +67,7 @@ class ManCaiDat extends ConsumerWidget {
             ),
           ),
           const Divider(),
+          ?mucPro,
           ListTile(
             key: const ValueKey('quyen-rieng-tu'),
             title: Text(l10n.settingsPrivacy),

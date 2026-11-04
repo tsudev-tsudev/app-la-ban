@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:compass_feature/compass_feature.dart';
 import 'package:design_system/design_system.dart';
@@ -18,6 +19,7 @@ import 'package:la_ban/src/lam_cung.dart';
 import 'package:la_ban/src/luu_tru.dart';
 import 'package:la_ban/src/phat_trien.dart';
 import 'package:la_ban/src/phien_ban.dart';
+import 'package:la_ban/src/pro.dart';
 import 'package:la_ban/src/rieng_tu.dart';
 import 'package:location_feature/location_feature.dart';
 import 'package:map_feature/map_feature.dart';
@@ -91,6 +93,16 @@ Future<Widget> dungApp(
   // S4: kiểm tra môi trường + freeRASP, chỉ báo server (SEC-APP).
   final rasp = kho != null && dv != null ? taoDichVuRasp(kho, dv) : null;
   if (rasp != null) batDauRasp(rasp, flavor, cong!, dinhDanh: dv, kenh: kenh);
+  // M1a bước 2: quyền lợi Pro + Play Billing (Android) - server quyết (Q55).
+  final pro = kho != null && dv != null && Platform.isAndroid
+      ? taoDichVuQuyenLoi(
+          flavor: flavor,
+          kho: kho,
+          dinhDanh: dv,
+          kenh: kenh!,
+          cong: cong!,
+        )
+      : null;
   return ProviderScope(
     overrides: [
       khoLuuTruProvider.overrideWithValue(kho),
@@ -98,6 +110,7 @@ Future<Widget> dungApp(
       kenhProvider.overrideWithValue(kenh),
       giamSatPhatTrienProvider.overrideWithValue(phatTrien),
       banProdProvider.overrideWithValue(flavor == Flavor.prod),
+      flavorProvider.overrideWithValue(flavor),
       dichVuRaspProvider.overrideWithValue(rasp),
       congTrucTuyenProvider.overrideWithValue(cong),
       // R3b: vị trí giả (Location.isMock) -> tín hiệu MOCK_LOCATION, chỉ báo.
@@ -121,6 +134,7 @@ Future<Widget> dungApp(
       ...noiBanDo(flavor),
       ...noiAr(),
       ...noiRiengTu(kho),
+      ...noiPro(pro, flavor),
       ...ghiDeThem,
     ],
     child: LaBanApp(flavor: flavor),

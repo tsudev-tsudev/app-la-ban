@@ -18,6 +18,7 @@ export const TANG = {
   ar_feature: 2,
   settings_feature: 2,
   ads_iap: 2,
+  quyen_loi: 2,
   la_ban: 3,
 };
 

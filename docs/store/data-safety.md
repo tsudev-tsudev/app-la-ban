@@ -13,6 +13,7 @@
 | `ACCESS_NETWORK_STATE` | freeRASP + MapLibre: biết có mạng hay không (không đọc nội dung) | - (quyền thường) |
 | `ACCESS_WIFI_STATE` | MapLibre: trạng thái kết nối khi tải tile | - (quyền thường) |
 | `USE_BIOMETRIC` / `USE_FINGERPRINT` | androidx.biometric trong freeRASP: chỉ kiểm máy CÓ khoá màn hình / sinh trắc (tín hiệu RASP), không đọc vân tay | - (quyền thường) |
+| `com.android.vending.BILLING` | Play Billing Library qua `in_app_purchase` (M1a, Q55): mở luồng mua La bàn Pro của Google Play | - (quyền thường) |
 | `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` | androidx.core: bảo vệ receiver nội bộ (quyền chữ ký của chính app) | - |
 
 **Đã gỡ** bằng `tools:node="remove"` trong `app/android/app/src/main/AndroidManifest.xml` (Q46):
@@ -44,6 +45,7 @@ Mọi dòng dưới đây là **tuỳ chọn** ("Users can choose whether this d
 | Location | Approximate location | Có | Không | Fraud prevention, security, and compliance | quốc gia + ASN suy từ địa chỉ IP ở máy chủ (Cloudflare); IP chi tiết rút gọn sau 90 ngày |
 | Device or other IDs | Device or other IDs | Có | **Có (Talsec)** | Fraud prevention, security, and compliance | mã cài đặt ngẫu nhiên + khoá công khai ECDSA phần cứng (không IMEI / serial / MAC / Android ID); freeRASP gửi Talsec mã phiên bản cài của riêng nó |
 | App info and performance | Crash logs | Có (tuỳ chọn RIÊNG, mặc định tắt) | Không | App functionality | S10b (Q49): loại lỗi, ngăn xếp đã che mã, phiên bản app / Android - chỉ khi bật "Gửi báo cáo sự cố"; về Worker của TsuDev, lưu 90 ngày |
+| Financial info | Purchase history | Có (chỉ khi mua Pro) | Không | App functionality | M1a (Q55): `POST /v1/mua/xac-minh` gửi purchase token + mã sản phẩm; D1 `quyen_loi` lưu sản phẩm, trạng thái, hết hạn, mã đơn, băm + bản mã hoá AES-GCM của token, mã cài đặt gắn kèm. Thanh toán do Google Play xử lý - không nhận thông tin thẻ. Mục này BẮT BUỘC khi mua (không tuỳ chọn) |
 | App info and performance | Diagnostics | Có | **Có (Talsec)** | Fraud prevention, security, and compliance | loại máy, phiên bản Android / app, tên gói, nguồn cài, kết quả kiểm tra môi trường (root, trình gỡ lỗi, hook, giả lập, chữ ký), phán quyết Play Integrity |
 
 Không khai (không rời máy hoặc được miễn theo định nghĩa của Play):
@@ -62,6 +64,7 @@ Không khai (không rời máy hoặc được miễn theo định nghĩa của 
 |---|---|---|
 | Cloudflare | hạ tầng xử lý thay mặt TsuDev (service provider) -> KHÔNG tính là "chia sẻ" | Chính sách quyền riêng tư mục 5 |
 | Google Play Integrity | API của Google Play services; token đi qua máy chủ TsuDev để giải mã -> đã gộp vào "Diagnostics" | mục 5 |
+| Google Play Billing | Google xử lý thanh toán; máy chủ TsuDev hỏi Play Developer API để xác minh -> không phải "chia sẻ" (Google là bên bán hộ / xử lý thanh toán) | mục 3 |
 | Talsec (freeRASP, Cộng hoà Séc) | dùng dữ liệu để thống kê mối đe doạ của chính họ -> **chia sẻ** | mục 5; đối chiếu hướng dẫn Data Safety mới nhất của Talsec khi điền |
 
 Không có SDK quảng cáo, phân tích, crash. Báo cáo sự cố tự xây (S10b, QUYET_DINH Q49) đi thẳng về Worker của TsuDev - không bên thứ ba; tỷ lệ crash / ANR native lấy từ Android vitals của Play Console (không cần SDK).
