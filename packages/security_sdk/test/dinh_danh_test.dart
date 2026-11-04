@@ -405,6 +405,43 @@ void main() {
       expect(dv().phien?.mucTin, MucTin.strong);
     });
 
+    test('canXacMinhLai: chưa có mốc / đồng hồ lùi thử ngay; unverified, '
+        'failed sau 1 giờ; mức tin cậy sau 24 giờ', () {
+      const t = 1761800000000;
+      expect(canXacMinhLai(MucTin.device, null, t), isTrue);
+      expect(canXacMinhLai(MucTin.device, t + 1, t), isTrue);
+      for (final m in [MucTin.unverified, MucTin.failed]) {
+        expect(canXacMinhLai(m, t, t + xacMinhLaiChuaTinMs - 1), isFalse);
+        expect(canXacMinhLai(m, t, t + xacMinhLaiChuaTinMs), isTrue);
+      }
+      for (final m in [MucTin.strong, MucTin.device, MucTin.basic]) {
+        expect(canXacMinhLai(m, t, t + xacMinhLaiChuaTinMs), isFalse);
+        expect(canXacMinhLai(m, t, t + xacMinhLaiDinhKyMs), isTrue);
+      }
+    });
+
+    test('xác minh lại theo lịch: đăng ký ghi mốc, 24 giờ sau mới gọi, máy '
+        'cũ chưa có mốc thử ngay', () async {
+      bayGio = 1761800000000;
+      api.hetHan = bayGio + 15 * 60 * 1000;
+      final d = dv();
+      await d.damBaoPhien();
+      expect(d.phien?.mucTin, MucTin.device);
+      int demAttest() =>
+          api.goi.where((g) => g.$1 == '/v1/device/attest').length;
+      expect(await d.xacMinhLaiNeuCan(), isNull);
+      bayGio += xacMinhLaiChuaTinMs;
+      expect(await d.xacMinhLaiNeuCan(), isNull);
+      bayGio += xacMinhLaiDinhKyMs;
+      final kq = await d.xacMinhLaiNeuCan();
+      expect((kq! as Ok<MucTin>).value, MucTin.strong);
+      expect(demAttest(), 1);
+      expect(await d.xacMinhLaiNeuCan(), isNull);
+      d.tep.ghiDongBo({...d.tep.duLieu}..remove('xacMinhLuc'));
+      expect(await d.xacMinhLaiNeuCan(), isNotNull);
+      expect(demAttest(), 2);
+    });
+
     group('yêu cầu ký (SEC-NET)', () {
       test('header đủ, chữ ký trên đúng chuỗi chuẩn của byte gửi đi', () async {
         bayGio = 1761800000000;

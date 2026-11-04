@@ -193,3 +193,25 @@ String? maRefThietBi(String thietBiId) {
   final d = thietBiId.substring(16);
   return 'REF-${d.substring(0, 5)}-${d.substring(5)}';
 }
+
+/// Chu kỳ xác minh lại khi chưa có mức tin cậy (token Play Integrity lỗi tạm
+/// lúc đăng ký, Play Integrity chưa liên kết dự án Cloud...).
+const int xacMinhLaiChuaTinMs = 60 * 60 * 1000;
+
+/// Chu kỳ làm tươi mức tin cậy đã có (máy bị root / đổi ROM sau khi đăng ký).
+const int xacMinhLaiDinhKyMs = 24 * 60 * 60 * 1000;
+
+/// Đến lịch xác minh lại thiết bị (`/v1/device/attest`, SEC-ID-05)?
+///
+/// [lanCuoi] = mốc lần thử gần nhất (ms Unix), null = chưa từng thử từ khi
+/// có lịch này -> thử ngay (bản cũ kẹt `unverified` mãi vì không có lượt
+/// xác minh lại nào - M32 bản Play 04/11). `unverified` / `failed` thử lại
+/// sau [xacMinhLaiChuaTinMs]; mức khác sau [xacMinhLaiDinhKyMs]. Đồng hồ máy
+/// lùi (mốc ở tương lai) -> coi như đến lịch.
+bool canXacMinhLai(MucTin muc, int? lanCuoi, int bayGio) {
+  if (lanCuoi == null || lanCuoi > bayGio) return true;
+  final chuKy = muc == MucTin.unverified || muc == MucTin.failed
+      ? xacMinhLaiChuaTinMs
+      : xacMinhLaiDinhKyMs;
+  return bayGio - lanCuoi >= chuKy;
+}
