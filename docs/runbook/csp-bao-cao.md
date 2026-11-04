@@ -84,3 +84,13 @@ Báo cáo 29/10 - 03/11 (AE, theo `blob6` nguồn): KHÔNG có vi phạm từ sc
   Reporting API - net-log không có request tới `/v1/web/csp`. Kiểm vi phạm bằng `grep CONSOLE`, kiểm đường gửi bằng
   `curl` ở trên hoặc trình duyệt thật (DevTools > Application > Reporting API).
 - Hành động: tiếp tục đọc bảng 7 ngày vào 05/11 - 10/11; rollback chỉ khi có `enforce` `script-src-elem` từ origin mình.
+
+## Đọc bảng 05/11 (từ 03/11 07:30 UTC, sau bật chặn)
+
+| Chế độ | Chỉ thị | Bị chặn | Trang / nguồn | Số | Kết luận |
+|---|---|---|---|---|---|
+| enforce + report | `script-src-elem` | `inline` | admin `/` (compass-admin) | 8 + 8 | script Cloudflare chèn không nonce - đã biết, vô hại |
+| enforce + report | `style-src-elem` | `inline` | landing `/tai-ve/`, nguồn rỗng | 2 + 2 | một lượt xem 04/11 13:06 VN; bản build không có `<style>` / `style=` (Astro gom ra CSS ngoài) -> tiện ích trình duyệt |
+| report | `require-trusted-types-for` | `trusted-types-sink` | landing `/` | 1 | JS detections Cloudflare - GIỮ Trusted Types ở Report-Only |
+
+- KHÔNG có `script-src-elem` từ origin landing -> GIỮ header chặn, không rollback. Đọc lại lần cuối 10/11 rồi đóng việc.
