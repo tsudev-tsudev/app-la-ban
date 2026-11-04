@@ -19,9 +19,9 @@ MOI_TRUONG = "prod"
 # Cloudflare List "la_ban_chan_ip" (tài khoản Free chỉ 1 List -> chỉ prod). Token: `wrangler secret put CF_LISTS_TOKEN`.
 CF_ACCOUNT_ID = "9541f44e84433a32b013ec31bae14848"
 CF_LIST_ID = "18b0a1e4506942969aad36e04ce95f46"
-# S2 Play Integrity: gói + SHA-256 chứng chỉ khoá upload (R0, Q34 - Play App Signing dùng lại chính khoá này).
+# S2 Play Integrity: gói + SHA-256 chứng chỉ ký hợp lệ: khoá upload (APK tải trực tiếp, Q34) + khoá Google Play tạo (Q63).
 PI_GOI = "com.tsudev.laban"
-PI_CHUNG_CHI = "cf09e7243bca9ab5d29dc788bbd31ba71efaebab7d69583d98bbfc5184a7f6bd"
+PI_CHUNG_CHI = "cf09e7243bca9ab5d29dc788bbd31ba71efaebab7d69583d98bbfc5184a7f6bd,b84d419196141b48c74609824b3ff41ebcc3f51f86c94b561fbbd20440f18b7b"
 # S6 Admin SOC: team Zero Trust + AUD ứng dụng Access "la-ban-admin" (tools/cloudflare/access.mjs in ra). AUD rỗng -> /admin 503.
 ACCESS_TEAM = "purple-cake-8f2a.cloudflareaccess.com"
 ACCESS_AUD = "f1dec48a71e9b10406ae9534bea272e055a6bcf58a302e8d9324286976641ed3"

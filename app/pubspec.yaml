@@ -2,7 +2,7 @@ name: la_ban
 description: Ứng dụng La bàn (Smart Compass) của TsuDev.
 publish_to: none
 # Đổi version thì sửa cả phienBanApp (lib/src/phien_ban.dart) - test kiểm hai nơi khớp.
-version: 0.1.0-beta.16+16
+version: 0.1.0-beta.17+17
 resolution: workspace
 
 environment:

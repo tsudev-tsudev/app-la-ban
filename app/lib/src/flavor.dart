@@ -27,6 +27,15 @@ enum Flavor {
   static const chungChiUpload =
       'cf09e7243bca9ab5d29dc788bbd31ba71efaebab7d69583d98bbfc5184a7f6bd';
 
+  /// SHA-256 chứng chỉ khoá ký ứng dụng do Google Play tạo (Play App Signing,
+  /// QUYET_DINH Q63) - bản cài từ Play mang chữ ký này, bản APK tải trực tiếp
+  /// mang [chungChiUpload]. Công khai, giống `PI_CHUNG_CHI` của Worker.
+  static const chungChiPlay =
+      'b84d419196141b48c74609824b3ff41ebcc3f51f86c94b561fbbd20440f18b7b';
+
+  /// Mọi chứng chỉ ký hợp lệ của bản release (APK trực tiếp + Play).
+  static const List<String> chungChiHopLe = [chungChiUpload, chungChiPlay];
+
   /// applicationId (android/app/build.gradle.kts: hậu tố theo flavor).
   String get goi => switch (this) {
     Flavor.dev => 'com.tsudev.laban.dev',

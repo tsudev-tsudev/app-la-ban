@@ -138,6 +138,14 @@ describe('đánh giá phán quyết Play Integrity', () => {
     expect(danhGiaPhanQuyet(pq({ tb: ['MEETS_BASIC_INTEGRITY'] }), kv)).toMatchObject({ muc: 'basic' });
     expect(danhGiaPhanQuyet(pq({ tb: ['MEETS_VIRTUAL_INTEGRITY'] }), kv)).toMatchObject({ muc: 'basic', tinHieu: { ao: true } });
   });
+  it('bản cài từ Play ký khoá Google tạo (Q63) đạt khi có trong danh sách, trượt khi chỉ có khoá upload', () => {
+    const play = 'b84d419196141b48c74609824b3ff41ebcc3f51f86c94b561fbbd20440f18b7b';
+    const playB64 = b64urlTuByte(Uint8Array.from(play.match(/../g)?.map((h) => parseInt(h, 16)) ?? []));
+    const hai = { ...kv, dsChungChi: [CC, play] };
+    expect(danhGiaPhanQuyet(pq({ app: { certificateSha256Digest: [playB64] } }), hai)).toMatchObject({ muc: 'device', lyDo: [] });
+    expect(danhGiaPhanQuyet(pq(), hai)).toMatchObject({ muc: 'device', lyDo: [] });
+    expect(danhGiaPhanQuyet(pq({ app: { certificateSha256Digest: [playB64] } }), kv)).toMatchObject({ muc: 'failed', lyDo: ['chung-chi'] });
+  });
   it('APK tải ngoài Play (UNRECOGNIZED_VERSION) đúng chứng chỉ vẫn đạt', () => {
     expect(danhGiaPhanQuyet(pq({ app: { appRecognitionVerdict: 'UNRECOGNIZED_VERSION' }, acc: { appLicensingVerdict: 'UNEVALUATED' } }), kv)).toMatchObject({ muc: 'device', lyDo: [] });
   });

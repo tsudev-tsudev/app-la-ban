@@ -72,7 +72,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 20 | S9 | Lớp bảo vệ nội dung web + build sạch | S8 | ✅ 29/10 (bdbd740; CSV audit ở S6) |
 | 21 | A8 | Cài đặt, quyền riêng tư, trợ năng, hiệu năng (chia A8a / A8b) | A7, S4 | ✅ 31/10 · A8a ✅ 31/10 (0191b2d PR #34: quyền riêng tư + đồng ý NĐ 13, Q43; máy thật M32 đạt; chưa phát hành APK - gộp A8b) · A8b ✅ 31/10 (trợ năng + Reduce motion, Q45; v0.1.0-beta.10) |
 | 22 | S10 | Giám sát, log bất biến, backup, ứng phó sự cố (chia S10a / S10b) | S7 | ✅ 02/11 · S10a ✅ 02/11 (máy chủ: nhật ký bất biến R2 + mốc neo audit, sao lưu mã hoá + diễn tập, đột biến -> Telegram, security.txt, runbook IR, Q48) · S10b ✅ 02/11 (báo cáo sự cố tự xây, 0 đồng, đồng ý riêng, Q49) |
-| 23 | R2 | Sẵn sàng store | A8, S4 | ⛔ R2a ✅ 31/10 (AAB + Data Safety + listing + ảnh store, Q46) · R2b: tài khoản Play cá nhân duyệt 04/11, app đã tạo, thiết lập 2/11; hướng dẫn từng trang `docs/store/huong-dan-play-console.md` (04/11); AAB beta.16 sẵn sàng cho internal (runbook phat-hanh-play mục 2-3) |
+| 23 | R2 | Sẵn sàng store | A8, S4 | ⛔ R2a ✅ 31/10 (AAB + Data Safety + listing + ảnh store, Q46) · R2b: tài khoản Play cá nhân duyệt 04/11, app đã tạo, thiết lập 2/11; hướng dẫn từng trang `docs/store/huong-dan-play-console.md` (04/11, bản 2: E0-E2); **Thử nghiệm nội bộ chạy 04/11**: AAB beta.16 lên kênh, link `https://play.google.com/apps/internaltest/4700876326543944136`, M32 cài từ Play ✅; khoá ký Google Play tạo -> chấp nhận 2 chứng chỉ (Q63, beta.17) · ⛔ còn: liên kết Play Integrity (Được bảo vệ bằng Play) -> `PLAY_RECOGNIZED`, Phần A 11/11, thử kín 12 x 14 ngày |
 | 24 | R3 | QA tổng + kiểm thử bảo mật (chia R3a / R3b) | R2, S9, S10 | ✅ 03/11 (0 Critical / High mở) · R3a ✅ 02/11 (gitleaks / osv-scanner / Semgrep vào cổng, ZAP + MobSF + SSL Labs A+, 0 High, minSdk 26, Q50) · R3b ✅ 02/11 (E2E + nâng cấp beta.7->13 + 5 kịch bản SEC-TEST trên M32, sửa 2 lỗi, Q51) · R3c ✅ 03/11 (#48-#50, Q52: DO -> D1 nonce + giới hạn; staging p95 < 300 ms; D1 prod chuyển ICN -> SIN (Q53): prod p50 8-49 ms, p95 < 250 ms mẫu nhỏ - đo lại 24 h) |
 | 25 | R4 | Phát hành v1.0.0 + OTA | R3 | ⬜ (tài khoản cá nhân: cần thử kín >= 12 người x 14 ngày trước production) |
 | 26 | M1 | Gói Pro trong app + quảng cáo (chia M1a quyền lợi + Play Billing / M1b quảng cáo), v1.1.0 sau Release Gate | R4 | 🟨 M1a bước 3 (máy chủ) ✅ 03/11 (b145e92, PR #66) · bước 2 (app) ✅ 04/11 (`packages/quyen_loi` + Paywall, Q61; prod chưa mở bán) · còn bước 1 (người dùng tạo sản phẩm), 4 phần SOC, 5, cổng máy thật license tester |
@@ -683,6 +683,17 @@ Console · trước M1b tài khoản AdMob (RevenueCat KHÔNG còn cần - Q55).
   `go`, quyền `cho-phep` security_admin + passkey + audit, hạn 24 giờ - 90 ngày, nút điền ASN Google), trang Can thiệp
   có mục Danh sách cho phép. Landing: bỏ nhãn "Sắp có" ở 5 tính năng đã phát hành; Quyền riêng tư mục 5 nói rõ freeRASP
   không được đọc GSF ID. Test mới: 2 thuần + 1 tích hợp Worker.
+
+- Kết quả R2b internal (04/11/2026, Q63): người dùng tải `la-ban-0.1.0-beta.16.aab` lên **Thử nghiệm nội bộ** (bản
+  `16 (0.1.0-beta.16)`, danh sách `TsuDev Compass noi bo` 2 người), link tham gia
+  `https://play.google.com/apps/internaltest/4700876326543944136`; M32 cài từ Play (installer `com.android.vending`), mở
+  được. Không qua PEPK -> Play tự tạo khoá ký: SHA-256 `B8:4D:41:...:8B:7B` (đo `apksigner` trên `base.apk` kéo từ M32).
+  Sửa: Worker prod `PI_CHUNG_CHI` thêm chứng chỉ Play (trước đó bản Play bị chấm `failed` / `chung-chi`), app
+  `Flavor.chungChiHopLe` (native + freeRASP - beta.16 bản Play tự báo `APP_REPACKAGED`), `assetlinks.json`; v0.1.0-beta.17.
+  Hướng dẫn Play Console bản 2: B2 khoá ký, B2b trang "Được bảo vệ bằng Play", E0 danh sách kiểm trước gửi duyệt, E1 / E2
+  từng bước + `tools/build/ky-duyet-play.sh bat / tat / trang-thai`.
+- Còn R2b: người dùng liên kết Play Integrity (B2b) -> agent kiểm `PLAY_RECOGNIZED` trên SOC; tải AAB beta.17 lên internal;
+  Phần A 11/11; thử kín (Phần C) - mỗi lần gửi duyệt làm E0 -> E1, duyệt xong E2.
 
 ### R3 - QA tổng
 - Đọc thêm: SEC-TEST.
