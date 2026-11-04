@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:la_ban/src/cong_truc_tuyen.dart';
+import 'package:la_ban/src/flavor.dart';
 import 'package:la_ban/src/kenh.dart';
 import 'package:la_ban/src/lam_cung.dart';
 import 'package:la_ban/src/luu_tru.dart';
@@ -90,6 +91,19 @@ void main() {
     addTearDown(c.dispose);
     return c.read(ruiRoProvider);
   }
+
+  test('chứng chỉ release: khoá upload (APK trực tiếp) + khoá Play (Q63)', () {
+    expect(Flavor.chungChiHopLe, [Flavor.chungChiUpload, Flavor.chungChiPlay]);
+    for (final h in Flavor.chungChiHopLe) {
+      expect(h, matches(RegExp(r'^[0-9a-f]{64}$')));
+    }
+    final c = cauHinhFreeRasp(
+      goi: Flavor.prod.goi,
+      chungChi: Flavor.chungChiHopLe,
+      banThat: true,
+    );
+    expect(c.androidConfig?.signingCertHashes, hasLength(2));
+  });
 
   test('mức rủi ro theo trạng thái server; offline dùng khoá đã lưu', () {
     expect(ruiRo().muc, MucRuiRo.thap);

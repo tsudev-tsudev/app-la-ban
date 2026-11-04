@@ -1,6 +1,6 @@
 # Hướng dẫn điền Google Play Console - La bàn (`com.tsudev.laban`)
 
-Cập nhật 04/11/2026 theo ảnh chụp Play Console tiếng Việt của tài khoản cá nhân **TsuDev** (mã 6673606179625007616,
+Cập nhật 04/11/2026 (bản 2: khoá ký Play, trang Được bảo vệ bằng Play, E0-E2 từng bước) theo ảnh chụp Play Console tiếng Việt của tài khoản cá nhân **TsuDev** (mã 6673606179625007616,
 app 4973918380597875482). Người dùng bấm trong Play Console; agent chuẩn bị AAB, nội dung và bật / tắt kill-switch.
 Nguồn nội dung dán: `docs/store/play-listing.md` (listing), `docs/store/data-safety.md` (An toàn dữ liệu),
 `docs/store/ghi-chu-reviewer.md` (người duyệt), runbook `docs/runbook/phat-hanh-play.md` (PEPK, Pro, RTDN).
@@ -13,7 +13,7 @@ Thứ tự làm đề xuất: Phần A (9 mục còn lại) -> Phần B (thử n
 > 1. **Chặn chế độ Nhà phát triển (Q57).** Bản prod hiện màn "Hãy tắt chế độ Nhà phát triển" khi máy bật Developer options
 >    / gỡ lỗi USB (đã kiểm trên M32 04/11). Máy pre-launch report (Firebase Test Lab) LUÔN bật ADB, máy người duyệt thường
 >    cũng bật -> họ chỉ thấy màn chặn -> báo "ứng dụng không hoạt động" (chính sách Chức năng tối thiểu / Ứng dụng bị hỏng).
->    TRƯỚC mỗi lần gửi duyệt (thử kín, công khai, bản cập nhật) làm mục E1; duyệt xong làm E2.
+>    TRƯỚC mỗi lần gửi duyệt (thử kín, công khai, bản cập nhật) làm E0 + E1; duyệt xong làm E2.
 > 2. **Miễn trừ ASN Google ở SOC** (runbook phat-hanh-play mục 4) - để thiết bị duyệt không bị Threat Engine cấm.
 > 3. **Khai báo phải khớp bản AAB.** Mục nào khai "Không" (quảng cáo, mã quảng cáo...) thì AAB không được có SDK / quyền
 >    tương ứng (`build-aab.sh` đã kiểm quyền). Khi bật quảng cáo (M1b) hoặc bán Pro (R4) -> sửa khai báo TRƯỚC khi gửi bản đó.
@@ -173,16 +173,28 @@ Menu **Kiểm thử và phát hành > Kiểm thử > Thử nghiệm nội bộ**
 4. Kéo xuống "Cách người thử nghiệm tham gia" -> **Sao chép đường liên kết** (dạng
    `https://play.google.com/apps/internaltest/...`) - mở trên M32 sau B3.
 
-### B2. App signing bằng PEPK (một lần, trước bản AAB đầu)
-Tab **Bản phát hành** -> **Tạo bản phát hành mới** (ảnh `..._ban-phat-hanh`). Ở khối "Khoá ký ứng dụng":
-1. Bấm **Chọn khoá ký** / **Thay đổi khoá ký ứng dụng** -> **Xuất và tải khoá lên từ kho khoá Java** (Export and upload a
-   key from Java keystore). KHÔNG chọn "Google tạo khoá" (Q34: khoá Play phải trùng khoá đang ký APK tải trực tiếp).
-2. Tải `pepk.jar` + **khoá mã hoá** (`encryption_public_key.pem`) vào `C:\Users\devng\Downloads\`.
-3. Báo agent - agent chạy lệnh PEPK ở runbook mục 2 (alias trong `~/.config/la-ban/android/key.properties`), ra
-   `~/.config/la-ban/android/play-signing.zip` và chép sang `C:\Users\devng\Downloads\laban\play-signing.zip`.
-4. Tải ZIP lên -> **Lưu**. Sau đó **Thiết lập > Tính toàn vẹn của ứng dụng > Khoá ký ứng dụng**: SHA-256 phải là
-   `CF:09:E7:24:3B:CA:9A:B5:D2:9D:C7:88:BB:D3:1B:A7:1E:FA:EB:AB:7D:69:58:3D:98:BB:FC:51:84:A7:F6:BD`. Khác -> dừng, báo agent.
-5. Cùng trang **Tính toàn vẹn của ứng dụng > Play Integrity API > Liên kết dự án Cloud** -> chọn `app-la-ban` (930761930572).
+### B2. Khoá ký ứng dụng - ĐÃ CHỐT: Google Play tạo khoá (04/11/2026, Q63)
+Bản AAB đầu (beta.16) đã tải lên mà không qua PEPK -> Play **tự tạo khoá ký ứng dụng**. Khoá này cố định cho
+`com.tsudev.laban`, KHÔNG làm lại PEPK (Play chỉ cho "nâng cấp khoá" một lần, không cần).
+- Đã đo trên M32 (bản cài từ Play, `apksigner`): chứng chỉ ký ứng dụng SHA-256
+  `B8:4D:41:91:96:14:1B:48:C7:46:09:82:4B:3F:F4:1E:BC:C3:F5:1F:86:C9:4B:56:1F:BB:D2:04:40:F1:8B:7B`.
+  Khoá upload (ký AAB agent tải lên + APK tải trực tiếp) vẫn là `CF:09:E7:...:F6:BD`.
+- Agent đã thêm chứng chỉ Play vào: Worker prod `PI_CHUNG_CHI`, app (`Flavor.chungChiHopLe` - kiểm chữ ký native +
+  freeRASP) từ bản beta.17, `assetlinks.json` (App Links). Bản beta.16 cài từ Play bị app tự báo `APP_REPACKAGED` ->
+  dùng beta.17 trở đi cho mọi kênh Play.
+- Hệ quả: bản APK tải trực tiếp và bản Play **không cập nhật đè lên nhau** (khác chữ ký) - người đang dùng APK muốn
+  chuyển sang Play phải gỡ APK trước (dữ liệu trong máy mất; xuất JSON ở Cài đặt > Quyền riêng tư trước khi gỡ).
+- Muốn tự xem trên Console: trang **Được bảo vệ bằng Play** (biểu tượng khiên ở menu trái) -> khối "Dịch vụ bảo vệ của
+  Cửa hàng Play" -> mũi tên mở rộng -> **Ký ứng dụng Play** -> **Quản lý** (Console mới không còn tab "Ký ứng dụng"
+  dưới "Tính toàn vẹn của ứng dụng").
+
+### B2b. Trang "Được bảo vệ bằng Play" (biểu tượng khiên, URL `.../app/<id>/protect-with-play`)
+| Khối | Trạng thái 04/11 | Làm gì |
+|---|---|---|
+| Tự động bảo vệ (1/1) | Đang bật | **Giữ bật.** Play chèn kiểm tra nguồn cài vào bản phân phối qua Play; không ảnh hưởng APK tải trực tiếp. |
+| API Tính toàn vẹn của Play (0/7) | Chưa liên kết | **Bắt đầu** -> **Liên kết dự án trên Cloud** -> chọn `app-la-ban` (930761930572) -> **Liên kết**. Các mục "Phản hồi" / "Phân loại" khác để mặc định (Worker tự đọc phán quyết, không dùng tính năng thiết bị lặp lại / mã cảnh báo). Sau đó chờ ~10 phút rồi mở app trên M32 -> agent kiểm SOC `PLAY_RECOGNIZED`. |
+| Dịch vụ bảo vệ của Cửa hàng Play (6/7) | Gần đủ | Mục còn thiếu thường là "Gói giải mã mã nguồn bị làm rối / ký hiệu gỡ lỗi" - không bắt buộc (cảnh báo vàng). |
+| Dịch vụ bảo vệ của Play Billing (0/4) | Chưa | Để sau M1a bước 1 (khi tạo sản phẩm Pro); không ảnh hưởng duyệt. |
 
 ### B3. Tạo bản phát hành nội bộ
 1. **Tạo bản phát hành mới** -> **Tải lên** -> chọn AAB
@@ -203,6 +215,11 @@ Tab **Bản phát hành** -> **Tạo bản phát hành mới** (ảnh `..._ban-p
 5. Trên M32 (đăng nhập Gmail có trong danh sách): mở link B1.4 -> **Chấp nhận / Become a tester** -> **Tải xuống trên Google
    Play** -> cài. Bản prod chặn khi bật ADB -> muốn mở app phải tắt Developer options, hoặc agent bật E1 tạm thời.
 6. Agent kiểm SOC: thiết bị mới có phán quyết app `PLAY_RECOGNIZED` (cổng R2) + so download size với `kich-thuoc.txt`.
+
+Đã xong 04/11/2026: bản `16 (0.1.0-beta.16)` lên Thử nghiệm nội bộ, danh sách `TsuDev Compass noi bo` (2 người), link
+tham gia `https://play.google.com/apps/internaltest/4700876326543944136`; M32 cài từ Play (installer
+`com.android.vending`) và mở được. Bản kế tiếp (beta.17, có chứng chỉ Play) tải lên cùng kênh: **Tạo bản phát hành
+mới** -> tải AAB -> ghi chú -> **Lưu và xuất bản**; người thử nhận cập nhật qua Play (vài phút - vài giờ).
 
 ---
 
@@ -260,21 +277,67 @@ Google trả lời trong ~7 ngày. Bị từ chối -> kéo dài thử kín thê
 
 ---
 
-## Phần E - Kill-switch cho kỳ duyệt (agent chuẩn bị, người dùng duyệt four-eyes)
+## Phần E - Trước và sau MỖI lần gửi duyệt (thử kín, công khai, mọi bản cập nhật)
 
-### E1. Trước khi gửi duyệt / khi Play chạy pre-launch report
-1. **App**: SOC (`compass-admin.tsudev.com`) -> **Cấu hình từ xa** -> App -> mục **Tắt** tích
-   **"Chặn chế độ Nhà phát triển"** (cờ `chanDevMode`, có từ bản Worker + admin của PR này) -> hạn 30 ngày -> lý do
-   "Google Play duyệt" -> đề xuất; người thứ hai **Duyệt**. App nhận cấu hình ký số ở lần `/v1/config` kế tiếp.
-2. **Worker**: agent đổi `CHAN_DEV_MODE = "0"` (env prod trong `workers/api/wrangler.toml`) + deploy prod - để máy duyệt bật
-   ADB không bị 403 ở các route nghiệp vụ (vẫn GHI NHẬN tín hiệu).
-3. **SOC > Can thiệp > Danh sách cho phép > ASN Google Play review** (AS15169 + AS396982), hạn 30 ngày (runbook mục 4).
-4. Tuỳ chọn: **Kiểm thử > Báo cáo trước khi ra mắt > Cài đặt** - giữ BẬT (báo cáo có ích) khi E1.1-2 đã làm; nếu chưa làm
-   được thì tạm tắt để báo cáo không toàn ảnh màn chặn.
+Mục tiêu: máy của người duyệt / pre-launch report (luôn bật ADB, nhiều máy là giả lập, IP thuộc mạng Google) mở app thấy
+đầy đủ tính năng, không bị màn chặn chế độ Nhà phát triển (Q57) và không bị Threat Engine cấm. Ba lớp phải tắt đủ
+(thiếu một lớp vẫn có thể bị từ chối "ứng dụng không hoạt động"):
+
+| Lớp | Ai làm | Tắt gì |
+|---|---|---|
+| E1.1 App | người dùng ở SOC (four-eyes) | màn chặn trong app (cờ `chanDevMode` của Remote Config ký số) |
+| E1.2 Worker | agent (`./tools/build/ky-duyet-play.sh bat`) | 403 `che-do-nha-phat-trien` ở route nghiệp vụ (`CHAN_DEV_MODE=0`) |
+| E1.3 Threat Engine | người dùng ở SOC | cấm / hạn chế tự động thiết bị qua ASN Google (miễn trừ AS15169 + AS396982) |
+
+### E0. Danh sách kiểm trước khi bấm "Gửi để xem xét" (đánh dấu từng dòng)
+1. **Trang tổng quan**: "Hoàn tất bước thiết lập ứng dụng" 11/11 gạch ngang (Phần A). Thiếu mục nào Play không cho gửi.
+2. **Tổng quan về việc xuất bản**: không còn lỗi đỏ; cảnh báo vàng đọc hết (thiếu ký hiệu gỡ lỗi = chấp nhận được).
+3. **Chính sách quyền riêng tư** mở được: `https://compass.tsudev.com/quyen-rieng-tu` (agent đo `curl -sL`).
+4. **Bản AAB** là bản mới nhất agent build (versionCode cao hơn mọi bản đã tải), targetSdk 36, đã có chứng chỉ Play (>= beta.17).
+5. **An toàn dữ liệu (A6)** và **Quảng cáo (A3)** khớp bản AAB: chưa có AdMob -> "Không có quảng cáo"; chưa mở bán Pro
+   trong prod (`moBanProTrongProd = false`) -> giữ khai báo như A4 / A6.
+6. **Thông tin đăng nhập (A2)**: "Không cần đăng nhập" - app không có tài khoản; mọi tính năng mở ngay.
+7. **Ghi chú cho người duyệt** (`docs/store/ghi-chu-reviewer.md`, dán vào ô ghi chú bản phát hành nếu Play hỏi): giải thích
+   app cần cảm biến từ trường / vị trí, chạy ngoại tuyến, cơ chế bảo mật chỉ chặn máy root / bị can thiệp.
+8. **E1.1 - E1.3 đã xong** và agent đã báo "kiểm E1 đạt" (bước E1.4).
+9. Gửi -> ghi ngày giờ gửi vào `AGENTS_LOG.md` (báo agent) để đếm hạn E1 (30 ngày).
+
+### E1. Tắt chặn cho kỳ duyệt (làm TRƯỚC khi gửi, cùng ngày)
+**E1.1 - App (SOC, cần 2 Security Admin):**
+1. Mở `https://compass-admin.tsudev.com` -> đăng nhập Access (mã PIN email) -> passkey.
+2. Menu **Cấu hình từ xa** -> thẻ **Ứng dụng (Remote Config)**.
+3. Khối **Tắt tính năng từ xa (kill-switch)** -> tích **Chặn chế độ Nhà phát triển**. KHÔNG tích ô nào khác (Bản đồ, Camera
+   AR... sẽ biến mất với người duyệt). Giữ nguyên mã build tối thiểu / khuyến nghị và CA gốc.
+4. **Hiệu lực (ngày)**: `30`. Lý do: `Google Play duyet ban <versionCode>`. -> **Đề xuất thay đổi** -> passkey.
+5. Người thứ hai (Security Admin khác) đăng nhập -> **Cấu hình từ xa** -> mục **Yêu cầu** -> **Duyệt và ký** -> passkey.
+   Thông báo "Đã ký và đưa gói mới lên" + **Chữ ký hợp lệ** ở gói đang phục vụ.
+6. Chỉ có MỘT Security Admin: báo agent - agent ký bằng công cụ ngoại tuyến (`tools/cau-hinh/ky-cau-hinh.mjs dua-len-app
+   --env prod --tat chanDevMode ...` giữ nguyên các giá trị đang phục vụ), ghi audit thủ công vào `AGENTS_LOG.md`.
+
+**E1.2 - Worker (agent):** `./tools/build/ky-duyet-play.sh bat` -> đặt `CHAN_DEV_MODE = "0"` ở env prod, deploy prod, in
+phiên bản Worker; agent commit thay đổi `wrangler.toml` qua PR nhỏ (để deploy sau không bật lại chặn ngoài ý muốn).
+
+**E1.3 - Miễn trừ ASN Google (SOC, 1 Security Admin):**
+1. Menu **Can thiệp** -> kéo xuống **Danh sách cho phép (miễn trừ)**.
+2. Bấm **ASN Google Play review** (tự điền AS15169 + AS396982) -> **Thời hạn** `30 ngày` -> lý do `Google Play duyet` ->
+   **Thêm miễn trừ** -> passkey. Bảng hiện 2 dòng `asn` còn hạn.
+
+**E1.4 - Kiểm (agent + người dùng, 5 phút):** trên M32 bật Developer options + gỡ lỗi USB -> mở bản cài từ Play -> vuốt
+xuống làm mới (hoặc đóng / mở lại app sau 1-2 phút để app lấy `/v1/config`) -> app dùng bình thường, KHÔNG màn chặn.
+Agent đo `./tools/build/ky-duyet-play.sh trang-thai` (giá trị `CHAN_DEV_MODE` trong `wrangler.toml` prod + bản Worker
+đang chạy). Đạt -> gửi duyệt (E0.9).
+
+**Pre-launch report** (Kiểm thử > Báo cáo trước khi ra mắt): giữ BẬT khi E1 đã xong - báo cáo có ảnh từng màn, giúp thấy lỗi
+trước người duyệt. Báo cáo có màn "Hãy tắt chế độ Nhà phát triển" = E1 chưa có hiệu lực lúc máy thử chạy -> sửa E1 rồi
+gửi lại (không cần bản AAB mới).
 
 ### E2. Sau khi được duyệt (bật lại chặn theo Q57)
-SOC -> Cấu hình từ xa -> bỏ tích "Chặn chế độ Nhà phát triển" (four-eyes); agent đặt lại `CHAN_DEV_MODE = "1"` + deploy;
-**Gỡ miễn trừ** ASN Google. Ghi `AGENTS_LOG.md` thời điểm bật / tắt. Lưu ý: mỗi bản cập nhật gửi duyệt sau này lặp lại E1.
+1. Email "Bản cập nhật đã được phê duyệt" / trạng thái **Đã xuất bản** -> báo agent.
+2. SOC -> **Cấu hình từ xa** -> bỏ tích **Chặn chế độ Nhà phát triển** -> Đề xuất -> người thứ hai **Duyệt và ký**.
+3. Agent: `./tools/build/ky-duyet-play.sh tat` (`CHAN_DEV_MODE = "1"` + deploy prod + PR).
+4. SOC -> **Can thiệp** -> **Danh sách cho phép** -> **Gỡ miễn trừ** cả hai dòng ASN Google.
+5. Kiểm: M32 bật gỡ lỗi USB -> bản Play hiện màn chặn; tắt -> dùng lại <= 5 s.
+6. Agent ghi `AGENTS_LOG.md` thời điểm bật / tắt. Mỗi bản cập nhật gửi duyệt sau này lặp lại E0 -> E1 -> E2.
 
 ---
 

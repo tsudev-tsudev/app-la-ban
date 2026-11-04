@@ -4,7 +4,10 @@
     "target": {
       "namespace": "android_app",
       "package_name": "com.tsudev.laban",
-      "sha256_cert_fingerprints": ["CF:09:E7:24:3B:CA:9A:B5:D2:9D:C7:88:BB:D3:1B:A7:1E:FA:EB:AB:7D:69:58:3D:98:BB:FC:51:84:A7:F6:BD"]
+      "sha256_cert_fingerprints": [
+        "CF:09:E7:24:3B:CA:9A:B5:D2:9D:C7:88:BB:D3:1B:A7:1E:FA:EB:AB:7D:69:58:3D:98:BB:FC:51:84:A7:F6:BD",
+        "B8:4D:41:91:96:14:1B:48:C7:46:09:82:4B:3F:F4:1E:BC:C3:F5:1F:86:C9:4B:56:1F:BB:D2:04:40:F1:8B:7B"
+      ]
     }
   },
   {

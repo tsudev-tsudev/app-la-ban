@@ -54,7 +54,7 @@ DichVuRasp taoDichVuRasp(KhoLuuTru kho, DichVuDinhDanh dv) {
       phienBanApp: pb.ten,
       build: pb.build,
       // Bản debug ký bằng khoá debug của máy dev -> không so chứng chỉ.
-      chungChiHopLe: kReleaseMode ? const [Flavor.chungChiUpload] : const [],
+      chungChiHopLe: kReleaseMode ? Flavor.chungChiHopLe : const [],
       guiMayChu: !kDebugMode,
     ),
   )..baoLuuTru(
@@ -113,7 +113,7 @@ void batDauRasp(
           nguonFreeRasp(
             cauHinhFreeRasp(
               goi: flavor.goi,
-              chungChi: const [Flavor.chungChiUpload],
+              chungChi: Flavor.chungChiHopLe,
               banThat: kReleaseMode,
             ),
           ).listen((e) {
