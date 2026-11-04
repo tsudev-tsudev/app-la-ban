@@ -33,6 +33,7 @@ import {
   type KetQuaXacMinh,
   type QuyenLoiTraVe,
 } from './thuan/quyen-loi';
+import { diemDoanhThu, rtdnCoThuTien, type SuKienDoanhThu } from './thuan/quyen-loi-soc';
 import type { BoTuyen } from './tuyen';
 
 const NGAY_MS = 24 * 60 * 60 * 1000;
@@ -62,12 +63,17 @@ async function ghiSuKienQl(db: D1Database, id: string | null, loai: string, chiT
     .run();
 }
 
-/** Ghi / cập nhật quyền lợi theo băm token (một token = một dòng). Đã thu hồi thì giữ thu hồi. Trả id dòng. */
+/** M1a bước 5: điểm AE cho doanh thu ước tính trên SOC (sản phẩm + loại sự kiện, không token / thiết bị / tài khoản). */
+function ghiDoanhThu(env: Env, sanPham: string, suKien: SuKienDoanhThu, thu: boolean): void {
+  env.SU_KIEN?.writeDataPoint(diemDoanhThu(sanPham, suKien, thu));
+}
+
+/** Ghi / cập nhật quyền lợi theo băm token (một token = một dòng). Đã thu hồi thì giữ thu hồi. Trả id dòng + dòng mới tạo. */
 async function ghiQuyenLoi(
   env: Env,
   db: D1Database,
   p: { loai: 'sub' | 'inapp'; goi: string; sanPham: string; token: string; kq: KetQuaXacMinh; bayGio: number },
-): Promise<string> {
+): Promise<{ id: string; moi: boolean }> {
   const khoa = canKhoa(env);
   const bam = await sha256Hex(p.token);
   const dong = await db
@@ -81,7 +87,7 @@ async function ghiQuyenLoi(
          order_id = coalesce(excluded.order_id, quyen_loi.order_id), account_hash = coalesce(excluded.account_hash, quyen_loi.account_hash),
          auto_renew = excluded.auto_renew, acknowledged = max(quyen_loi.acknowledged, excluded.acknowledged),
          test_purchase = excluded.test_purchase, updated_at = excluded.updated_at
-       RETURNING id`,
+       RETURNING id, created_at`,
     )
     .bind(
       taoUlid(p.bayGio),
@@ -100,18 +106,22 @@ async function ghiQuyenLoi(
       p.bayGio,
       p.bayGio,
     )
-    .first<{ id: string }>();
+    .first<{ id: string; created_at: number }>();
   if (!dong) throw new Error('không ghi được quyền lợi');
-  return dong.id;
+  // ON CONFLICT giữ created_at cũ -> chỉ dòng vừa chèn có created_at = bayGio.
+  const moi = dong.created_at === p.bayGio;
+  if (moi && (p.kq.trangThai === 'active' || p.kq.trangThai === 'grace')) ghiDoanhThu(env, p.sanPham, 'mua-moi', p.kq.thu);
+  return { id: dong.id, moi };
 }
 
 /** Thu hồi theo purchase token (hoàn tiền / chargeback / thay bằng gói nâng cấp). Trả id nếu có dòng. */
-async function thuHoiTheoToken(db: D1Database, token: string, lyDo: string, bayGio: number): Promise<string | null> {
+async function thuHoiTheoToken(env: Env, db: D1Database, token: string, lyDo: string, bayGio: number): Promise<string | null> {
   const dong = await db
-    .prepare("UPDATE quyen_loi SET state = 'revoked', reason = ?, updated_at = ? WHERE token_hash = ? AND state != 'revoked' RETURNING id")
+    .prepare("UPDATE quyen_loi SET state = 'revoked', reason = ?, updated_at = ? WHERE token_hash = ? AND state != 'revoked' RETURNING id, product_id, test_purchase")
     .bind(lyDo, bayGio, await sha256Hex(token))
-    .first<{ id: string }>();
+    .first<{ id: string; product_id: string; test_purchase: number }>();
   if (dong) await ghiSuKienQl(db, dong.id, 'thu-hoi', { ly_do: lyDo }, bayGio);
+  if (dong && lyDo === 'hoan-tien') ghiDoanhThu(env, dong.product_id, 'hoan', dong.test_purchase === 1);
   return dong?.id ?? null;
 }
 
@@ -241,9 +251,9 @@ export function dangKyMua(boTuyen: BoTuyen): void {
         baoSuKien(c, thietBi, 'PURCHASE_TOKEN_INVALID', 'medium', { san_pham: b.sanPham });
         throw new LoiApi(422, 'token-sai');
       }
-      const id = await ghiQuyenLoi(c.env, db, { loai, goi: b.goi, sanPham: b.sanPham, token: b.token, kq, bayGio });
+      const { id } = await ghiQuyenLoi(c.env, db, { loai, goi: b.goi, sanPham: b.sanPham, token: b.token, kq, bayGio });
       if (kq.tokenLienKet && schemaPurchaseToken.safeParse(kq.tokenLienKet).success) {
-        await thuHoiTheoToken(db, kq.tokenLienKet, 'thay-the', bayGio);
+        await thuHoiTheoToken(c.env, db, kq.tokenLienKet, 'thay-the', bayGio);
       }
       // IAP-04: một token tối đa N cài đặt hoạt động trong 30 ngày (máy đã gắn thì luôn được làm mới).
       const khac = await db
@@ -299,7 +309,7 @@ export function dangKyMua(boTuyen: BoTuyen): void {
       const bayGio = Date.now();
       try {
         if (viec.loai === 'hoan') {
-          const id = await thuHoiTheoToken(db, viec.token, 'hoan-tien', bayGio);
+          const id = await thuHoiTheoToken(c.env, db, viec.token, 'hoan-tien', bayGio);
           if (!id) await ghiSuKienQl(db, null, 'rtdn-hoan-khong-dong', {}, bayGio);
         } else if (viec.loai === 'sub' || viec.loai === 'inapp') {
           const kq = await hoiGoogle(c.env, viec.loai, viec.goi, viec.sanPham, viec.token);
@@ -307,8 +317,9 @@ export function dangKyMua(boTuyen: BoTuyen): void {
             await ghiSuKienQl(db, null, 'rtdn-token-sai', { kieu: viec.kieu }, bayGio);
           } else {
             const p = { loai: viec.loai, goi: viec.goi, sanPham: viec.sanPham, token: viec.token };
-            const id = await ghiQuyenLoi(c.env, db, { ...p, kq, bayGio });
-            if (kq.tokenLienKet && schemaPurchaseToken.safeParse(kq.tokenLienKet).success) await thuHoiTheoToken(db, kq.tokenLienKet, 'thay-the', bayGio);
+            const { id, moi } = await ghiQuyenLoi(c.env, db, { ...p, kq, bayGio });
+            if (!moi && viec.loai === 'sub' && rtdnCoThuTien(viec.kieu)) ghiDoanhThu(c.env, viec.sanPham, 'gia-han', kq.thu);
+            if (kq.tokenLienKet && schemaPurchaseToken.safeParse(kq.tokenLienKet).success) await thuHoiTheoToken(c.env, db, kq.tokenLienKet, 'thay-the', bayGio);
             await ghiSuKienQl(db, id, 'rtdn', { kieu: viec.kieu, trang_thai: kq.trangThai }, bayGio);
             if (canXacNhan(kq)) nen(c, xacNhanNen(c.env, db, id, p), 'xac-nhan-mua');
           }
@@ -340,7 +351,7 @@ export async function quetQuyenLoi(env: Env, bayGio = Date.now()): Promise<Recor
   for (const goi of tachDs(env.PI_GOI)) {
     try {
       for (const token of await dsMuaBiHuy(env, goi, bayGio - 3 * NGAY_MS)) {
-        if (await thuHoiTheoToken(db, token, 'hoan-tien', bayGio)) kq.thuHoi++;
+        if (await thuHoiTheoToken(env, db, token, 'hoan-tien', bayGio)) kq.thuHoi++;
       }
     } catch (e) {
       kq.loi.push(`${goi}:${e instanceof LoiDichVu ? e.lyDo : 'khac'}`);

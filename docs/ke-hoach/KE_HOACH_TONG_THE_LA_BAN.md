@@ -75,7 +75,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 23 | R2 | Sẵn sàng store | A8, S4 | ⛔ R2a ✅ 31/10 (AAB + Data Safety + listing + ảnh store, Q46) · R2b: tài khoản Play cá nhân duyệt 04/11, app đã tạo, thiết lập 2/11; hướng dẫn từng trang `docs/store/huong-dan-play-console.md` (04/11, bản 2: E0-E2); **Thử nghiệm nội bộ chạy 04/11**: AAB beta.16 lên kênh, link `https://play.google.com/apps/internaltest/4700876326543944136`, M32 cài từ Play ✅; khoá ký Google Play tạo -> chấp nhận 2 chứng chỉ (Q63, beta.17) · ⛔ còn: liên kết Play Integrity (Được bảo vệ bằng Play) -> `PLAY_RECOGNIZED`, Phần A 11/11, thử kín 12 x 14 ngày |
 | 24 | R3 | QA tổng + kiểm thử bảo mật (chia R3a / R3b) | R2, S9, S10 | ✅ 03/11 (0 Critical / High mở) · R3a ✅ 02/11 (gitleaks / osv-scanner / Semgrep vào cổng, ZAP + MobSF + SSL Labs A+, 0 High, minSdk 26, Q50) · R3b ✅ 02/11 (E2E + nâng cấp beta.7->13 + 5 kịch bản SEC-TEST trên M32, sửa 2 lỗi, Q51) · R3c ✅ 03/11 (#48-#50, Q52: DO -> D1 nonce + giới hạn; staging p95 < 300 ms; D1 prod chuyển ICN -> SIN (Q53): prod p50 8-49 ms, p95 < 250 ms mẫu nhỏ - đo lại 24 h) |
 | 25 | R4 | Phát hành v1.0.0 + OTA | R3 | ⬜ (tài khoản cá nhân: cần thử kín >= 12 người x 14 ngày trước production) |
-| 26 | M1 | Gói Pro trong app + quảng cáo (chia M1a quyền lợi + Play Billing / M1b quảng cáo), v1.1.0 sau Release Gate | R4 | 🟨 M1a bước 3 (máy chủ) ✅ 03/11 (b145e92, PR #66) · bước 2 (app) ✅ 04/11 (`packages/quyen_loi` + Paywall, Q61; prod chưa mở bán) · còn bước 1 (người dùng tạo sản phẩm), 4 phần SOC, 5, cổng máy thật license tester |
+| 26 | M1 | Gói Pro trong app + quảng cáo (chia M1a quyền lợi + Play Billing / M1b quảng cáo), v1.1.0 sau Release Gate | R4 | 🟨 M1a bước 3 (máy chủ) ✅ 03/11 (b145e92, PR #66) · bước 2 (app) ✅ 04/11 (`packages/quyen_loi` + Paywall, Q61; prod chưa mở bán) · bước 4 phần SOC + 5 (trang Quyền lợi SOC, Q64) ✅ 04/11 · còn bước 1 (người dùng tạo sản phẩm + RTDN_EMAIL), cổng máy thật license tester |
 | 27 | R0 | Bản APK thử: khoá ký, script phát hành GitHub Release + R2, trang tải | A5 | ✅ 28/10 |
 | 28 | I1 | iOS (đầu 2027): build, App Attest, Privacy Manifest, TestFlight, App Store | R4, máy Mac | ⬜ |
 | 29 | M2 | App song song "La bàn Pro" trả phí một lần, không quảng cáo (Q56) | R2b, M1a bước 3 (bảng `quyen_loi`) | ⬜ chạy CÙNG R4 (người dùng chốt 03/11: dùng chung cửa sổ thử kín 14 ngày; M1a bước 3 phần máy chủ làm trước) · logo Pro ✅ 03/11 |
@@ -807,6 +807,14 @@ Console · trước M1b tài khoản AdMob (RevenueCat KHÔNG còn cần - Q55).
   kênh `moTrang`), mục "La bàn Pro" trong Cài đặt. Mở bán (Q61): dev / staging mở, prod đóng (`moBanProTrongProd`) tới R4,
   kill-switch `mua-pro`. Data Safety + chính sách: "Purchase history". 40 test gói + 8 test app + golden `man_pro`.
   Chưa thử máy thật: cần sản phẩm Play (bước 1) + license tester + bản cài từ Play (internal testing).
+- Kết quả M1a bước 4 phần SOC + bước 5 (04/11, nhánh `phase/m1a-soc`, Q64): migration 0015 `quyen_loi_requests` (four-eyes
+  thu hồi, một yêu cầu chờ / quyền lợi) + chỉ mục `order_id` / `updated_at`; Admin API `/admin/v1/quyen-loi` (tra cứu theo mã
+  thiết bị / băm token / mã đơn GPA. / mã quyền lợi, lọc trạng thái / nguồn, cursor), `/chi-tiet` (thiết bị gắn + hoạt động 30
+  ngày, lịch sử `quyen_loi_events`, yêu cầu; không `token_enc`, băm tài khoản rút gọn), `/so-lieu` (D1 theo sản phẩm + doanh
+  thu ước tính AE 7 / 30 / 90 ngày), `/go-thiet-bi` (đổi máy chạm N), `/thu-hoi` -> `/yeu-cau/quyet` (người thứ hai) -> revoked
+  + audit. Luồng mua ghi điểm AE `doanh-thu` (mua mới khi dòng vừa tạo, gia hạn RTDN 1 / 2, hoàn tiền). Trang SOC "Quyền lợi
+  Pro" (`g p`) vi / en. Bản sao lưu D1 thêm `quyen_loi_requests`. Test: 6 thuần + 1 tích hợp workerd (quyền theo vai trò,
+  chống tự duyệt, 409 trùng / đã quyết / đã thu hồi, audit).
 - Cổng M1a: mua / gia hạn / huỷ / hoàn tiền / khôi phục trên máy thật bằng tài khoản thử license tester đúng trạng thái ở
   app + D1 + SOC; RTDN tới Worker < 1 phút; test thuần + tích hợp Worker (token giả, JWT RTDN sai -> 401).
 - Cổng M1b: chênh FPS có / không quảng cáo < 2 %; không che la bàn; người có `khongQuangCao` không có request nào tới
