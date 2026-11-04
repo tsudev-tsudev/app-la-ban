@@ -114,7 +114,8 @@ bằng khoá phần mềm trong script thử (`tools/thu/soc-e2e.mjs`). Prod KH�
   tin `app-1`, web chỉ tin `web-1`):
   `set -a; . ~/.config/la-ban/cf.env; set +a; cd workers/api` rồi
   `npx wrangler secret put KHOA_KY_APP --env staging < ~/.config/la-ban/cau-hinh/app-1.pem` (tương tự `KHOA_KY_WEB` với
-  `web-1.pem`; prod: `--env=`). Thiếu / sai khoá -> trang **Cấu hình từ xa** báo "chưa có khoá ký", duyệt trả 503.
+  `web-1.pem`; prod: `--env=`). Thiếu / sai khoá -> trang **Cấu hình từ xa** báo "chưa có khoá ký", nút Duyệt và ký bị khoá, API trả 409 `chua-co-khoa-ky`
+  (trước 04/11 trả 503 không kèm mã -> SOC chỉ hiện "Không tải được dữ liệu").
   Rút quyền ký online: `npx wrangler secret delete KHOA_KY_APP` - công cụ ngoại tuyến vẫn dùng được.
 - **Cấu hình từ xa** (`g r`, analyst xem, Security Admin đề xuất / duyệt): form điền sẵn từ gói đang phục vụ, bảng
   "Thay đổi" so với hiện tại. Đề xuất cần lý do + passkey; một yêu cầu chờ / mục; hết hạn sau 24 giờ. Người thứ hai duyệt

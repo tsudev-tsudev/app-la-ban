@@ -652,6 +652,19 @@ describe('S7c2: Remote Config four-eyes + báo cáo', () => {
     expect((await goi('/cau-hinh-tu-xa/quyet', { jwt: b.jwt, cookie: b.cookie, body: { id: yw.json.id, dongY: true } })).json.code).toBe('cau-hinh-da-doi');
     expect((await goi('/cau-hinh-tu-xa', { jwt: an.jwt, cookie: an.cookie })).json).toMatchObject({ web: { chuKyDung: false } });
     expect((await goi('/cau-hinh-tu-xa/huy', { jwt: a.jwt, cookie: a.cookie, body: { id: yw.json.id } })).status).toBe(200);
+
+    // E1 04/11: Worker không có khoá ký khớp kid -> 409 kèm mã (5xx bị bỏ `code` -> SOC chỉ thấy lỗi chung), yêu cầu vẫn chờ.
+    const yk = await goi('/cau-hinh-tu-xa/yeu-cau', { jwt: a.jwt, cookie: a.cookie, body: { dich: 'web', noiDung: { landing: 'nhe', admin: 'chat', ngay: 30 }, lyDo: 'Thử thiếu khoá ký web' } });
+    expect(yk.status).toBe(201);
+    const datKhoa = (web: string | undefined) =>
+      mf.dispatchFetch('https://compass-api.tsudev.com/thu/khoa-cong-khai', { method: 'POST', body: JSON.stringify({ 'app-1': khoaThu[0]?.x, 'web-1': web }) });
+    await datKhoa(khoaThu[0]?.x);
+    expect((await goi('/cau-hinh-tu-xa', { jwt: an.jwt, cookie: an.cookie })).json).toMatchObject({ coKhoa: { app: true, web: false } });
+    const thieu = await goi('/cau-hinh-tu-xa/quyet', { jwt: b.jwt, cookie: b.cookie, body: { id: yk.json.id, dongY: true } });
+    expect(thieu.status).toBe(409);
+    expect(thieu.json.code).toBe('chua-co-khoa-ky');
+    await datKhoa(khoaThu[1]?.x);
+    expect((await goi('/cau-hinh-tu-xa/huy', { jwt: a.jwt, cookie: a.cookie, body: { id: yk.json.id } })).status).toBe(200);
   });
 
   it('báo cáo: viewer xem tổng hợp, không xuất; analyst xuất CSV (BOM, IP đầy đủ, chống công thức) + audit', async () => {
