@@ -38,6 +38,12 @@ export const QUYEN = {
   // S10b: sự cố app - nhóm + tỷ lệ không lỗi (không PII) -> viewer; mẫu kèm ngăn xếp + mã thiết bị -> analyst.
   'su-co:xem': 'viewer',
   'su-co:chi-tiet': 'analyst',
+  // M1a bước 5: số liệu quyền lợi + doanh thu ước tính (không PII) -> viewer; tra cứu (mã thiết bị, băm token, mã đơn) ->
+  // analyst; gỡ thiết bị / đề xuất thu hồi -> responder; duyệt thu hồi four-eyes -> security_admin.
+  'quyen-loi:so-lieu': 'viewer',
+  'quyen-loi:xem': 'analyst',
+  'quyen-loi:xu-ly': 'responder',
+  'quyen-loi:duyet': 'security_admin',
   'quan-tri-vien': 'super_admin',
   'cai-dat-soc': 'super_admin',
 } as const satisfies Record<string, VaiTro>;

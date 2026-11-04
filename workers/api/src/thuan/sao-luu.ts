@@ -32,6 +32,7 @@ export const BANG_SAO_LUU = [
   'quyen_loi',
   'quyen_loi_devices',
   'quyen_loi_events',
+  'quyen_loi_requests',
 ] as const;
 export type BangSaoLuu = (typeof BANG_SAO_LUU)[number];
 

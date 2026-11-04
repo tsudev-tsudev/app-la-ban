@@ -27,6 +27,7 @@ import { SuCoApp } from './trang/SuCoApp';
 import { Luat } from './trang/Luat';
 import { NhatKyAudit } from './trang/NhatKyAudit';
 import { QuanTriVien } from './trang/QuanTriVien';
+import { QuyenLoi } from './trang/QuyenLoi';
 import { TaiKhoan } from './trang/TaiKhoan';
 import { TongQuan } from './trang/TongQuan';
 
@@ -46,6 +47,7 @@ const GO_TAT: Record<string, string> = {
   b: '#/bao-cao',
   r: '#/cau-hinh-tu-xa',
   e: '#/su-co-app',
+  p: '#/quyen-loi',
 };
 
 function useHash(): string {
@@ -261,6 +263,7 @@ export function App() {
         ...(quyen.includes('khieu-nai:xem') ? [{ d: '/khieu-nai', nhan: t.khieuNai, bt: 'khieu-nai', dem: soKhieuNai }] : []),
         ...(quyen.includes('bao-cao:xem') ? [{ d: '/bao-cao', nhan: t.baoCao, bt: 'bao-cao' }] : []),
         ...(quyen.includes('su-co:xem') ? [{ d: '/su-co-app', nhan: t.suCoApp, bt: 'su-co-app' }] : []),
+        ...(quyen.includes('quyen-loi:so-lieu') ? [{ d: '/quyen-loi', nhan: t.quyenLoi, bt: 'quyen-loi' }] : []),
       ],
     },
     {
@@ -361,6 +364,9 @@ export function App() {
   } else if (duong === '/su-co-app' && toi.quyen.includes('su-co:xem')) {
     noiDung = <SuCoApp />;
     tieuDeTrang = t.suCoApp;
+  } else if (duong === '/quyen-loi' && toi.quyen.includes('quyen-loi:so-lieu')) {
+    noiDung = <QuyenLoi />;
+    tieuDeTrang = t.quyenLoi;
   } else if (duong === '/cau-hinh-tu-xa' && toi.quyen.includes('cau-hinh-tu-xa:xem')) {
     noiDung = <CauHinhTuXa />;
     tieuDeTrang = t.cauHinhTuXa;

@@ -16,6 +16,7 @@ import { dangKyKhieuNai } from './khieu-nai';
 import { dangKyLuat } from './luat';
 import { dangKyPasskey } from './passkey';
 import { dangKyQuanTriVien } from './quan-tri-vien';
+import { dangKyQuyenLoi } from './quyen-loi';
 import { canPhien, chongCsrf, danhTinh, docPhien } from './xac-thuc';
 
 const KHONG_CAN_PHIEN = /^\/admin\/v1\/(toi|passkey\/dang-ky\/(bat-dau|xong)|phien\/(bat-dau|xong|ket-thuc))$/;
@@ -65,5 +66,6 @@ export function taoAdmin(): Hono<MoiTruongHono> {
   dangKyChoPhep(r);
   dangKySuCoAppSoc(r);
   dangKyQuanTriVien(r);
+  dangKyQuyenLoi(r);
   return r;
 }

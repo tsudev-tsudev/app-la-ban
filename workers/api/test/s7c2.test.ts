@@ -153,7 +153,7 @@ describe('S7c2: báo cáo CSV', () => {
     expect(coQuyen('analyst', 'bao-cao:xuat')).toBe(true);
     expect(coQuyen('responder', 'cau-hinh-tu-xa:sua')).toBe(false);
     expect(coQuyen('security_admin', 'cau-hinh-tu-xa:sua')).toBe(true);
-    expect(dsQuyen('super_admin')).toHaveLength(24);
+    expect(dsQuyen('super_admin')).toHaveLength(28);
     expect(DEM_CHAN_MS).toBeLessThanOrEqual(5000);
   });
 });

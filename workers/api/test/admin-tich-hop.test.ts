@@ -743,3 +743,75 @@ describe('R2: allow-list miễn trừ thiết bị duyệt store', () => {
     expect(au.results.map((x) => (x as { action: string }).action)).toEqual(['cho-phep:them', 'cho-phep:go']);
   });
 });
+
+describe('M1a bước 5: SOC Quyền lợi', () => {
+  it('tra cứu theo thiết bị / mã đơn, chi tiết không lộ token, gỡ thiết bị, thu hồi four-eyes + audit', async () => {
+    await themQt('vw30@thu.vn', 'viewer');
+    await themQt('an30@thu.vn', 'analyst');
+    await themQt('rs30@thu.vn', 'responder');
+    await themQt('sec30@thu.vn', 'security_admin');
+    const vw = await vaoSoc('vw30@thu.vn');
+    const an = await vaoSoc('an30@thu.vn');
+    const rs = await vaoSoc('rs30@thu.vn');
+    const s = await vaoSoc('sec30@thu.vn');
+    const bayGio = Date.now();
+    const ql = '01JTB0000000000000000000Q1';
+    const tb2 = '01JTB0000000000000000000Q2';
+    await db.prepare("INSERT INTO devices (id, installation_id_hash, platform, first_seen, last_seen) VALUES (?, 'h-q2', 'android', 1, ?)").bind(tb2, bayGio).run();
+    await db
+      .prepare(
+        `INSERT INTO quyen_loi (id, source, package_name, product_id, state, expires_at, token_hash, token_enc, order_id, account_hash, auto_renew, acknowledged, test_purchase, created_at, updated_at)
+         VALUES (?, 'play_sub', 'com.tsudev.laban', 'pro_nam', 'active', ?, ?, 'bi-mat-ma-hoa', 'GPA.1111-2222-3333-44444', ?, 1, 1, 0, ?, ?)`,
+      )
+      .bind(ql, bayGio + 86_400_000, 'b'.repeat(64), 'c'.repeat(64), bayGio, bayGio)
+      .run();
+    for (const tb of ['01JTB0000000000000000000AA', tb2]) {
+      await db.prepare('INSERT INTO quyen_loi_devices (entitlement_id, device_id, linked_at, seen_at) VALUES (?, ?, ?, ?)').bind(ql, tb, bayGio, bayGio).run();
+    }
+
+    // viewer: chỉ số liệu (không PII); doanh thu AE chưa cấu hình -> null + lý do, không lỗi cả trang.
+    expect((await goi('/quyen-loi', { jwt: vw.jwt, cookie: vw.cookie })).status).toBe(403);
+    const sl = await goi('/quyen-loi/so-lieu?ngay=30', { jwt: vw.jwt, cookie: vw.cookie });
+    expect(sl.status).toBe(200);
+    expect(sl.json).toMatchObject({ ngay: 30, doanhThu: null, doanhThuLyDo: 'thieu-cau-hinh', toiDa: 5 });
+    expect(sl.json.theoSanPham).toEqual([{ source: 'play_sub', product_id: 'pro_nam', tong: 1, hieu_luc: 1, thu_hoi: 0, mua_thu: 0 }]);
+    expect((await goi('/quyen-loi/so-lieu?ngay=31', { jwt: vw.jwt, cookie: vw.cookie })).status).toBe(400);
+
+    const theoTb = await goi('/quyen-loi?q=01JTB0000000000000000000AA', { jwt: an.jwt, cookie: an.cookie });
+    expect(theoTb.status).toBe(200);
+    const ds = theoTb.json.ds as Record<string, unknown>[];
+    expect(ds.map((x) => x.id)).toEqual([ql]);
+    expect(ds[0]).toMatchObject({ so_thiet_bi: 2, account_hash: 'cccccccccccc…' });
+    expect(ds[0]).not.toHaveProperty('token_enc');
+    expect(((await goi('/quyen-loi?q=GPA.1111-2222-3333-44444', { jwt: an.jwt, cookie: an.cookie })).json.ds as unknown[]).length).toBe(1);
+    expect((await goi(`/quyen-loi?q=${encodeURIComponent("' OR 1=1")}`, { jwt: an.jwt, cookie: an.cookie })).status).toBe(400);
+    const ct = await goi(`/quyen-loi/chi-tiet?id=${ql}`, { jwt: an.jwt, cookie: an.cookie });
+    expect(ct.status).toBe(200);
+    expect(JSON.stringify(ct.json)).not.toContain('bi-mat-ma-hoa');
+    expect((ct.json.thietBi as unknown[]).length).toBe(2);
+
+    // Gỡ thiết bị: analyst không được; responder được (passkey + audit).
+    const go = { id: ql, thietBi: tb2, lyDo: 'Người dùng đổi điện thoại mới' };
+    expect((await goi('/quyen-loi/go-thiet-bi', { jwt: an.jwt, cookie: an.cookie, body: go })).status).toBe(403);
+    expect((await goi('/quyen-loi/go-thiet-bi', { jwt: rs.jwt, cookie: rs.cookie, body: go })).status).toBe(200);
+    expect((await goi('/quyen-loi/go-thiet-bi', { jwt: rs.jwt, cookie: rs.cookie, body: go })).status).toBe(404);
+
+    // Thu hồi four-eyes: responder đề xuất, không tự duyệt (cũng không có quyền duyệt), security_admin duyệt -> revoked.
+    const dx = await goi('/quyen-loi/thu-hoi', { jwt: rs.jwt, cookie: rs.cookie, body: { id: ql, lyDo: 'Gian lận chargeback xác nhận' } });
+    expect(dx.status).toBe(202);
+    expect((await goi('/quyen-loi/thu-hoi', { jwt: rs.jwt, cookie: rs.cookie, body: { id: ql, lyDo: 'Gian lận chargeback lần hai' } })).json.code).toBe('dang-co-yeu-cau');
+    const yc = dx.json.yeuCau as string;
+    expect((await goi('/quyen-loi/yeu-cau/quyet', { jwt: rs.jwt, cookie: rs.cookie, body: { id: yc, dongY: true } })).status).toBe(403);
+    expect(((await goi('/quyen-loi/yeu-cau', { jwt: an.jwt, cookie: an.cookie })).json.ds as unknown[]).length).toBe(1);
+    const duyet = await goi('/quyen-loi/yeu-cau/quyet', { jwt: s.jwt, cookie: s.cookie, body: { id: yc, dongY: true, ghiChu: 'Đã đối chiếu' } });
+    expect(duyet.status).toBe(200);
+    expect(duyet.json.ketQua).toBe('da-ap');
+    expect((await goi('/quyen-loi/yeu-cau/quyet', { jwt: s.jwt, cookie: s.cookie, body: { id: yc, dongY: true } })).status).toBe(409);
+    expect((await db.prepare('SELECT state, reason FROM quyen_loi WHERE id = ?').bind(ql).first())).toEqual({ state: 'revoked', reason: 'soc' });
+    expect((await goi('/quyen-loi/thu-hoi', { jwt: rs.jwt, cookie: rs.cookie, body: { id: ql, lyDo: 'Gian lận chargeback lần ba' } })).json.code).toBe('da-thu-hoi');
+    const sk = (await goi(`/quyen-loi/chi-tiet?id=${ql}`, { jwt: an.jwt, cookie: an.cookie })).json.suKien as { kind: string }[];
+    expect(sk.map((x) => x.kind)).toEqual(['thu-hoi-soc', 'soc-go-thiet-bi']);
+    const au = await db.prepare("SELECT action FROM audit_logs WHERE action LIKE 'quyen-loi:%' ORDER BY rowid").all();
+    expect(au.results.map((x) => (x as { action: string }).action)).toEqual(['quyen-loi:go-thiet-bi', 'quyen-loi:de-xuat-thu-hoi', 'quyen-loi:duyet-thu-hoi']);
+  });
+});
