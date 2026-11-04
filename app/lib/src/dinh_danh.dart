@@ -154,6 +154,9 @@ final class ChayDinhDanh {
     switch (kq) {
       case Ok():
         _lan = 0;
+        // Mức tin cậy kẹt `unverified` khi Play Integrity lỗi lúc đăng ký ->
+        // xác minh lại theo lịch (lỗi ở lượt này không ảnh hưởng phiên).
+        unawaited(_dv.xacMinhLaiNeuCan());
       case Err(:final failure):
         final cho = LichThuLai.cho(_lan, failure.code);
         if (cho == null) {

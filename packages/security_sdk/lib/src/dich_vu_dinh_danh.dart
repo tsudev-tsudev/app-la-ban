@@ -123,9 +123,33 @@ final class DichVuDinhDanh {
     }
     final p = PhienThietBi.tuJson(r.duLieu);
     if (p == null) return const Err(Failure('dinhDanh.phanHoi'));
-    await _luu(p);
+    // Đăng ký đã kèm Play Integrity -> tính lịch xác minh lại từ lúc này.
+    await tep.ghi({
+      ...tep.duLieu,
+      'phien': p.toJson(),
+      _khoaXacMinh: _dongHo(),
+    });
     return Ok(p);
   });
+
+  static const _khoaXacMinh = 'xacMinhLuc';
+
+  /// Xác minh lại khi đến lịch ([canXacMinhLai]); null = chưa đến lịch / chưa
+  /// có phiên. Ghi mốc TRƯỚC khi gọi: lỗi mạng / Google không thành vòng lặp
+  /// gọi dồn (Worker cũng giới hạn 10 lượt / giờ / thiết bị).
+  Future<Result<MucTin>?> xacMinhLaiNeuCan() async {
+    final p = phien;
+    if (p == null) return null;
+    final luc = tep.duLieu[_khoaXacMinh];
+    final bayGio = _dongHo();
+    if (!canXacMinhLai(p.mucTin, luc is int ? luc : null, bayGio)) return null;
+    try {
+      await tep.ghi({...tep.duLieu, _khoaXacMinh: bayGio});
+    } on Object {
+      return const Err(Failure('dinhDanh.luu'));
+    }
+    return await xacMinhLai();
+  }
 
   /// Xác minh lại (định kỳ / trước thao tác nhạy cảm): cập nhật mức tin cậy.
   Future<Result<MucTin>> xacMinhLai() => _boc(() async {
