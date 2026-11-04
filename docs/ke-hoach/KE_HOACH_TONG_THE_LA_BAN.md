@@ -75,11 +75,11 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 23 | R2 | Sẵn sàng store | A8, S4 | ⛔ R2a ✅ 31/10 (AAB + Data Safety + listing + ảnh store, Q46) · R2b: tài khoản Play cá nhân đã tạo 03/11, chờ Google duyệt danh tính (runbook phat-hanh-play mục 1b) |
 | 24 | R3 | QA tổng + kiểm thử bảo mật (chia R3a / R3b) | R2, S9, S10 | ✅ 03/11 (0 Critical / High mở) · R3a ✅ 02/11 (gitleaks / osv-scanner / Semgrep vào cổng, ZAP + MobSF + SSL Labs A+, 0 High, minSdk 26, Q50) · R3b ✅ 02/11 (E2E + nâng cấp beta.7->13 + 5 kịch bản SEC-TEST trên M32, sửa 2 lỗi, Q51) · R3c ✅ 03/11 (#48-#50, Q52: DO -> D1 nonce + giới hạn; staging p95 < 300 ms; D1 prod chuyển ICN -> SIN (Q53): prod p50 8-49 ms, p95 < 250 ms mẫu nhỏ - đo lại 24 h) |
 | 25 | R4 | Phát hành v1.0.0 + OTA | R3 | ⬜ (tài khoản cá nhân: cần thử kín >= 12 người x 14 ngày trước production) |
-| 26 | M1 | Gói Pro trong app + quảng cáo (chia M1a quyền lợi + Play Billing / M1b quảng cáo), v1.1.0 sau Release Gate | R4 | 🟨 M1a bước 3 (máy chủ) ✅ 03/11 (b145e92, PR #66) · còn bước 1 (người dùng tạo sản phẩm), 2 (app), 4 phần SOC, 5 |
+| 26 | M1 | Gói Pro trong app + quảng cáo (chia M1a quyền lợi + Play Billing / M1b quảng cáo), v1.1.0 sau Release Gate | R4 | 🟨 M1a bước 3 (máy chủ) ✅ 03/11 (b145e92, PR #66) · bước 2 (app) ✅ 04/11 (`packages/quyen_loi` + Paywall, Q61; prod chưa mở bán) · còn bước 1 (người dùng tạo sản phẩm), 4 phần SOC, 5, cổng máy thật license tester |
 | 27 | R0 | Bản APK thử: khoá ký, script phát hành GitHub Release + R2, trang tải | A5 | ✅ 28/10 |
 | 28 | I1 | iOS (đầu 2027): build, App Attest, Privacy Manifest, TestFlight, App Store | R4, máy Mac | ⬜ |
 | 29 | M2 | App song song "La bàn Pro" trả phí một lần, không quảng cáo (Q56) | R2b, M1a bước 3 (bảng `quyen_loi`) | ⬜ chạy CÙNG R4 (người dùng chốt 03/11: dùng chung cửa sổ thử kín 14 ngày; M1a bước 3 phần máy chủ làm trước) · logo Pro ✅ 03/11 |
-| 30 | A9 | Thiết bị thiếu phần cứng + làm mới giao diện web / nút app + chống nhấp nháy (chia A9a / A9b / A9c) - PHIÊN SONG SONG `../app-la-ban-a9` | A8 | ⬜ giao `agent-laban-a9` 03/11 |
+| 30 | A9 | Thiết bị thiếu phần cứng + làm mới giao diện web / nút app + chống nhấp nháy (chia A9a / A9b / A9c) - PHIÊN SONG SONG `../app-la-ban-a9` | A8 | ✅ 04/11 · A9c #70 (3f7c3a6) · A9a #71 (b970562) · A9b #72 (e5bd627) · web đã deploy · APK gộp + thử M32 staging ở phiên chính |
 | 31 | S11 | Chặn chế độ Nhà phát triển (app) + khiên web mạnh (Q57, Q58) | S4, S9, M1a bước 3 (cùng Worker) | 🟨 03/11 (adf3102 PR #67, v0.1.0-beta.15 PR #68): Worker staging + prod, landing + admin, APK đã phát hành · ⛔ chờ nghiệm thu máy thật M32 (bản prod bật ADB -> màn chặn; staging không chặn) |
 
 Có thể giao agent thứ hai song song: S1 với A2-A3 · A5 với A4 · S5 với S4 · A6 với S6-S7 · R1 với A7 · A8 với S8-S9.
@@ -784,6 +784,15 @@ Console · trước M1b tài khoản AdMob (RevenueCat KHÔNG còn cần - Q55).
   hạn; `/v1/status.quyenLoi {pro, khongQuangCao, hetHan}`; app Pro LICENSED + PLAY_RECOGNIZED -> `pro_app`, UNLICENSED ->
   thu hồi + `PRO_UNLICENSED` (0 điểm). 29 test mới. Staging + prod đã deploy; `RTDN_EMAIL` chờ người dùng tạo Pub/Sub
   (runbook phat-hanh-play mục 6) - tới lúc đó route RTDN trả 503.
+- Kết quả M1a bước 2 (04/11, nhánh `phase/m1a-app`): gói `packages/quyen_loi` - domain thuần `tinhQuyenLoi` (ân hạn offline
+  3 ngày, lùi đồng hồ không kéo dài hạn, vĩnh viễn giữ tới khi máy chủ báo khác), `chonUuDai` (dùng thử > base plan), máy
+  trạng thái Paywall, `loiTuPhanHoi` (mã Worker -> chuỗi); `CuaHangPlay` bọc `in_app_purchase` 3.3 (giá / kỳ / dùng thử từ
+  Play, `obfuscatedAccountId` = SHA-256 định danh cài đặt); `DichVuQuyenLoi` chỉ `completePurchase` sau khi Worker cấp quyền
+  lợi, giao dịch dở gửi lại khi mở app, Khôi phục = `queryPastPurchases`; `/v1/status.quyenLoi` -> lưu `quyen_loi.json`.
+  Paywall vi / en (giá Play, điều khoản tự gia hạn + dùng thử, Khôi phục, Quản lý gói -> trang Gói thuê bao của Play qua
+  kênh `moTrang`), mục "La bàn Pro" trong Cài đặt. Mở bán (Q61): dev / staging mở, prod đóng (`moBanProTrongProd`) tới R4,
+  kill-switch `mua-pro`. Data Safety + chính sách: "Purchase history". 40 test gói + 8 test app + golden `man_pro`.
+  Chưa thử máy thật: cần sản phẩm Play (bước 1) + license tester + bản cài từ Play (internal testing).
 - Cổng M1a: mua / gia hạn / huỷ / hoàn tiền / khôi phục trên máy thật bằng tài khoản thử license tester đúng trạng thái ở
   app + D1 + SOC; RTDN tới Worker < 1 phút; test thuần + tích hợp Worker (token giả, JWT RTDN sai -> 401).
 - Cổng M1b: chênh FPS có / không quảng cáo < 2 %; không che la bàn; người có `khongQuangCao` không có request nào tới

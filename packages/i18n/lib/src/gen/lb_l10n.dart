@@ -2084,6 +2084,252 @@ abstract class LbL10n {
   /// **'Máy chủ vẫn ghi nhận chế độ Nhà phát triển - hãy kết nối mạng rồi bấm Kiểm tra lại.'**
   String get devModeServerOnly;
 
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'La bàn Pro'**
+  String get m1ProTitle;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Gỡ quảng cáo và ủng hộ La bàn tiếp tục phát triển.'**
+  String get m1ProTagline;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Không quảng cáo trên mọi màn hình'**
+  String get m1BenefitNoAds;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Tính năng đang miễn phí vẫn miễn phí: la bàn, toạ độ, điểm mốc, chia sẻ, bản đồ offline, Camera AR'**
+  String get m1BenefitFree;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Dùng ngay các tính năng Pro mới khi ra mắt'**
+  String get m1BenefitNew;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Ủng hộ một nhà phát triển độc lập'**
+  String get m1BenefitSupport;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Theo năm'**
+  String get m1PlanYear;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Theo tháng'**
+  String get m1PlanMonth;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Vĩnh viễn'**
+  String get m1PlanLifetime;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'{price} / năm'**
+  String m1PricePerYear(String price);
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'{price} / tháng'**
+  String m1PricePerMonth(String price);
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'{price} - trả một lần'**
+  String m1PriceOnce(String price);
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'{days} ngày dùng thử miễn phí'**
+  String m1TrialBadge(int days);
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Tiếp tục'**
+  String get m1Continue;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Bắt đầu dùng thử miễn phí'**
+  String get m1StartTrial;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Khôi phục giao dịch'**
+  String get m1Restore;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Quản lý gói trên Google Play'**
+  String get m1Manage;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Không mở được Google Play trên thiết bị này.'**
+  String get m1ManageFailed;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Gói tự gia hạn với giá {price} cho tới khi bạn huỷ. Huỷ bất kỳ lúc nào trong Google Play > Thanh toán và gói thuê bao, chậm nhất 24 giờ trước khi kỳ hiện tại kết thúc để không bị tính phí kỳ sau. Tiền được thanh toán qua tài khoản Google Play khi bạn xác nhận mua.'**
+  String m1TermsSub(String price);
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Sau {days} ngày dùng thử, bạn sẽ bị tính {price} trừ khi huỷ trước khi hết thời gian dùng thử.'**
+  String m1TermsTrial(int days, String price);
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Trả một lần, không tự gia hạn. Dùng trên mọi thiết bị đăng nhập cùng tài khoản Google (nút Khôi phục giao dịch).'**
+  String get m1TermsLifetime;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải các gói từ Google Play…'**
+  String get m1Loading;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Google Play chưa sẵn sàng trên thiết bị này hoặc các gói chưa mở bán. Hãy thử lại sau.'**
+  String get m1Unavailable;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Thử lại'**
+  String get m1Retry;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Google Play đang chờ bạn hoàn tất thanh toán. La bàn Pro sẽ bật khi thanh toán xong.'**
+  String get m1Pending;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang xác nhận giao dịch…'**
+  String get m1Verifying;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Cảm ơn bạn! La bàn Pro đã được bật.'**
+  String get m1Success;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn đang dùng La bàn Pro'**
+  String get m1Active;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Hiệu lực đến {date}'**
+  String m1ActiveUntil(String date);
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Gói vĩnh viễn'**
+  String get m1ActiveLifetime;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang xác nhận gia hạn với Google Play - Pro vẫn hoạt động trong lúc chờ.'**
+  String get m1Grace;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Không kết nối được máy chủ. Giao dịch đã được giữ lại và sẽ tự xác nhận khi có mạng.'**
+  String get m1ErrNetwork;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Google Play không mở được giao dịch. Hãy thử lại.'**
+  String get m1ErrStore;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Không xác minh được giao dịch với Google Play. Nếu đã bị trừ tiền, Google sẽ tự hoàn tiền trong 3 ngày.'**
+  String get m1ErrToken;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Giao dịch này đang được dùng trên quá nhiều thiết bị. Nếu đây là nhầm lẫn, hãy gửi khiếu nại kèm mã thiết bị.'**
+  String get m1ErrShared;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Bản cài này không đến từ Google Play nên chưa nhận được Pro. Hãy cài La bàn từ Google Play rồi bấm Khôi phục giao dịch.'**
+  String get m1ErrNotPlay;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Máy chủ chưa xác nhận được giao dịch. Hãy thử lại sau ít phút.'**
+  String get m1ErrServer;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Không tìm thấy giao dịch nào của tài khoản Google đang dùng trên Play.'**
+  String get m1ErrNothing;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Đóng'**
+  String get m1Dismiss;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Gỡ quảng cáo, ủng hộ phát triển'**
+  String get m1SettingsSubFree;
+
+  /// M1a
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang dùng'**
+  String get m1SettingsSubPro;
+
   /// A9c: ghi chú cố định khi từ trường bình thường (giữ chỗ cho cảnh báo)
   ///
   /// In vi, this message translates to:

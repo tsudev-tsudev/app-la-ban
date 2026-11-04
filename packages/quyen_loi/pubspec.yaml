@@ -1,0 +1,22 @@
+name: quyen_loi
+description: "Quyền lợi Pro + Google Play Billing (M1a, QUYET_DINH Q55) - server quyết, app chỉ hiển thị."
+publish_to: none
+resolution: workspace
+environment:
+  sdk: ^3.13.0
+dependencies:
+  core:
+  crypto: ^3.0.6
+  design_system:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^3.4.3
+  i18n:
+  in_app_purchase: ^3.3.1
+  in_app_purchase_android: ^0.5.5
+  in_app_purchase_platform_interface: ^1.4.1
+  meta: any
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  test_kit:

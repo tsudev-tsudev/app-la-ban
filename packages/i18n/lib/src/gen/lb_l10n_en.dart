@@ -1267,6 +1267,155 @@ class LbL10nEn extends LbL10n {
       'The server still sees developer mode - connect to the internet, then tap Check again.';
 
   @override
+  String get m1ProTitle => 'Compass Pro';
+
+  @override
+  String get m1ProTagline => 'Remove ads and help Compass keep growing.';
+
+  @override
+  String get m1BenefitNoAds => 'No ads on any screen';
+
+  @override
+  String get m1BenefitFree =>
+      'Free features stay free: compass, coordinates, waypoints, sharing, offline maps, AR camera';
+
+  @override
+  String get m1BenefitNew => 'Get new Pro features as soon as they launch';
+
+  @override
+  String get m1BenefitSupport => 'Support an independent developer';
+
+  @override
+  String get m1PlanYear => 'Yearly';
+
+  @override
+  String get m1PlanMonth => 'Monthly';
+
+  @override
+  String get m1PlanLifetime => 'Lifetime';
+
+  @override
+  String m1PricePerYear(String price) {
+    return '$price / year';
+  }
+
+  @override
+  String m1PricePerMonth(String price) {
+    return '$price / month';
+  }
+
+  @override
+  String m1PriceOnce(String price) {
+    return '$price - one-time payment';
+  }
+
+  @override
+  String m1TrialBadge(int days) {
+    return '$days-day free trial';
+  }
+
+  @override
+  String get m1Continue => 'Continue';
+
+  @override
+  String get m1StartTrial => 'Start free trial';
+
+  @override
+  String get m1Restore => 'Restore purchases';
+
+  @override
+  String get m1Manage => 'Manage subscription on Google Play';
+
+  @override
+  String get m1ManageFailed => 'Couldn\'t open Google Play on this device.';
+
+  @override
+  String m1TermsSub(String price) {
+    return 'The subscription renews automatically at $price until you cancel. Cancel anytime in Google Play > Payments & subscriptions, at least 24 hours before the current period ends to avoid being charged for the next one. Payment is charged to your Google Play account when you confirm the purchase.';
+  }
+
+  @override
+  String m1TermsTrial(int days, String price) {
+    return 'After the $days-day trial you will be charged $price unless you cancel before the trial ends.';
+  }
+
+  @override
+  String get m1TermsLifetime =>
+      'One-time payment, no auto-renewal. Use it on any device signed in to the same Google account (Restore purchases).';
+
+  @override
+  String get m1Loading => 'Loading plans from Google Play…';
+
+  @override
+  String get m1Unavailable =>
+      'Google Play isn\'t available on this device or the plans aren\'t on sale yet. Please try again later.';
+
+  @override
+  String get m1Retry => 'Try again';
+
+  @override
+  String get m1Pending =>
+      'Google Play is waiting for you to complete payment. Compass Pro turns on once payment goes through.';
+
+  @override
+  String get m1Verifying => 'Confirming your purchase…';
+
+  @override
+  String get m1Success => 'Thank you! Compass Pro is now on.';
+
+  @override
+  String get m1Active => 'You\'re using Compass Pro';
+
+  @override
+  String m1ActiveUntil(String date) {
+    return 'Valid until $date';
+  }
+
+  @override
+  String get m1ActiveLifetime => 'Lifetime plan';
+
+  @override
+  String get m1Grace =>
+      'Confirming your renewal with Google Play - Pro stays on meanwhile.';
+
+  @override
+  String get m1ErrNetwork =>
+      'Couldn\'t reach the server. Your purchase is kept and will be confirmed automatically when you\'re online.';
+
+  @override
+  String get m1ErrStore =>
+      'Google Play couldn\'t start the purchase. Please try again.';
+
+  @override
+  String get m1ErrToken =>
+      'The purchase couldn\'t be verified with Google Play. If you were charged, Google refunds it automatically within 3 days.';
+
+  @override
+  String get m1ErrShared =>
+      'This purchase is in use on too many devices. If this is a mistake, send an appeal with your device code.';
+
+  @override
+  String get m1ErrNotPlay =>
+      'This copy wasn\'t installed from Google Play, so it can\'t receive Pro. Install Compass from Google Play, then tap Restore purchases.';
+
+  @override
+  String get m1ErrServer =>
+      'The server couldn\'t confirm the purchase yet. Please try again in a few minutes.';
+
+  @override
+  String get m1ErrNothing =>
+      'No purchases found for the Google account signed in to Play.';
+
+  @override
+  String get m1Dismiss => 'Dismiss';
+
+  @override
+  String get m1SettingsSubFree => 'Remove ads, support development';
+
+  @override
+  String get m1SettingsSubPro => 'Active';
+
+  @override
   String get a9FieldNormal => 'Field normal - no magnetic interference nearby.';
 
   @override
@@ -2673,6 +2822,160 @@ class LbL10nEnXa extends LbL10nEn {
   @override
   String get devModeServerOnly =>
       '[Ťhẽ šẽřvẽř šťỉłł šẽẽš đẽvẽłởpẽř mởđẽ - çởññẽçť ťở ťhẽ ỉñťẽřñẽť, ťhẽñ ťảp Çhẽçk ảğảỉñ. ··································]';
+
+  @override
+  String get m1ProTitle => '[Çởmpảšš Přở ·····]';
+
+  @override
+  String get m1ProTagline =>
+      '[Řẽmởvẽ ảđš ảñđ hẽłp Çởmpảšš kẽẽp ğřởŵỉñğ. ·················]';
+
+  @override
+  String get m1BenefitNoAds => '[Ñở ảđš ởñ ảñỹ šçřẽẽñ ········]';
+
+  @override
+  String get m1BenefitFree =>
+      '[Fřẽẽ fẽảťữřẽš šťảỹ fřẽẽ: çởmpảšš, çởởřđỉñảťẽš, ŵảỹpởỉñťš, šhảřỉñğ, ởffłỉñẽ mảpš, ẢŘ çảmẽřả ····································]';
+
+  @override
+  String get m1BenefitNew =>
+      '[Ğẽť ñẽŵ Přở fẽảťữřẽš ảš šởởñ ảš ťhẽỹ łảữñçh ··················]';
+
+  @override
+  String get m1BenefitSupport =>
+      '[Šữppởřť ảñ ỉñđẽpẽñđẽñť đẽvẽłởpẽř ·············]';
+
+  @override
+  String get m1PlanYear => '[Ỹẽảřłỹ ···]';
+
+  @override
+  String get m1PlanMonth => '[Mởñťhłỹ ···]';
+
+  @override
+  String get m1PlanLifetime => '[Łỉfẽťỉmẽ ····]';
+
+  @override
+  String m1PricePerYear(String price) {
+    return '[$price / ỹẽảř ···]';
+  }
+
+  @override
+  String m1PricePerMonth(String price) {
+    return '[$price / mởñťh ····]';
+  }
+
+  @override
+  String m1PriceOnce(String price) {
+    return '[$price - ởñẽ-ťỉmẽ pảỹmẽñť ········]';
+  }
+
+  @override
+  String m1TrialBadge(int days) {
+    return '[$days-đảỹ fřẽẽ ťřỉảł ······]';
+  }
+
+  @override
+  String get m1Continue => '[Çởñťỉñữẽ ····]';
+
+  @override
+  String get m1StartTrial => '[Šťảřť fřẽẽ ťřỉảł ·······]';
+
+  @override
+  String get m1Restore => '[Řẽšťởřẽ pữřçhảšẽš ·······]';
+
+  @override
+  String get m1Manage => '[Mảñảğẽ šữbšçřỉpťỉởñ ởñ Ğởởğłẽ Płảỹ ··············]';
+
+  @override
+  String get m1ManageFailed =>
+      '[Çởữłđñ\'ť ởpẽñ Ğởởğłẽ Płảỹ ởñ ťhỉš đẽvỉçẽ. ·················]';
+
+  @override
+  String m1TermsSub(String price) {
+    return '[Ťhẽ šữbšçřỉpťỉởñ řẽñẽŵš ảữťởmảťỉçảłłỹ ảť $price ữñťỉł ỹởữ çảñçẽł. Çảñçẽł ảñỹťỉmẽ ỉñ Ğởởğłẽ Płảỹ > Pảỹmẽñťš & šữbšçřỉpťỉởñš, ảť łẽảšť 24 hởữřš bẽfởřẽ ťhẽ çữřřẽñť pẽřỉởđ ẽñđš ťở ảvởỉđ bẽỉñğ çhảřğẽđ fởř ťhẽ ñẽxť ởñẽ. Pảỹmẽñť ỉš çhảřğẽđ ťở ỹởữř Ğởởğłẽ Płảỹ ảççởữñť ŵhẽñ ỹởữ çởñfỉřm ťhẽ pữřçhảšẽ. ··················································································································]';
+  }
+
+  @override
+  String m1TermsTrial(int days, String price) {
+    return '[Ảfťẽř ťhẽ $days-đảỹ ťřỉảł ỹởữ ŵỉłł bẽ çhảřğẽđ $price ữñłẽšš ỹởữ çảñçẽł bẽfởřẽ ťhẽ ťřỉảł ẽñđš. ·································]';
+  }
+
+  @override
+  String get m1TermsLifetime =>
+      '[Ởñẽ-ťỉmẽ pảỹmẽñť, ñở ảữťở-řẽñẽŵảł. Ữšẽ ỉť ởñ ảñỹ đẽvỉçẽ šỉğñẽđ ỉñ ťở ťhẽ šảmẽ Ğởởğłẽ ảççởữñť (Řẽšťởřẽ pữřçhảšẽš). ··············································]';
+
+  @override
+  String get m1Loading => '[Łởảđỉñğ płảñš fřởm Ğởởğłẽ Płảỹ… ·············]';
+
+  @override
+  String get m1Unavailable =>
+      '[Ğởởğłẽ Płảỹ ỉšñ\'ť ảvảỉłảbłẽ ởñ ťhỉš đẽvỉçẽ ởř ťhẽ płảñš ảřẽñ\'ť ởñ šảłẽ ỹẽť. Płẽảšẽ ťřỹ ảğảỉñ łảťẽř. ········································]';
+
+  @override
+  String get m1Retry => '[Ťřỹ ảğảỉñ ····]';
+
+  @override
+  String get m1Pending =>
+      '[Ğởởğłẽ Płảỹ ỉš ŵảỉťỉñğ fởř ỹởữ ťở çởmpłẽťẽ pảỹmẽñť. Çởmpảšš Přở ťữřñš ởñ ởñçẽ pảỹmẽñť ğởẽš ťhřởữğh. ········································]';
+
+  @override
+  String get m1Verifying => '[Çởñfỉřmỉñğ ỹởữř pữřçhảšẽ… ··········]';
+
+  @override
+  String get m1Success => '[Ťhảñk ỹởữ! Çởmpảšš Přở ỉš ñởŵ ởñ. ··············]';
+
+  @override
+  String get m1Active => '[Ỹởữ\'řẽ ữšỉñğ Çởmpảšš Přở ··········]';
+
+  @override
+  String m1ActiveUntil(String date) {
+    return '[Vảłỉđ ữñťỉł $date ·····]';
+  }
+
+  @override
+  String get m1ActiveLifetime => '[Łỉfẽťỉmẽ płảñ ······]';
+
+  @override
+  String get m1Grace =>
+      '[Çởñfỉřmỉñğ ỹởữř řẽñẽŵảł ŵỉťh Ğởởğłẽ Płảỹ - Přở šťảỹš ởñ mẽảñŵhỉłẽ. ···························]';
+
+  @override
+  String get m1ErrNetwork =>
+      '[Çởữłđñ\'ť řẽảçh ťhẽ šẽřvẽř. Ỹởữř pữřçhảšẽ ỉš kẽpť ảñđ ŵỉłł bẽ çởñfỉřmẽđ ảữťởmảťỉçảłłỹ ŵhẽñ ỹởữ\'řẽ ởñłỉñẽ. ··········································]';
+
+  @override
+  String get m1ErrStore =>
+      '[Ğởởğłẽ Płảỹ çởữłđñ\'ť šťảřť ťhẽ pữřçhảšẽ. Płẽảšẽ ťřỹ ảğảỉñ. ························]';
+
+  @override
+  String get m1ErrToken =>
+      '[Ťhẽ pữřçhảšẽ çởữłđñ\'ť bẽ vẽřỉfỉẽđ ŵỉťh Ğởởğłẽ Płảỹ. Ỉf ỹởữ ŵẽřẽ çhảřğẽđ, Ğởởğłẽ řẽfữñđš ỉť ảữťởmảťỉçảłłỹ ŵỉťhỉñ 3 đảỹš. ················································]';
+
+  @override
+  String get m1ErrShared =>
+      '[Ťhỉš pữřçhảšẽ ỉš ỉñ ữšẽ ởñ ťởở mảñỹ đẽvỉçẽš. Ỉf ťhỉš ỉš ả mỉšťảkẽ, šẽñđ ảñ ảppẽảł ŵỉťh ỹởữř đẽvỉçẽ çởđẽ. ··········································]';
+
+  @override
+  String get m1ErrNotPlay =>
+      '[Ťhỉš çởpỹ ŵảšñ\'ť ỉñšťảłłẽđ fřởm Ğởởğłẽ Płảỹ, šở ỉť çảñ\'ť řẽçẽỉvẽ Přở. Ỉñšťảłł Çởmpảšš fřởm Ğởởğłẽ Płảỹ, ťhẽñ ťảp Řẽšťởřẽ pữřçhảšẽš. ·····················································]';
+
+  @override
+  String get m1ErrServer =>
+      '[Ťhẽ šẽřvẽř çởữłđñ\'ť çởñfỉřm ťhẽ pữřçhảšẽ ỹẽť. Płẽảšẽ ťřỹ ảğảỉñ ỉñ ả fẽŵ mỉñữťẽš. ································]';
+
+  @override
+  String get m1ErrNothing =>
+      '[Ñở pữřçhảšẽš fởữñđ fởř ťhẽ Ğởởğłẽ ảççởữñť šỉğñẽđ ỉñ ťở Płảỹ. ························]';
+
+  @override
+  String get m1Dismiss => '[Đỉšmỉšš ···]';
+
+  @override
+  String get m1SettingsSubFree =>
+      '[Řẽmởvẽ ảđš, šữppởřť đẽvẽłởpmẽñť ·············]';
+
+  @override
+  String get m1SettingsSubPro => '[Ảçťỉvẽ ···]';
 
   @override
   String get a9FieldNormal =>

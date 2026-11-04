@@ -126,6 +126,7 @@ final class TinhTrangThietBi {
     this.ref,
     this.banMoi,
     this.cheDoPhatTrien = false,
+    this.quyenLoi,
   });
 
   /// Server từ chối phiên vì thiết bị bị cấm: trạng thái `banned` + mã REF
@@ -144,6 +145,10 @@ final class TinhTrangThietBi {
   /// S11 (Q57): Worker đang chặn vì Developer options / ADB bật.
   final bool cheDoPhatTrien;
 
+  /// M1a: phần `quyenLoi` nguyên văn (gói `quyen_loi` đọc - SDK bảo mật
+  /// không phụ thuộc gói tính năng).
+  final Map<String, Object?>? quyenLoi;
+
   /// Bản sao với [cheDoPhatTrien] mới (app vừa thấy người dùng tắt - không
   /// giữ màn chặn theo phản hồi cũ trong lúc chờ `/v1/status` mới).
   TinhTrangThietBi voiPhatTrien({required bool chan}) => TinhTrangThietBi(
@@ -152,6 +157,7 @@ final class TinhTrangThietBi {
     ref: ref,
     banMoi: banMoi,
     cheDoPhatTrien: chan,
+    quyenLoi: quyenLoi,
   );
 
   /// Thân JSON -> tình trạng; sai dạng -> null.
@@ -159,6 +165,7 @@ final class TinhTrangThietBi {
     if (j == null || j['trangThai'] is! String) return null;
     final b = j['banMoi'];
     final ref = j['ref'];
+    final ql = j['quyenLoi'];
     return TinhTrangThietBi(
       trangThai: TrangThaiThietBi.tuChuoi(j['trangThai']),
       mucTin: MucTin.tuChuoi(j['mucTin']),
@@ -173,6 +180,7 @@ final class TinhTrangThietBi {
             )
           : null,
       cheDoPhatTrien: j['cheDoPhatTrien'] == true,
+      quyenLoi: ql is Map<String, Object?> ? ql : null,
     );
   }
 }

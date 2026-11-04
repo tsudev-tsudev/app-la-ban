@@ -7,6 +7,7 @@ import 'package:la_ban/src/ar.dart';
 import 'package:la_ban/src/bang_an_toan.dart';
 import 'package:la_ban/src/luu_tru.dart';
 import 'package:la_ban/src/phien_ban.dart';
+import 'package:la_ban/src/pro.dart';
 import 'package:location_feature/location_feature.dart';
 import 'package:map_feature/map_feature.dart';
 import 'package:settings_feature/settings_feature.dart';
@@ -48,7 +49,7 @@ final dsTabProvider = Provider<List<TabApp>>((ref) {
       duongDan: '/cai-dat',
       icon: LbIcons.caiDat,
       nhan: (l) => l.tabSettings,
-      man: const ManCaiDat(phienBan: phienBanApp),
+      man: const ManCaiDat(phienBan: phienBanApp, mucPro: MucProApp()),
     ),
   ];
 });

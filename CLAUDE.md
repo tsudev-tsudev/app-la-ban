@@ -24,7 +24,7 @@ project hay cổng dev với các repo khác trên máy (`ubnd`, `ban-do-3d`, `t
 ```
 app/                    Flutter app (entry, DI, routing, flavors dev/staging/prod)
 packages/               core · design_system · sensors · compass_feature · location_feature · waypoint_feature · map_feature
-                        ar_feature · settings_feature · security_sdk · network · storage · i18n · ads_iap
+                        ar_feature · settings_feature · security_sdk · network · storage · i18n · ads_iap · quyen_loi (Pro + Play Billing)
 native/                 android/ (Kotlin + cpp/) · ios/ (Swift) - mã nền tảng của plugin nội bộ
 workers/api/            Worker la-ban-api: src/ (routes, threat/, attest/, admin/) · migrations/ (D1, BẤT BIẾN) · wrangler.toml
 web/landing/            Astro - compass.tsudev.com

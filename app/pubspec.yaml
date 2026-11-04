@@ -23,6 +23,7 @@ dependencies:
   location_feature:
   map_feature:
   network:
+  quyen_loi:
   security_sdk:
   settings_feature:
   storage:

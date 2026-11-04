@@ -1260,6 +1260,155 @@ class LbL10nVi extends LbL10n {
       'Máy chủ vẫn ghi nhận chế độ Nhà phát triển - hãy kết nối mạng rồi bấm Kiểm tra lại.';
 
   @override
+  String get m1ProTitle => 'La bàn Pro';
+
+  @override
+  String get m1ProTagline =>
+      'Gỡ quảng cáo và ủng hộ La bàn tiếp tục phát triển.';
+
+  @override
+  String get m1BenefitNoAds => 'Không quảng cáo trên mọi màn hình';
+
+  @override
+  String get m1BenefitFree =>
+      'Tính năng đang miễn phí vẫn miễn phí: la bàn, toạ độ, điểm mốc, chia sẻ, bản đồ offline, Camera AR';
+
+  @override
+  String get m1BenefitNew => 'Dùng ngay các tính năng Pro mới khi ra mắt';
+
+  @override
+  String get m1BenefitSupport => 'Ủng hộ một nhà phát triển độc lập';
+
+  @override
+  String get m1PlanYear => 'Theo năm';
+
+  @override
+  String get m1PlanMonth => 'Theo tháng';
+
+  @override
+  String get m1PlanLifetime => 'Vĩnh viễn';
+
+  @override
+  String m1PricePerYear(String price) {
+    return '$price / năm';
+  }
+
+  @override
+  String m1PricePerMonth(String price) {
+    return '$price / tháng';
+  }
+
+  @override
+  String m1PriceOnce(String price) {
+    return '$price - trả một lần';
+  }
+
+  @override
+  String m1TrialBadge(int days) {
+    return '$days ngày dùng thử miễn phí';
+  }
+
+  @override
+  String get m1Continue => 'Tiếp tục';
+
+  @override
+  String get m1StartTrial => 'Bắt đầu dùng thử miễn phí';
+
+  @override
+  String get m1Restore => 'Khôi phục giao dịch';
+
+  @override
+  String get m1Manage => 'Quản lý gói trên Google Play';
+
+  @override
+  String get m1ManageFailed => 'Không mở được Google Play trên thiết bị này.';
+
+  @override
+  String m1TermsSub(String price) {
+    return 'Gói tự gia hạn với giá $price cho tới khi bạn huỷ. Huỷ bất kỳ lúc nào trong Google Play > Thanh toán và gói thuê bao, chậm nhất 24 giờ trước khi kỳ hiện tại kết thúc để không bị tính phí kỳ sau. Tiền được thanh toán qua tài khoản Google Play khi bạn xác nhận mua.';
+  }
+
+  @override
+  String m1TermsTrial(int days, String price) {
+    return 'Sau $days ngày dùng thử, bạn sẽ bị tính $price trừ khi huỷ trước khi hết thời gian dùng thử.';
+  }
+
+  @override
+  String get m1TermsLifetime =>
+      'Trả một lần, không tự gia hạn. Dùng trên mọi thiết bị đăng nhập cùng tài khoản Google (nút Khôi phục giao dịch).';
+
+  @override
+  String get m1Loading => 'Đang tải các gói từ Google Play…';
+
+  @override
+  String get m1Unavailable =>
+      'Google Play chưa sẵn sàng trên thiết bị này hoặc các gói chưa mở bán. Hãy thử lại sau.';
+
+  @override
+  String get m1Retry => 'Thử lại';
+
+  @override
+  String get m1Pending =>
+      'Google Play đang chờ bạn hoàn tất thanh toán. La bàn Pro sẽ bật khi thanh toán xong.';
+
+  @override
+  String get m1Verifying => 'Đang xác nhận giao dịch…';
+
+  @override
+  String get m1Success => 'Cảm ơn bạn! La bàn Pro đã được bật.';
+
+  @override
+  String get m1Active => 'Bạn đang dùng La bàn Pro';
+
+  @override
+  String m1ActiveUntil(String date) {
+    return 'Hiệu lực đến $date';
+  }
+
+  @override
+  String get m1ActiveLifetime => 'Gói vĩnh viễn';
+
+  @override
+  String get m1Grace =>
+      'Đang xác nhận gia hạn với Google Play - Pro vẫn hoạt động trong lúc chờ.';
+
+  @override
+  String get m1ErrNetwork =>
+      'Không kết nối được máy chủ. Giao dịch đã được giữ lại và sẽ tự xác nhận khi có mạng.';
+
+  @override
+  String get m1ErrStore => 'Google Play không mở được giao dịch. Hãy thử lại.';
+
+  @override
+  String get m1ErrToken =>
+      'Không xác minh được giao dịch với Google Play. Nếu đã bị trừ tiền, Google sẽ tự hoàn tiền trong 3 ngày.';
+
+  @override
+  String get m1ErrShared =>
+      'Giao dịch này đang được dùng trên quá nhiều thiết bị. Nếu đây là nhầm lẫn, hãy gửi khiếu nại kèm mã thiết bị.';
+
+  @override
+  String get m1ErrNotPlay =>
+      'Bản cài này không đến từ Google Play nên chưa nhận được Pro. Hãy cài La bàn từ Google Play rồi bấm Khôi phục giao dịch.';
+
+  @override
+  String get m1ErrServer =>
+      'Máy chủ chưa xác nhận được giao dịch. Hãy thử lại sau ít phút.';
+
+  @override
+  String get m1ErrNothing =>
+      'Không tìm thấy giao dịch nào của tài khoản Google đang dùng trên Play.';
+
+  @override
+  String get m1Dismiss => 'Đóng';
+
+  @override
+  String get m1SettingsSubFree => 'Gỡ quảng cáo, ủng hộ phát triển';
+
+  @override
+  String get m1SettingsSubPro => 'Đang dùng';
+
+  @override
   String get a9FieldNormal =>
       'Từ trường bình thường - không thấy nhiễu từ gần máy.';
 
