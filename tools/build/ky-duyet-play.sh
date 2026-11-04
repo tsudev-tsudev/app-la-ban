@@ -21,7 +21,8 @@ datGiaTri() {
 wr() {
   set -a; . "$HOME/.config/la-ban/cf.env"; set +a
   # shellcheck disable=SC1091
-  source "$HOME/.nvm/nvm.sh" >/dev/null; nvm use >/dev/null
+  # nvm.sh hỏng dưới `set -u` -> tắt tạm (trước 04/11 deploy chết im lặng vì `|| true` bên dưới).
+  set +u; source "$HOME/.nvm/nvm.sh" >/dev/null; nvm use >/dev/null; set -u
   (cd workers/api && npx wrangler "$@")
 }
 
@@ -30,7 +31,8 @@ case $lenh in
     v=$([[ $lenh == bat ]] && echo 0 || echo 1)
     datGiaTri "$v"
     echo "CHAN_DEV_MODE (prod) = $(giaTri)"
-    wr deploy 2>&1 | grep -E "Current Version ID|Deployed|error" || true
+    kq=$(wr deploy 2>&1) || { echo "$kq" | tail -20 >&2; echo "Deploy LỖI - CHAN_DEV_MODE đã đổi trong $TOML nhưng Worker prod CHƯA nhận" >&2; exit 1; }
+    echo "$kq" | grep -E "Current Version ID|Deployed"
     echo "Nhớ: commit $TOML qua PR; SOC: cờ chanDevMode + miễn trừ ASN Google (mục E1 / E2)."
     ;;
   trang-thai)
