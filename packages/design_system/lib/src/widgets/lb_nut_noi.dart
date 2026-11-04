@@ -37,13 +37,12 @@ class LbNutNoi extends StatelessWidget {
     final quang = BoxDecoration(
       shape: BoxShape.circle,
       gradient: RadialGradient(
-        colors: [nen.withValues(alpha: 0.85), nen.withValues(alpha: 0)],
+        colors: [nen.withValues(alpha: 0.95), nen.withValues(alpha: 0)],
       ),
     );
-    final bongChu = [
-      for (final o in const [Offset.zero, Offset(0, 1)])
-        Shadow(color: nen, blurRadius: 4, offset: o),
-    ];
+    final kieu = theme.textTheme.labelMedium?.copyWith(
+      fontWeight: FontWeight.w700,
+    );
     return Semantics(
       button: true,
       enabled: onPressed != null,
@@ -73,15 +72,28 @@ class LbNutNoi extends StatelessWidget {
                       child: LbIcon(icon, size: 28, color: mau),
                     ),
                   ),
+                  // Viền chữ đặc màu nền (vẽ dưới) - đọc được cả khi đè lên
+                  // chữ / đường của bản đồ (bóng mờ không đủ - thử trên M32).
                   if (hienNhan)
-                    Text(
-                      nhan,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: mau,
-                        fontWeight: FontWeight.w700,
-                        shadows: bongChu,
-                      ),
+                    Stack(
+                      children: [
+                        Text(
+                          nhan,
+                          textAlign: TextAlign.center,
+                          style: kieu?.copyWith(
+                            foreground: Paint()
+                              ..style = PaintingStyle.stroke
+                              ..strokeWidth = 4
+                              ..strokeJoin = StrokeJoin.round
+                              ..color = nen,
+                          ),
+                        ),
+                        Text(
+                          nhan,
+                          textAlign: TextAlign.center,
+                          style: kieu?.copyWith(color: mau),
+                        ),
+                      ],
                     ),
                 ],
               ),

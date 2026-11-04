@@ -415,7 +415,14 @@ class _ThongTinState extends State<_ThongTin> {
           spacing: LbSpacing.xs,
           runSpacing: LbSpacing.xs,
           children: [
-            _Nhan(cham: mauMuc, chu: l10n.compassAccuracy(tenMuc(l10n, muc))),
+            _Nhan(
+              cham: mauMuc,
+              chu: l10n.compassAccuracy(tenMuc(l10n, muc)),
+              phuongAn: [
+                for (final m in MucTinCay.values)
+                  l10n.compassAccuracy(tenMuc(l10n, m)),
+              ],
+            ),
             if (h.cuongDoTu.isFinite)
               _Nhan(chu: l10n.compassFieldStrength(h.cuongDoTu.round())),
             _Nhan(chu: l10n.compassTilt(h.doc.round(), h.lan.round())),
@@ -456,10 +463,15 @@ class _ThongTinState extends State<_ThongTin> {
 
 /// Nhãn viền bo tròn, chữ dài thì xuống dòng (Chip cắt chữ khi phóng to).
 class _Nhan extends StatelessWidget {
-  const new({required this.chu, this.cham});
+  const new({required this.chu, this.cham, this.phuongAn = const []});
 
   final String chu;
   final Color? cham;
+
+  /// Mọi giá trị có thể của nhãn (A9c): đặt chồng trong ô cố định nên nhãn
+  /// luôn rộng bằng giá trị dài nhất - đổi Cao / Trung bình / Thấp không làm
+  /// hàng nhãn xuống dòng (thấy trên M32). Rỗng = chỉ [chu].
+  final List<String> phuongAn;
 
   @override
   Widget build(BuildContext context) {
@@ -484,7 +496,17 @@ class _Nhan extends StatelessWidget {
               ),
               const SizedBox(width: LbSpacing.xs),
             ],
-            Flexible(child: Text(chu, style: theme.textTheme.labelLarge)),
+            Flexible(
+              child: phuongAn.isEmpty
+                  ? Text(chu, style: theme.textTheme.labelLarge)
+                  : LbOCoDinh(
+                      chiSo: phuongAn.indexOf(chu),
+                      phuongAn: [
+                        for (final p in phuongAn)
+                          Text(p, style: theme.textTheme.labelLarge),
+                      ],
+                    ),
+            ),
           ],
         ),
       ),

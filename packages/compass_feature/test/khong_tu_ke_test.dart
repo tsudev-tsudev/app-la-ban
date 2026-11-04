@@ -80,10 +80,7 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      dung(
-        oChup.first,
-        ghiDe(tuongDoi: [xoayGame(0, 1)]),
-      ),
+      dung(oChup.first, ghiDe(tuongDoi: [xoayGame(0, 1)])),
     );
     // Dò cảm biến xong -> luồng con quay mới bắt đầu ở khung kế.
     await tester.pump(const Duration(milliseconds: 50));

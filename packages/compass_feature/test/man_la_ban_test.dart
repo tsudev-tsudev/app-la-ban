@@ -115,8 +115,24 @@ void main() {
         )
         .opacity;
     final viTriMat = tester.getRect(mat);
+    bool hienCao() =>
+        tester
+            .widget<AnimatedOpacity>(
+              find.ancestor(
+                of: find.text('Độ tin cậy: Cao'),
+                matching: find.byType(AnimatedOpacity),
+              ),
+            )
+            .opacity ==
+        1;
+    // Hàng nhãn (độ tin cậy dài / ngắn khác nhau) giữ nguyên kích thước.
+    final hangNhan = find.ancestor(
+      of: find.text('Độ tin cậy: Cao'),
+      matching: find.byType(Wrap),
+    );
+    final coHang = tester.getSize(hangNhan);
     expect(mo(), 0);
-    expect(find.text('Độ tin cậy: Cao'), findsOneWidget);
+    expect(hienCao(), isTrue);
 
     var doiCanhBao = 0;
     var doiNhan = 0;
@@ -133,9 +149,10 @@ void main() {
       );
       await tester.pump(const Duration(milliseconds: 100));
       expect(tester.getRect(mat), viTriMat, reason: '$ms ms');
+      expect(tester.getSize(hangNhan), coHang, reason: '$ms ms');
       if (mo() != truocMo) doiCanhBao++;
       truocMo = mo();
-      final cao = find.text('Độ tin cậy: Cao').evaluate().isNotEmpty;
+      final cao = hienCao();
       if (cao != truocCao) doiNhan++;
       truocCao = cao;
     }
@@ -150,7 +167,7 @@ void main() {
     }
     await tester.pump(const Duration(milliseconds: 300));
     expect(mo(), 0);
-    expect(find.text('Độ tin cậy: Cao'), findsOneWidget);
+    expect(hienCao(), isTrue);
   });
 
   testWidgets('hiện số độ, hướng, độ tin cậy, góc nghiêng (vi)', (
