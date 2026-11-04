@@ -13,7 +13,7 @@
 | `ACCESS_NETWORK_STATE` | freeRASP + MapLibre: biết có mạng hay không (không đọc nội dung) | - (quyền thường) |
 | `ACCESS_WIFI_STATE` | MapLibre: trạng thái kết nối khi tải tile | - (quyền thường) |
 | `USE_BIOMETRIC` / `USE_FINGERPRINT` | androidx.biometric trong freeRASP: chỉ kiểm máy CÓ khoá màn hình / sinh trắc (tín hiệu RASP), không đọc vân tay | - (quyền thường) |
-| `com.android.vending.BILLING` | Play Billing Library qua `in_app_purchase` (M1a, Q55): mở luồng mua La bàn Pro của Google Play | - (quyền thường) |
+| `BILLING` (com.android.vending) | Play Billing Library qua `in_app_purchase` (M1a, Q55): mở luồng mua La bàn Pro của Google Play | - (quyền thường) |
 | `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` | androidx.core: bảo vệ receiver nội bộ (quyền chữ ký của chính app) | - |
 
 **Đã gỡ** bằng `tools:node="remove"` trong `app/android/app/src/main/AndroidManifest.xml` (Q46):
