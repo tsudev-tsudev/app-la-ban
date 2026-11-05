@@ -33,6 +33,8 @@ TURNSTILE_TEN_MIEN = "compass.tsudev.com"
 QL_YEU_CAU_PLAY = "1"
 PI_GOI_PRO = "com.tsudev.laban.pro"
 RTDN_AUD = "https://compass-api.tsudev.com/v1/play/rtdn"
+# Service account Pub/Sub dùng ký JWT OIDC (tạo ở project Cloud app-la-ban, không khoá JSON) - runbook phat-hanh-play mục 6.
+RTDN_EMAIL = "rtdn-day@app-la-ban.iam.gserviceaccount.com"
 # S11 (Q57): chặn route nghiệp vụ khi app báo Developer options / ADB bật. Kill-switch: đặt "0" + deploy (<= 30 s).
 CHAN_DEV_MODE = "0"
 AE_BANG = "la_ban_su_kien"
