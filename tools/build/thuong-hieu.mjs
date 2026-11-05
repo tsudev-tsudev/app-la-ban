@@ -295,6 +295,30 @@ function xuatSanPham() {
   for (const [flavor, ma] of [['pro-thang', 'pro_thang'], ['pro-nam', 'pro_nam'], ['pro-vinh-vien', 'pro_vinh_vien']]) {
     ghi(`design/store/san-pham/${ma}.png`, png(iconKin(512, flavor), 512));
   }
+  // Play Console ghi "Đừng chèn văn bản" vào biểu tượng sản phẩm: bản thay thế không chữ - phân biệt gói bằng số chấm
+  // trắng trong viên nhãn xanh lá (1 tháng · 2 năm · 3 vĩnh viễn), cùng kích thước / vị trí viên nhãn có chữ.
+  for (const [soCham, ma] of [[1, 'pro_thang'], [2, 'pro_nam'], [3, 'pro_vinh_vien']]) {
+    ghi(`design/store/san-pham/khong-chu/${ma}.png`, png(iconKhongChu(512, soCham), 512));
+  }
+}
+
+/** Icon kín nền + viên nhãn xanh lá chứa `soCham` chấm trắng, không ký tự nào (biểu tượng sản phẩm Play). */
+function iconKhongChu(hop, soCham) {
+  const cao = hop * 0.15;
+  const cy = hop * 0.8;
+  const rong = cao * 2.5;
+  const r = cao * 0.2;
+  const buoc = r * 3;
+  const x0 = hop / 2 - ((soCham - 1) * buoc) / 2;
+  const cham = Array.from({ length: soCham }, (_, i) => `<circle cx="${x0 + i * buoc}" cy="${cy}" r="${r}" fill="#FFFFFF"/>`).join('');
+  return svg(
+    hop,
+    hop,
+    nenGradient('n', hop, hop) +
+      datGiua(hop, hop * 0.68, hinh({ id: 'i' })) +
+      `<rect x="${(hop - rong) / 2}" y="${cy - cao / 2}" width="${rong}" height="${cao}" rx="${cao / 2}" fill="${tokens.color.light.success}" stroke="#FFFFFF" stroke-width="${cao * 0.08}"/>` +
+      cham,
+  );
 }
 
 /** Ảnh xem trước icon trên launcher: 3 nền (sáng, tối, ảnh) x mặt nạ tròn / squircle / themed + bản dev, stg, Pro. */
