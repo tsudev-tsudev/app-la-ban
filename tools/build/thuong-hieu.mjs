@@ -27,6 +27,10 @@ const NHAN = {
   dev: { chu: 'DEV', mau: MAU.coral },
   staging: { chu: 'STG', mau: '#FFB300' },
   pro: { chu: 'PRO', mau: tokens.color.light.success },
+  // Biểu tượng sản phẩm Play (M1a, Q55): mỗi gói một ảnh riêng (Play yêu cầu), cùng viên nhãn xanh lá của Pro.
+  'pro-thang': { chu: 'THÁNG', mau: tokens.color.light.success },
+  'pro-nam': { chu: 'NĂM', mau: tokens.color.light.success },
+  'pro-vinh-vien': { chu: 'VĨNH VIỄN', mau: tokens.color.light.success },
 };
 
 /** PNG RGB không kênh alpha (App Store từ chối icon 1024 có alpha). Ảnh phải phủ kín nền. */
@@ -84,7 +88,8 @@ const datGiua = (hop, co, noiDung, extra = '') =>
 function nhanFlavor(flavor, hop, cy, cao) {
   if (!flavor) return '';
   const { chu, mau } = NHAN[flavor];
-  const rong = cao * 2.5;
+  // Nhãn 3 ký tự giữ đúng cao x 2.5 như cũ; nhãn dài hơn nới theo số ký tự.
+  const rong = Math.max(cao * 2.5, cao * (1 + 0.5 * [...chu].length));
   return (
     `<rect x="${(hop - rong) / 2}" y="${cy - cao / 2}" width="${rong}" height="${cao}" rx="${cao / 2}" fill="${mau}" stroke="#FFFFFF" stroke-width="${cao * 0.08}"/>` +
     `<text x="${hop / 2}" y="${cy + cao * 0.24}" text-anchor="middle" font-family="Be Vietnam Pro" font-weight="700" font-size="${cao * 0.62}" fill="${MAU.chu}">${chu}</text>`
@@ -285,6 +290,13 @@ function xuatPro() {
   ghi('design/store/pro/play-icon-512.png', pngKhongAlpha(iconKin(512, 'pro'), 512));
 }
 
+/** Biểu tượng sản phẩm trong Play Console (PNG 32 bit RGBA - Play yêu cầu, 512, 1:1): design/store/san-pham/<mã sản phẩm>.png. */
+function xuatSanPham() {
+  for (const [flavor, ma] of [['pro-thang', 'pro_thang'], ['pro-nam', 'pro_nam'], ['pro-vinh-vien', 'pro_vinh_vien']]) {
+    ghi(`design/store/san-pham/${ma}.png`, png(iconKin(512, flavor), 512));
+  }
+}
+
 /** Ảnh xem trước icon trên launcher: 3 nền (sáng, tối, ảnh) x mặt nạ tròn / squircle / themed + bản dev, stg, Pro. */
 function xuatXemTruoc() {
   const NEN = [
@@ -340,4 +352,5 @@ xuatIos();
 xuatWeb();
 xuatXemTruoc();
 xuatPro();
+xuatSanPham();
 console.log(`ghi logo, icon Android/iOS, splash, favicon/OG, xem trước launcher (wordmark rộng ${Math.round(wordmark(100).rong)})`);
