@@ -1,0 +1,23 @@
+name: la_ban_pro
+description: La bàn Pro - bản trả phí một lần, không quảng cáo (M2, QUYET_DINH Q56).
+publish_to: none
+# Đổi version thì sửa cả phienBanApp (lib/src/phien_ban.dart) - test kiểm hai nơi khớp. versionCode riêng của gói
+# com.tsudev.laban.pro, độc lập với app miễn phí.
+version: 0.1.0-beta.1+1
+resolution: workspace
+
+environment:
+  sdk: ^3.13.0
+
+# KHÔNG thêm quang_cao / SDK quảng cáo (cổng: tools/kiem-tra/lop-luat.mjs + apkanalyzer khi build).
+dependencies:
+  app_shell:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

@@ -1982,3 +1982,9 @@ a.o-dem {
   font-size: 12px;
   white-space: pre;
 }
+
+/* M2 (Q56): thiết bị cài app "La bàn Pro" trong danh sách thiết bị. */
+.nhan-pro {
+  margin-inline-start: var(--lb-space-xs);
+  color: var(--lb-color-text);
+}

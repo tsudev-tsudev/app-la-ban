@@ -115,3 +115,25 @@ Future<bool> moTrangLaBan(Uri url) async {
     return false;
   }
 }
+
+/// Kết quả hộp thoại "Tải từ Google Play" (Play Integrity GET_LICENSED).
+enum KetQuaHopThoaiBanQuyen { thanhCong, huy, khongKhaDung }
+
+/// M2 (Q56): app Pro không do Play cài (`UNLICENSED`) -> mở hộp thoại khắc
+/// phục của Play. Chỉ là lối cho người dùng; Worker cấp quyền lợi `pro_app`
+/// ở lần xác minh kế tiếp.
+Future<KetQuaHopThoaiBanQuyen> moHopThoaiBanQuyen(int soDuAnCloud) async {
+  try {
+    final kq = await const MethodChannel('la_ban/thiet_bi')
+        .invokeMethod<String>('hopThoaiBanQuyen', {'soDuAn': soDuAnCloud});
+    return switch (kq) {
+      'thanhCong' => KetQuaHopThoaiBanQuyen.thanhCong,
+      'huy' => KetQuaHopThoaiBanQuyen.huy,
+      _ => KetQuaHopThoaiBanQuyen.khongKhaDung,
+    };
+  } on PlatformException {
+    return KetQuaHopThoaiBanQuyen.khongKhaDung;
+  } on MissingPluginException {
+    return KetQuaHopThoaiBanQuyen.khongKhaDung;
+  }
+}

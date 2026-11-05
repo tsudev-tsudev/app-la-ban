@@ -134,7 +134,12 @@ function xuatLogo() {
 }
 
 function xuatAndroid() {
-  const res = 'app/android/app/src';
+  // M2: app_pro dùng chung adaptive XML / nền / monochrome / splash / icon DEV-STG; xuatPro ghi đè icon main bằng bản Pro.
+  for (const res of ['app/android/app/src', 'app_pro/android/app/src']) xuatAndroidVao(res);
+  ghi('design/store/play-icon-512.png', pngKhongAlpha(iconKin(512), 512));
+}
+
+function xuatAndroidVao(res) {
   const adaptive = `<?xml version="1.0" encoding="utf-8"?>
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
     <background android:drawable="@drawable/ic_launcher_background"/>
@@ -179,7 +184,6 @@ function xuatAndroid() {
 `,
     );
   }
-  ghi('design/store/play-icon-512.png', pngKhongAlpha(iconKin(512), 512));
 }
 
 function xuatIos() {
@@ -275,12 +279,12 @@ function xuatWeb() {
 }
 
 /**
- * App "La bàn Pro" (M2, Q56): icon riêng để người dùng phân biệt bản không quảng cáo. `app_pro/` chưa có (M2 bước 1
- * tách vỏ app) nên tài nguyên Android đặt ở design/logo/pro/android/res - M2 chép sang `app_pro/android/app/src/main/res`
- * (adaptive XML + nền + monochrome dùng chung bản miễn phí). Flavor dev / staging của app Pro giữ nhãn DEV / STG.
+ * App "La bàn Pro" (M2, Q56): icon riêng để người dùng phân biệt bản không quảng cáo, ghi thẳng vào
+ * `app_pro/android/app/src/main/res` (adaptive XML + nền + monochrome giống bản miễn phí - xuatAndroid chép). Flavor dev /
+ * staging của app Pro giữ nhãn DEV / STG như bản miễn phí.
  */
 function xuatPro() {
-  const res = 'design/logo/pro/android/res';
+  const res = 'app_pro/android/app/src/main/res';
   for (const [thuMuc, k] of Object.entries(DPI)) {
     ghi(`${res}/mipmap-${thuMuc}/ic_launcher_foreground.png`, png(tienCanh('pro'), 108 * k));
     ghi(`${res}/mipmap-${thuMuc}/ic_launcher.png`, png(iconLegacy(false, 'pro'), 48 * k));

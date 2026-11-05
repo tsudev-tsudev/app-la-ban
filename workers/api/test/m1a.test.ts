@@ -13,6 +13,7 @@ import {
   maHoaToken,
   tongHopQuyenLoi,
   trangThaiGhiDe,
+  goiBanTrongApp,
 } from '../src/thuan/quyen-loi';
 
 const BAY_GIO = Date.parse('2026-11-03T12:00:00Z');
@@ -184,5 +185,14 @@ describe('maHoaToken / giaiMaTokenQl', () => {
     expect(await giaiMaTokenQl(khoa, `${v}.${iv}.${ma.slice(0, -2)}AA`)).toBeNull();
     expect(await giaiMaTokenQl(khoa, 'v2.x.y')).toBeNull();
     await expect(maHoaToken(btoa('ngan'), TOKEN)).rejects.toThrow('khoa-quyen-loi-sai-do-dai');
+  });
+});
+
+describe('goiBanTrongApp (M2, Q56)', () => {
+  it('bỏ gói app Pro khỏi luồng bán trong app / RTDN / Voided Purchases', () => {
+    const ds = ['com.tsudev.laban', 'com.tsudev.laban.pro'];
+    expect(goiBanTrongApp(ds, ['com.tsudev.laban.pro'])).toEqual(['com.tsudev.laban']);
+    expect(goiBanTrongApp(ds, [])).toEqual(ds);
+    expect(goiBanTrongApp([], ['com.tsudev.laban.pro'])).toEqual([]);
   });
 });

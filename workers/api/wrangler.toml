@@ -20,7 +20,7 @@ MOI_TRUONG = "prod"
 CF_ACCOUNT_ID = "9541f44e84433a32b013ec31bae14848"
 CF_LIST_ID = "18b0a1e4506942969aad36e04ce95f46"
 # S2 Play Integrity: gói + SHA-256 chứng chỉ ký hợp lệ: khoá upload (APK tải trực tiếp, Q34) + khoá Google Play tạo (Q63).
-PI_GOI = "com.tsudev.laban"
+PI_GOI = "com.tsudev.laban,com.tsudev.laban.pro"
 PI_CHUNG_CHI = "cf09e7243bca9ab5d29dc788bbd31ba71efaebab7d69583d98bbfc5184a7f6bd,b84d419196141b48c74609824b3ff41ebcc3f51f86c94b561fbbd20440f18b7b"
 # S6 Admin SOC: team Zero Trust + AUD ứng dụng Access "la-ban-admin" (tools/cloudflare/access.mjs in ra). AUD rỗng -> /admin 503.
 ACCESS_TEAM = "purple-cake-8f2a.cloudflareaccess.com"
@@ -28,7 +28,7 @@ ACCESS_AUD = "f1dec48a71e9b10406ae9534bea272e055a6bcf58a302e8d9324286976641ed3"
 SOC_NGUON = "https://compass-admin.tsudev.com"
 # S7c1 khiếu nại: hostname trang có widget Turnstile (bí mật: `wrangler secret put TURNSTILE_SECRET`).
 TURNSTILE_TEN_MIEN = "compass.tsudev.com"
-# M1a (Q55, SEC-IAP): chỉ bản do Play cài nhận quyền lợi; gói app Pro (Q56 - thêm vào PI_GOI ở M2); audience JWT OIDC của
+# M1a (Q55, SEC-IAP): chỉ bản do Play cài nhận quyền lợi; gói app Pro (Q56 - M2 đã thêm vào PI_GOI, KHÔNG bán trong app); audience JWT OIDC của
 # Pub/Sub push RTDN. Bí mật: `wrangler secret put KHOA_QUYEN_LOI` (base64 32 byte); RTDN_EMAIL đặt khi tạo Pub/Sub (runbook).
 QL_YEU_CAU_PLAY = "1"
 PI_GOI_PRO = "com.tsudev.laban.pro"
@@ -116,7 +116,7 @@ enabled = true
 [env.staging.vars]
 MOI_TRUONG = "staging"
 # Staging nhận cả bản dev / stg (ký khoá debug -> không kiểm chứng chỉ).
-PI_GOI = "com.tsudev.laban.stg,com.tsudev.laban.dev,com.tsudev.laban"
+PI_GOI = "com.tsudev.laban.stg,com.tsudev.laban.dev,com.tsudev.laban,com.tsudev.laban.pro.stg,com.tsudev.laban.pro.dev,com.tsudev.laban.pro"
 PI_CHUNG_CHI = ""
 # SOC staging = Pages preview nhánh "staging" (binding API -> worker này). Service token e2e chỉ được nhận ở đây.
 ACCESS_TEAM = "purple-cake-8f2a.cloudflareaccess.com"
@@ -188,7 +188,8 @@ workers_dev = false
 
 [env.dev.vars]
 MOI_TRUONG = "dev"
-PI_GOI = "com.tsudev.laban.dev,com.tsudev.laban.stg"
+PI_GOI = "com.tsudev.laban.dev,com.tsudev.laban.stg,com.tsudev.laban.pro.dev,com.tsudev.laban.pro.stg"
+PI_GOI_PRO = "com.tsudev.laban.pro.dev,com.tsudev.laban.pro.stg"
 PI_CHUNG_CHI = ""
 
 [[env.dev.d1_databases]]

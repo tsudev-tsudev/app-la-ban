@@ -69,14 +69,14 @@ if [ -f pubspec.yaml ] && [ "$FLUTTER_SAN_SANG" = 0 ]; then
   echo "(Flutter SDK chưa sẵn sàng - bỏ qua phần Dart ở cổng nhanh)"
 fi
 if [ -f pubspec.yaml ] && [ "$FLUTTER_SAN_SANG" = 1 ]; then
-  DART_DOI=$(printf '%s\n' "$DOI" | grep -E '^(app|packages/[^/]+)/' | sed -E 's#^(app|packages/[^/]+)/.*#\1#' | sort -u || true)
+  DART_DOI=$(printf '%s\n' "$DOI" | grep -E '^(app|app_pro|packages/[^/]+)/' | sed -E 's#^(app|app_pro|packages/[^/]+)/.*#\1#' | sort -u || true)
   printf '%s\n' "$DOI" | grep -qE '^(pubspec\.(yaml|lock)|analysis_options\.yaml)$' && DART_DOI="ALL"
   [ "$CHE_DO" = day-du ] && DART_DOI="ALL"
   if [ -n "$DART_DOI" ]; then
     buoc "Flutter: analyze + test"
     flutter pub get >/dev/null
     if [ "$DART_DOI" = ALL ]; then
-      DART_DOI=$(ls -d app packages/*/ 2>/dev/null | sed 's#/$##')
+      DART_DOI=$(ls -d app app_pro packages/*/ 2>/dev/null | sed 's#/$##')
     fi
     for goi in $DART_DOI; do
       [ -f "$goi/pubspec.yaml" ] || continue

@@ -166,16 +166,16 @@ export function dangKyDinhDanh(_app: Hono<MoiTruongHono>, boTuyen: BoTuyen): voi
       const dong = await db
         .prepare(
           `INSERT INTO devices (id, installation_id_hash, public_key, platform, os_version, model, app_version, build, locale, first_seen, last_seen,
-             attestation_level, attested_at, attest_signals, country)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             attestation_level, attested_at, attest_signals, country, package_name)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
            ON CONFLICT (installation_id_hash) DO UPDATE SET public_key = excluded.public_key, os_version = excluded.os_version,
              model = excluded.model, app_version = excluded.app_version, build = excluded.build, locale = excluded.locale,
              last_seen = excluded.last_seen, attestation_level = excluded.attestation_level, attested_at = excluded.attested_at,
-             attest_signals = excluded.attest_signals, country = excluded.country
+             attest_signals = excluded.attest_signals, country = excluded.country, package_name = excluded.package_name
            RETURNING id, status`,
         )
         .bind(taoUlid(bayGio), bamCaiDat, b.khoaCongKhai, b.nenTang, t.heDieuHanh, t.model, t.phienBan, t.build, t.ngonNgu, bayGio, bayGio,
-          dg.muc, bayGio, tinHieu, c.req.header('cf-ipcountry') ?? null)
+          dg.muc, bayGio, tinHieu, c.req.header('cf-ipcountry') ?? null, b.goi)
         .first<{ id: string; status: 'clean' | 'suspicious' | 'restricted' | 'banned' }>();
       if (!dong) throw new Error('không ghi được thiết bị');
       // Khoá đổi trên cùng bản cài (Keystore bị xoá / khôi phục máy): mọi phiên cũ của thiết bị bị thu hồi.
@@ -297,8 +297,8 @@ export function dangKyDinhDanh(_app: Hono<MoiTruongHono>, boTuyen: BoTuyen): voi
       }
       const bayGio = Date.now();
       await db
-        .prepare('UPDATE devices SET attestation_level = ?, attested_at = ?, attest_signals = ?, last_seen = ? WHERE id = ?')
-        .bind(dg.muc, bayGio, JSON.stringify({ ...dg.tinHieu, ly_do: dg.lyDo.join(',') || null }), bayGio, thietBi)
+        .prepare('UPDATE devices SET attestation_level = ?, attested_at = ?, attest_signals = ?, last_seen = ?, package_name = ? WHERE id = ?')
+        .bind(dg.muc, bayGio, JSON.stringify({ ...dg.tinHieu, ly_do: dg.lyDo.join(',') || null }), bayGio, b.goi, thietBi)
         .run();
       if (dg.muc === 'failed') baoSuKien(c, thietBi, 'ATTEST_FAIL', 'high', { ly_do: dg.lyDo.join(','), buoc: 'xac-thuc', ...dg.tinHieu });
       else nen(c, capNhatProApp(c, thietBi, b.goi, dg.tinHieu), 'pro-app');

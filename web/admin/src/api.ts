@@ -172,6 +172,7 @@ export type TongQuan = {
   heDieuHanh: Dem[];
   phienBan: Dem[];
   quocGia: Dem[];
+  ungDung?: Dem[];
   suKien24h: { loai: Dem[]; theoGio: Dem[] };
   topIp: Dem[];
   topAsn: Dem[];
@@ -210,6 +211,7 @@ export type Passkey = { id: string; name: string | null; alg: number; rp_id: str
 export type DongThietBi = {
   id: string;
   platform: string;
+  package_name?: string | null;
   model: string | null;
   os_version: string | null;
   app_version: string | null;

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Build AAB prod cho Google Play (R2): ./tools/build/build-aab.sh [--khong-build]
+# Build AAB prod cho Google Play (R2): ./tools/build/build-aab.sh [--pro] [--khong-build]
+#   --pro: app "La bàn Pro" (app_pro/, M2 - Q56, Q65) -> build/phat-hanh/pro/<pb>/la-ban-pro-<pb>.aab + kiểm KHÔNG có quảng cáo.
 #   1. flutter build appbundle prod release --obfuscate --split-debug-info (3 ABI - Play tự tách theo máy)
 #   2. jarsigner verify + so chứng chỉ với khoá upload ngoài repo (QUYET_DINH Q34: Play App Signing dùng CHÍNH khoá này)
 #   3. quyền trong manifest đã gộp phải khớp docs/store/data-safety.md mục 1
@@ -9,8 +10,10 @@ set -euo pipefail
 cd "$(dirname "$0")/../.."
 GOC="$PWD"
 BUILD=1
+APP=app
+TEN_TEP=la-ban
 for a in "$@"; do
-  case "$a" in --khong-build) BUILD=0 ;; *) echo "tham số lạ: $a" >&2; exit 2 ;; esac
+  case "$a" in --khong-build) BUILD=0 ;; --pro) APP=app_pro; TEN_TEP=la-ban-pro ;; *) echo "tham số lạ: $a" >&2; exit 2 ;; esac
 done
 
 KHOA_DIR="$HOME/.config/la-ban/android"
@@ -21,21 +24,22 @@ export GRADLE_USER_HOME="$HOME/tools/java/gradle-home"
 # bundletool bản thư viện (cache Gradle) không kèm aapt2 -> dùng aapt2 của SDK.
 BT="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)"
 
-DONG=$(grep -E '^version:' app/pubspec.yaml | awk '{print $2}')
+DONG=$(grep -E '^version:' "$APP/pubspec.yaml" | awk '{print $2}')
 TEN="${DONG%%+*}"
-RA="$GOC/build/phat-hanh/$TEN"
-SYM="$KHOA_DIR/symbols/$TEN/aab"
-AAB="$GOC/app/build/app/outputs/bundle/prodRelease/app-prod-release.aab"
+PHU=""; [ "$APP" = app_pro ] && PHU="pro/"
+RA="$GOC/build/phat-hanh/$PHU$TEN"
+SYM="$KHOA_DIR/symbols/$PHU$TEN/aab"
+AAB="$GOC/$APP/build/app/outputs/bundle/prodRelease/app-prod-release.aab"
 mkdir -p "$RA" "$SYM"
 
 if [ "$BUILD" = 1 ]; then
-  (cd app && flutter build appbundle --flavor prod -t lib/main_prod.dart --release --obfuscate --split-debug-info="$SYM")
+  (cd "$APP" && flutter build appbundle --flavor prod -t lib/main_prod.dart --release --obfuscate --split-debug-info="$SYM")
   # Gradle daemon JDK 21 giữ ~1,5 GB - máy 8 GB cần trả lại cho cổng / test.
-  (cd app/android && ./gradlew --stop >/dev/null)
+  (cd "$APP/android" && ./gradlew --stop >/dev/null)
 fi
 [ -f "$AAB" ] || { echo "Chưa có $AAB" >&2; exit 1; }
-cp "$AAB" "$RA/la-ban-$TEN.aab"
-AAB="$RA/la-ban-$TEN.aab"
+cp "$AAB" "$RA/$TEN_TEP-$TEN.aab"
+AAB="$RA/$TEN_TEP-$TEN.aab"
 
 # Chứng chỉ ký AAB = chứng chỉ khoá upload.
 STORE=$(grep '^storeFile=' "$KEY_PROPS" | cut -d= -f2-)
@@ -65,6 +69,13 @@ for q in $QUYEN; do
 done
 
 TAM=$(mktemp -d); trap 'rm -rf "$TAM"' EXIT
+# M2 (Q56): AAB Pro không được chứa SDK quảng cáo / Advertising ID (Data Safety riêng không khai Advertising ID).
+if [ "$APP" = app_pro ]; then
+  (cd "$TAM" && unzip -qo "$AAB" 'base/dex/*' 'base/manifest/*')
+  if grep -qa 'com/google/android/gms/ads' "$TAM"/base/dex/*.dex; then echo "AAB Pro có lớp com.google.android.gms.ads" >&2; exit 1; fi
+  if printf '%s\n' $QUYEN | grep -qx 'com.google.android.gms.permission.AD_ID'; then echo "AAB Pro xin quyền AD_ID" >&2; exit 1; fi
+  echo "✓ AAB Pro không có lớp / quyền quảng cáo"
+fi
 bt build-apks --bundle "$AAB" --output "$TAM/la-ban.apks" --overwrite --aapt2 "$BT/aapt2" >/dev/null
 {
   echo "La bàn $TEN - download size Google Play (bundletool get-size total, byte nén, MIN-MAX)"

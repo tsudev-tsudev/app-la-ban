@@ -16,7 +16,7 @@ function tepDart(thuMuc) {
   });
 }
 
-const thuMucGoi = ['app', ...readdirSync(join(goc, 'packages')).map((t) => `packages/${t}`)].filter((t) =>
+const thuMucGoi = ['app', 'app_pro', ...readdirSync(join(goc, 'packages')).map((t) => `packages/${t}`)].filter((t) =>
   existsSync(join(goc, t, 'pubspec.yaml')),
 );
 const dsGoi = {};

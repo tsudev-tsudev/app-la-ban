@@ -2,7 +2,7 @@ import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['**/dist/**', '**/.astro/**', '**/.wrangler/**', '**/node_modules/**', 'app/**', 'packages/**', 'native/**', '.semgrep/**'] },
+  { ignores: ['**/dist/**', '**/.astro/**', '**/.wrangler/**', '**/node_modules/**', 'app/**', 'app_pro/**', 'packages/**', 'native/**', '.semgrep/**'] },
   js.configs.recommended,
   ...tseslint.configs.strict,
   {

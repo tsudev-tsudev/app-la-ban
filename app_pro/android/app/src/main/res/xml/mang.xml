@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  S3 (SEC-NET): cấm HTTP, chỉ tin CA HỆ THỐNG (không CA người dùng cài thêm - chống proxy MITM).
+  Kênh API của app đi qua dart:io (ghim CA ở packages/network, xoay bằng Remote Config ký số); pin-set dưới đây
+  phủ thêm mọi kết nối native tới compass-api (cùng bộ CA - tools/build/goc-tin-cay.mjs). Hết hạn pin-set
+  = Android ngừng áp pin (không khoá app) - gia hạn trước mỗi bản phát hành.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="false">compass-api.tsudev.com</domain>
+        <domain includeSubdomains="false">compass-api-stg.tsudev.com</domain>
+        <pin-set expiration="2027-12-31">
+            <pin digest="SHA-256">hxqRlPTu1bMS/0DITB1SSu0vd4u/8l8TjPgfaAp63Gc=</pin> <!-- GTS_Root_R1 -->
+            <pin digest="SHA-256">QXnt2YHvdHR3tJYmQIr0Paosp6t/nggsEGD4QJZ3Q0g=</pin> <!-- GTS_Root_R3 -->
+            <pin digest="SHA-256">mEflZT5enoR1FuXLgYYGqnVEoZvmf9c2bVBpiOjYQ0c=</pin> <!-- GTS_Root_R4 -->
+            <pin digest="SHA-256">C5+lpZ7tcVwmwQIMcRtPbsQtWLABXhQzejna0wHFr8M=</pin> <!-- ISRG_Root_X1 -->
+            <pin digest="SHA-256">diGVwiVYbubAI3RW4hB9xU8e/CH2GnkuvVFZE8zmgzI=</pin> <!-- ISRG_Root_X2 -->
+        </pin-set>
+    </domain-config>
+</network-security-config>

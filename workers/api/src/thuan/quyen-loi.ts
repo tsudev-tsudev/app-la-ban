@@ -309,3 +309,12 @@ export async function giaiMaTokenQl(khoaB64: string, banMa: string): Promise<str
     return null;
   }
 }
+
+/**
+ * M2 (Q56): gói có bán Pro trong app (Play Billing / RTDN / Voided Purchases) = gói Play Integrity hợp lệ trừ gói app
+ * "La bàn Pro" (trả phí một lần, quyền lợi `pro_app` cấp qua Play Integrity LICENSED, không có sản phẩm trong app).
+ */
+export function goiBanTrongApp(dsGoi: readonly string[], dsGoiPro: readonly string[]): string[] {
+  const pro = new Set(dsGoiPro);
+  return dsGoi.filter((g) => !pro.has(g));
+}

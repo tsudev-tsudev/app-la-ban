@@ -341,6 +341,45 @@ gửi lại (không cần bản AAB mới).
 
 ---
 
+## Phần F - App "La bàn Pro" `com.tsudev.laban.pro` (M2, Q56, Q65) - NGƯỜI DÙNG làm, agent hướng dẫn theo ảnh chụp
+
+Mã nguồn sẵn sàng (M2a): `app_pro/`, Worker đã nhận gói Pro (`PI_GOI`), SOC lọc theo ứng dụng. Làm SAU khi app miễn phí
+ổn định kỳ duyệt (không làm hai app cùng lúc nếu Google còn đang duyệt app miễn phí).
+
+### F1. Tạo ứng dụng
+- Play Console -> **Tạo ứng dụng**: tên `La bàn Pro - TsuDev Compass`, ngôn ngữ mặc định Tiếng Việt, **Ứng dụng**,
+  **Có phí** (KHÔNG đổi sang miễn phí được về sau - chọn đúng ngay), tick 2 cam kết -> Tạo.
+- Giá: Kiếm tiền -> **Giá ứng dụng** -> 99.000 đ (Q56), để Play quy đổi các nước khác. Cần hồ sơ thanh toán (đã làm ở M1a bước 1).
+
+### F2. Khoá ký ứng dụng - DÙNG CHUNG với La bàn (BẮT BUỘC chọn đúng ở lần tải AAB đầu)
+- Thử nghiệm nội bộ -> Tạo bản phát hành -> mục **Khoá ký ứng dụng** -> **Chọn khoá ký** ->
+  **"Dùng cùng khoá với một ứng dụng khác trong tài khoản nhà phát triển"** (Use the same key as another app) -> chọn
+  `La bàn` (`com.tsudev.laban`). KHÔNG chọn "Google tạo khoá mới".
+- Lý do: M2b chuyển điểm mốc từ app miễn phí sang Pro qua permission `signature` (hai app phải cùng chữ ký), và Worker
+  (`PI_CHUNG_CHI`) + app (`Flavor.chungChiHopLe`) đã có sẵn chứng chỉ này. Nếu Play không hiện lựa chọn -> chụp ảnh gửi
+  agent (agent thêm chứng chỉ mới và chuyển M2b sang phương án tệp xuất mã hoá).
+
+### F3. Bản AAB đầu tiên
+- Agent build: `./tools/build/build-aab.sh --pro` -> `build/phat-hanh/pro/<pb>/la-ban-pro-<pb>.aab` (script tự kiểm không có
+  lớp / quyền quảng cáo). Người dùng tải lên kênh **Thử nghiệm nội bộ**, thêm cùng danh sách tester với app miễn phí.
+
+### F4. Liên kết Play Integrity + quyền service account
+- **Được bảo vệ bằng Play** / Tính toàn vẹn của ứng dụng -> Play Integrity API -> **Liên kết dự án Cloud** `930761930572`
+  (giống B2b của app miễn phí). Thiếu bước này -> Worker không giải mã được token -> app Pro không nhận quyền lợi `pro_app`.
+- Trang **Người dùng và quyền** (cấp tài khoản) -> service account Play Integrity / Play Developer API hiện có -> **Quyền đối với
+  ứng dụng** -> thêm `La bàn Pro` (xem thông tin ứng dụng). Không cần quyền tài chính cho app Pro (không bán trong app).
+
+### F5. Thiết lập app (giống Phần A) - khác biệt so với app miễn phí
+- A3 Quảng cáo: **Không, ứng dụng không chứa quảng cáo**. A6 An toàn dữ liệu: KHÔNG khai Advertising ID, KHÔNG khai lịch sử
+  mua hàng (mua app trả phí do Google xử lý, app không xử lý dữ liệu mua). Nội dung listing riêng ở M2b bước 4 (nêu rõ quan
+  hệ bản miễn phí / Pro - tránh vi phạm chính sách nội dung lặp lại).
+- Thử kín >= 12 người x 14 ngày RIÊNG cho app này (dùng chung 12 tester, chạy cùng lúc với app miễn phí - Q56).
+
+### F6. Kiểm sau khi cài từ Play (agent làm cùng người dùng)
+- Cài từ link thử nội bộ -> mở app -> Cài đặt -> **Bản quyền La bàn Pro** phải hiện "Đã xác minh qua Google Play" sau lần
+  đồng bộ đầu; SOC -> Thiết bị -> lọc **Ứng dụng: La bàn Pro** thấy máy; SOC -> Quyền lợi Pro thấy `pro_app:<thiết bị>`.
+- Bản sideload (APK tự build) phải hiện "Chưa xác minh", chạm -> hộp thoại "Tải từ Google Play" của Play.
+
 ## Phụ lục - đối chiếu ảnh chụp (`ky-ung-dung-la-ban/`, thư mục cục bộ, không commit)
 
 | Ảnh | Mục |
