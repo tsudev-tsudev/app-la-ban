@@ -93,15 +93,28 @@ cho staging + prod. Người dùng làm (sau khi tài khoản Play được duy�
 1. **Quyền service account** (Play Console -> Người dùng và quyền -> mời email service account đang dùng cho Play
    Integrity): quyền ứng dụng "Xem dữ liệu tài chính" + "Quản lý đơn hàng và gói thuê bao" cho `com.tsudev.laban`
    (và `com.tsudev.laban.pro` khi có). Thiếu quyền -> `/v1/mua/xac-minh` trả 503 `google-loi` (`google-403`).
-2. **Pub/Sub** (Cloud project 930761930572, gói miễn phí 10 GB/tháng - RTDN chỉ vài KB):
-   - Tạo topic `play-rtdn`; cấp `google-play-developer-notifications@system.gserviceaccount.com` vai trò *Pub/Sub Publisher* trên topic.
-   - Tạo service account `rtdn-day` (không cần khoá JSON) để Pub/Sub ký JWT OIDC.
-   - Tạo subscription **Push**: endpoint `https://compass-api.tsudev.com/v1/play/rtdn`, bật *Authentication* với service
-     account `rtdn-day`, audience = đúng URL endpoint (khớp `RTDN_AUD` trong `wrangler.toml`).
-   - Báo agent email `rtdn-day@...iam.gserviceaccount.com` -> agent đặt `RTDN_EMAIL` (biến thường) + deploy. Chưa đặt -> route trả 503 (Pub/Sub tự gửi lại tối đa 7 ngày).
-3. **Play Console -> Kiếm tiền -> Thiết lập kiếm tiền**: dán topic `projects/930761930572/topics/play-rtdn` -> *Gửi thông
-   báo thử* -> agent kiểm sự kiện `rtdn-thu` trong D1 `quyen_loi_events`.
-4. Tạo sản phẩm `pro_thang`, `pro_nam` (base plan + dùng thử 7 ngày), `pro_vinh_vien` theo giá Q55; thêm license tester.
+2. **Pub/Sub** (Cloud project `app-la-ban` = 930761930572, gói miễn phí 10 GB/tháng - RTDN chỉ vài KB), console.cloud.google.com
+   đúng tài khoản Google sở hữu project:
+   - *API và dịch vụ -> Thư viện* -> bật **Cloud Pub/Sub API**.
+   - *Pub/Sub -> Chủ đề -> Tạo chủ đề*: mã `play-rtdn`, BỎ tích "Thêm gói thuê bao mặc định", mã hoá do Google quản lý.
+   - Mở chủ đề -> *Quyền* (hoặc *Hiện bảng thông tin*) -> *Thêm bên chính* `google-play-developer-notifications@system.gserviceaccount.com`,
+     vai trò **Pub/Sub Publisher**.
+   - *IAM và quản trị -> Tài khoản dịch vụ -> Tạo*: mã ĐÚNG `rtdn-day` (email `rtdn-day@app-la-ban.iam.gserviceaccount.com` -
+     đã đặt sẵn `RTDN_EMAIL` trong `wrangler.toml` prod), KHÔNG cấp vai trò, KHÔNG tạo khoá.
+   - *Pub/Sub -> Gói thuê bao -> Tạo*: mã `play-rtdn-push`, chủ đề `projects/app-la-ban/topics/play-rtdn`, loại phân phối
+     **Đẩy (Push)**, endpoint `https://compass-api.tsudev.com/v1/play/rtdn`, tích **Bật xác thực** -> tài khoản dịch vụ
+     `rtdn-day`, audience = đúng URL endpoint (khớp `RTDN_AUD`), lưu giữ tin 7 ngày, hết hạn **Không bao giờ**, thử lại
+     **Thời gian chờ tăng theo cấp số nhân**, không dead-letter. Project tạo sau 08/04/2021 không cần cấp *Token Creator*
+     cho service agent Pub/Sub.
+3. **Play Console -> app -> Kiếm tiền bằng Play -> Thiết lập tính năng kiếm tiền**: tích *Bật thông báo theo thời gian
+   thực*, chủ đề `projects/app-la-ban/topics/play-rtdn`, nội dung **"Gói thuê bao, giao dịch mua hàng vô hiệu và tất cả
+   các sản phẩm tính phí một lần"** (`pro_vinh_vien` là sản phẩm một lần) -> *Lưu* -> *Gửi thông báo thử* -> agent kiểm
+   sự kiện `rtdn-thu` trong D1 `quyen_loi_events`.
+4. Tạo sản phẩm theo giá Q55 (cần hồ sơ thanh toán): `pro_thang` (gói thuê bao, base plan `thang` tự gia hạn 1 tháng),
+   `pro_nam` (gói thuê bao, base plan `nam` 1 năm + ưu đãi `dung-thu-7-ngay`) - giá đặt ở *Giá và phạm vi cung cấp ->
+   Set prices*. `pro_vinh_vien` là **Sản phẩm một lần** (KHÔNG phải gói thuê bao; mã sản phẩm không dùng lại được sau
+   khi xoá - tạo nhầm loại thì báo agent đổi mã ở `thuan/quyen-loi.ts` + `packages/quyen_loi`). Biểu tượng:
+   `design/store/san-pham/`. License tester: trang tài khoản (ngoài app) -> *Kiểm thử giấy phép*.
 
 Kiểm nhanh (agent): `npx wrangler d1 execute la-ban-prod --remote --command "SELECT kind, count(*) FROM quyen_loi_events GROUP BY kind"`.
 
