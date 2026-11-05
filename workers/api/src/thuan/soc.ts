@@ -132,6 +132,8 @@ export const SchemaLocThietBi = z.strictObject({
   asn: z.string().regex(/^\d{1,10}$/).optional(),
   suKien: z.string().regex(/^[A-Z][A-Z0-9_]{1,40}$/).optional(),
   sap: z.enum(['moi-nhat', 'rui-ro']).optional(),
+  /** M2 (Q56): app miễn phí / app "La bàn Pro" (theo PI_GOI_PRO). */
+  ungDung: z.enum(['mien-phi', 'pro']).optional(),
   cursor: z.string().max(200).optional(),
   limit: z.string().max(4).optional(),
 });
@@ -155,12 +157,12 @@ export function docLocThietBi(q: Record<string, string>): LocThietBi {
 export type TruyVan = { sql: string; thamSo: (string | number)[]; gioiHan: number; cursor: Cursor | null };
 
 const COT_DS =
-  'd.id, d.platform, d.model, d.os_version, d.app_version, d.build, d.status, d.risk_score, d.attestation_level, d.country, d.first_seen, d.last_seen,' +
+  'd.id, d.platform, d.package_name, d.model, d.os_version, d.app_version, d.build, d.status, d.risk_score, d.attestation_level, d.country, d.first_seen, d.last_seen,' +
   ' (SELECT i.ip FROM device_ips i WHERE i.device_id = d.id ORDER BY i.last_seen DESC LIMIT 1) AS ip,' +
   ' (SELECT i.asn FROM device_ips i WHERE i.device_id = d.id ORDER BY i.last_seen DESC LIMIT 1) AS asn';
 
 /** Bộ lọc -> SELECT có tham số, phân trang keyset (last_seen | risk_score, id) giảm dần; lấy dư 1 dòng để biết còn trang. */
-export function truyVanThietBi(loc: LocThietBi, bayGio: number): TruyVan {
+export function truyVanThietBi(loc: LocThietBi, bayGio: number, dsGoiPro: readonly string[] = []): TruyVan {
   const dk: string[] = [];
   const ts: (string | number)[] = [];
   const them = (dieuKien: string, ...giaTri: (string | number)[]): void => {
@@ -171,6 +173,12 @@ export function truyVanThietBi(loc: LocThietBi, bayGio: number): TruyVan {
   if (loc.nenTang) them('d.platform = ?', loc.nenTang);
   if (loc.mucTin) them('d.attestation_level = ?', loc.mucTin);
   if (loc.phienBan) them('d.app_version = ?', loc.phienBan);
+  if (loc.ungDung) {
+    // package_name NULL = đăng ký trước M2 = app miễn phí. Không có gói Pro nào cấu hình -> lọc Pro ra rỗng.
+    const pro = dsGoiPro.length ? `d.package_name IN (${dsGoiPro.map(() => '?').join(', ')})` : '0';
+    if (loc.ungDung === 'pro') them(pro, ...dsGoiPro);
+    else them(`NOT coalesce(${pro}, 0)`, ...dsGoiPro);
+  }
   // Schema chỉ cho [0-9A-Za-z-] nên không có ký tự đại diện LIKE (% _) lọt vào.
   if (loc.q) them('d.id LIKE ?', `${loc.q}%`);
   if (loc.ip) {

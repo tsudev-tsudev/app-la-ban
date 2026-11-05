@@ -7,6 +7,7 @@ import type { MoiTruongHono, Ngu } from '../moi-truong';
 import { maHoaCursor } from '../thuan/cursor';
 import { laIdHopLe, taoUlid } from '../thuan/dinh-danh';
 import { LoiApi } from '../thuan/loi';
+import { tachDs } from '../thuan/access-jwt';
 import { cheIp, docLocThietBi, giaTriCursor, truyVanThietBi, type VaiTro } from '../thuan/soc';
 import { canQuyen } from './xac-thuc';
 
@@ -54,6 +55,8 @@ export function dangKyDuLieu(r: Hono<MoiTruongHono>): void {
       d.prepare(
         "SELECT (SELECT COUNT(*) FROM alerts WHERE status = 'open') AS canhBao, (SELECT COUNT(*) FROM enforcements WHERE revoked_at IS NULL AND expires_at > ? AND pending_approval = 0) AS thucThi, (SELECT COUNT(*) FROM enforcements WHERE revoked_at IS NULL AND expires_at > ? AND pending_approval = 1) AS choDuyet, (SELECT COUNT(*) FROM appeals WHERE status = 'open') AS khieuNai",
       ).bind(bayGio, bayGio),
+      // M2 (Q56): thiết bị hoạt động 30 ngày theo gói (NULL = đăng ký trước M2 = app miễn phí).
+      d.prepare("SELECT coalesce(package_name, '?') AS k, COUNT(*) AS n FROM devices WHERE last_seen >= ? GROUP BY k ORDER BY n DESC LIMIT 8").bind(thang),
     ]);
     const ds = (i: number) => (kq[i]?.results ?? []) as Dem[];
     const tong = (kq[1]?.results[0] ?? { n: 0, dau: 0, mau: 0 }) as { n: number; dau: number | null; mau: number | null };
@@ -68,13 +71,14 @@ export function dangKyDuLieu(r: Hono<MoiTruongHono>): void {
       topIp: ds(7).map((x) => ({ k: cheIp(String(x.k), vt), n: x.n })),
       topAsn: ds(8),
       dem: kq[9]?.results[0] ?? {},
+      ungDung: ds(10),
       haTang: { moiTruong: c.env.MOI_TRUONG, build: c.env.BAN_BUILD ?? 'dev', d1Ms: Date.now() - batDau },
     });
   });
 
   r.get('/thiet-bi', canQuyen('thiet-bi:ds'), async (c) => {
     const loc = docLocThietBi(c.req.query());
-    const tv = truyVanThietBi(loc, Date.now());
+    const tv = truyVanThietBi(loc, Date.now(), tachDs(c.env.PI_GOI_PRO));
     const batDau = Date.now();
     const { results } = await db(c)
       .prepare(tv.sql)
@@ -97,7 +101,7 @@ export function dangKyDuLieu(r: Hono<MoiTruongHono>): void {
     const d = db(c);
     const tb = await d
       .prepare(
-        'SELECT id, platform, model, os_version, app_version, build, locale, status, risk_score, attestation_level, attested_at, attest_signals, country, first_seen, last_seen, last_violation_at FROM devices WHERE id = ?',
+        'SELECT id, platform, package_name, model, os_version, app_version, build, locale, status, risk_score, attestation_level, attested_at, attest_signals, country, first_seen, last_seen, last_violation_at FROM devices WHERE id = ?',
       )
       .bind(id)
       .first<Record<string, unknown> & { attest_signals: string | null }>();

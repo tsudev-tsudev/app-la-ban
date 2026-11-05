@@ -173,4 +173,16 @@ describe('bộ lọc thiết bị -> SQL', () => {
     }
     expect(truyVanThietBi(docLocThietBi({ ip: '2001:db8::1' }), 0).thamSo).toEqual(['2001:db8::1', 51]);
   });
+
+  it('M2: lọc app miễn phí / Pro theo PI_GOI_PRO; NULL (trước M2) = miễn phí', () => {
+    const pro = ['com.tsudev.laban.pro', 'com.tsudev.laban.pro.stg'];
+    const p = truyVanThietBi(docLocThietBi({ ungDung: 'pro' }), 0, pro);
+    expect(p.sql).toContain('d.package_name IN (?, ?)');
+    expect(p.thamSo).toEqual([...pro, 51]);
+    const m = truyVanThietBi(docLocThietBi({ ungDung: 'mien-phi' }), 0, pro);
+    expect(m.sql).toContain('NOT coalesce(d.package_name IN (?, ?), 0)');
+    expect(m.thamSo).toEqual([...pro, 51]);
+    expect(truyVanThietBi(docLocThietBi({ ungDung: 'pro' }), 0).sql).toMatch(/WHERE 0/);
+    expect(() => docLocThietBi({ ungDung: 'khac' })).toThrow(LoiApi);
+  });
 });

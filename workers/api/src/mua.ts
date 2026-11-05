@@ -23,6 +23,7 @@ import {
   docMuaMotLan,
   docRtdn,
   giaiMaTokenQl,
+  goiBanTrongApp,
   kidJwt,
   kiemJwtGoogle,
   LoiJwtGoogle,
@@ -225,7 +226,7 @@ export function dangKyMua(boTuyen: BoTuyen): void {
       const db = canDb(c.env);
       canKhoa(c.env);
       const thietBi = c.get('thietBi') as string;
-      if (!tachDs(c.env.PI_GOI).includes(b.goi)) throw new LoiApi(422, 'goi');
+      if (!goiBanTrongApp(tachDs(c.env.PI_GOI), tachDs(c.env.PI_GOI_PRO)).includes(b.goi)) throw new LoiApi(422, 'goi');
       const loai = SAN_PHAM[b.sanPham];
       const tb = await db.prepare('SELECT attest_signals FROM devices WHERE id = ?').bind(thietBi).first<{ attest_signals: string | null }>();
       // IAP-05: bản không do Play cài (sideload / đóng gói lại) không nhận quyền lợi mới. Staging tắt (bản stg ký debug).
@@ -305,7 +306,7 @@ export function dangKyMua(boTuyen: BoTuyen): void {
         throw new LoiApi(401, 'rtdn-jwt');
       }
       const db = canDb(c.env);
-      const viec = docRtdn(b.message.data, tachDs(c.env.PI_GOI));
+      const viec = docRtdn(b.message.data, goiBanTrongApp(tachDs(c.env.PI_GOI), tachDs(c.env.PI_GOI_PRO)));
       const bayGio = Date.now();
       try {
         if (viec.loai === 'hoan') {
@@ -348,7 +349,7 @@ export async function quetQuyenLoi(env: Env, bayGio = Date.now()): Promise<Recor
   const db = env.DB;
   if (!db || !env.PLAY_INTEGRITY_SA_JSON || !env.KHOA_QUYEN_LOI) return { boQua: 'chua-cau-hinh' };
   const kq = { thuHoi: 0, kiemLai: 0, loi: [] as string[] };
-  for (const goi of tachDs(env.PI_GOI)) {
+  for (const goi of goiBanTrongApp(tachDs(env.PI_GOI), tachDs(env.PI_GOI_PRO))) {
     try {
       for (const token of await dsMuaBiHuy(env, goi, bayGio - 3 * NGAY_MS)) {
         if (await thuHoiTheoToken(env, db, token, 'hoan-tien', bayGio)) kq.thuHoi++;

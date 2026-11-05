@@ -1534,4 +1534,25 @@ class LbL10nVi extends LbL10n {
 
   @override
   String get a9LiteOff => 'Chế độ nhẹ: tắt - máy đủ mạnh cho hiệu ứng đầy đủ.';
+
+  @override
+  String get appTitlePro => 'La bàn Pro';
+
+  @override
+  String get m2LicenseTitle => 'Bản quyền La bàn Pro';
+
+  @override
+  String get m2LicenseOk =>
+      'Đã xác minh qua Google Play - đủ mọi tính năng Pro';
+
+  @override
+  String get m2LicenseMissing =>
+      'Chưa xác minh - chạm để tải bản chính thức từ Google Play';
+
+  @override
+  String get m2LicenseFixFail =>
+      'Không mở được Google Play. Hãy cài La bàn Pro từ Google Play rồi mở lại app.';
+
+  @override
+  String get m2LicenseFixDone => 'Đã gửi yêu cầu xác minh lại bản quyền.';
 }

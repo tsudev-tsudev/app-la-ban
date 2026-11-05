@@ -155,4 +155,85 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(ManPro), findsOneWidget);
   });
+
+  group('MucBanQuyenPro (M2, Q56)', () {
+    DichVuQuyenLoi dvPro() => DichVuQuyenLoi(
+      cuaHang: const CuaHangKhongBan(),
+      kho: KhoQuyenLoiBoNho(),
+      maTaiKhoan: () => 'm',
+      dongHo: () => DateTime.utc(2026, 11, 5).millisecondsSinceEpoch,
+      xacMinh: (_, _) async => (quyenLoi: null, loi: LoiMua.mayChu),
+    )..batDau();
+
+    Widget dungMuc(DichVuQuyenLoi dv, Future<bool?> Function()? kp) =>
+        ProviderScope(
+          overrides: [
+            dichVuQuyenLoiProvider.overrideWithValue(dv),
+            khacPhucBanQuyenProvider.overrideWithValue(kp),
+          ],
+          child: khungThu(
+            const Scaffold(body: MucBanQuyenPro()),
+            o: oChup.first,
+          ),
+        );
+
+    testWidgets('chưa xác minh -> chạm mở khắc phục, báo kết quả', (
+      tester,
+    ) async {
+      var goi = 0;
+      bool? kq = true;
+      await tester.pumpWidget(
+        dungMuc(dvPro(), () async {
+          goi++;
+          return kq;
+        }),
+      );
+      expect(
+        find.text('Chưa xác minh - chạm để tải bản chính thức từ Google Play'),
+        findsOneWidget,
+      );
+      await tester.tap(find.byKey(const ValueKey('muc-ban-quyen-pro')));
+      await tester.pump();
+      expect(goi, 1);
+      expect(
+        find.text('Đã gửi yêu cầu xác minh lại bản quyền.'),
+        findsOneWidget,
+      );
+      kq = null;
+      await tester.tap(find.byKey(const ValueKey('muc-ban-quyen-pro')));
+      await tester.pump();
+      expect(goi, 2);
+    });
+
+    testWidgets('đã có pro_app -> hiện đã xác minh, không chạm được', (
+      tester,
+    ) async {
+      final dv = dvPro();
+      var goi = 0;
+      await tester.pumpWidget(
+        dungMuc(dv, () async {
+          goi++;
+          return true;
+        }),
+      );
+      await dv.capNhatTuMayChu(const QuyenLoi(pro: true, khongQuangCao: true));
+      await tester.pump();
+      expect(
+        find.text('Đã xác minh qua Google Play - đủ mọi tính năng Pro'),
+        findsOneWidget,
+      );
+      await tester.tap(find.byKey(const ValueKey('muc-ban-quyen-pro')));
+      await tester.pump();
+      expect(goi, 0);
+    });
+  });
+
+  test('CuaHangKhongBan: không bán, không giao dịch', () async {
+    const ch = CuaHangKhongBan();
+    expect(await ch.khaDung(), isFalse);
+    expect(await ch.taiGoi(), isEmpty);
+    expect(await ch.khoiPhuc(), isEmpty);
+    expect(await ch.chuaXacNhan(), isEmpty);
+    expect(await ch.capNhat.isEmpty, isTrue);
+  });
 }

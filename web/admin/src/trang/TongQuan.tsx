@@ -227,6 +227,10 @@ export function TongQuan() {
         <h2>{t.phienBanApp}</h2>
         <ThanhXepHang ds={d.phienBan} />
       </section>
+      <section className="the">
+        <h2>{t.ungDungTq}</h2>
+        <ThanhXepHang ds={d.ungDung ?? []} nhan={(k) => (k === '?' ? t.goiCu : String(k))} />
+      </section>
 
       <section className="the rong-3">
         <div className="tieu-de-the">

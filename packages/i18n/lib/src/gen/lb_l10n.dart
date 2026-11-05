@@ -2557,6 +2557,42 @@ abstract class LbL10n {
   /// In vi, this message translates to:
   /// **'Chế độ nhẹ: tắt - máy đủ mạnh cho hiệu ứng đầy đủ.'**
   String get a9LiteOff;
+
+  /// M2: tên app Pro (bản prod)
+  ///
+  /// In vi, this message translates to:
+  /// **'La bàn Pro'**
+  String get appTitlePro;
+
+  /// M2: mục Cài đặt app Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'Bản quyền La bàn Pro'**
+  String get m2LicenseTitle;
+
+  /// M2: phụ đề khi Worker đã cấp pro_app
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã xác minh qua Google Play - đủ mọi tính năng Pro'**
+  String get m2LicenseOk;
+
+  /// M2: phụ đề khi chưa có pro_app
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa xác minh - chạm để tải bản chính thức từ Google Play'**
+  String get m2LicenseMissing;
+
+  /// M2: hộp thoại GET_LICENSED không khả dụng
+  ///
+  /// In vi, this message translates to:
+  /// **'Không mở được Google Play. Hãy cài La bàn Pro từ Google Play rồi mở lại app.'**
+  String get m2LicenseFixFail;
+
+  /// M2: sau khi hộp thoại Play thành công
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã gửi yêu cầu xác minh lại bản quyền.'**
+  String get m2LicenseFixDone;
 }
 
 class _LbL10nDelegate extends LocalizationsDelegate<LbL10n> {

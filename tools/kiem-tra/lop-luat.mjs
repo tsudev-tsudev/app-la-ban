@@ -19,8 +19,17 @@ export const TANG = {
   settings_feature: 2,
   ads_iap: 2,
   quyen_loi: 2,
-  la_ban: 3,
+  // M2 (Q56): vỏ app dùng chung; hai app chỉ còn main + Android.
+  app_shell: 3,
+  la_ban: 4,
+  la_ban_pro: 4,
 };
+
+/** App / gói KHÔNG được chứa quảng cáo kể cả bắc cầu (M2, Q56: APK Pro không có SDK quảng cáo). */
+export const KHONG_QUANG_CAO = new Set(['la_ban_pro', 'app_shell']);
+
+/** Gói nội bộ / SDK mang quảng cáo. */
+export const GOI_QUANG_CAO = new Set(['quang_cao', 'ads_iap', 'google_mobile_ads']);
 
 /** Gói chỉ được khai báo ở dev_dependencies và chỉ import trong test/. */
 export const CHI_TEST = new Set(['test_kit', 'flutter_test']);
@@ -70,6 +79,17 @@ export function kiemLop(dsGoi) {
       if (td === undefined || laTest) continue;
       if (td > tang || (td === tang && !CUNG_TANG_DUOC.has(`${ten}>${d}`))) {
         loi.push(`${ten} (tầng ${tang}) không được phụ thuộc ${d} (tầng ${td})`);
+      }
+    }
+    if (KHONG_QUANG_CAO.has(ten)) {
+      const da = new Set();
+      const hang = [...g.deps];
+      while (hang.length) {
+        const d = hang.pop();
+        if (da.has(d)) continue;
+        da.add(d);
+        if (GOI_QUANG_CAO.has(d)) loi.push(`${ten}: không được phụ thuộc quảng cáo (${d}) - Q56`);
+        hang.push(...(dsGoi[d]?.deps ?? []));
       }
     }
     const khaiBao = new Set([...g.deps, ...g.devDeps, ten]);

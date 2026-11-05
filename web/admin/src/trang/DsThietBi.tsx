@@ -3,12 +3,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { goi, LoiSoc, type DongThietBi } from '../api';
 import { NhanTrangThai, ThongBaoLoi } from '../dung-chung';
+import { laGoiPro } from '../giao-dien/goi-app';
 import { dinhDangLuc } from '../i18n';
 import { useSoc } from '../ngu-canh';
 
 const CAO_DONG = 44;
 const DU_TREN_DUOI = 8;
-const KHOA_LOC = ['trangThai', 'q', 'ip', 'asn', 'phienBan', 'suKien', 'sap'] as const;
+const KHOA_LOC = ['trangThai', 'ungDung', 'q', 'ip', 'asn', 'phienBan', 'suKien', 'sap'] as const;
 type Loc = Partial<Record<(typeof KHOA_LOC)[number], string>>;
 
 function docLocTuHash(): Loc {
@@ -124,6 +125,17 @@ export function DsThietBi() {
           </select>
         </label>
         <label>
+          <span>{t.locUngDung}</span>
+          <select name="ungDung" defaultValue={loc.ungDung ?? ''}>
+            <option value="">{t.tatCa}</option>
+            {['mien-phi', 'pro'].map((k) => (
+              <option key={k} value={k}>
+                {t.ungDung[k]}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
           <span>{t.timId}</span>
           <input name="q" defaultValue={loc.q ?? ''} pattern="[0-9A-Za-z\-]{2,36}" autoComplete="off" spellCheck={false} />
         </label>
@@ -192,6 +204,7 @@ export function DsThietBi() {
                 </span>
                 <span role="cell">
                   {d.app_version ?? '-'} / {d.build ?? '-'}
+                  {laGoiPro(d.package_name) && <span className="nhan-phu nhan-pro">{t.ungDung.pro}</span>}
                 </span>
                 <span role="cell" className="ma">
                   {d.ip ?? '-'}

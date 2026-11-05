@@ -1543,6 +1543,27 @@ class LbL10nEn extends LbL10n {
   @override
   String get a9LiteOff =>
       'Lite mode: off - this phone handles the full effects.';
+
+  @override
+  String get appTitlePro => 'Compass Pro';
+
+  @override
+  String get m2LicenseTitle => 'Compass Pro license';
+
+  @override
+  String get m2LicenseOk =>
+      'Verified by Google Play - all Pro features unlocked';
+
+  @override
+  String get m2LicenseMissing =>
+      'Not verified - tap to get the official copy from Google Play';
+
+  @override
+  String get m2LicenseFixFail =>
+      'Couldn\'t open Google Play. Install Compass Pro from Google Play, then reopen the app.';
+
+  @override
+  String get m2LicenseFixDone => 'License re-check requested.';
 }
 
 /// The translations for English (`en_XA`).
@@ -3109,4 +3130,25 @@ class LbL10nEnXa extends LbL10nEn {
   @override
   String get a9LiteOff =>
       '[Łỉťẽ mởđẽ: ởff - ťhỉš phởñẽ hảñđłẽš ťhẽ fữłł ẽffẽçťš. ······················]';
+
+  @override
+  String get appTitlePro => '[Çởmpảšš Přở ·····]';
+
+  @override
+  String get m2LicenseTitle => '[Çởmpảšš Přở łỉçẽñšẽ ········]';
+
+  @override
+  String get m2LicenseOk =>
+      '[Vẽřỉfỉẽđ bỹ Ğởởğłẽ Płảỹ - ảłł Přở fẽảťữřẽš ữñłởçkẽđ ·····················]';
+
+  @override
+  String get m2LicenseMissing =>
+      '[Ñởť vẽřỉfỉẽđ - ťảp ťở ğẽť ťhẽ ởffỉçỉảł çởpỹ fřởm Ğởởğłẽ Płảỹ ························]';
+
+  @override
+  String get m2LicenseFixFail =>
+      '[Çởữłđñ\'ť ởpẽñ Ğởởğłẽ Płảỹ. Ỉñšťảłł Çởmpảšš Přở fřởm Ğởởğłẽ Płảỹ, ťhẽñ řẽởpẽñ ťhẽ ảpp. ··································]';
+
+  @override
+  String get m2LicenseFixDone => '[Łỉçẽñšẽ řẽ-çhẽçk řẽqữẽšťẽđ. ···········]';
 }

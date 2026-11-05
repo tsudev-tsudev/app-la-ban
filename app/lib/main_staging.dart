@@ -1,4 +1,4 @@
-import 'package:la_ban/src/flavor.dart';
-import 'package:la_ban/src/khoi_dong.dart';
+import 'package:app_shell/app_shell.dart';
+import 'package:la_ban/src/san_pham.dart';
 
-void main() => khoiDong(Flavor.staging);
+void main() => khoiDong(cauHinhMienPhi(Flavor.staging));

@@ -450,5 +450,11 @@
   "a9No": "No",
   "a9SourcesTitle": "Direction sources available (in priority order)",
   "a9LiteOn": "Lite mode is on: the dial skips smooth rotation so the phone stays responsive.",
-  "a9LiteOff": "Lite mode: off - this phone handles the full effects."
+  "a9LiteOff": "Lite mode: off - this phone handles the full effects.",
+  "appTitlePro": "Compass Pro",
+  "m2LicenseTitle": "Compass Pro license",
+  "m2LicenseOk": "Verified by Google Play - all Pro features unlocked",
+  "m2LicenseMissing": "Not verified - tap to get the official copy from Google Play",
+  "m2LicenseFixFail": "Couldn't open Google Play. Install Compass Pro from Google Play, then reopen the app.",
+  "m2LicenseFixDone": "License re-check requested."
 }

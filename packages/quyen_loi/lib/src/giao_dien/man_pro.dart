@@ -415,3 +415,47 @@ class MucPro extends ConsumerWidget {
     );
   }
 }
+
+/// App Pro (M2, Q56): mở hộp thoại "Tải từ Google Play" khi chưa có quyền lợi
+/// `pro_app`. Trả true = Play báo xong (đã gửi xác minh lại), false = không
+/// khả dụng, null = người dùng huỷ. null provider = không hỗ trợ (test / iOS).
+final khacPhucBanQuyenProvider = Provider<Future<bool?> Function()?>(
+  (_) => null,
+);
+
+/// Mục Cài đặt của app "La bàn Pro" thay cho [MucPro]: app trả phí một lần
+/// không bán gói - chỉ hiện trạng thái bản quyền do máy chủ xác minh
+/// (Play Integrity `LICENSED` -> `pro_app`) và lối khắc phục khi chưa có.
+class MucBanQuyenPro extends ConsumerWidget {
+  const new({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = context.l10n;
+    final coPro = ref.watch(trangThaiQuyenLoiProvider).coPro;
+    final khacPhuc = ref.watch(khacPhucBanQuyenProvider);
+    return ListTile(
+      key: const ValueKey('muc-ban-quyen-pro'),
+      leading: Icon(
+        coPro ? Icons.verified : Icons.gpp_maybe,
+        color: Theme.of(context).colorScheme.primary,
+      ),
+      title: Text(l10n.m2LicenseTitle),
+      subtitle: Text(coPro ? l10n.m2LicenseOk : l10n.m2LicenseMissing),
+      onTap: coPro || khacPhuc == null
+          ? null
+          : () async {
+              final tin = ScaffoldMessenger.maybeOf(context);
+              final kq = await khacPhuc();
+              if (kq == null) return;
+              tin?.showSnackBar(
+                SnackBar(
+                  content: Text(
+                    kq ? l10n.m2LicenseFixDone : l10n.m2LicenseFixFail,
+                  ),
+                ),
+              );
+            },
+    );
+  }
+}

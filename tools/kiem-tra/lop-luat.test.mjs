@@ -89,3 +89,23 @@ test('lib/ không được import gói chỉ có ở dev_dependencies', () => {
   });
   assert.deepEqual(loi, ['c/lib/a.dart: mã lib/ import design_system chỉ có ở dev_dependencies']);
 });
+
+test('M2 (Q56): app Pro / app_shell không phụ thuộc quảng cáo kể cả bắc cầu; app miễn phí được', () => {
+  const loi = kiemLop({
+    core: goi(),
+    ads_iap: goi(['core']),
+    quyen_loi: goi(['core']),
+    app_shell: goi(['quyen_loi']),
+    la_ban: goi(['app_shell', 'ads_iap']),
+    la_ban_pro: goi(['app_shell']),
+  });
+  assert.deepEqual(loi, []);
+  const loi2 = kiemLop({
+    core: goi(),
+    ads_iap: goi(['core']),
+    quyen_loi: goi(['ads_iap']),
+    app_shell: goi(['quyen_loi']),
+    la_ban_pro: goi(['app_shell']),
+  });
+  assert.equal(loi2.filter((l) => l.includes('quảng cáo')).length, 2);
+});

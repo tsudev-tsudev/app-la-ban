@@ -1,0 +1,174 @@
+import 'dart:async';
+import 'dart:typed_data';
+
+import 'package:app_shell/src/dinh_danh.dart';
+import 'package:app_shell/src/flavor.dart';
+import 'package:app_shell/src/phien_ban.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:security_sdk/security_sdk.dart';
+
+void main() {
+  _testThuLai();
+
+  test('tách phiên bản app cho đăng ký thiết bị', () {
+    expect(tachPhienBan('0.1.0-beta.4+4'), (ten: '0.1.0-beta.4', build: 4));
+    expect(tachPhienBan('1.2.3'), (ten: '1.2.3', build: 1));
+    expect(tachPhienBan(phienBanApp).build, greaterThan(0));
+  });
+
+  test('API theo flavor: staging / prod HTTPS, đúng tên miền một cấp', () {
+    expect(Flavor.prod.apiGoc.toString(), 'https://compass-api.tsudev.com');
+    expect(Flavor.staging.apiGoc.host, 'compass-api-stg.tsudev.com');
+    expect(Flavor.staging.apiGoc.scheme, 'https');
+    expect(Flavor.soDuAnCloud, 930761930572);
+  });
+}
+
+final class _ApiTat implements ApiDinhDanh {
+  bool mang = false;
+  int goi = 0;
+
+  @override
+  Future<PhanHoiDinhDanh> post(
+    String duongDan,
+    Map<String, Object?> body, {
+    String? bearer,
+  }) async {
+    goi++;
+    if (!mang) throw const LoiKetNoi('SocketException');
+    return switch (duongDan) {
+      '/v1/device/challenge' => (status: 200, duLieu: {'thachThuc': 'T' * 43}),
+      _ => (
+        status: 201,
+        duLieu: {
+          'thietBiId': 'TB',
+          'mucTin': 'device',
+          'phien': {
+            'accessToken': 'a',
+            'hetHan': DateTime.now().millisecondsSinceEpoch + 900000,
+            'refreshToken': 'r',
+          },
+        },
+      ),
+    };
+  }
+
+  @override
+  Future<PhanHoiKy> goiTho(
+    String phuongThuc,
+    String duongDan, {
+    List<int>? than,
+    Map<String, String> tieuDe = const {},
+  }) async {
+    goi++;
+    if (!mang) throw const LoiKetNoi('SocketException');
+    return (status: 404, duLieu: null, gioMayChu: null);
+  }
+}
+
+final class _Kho implements KhoTrangThai {
+  @override
+  Map<String, Object?> duLieu = {};
+
+  @override
+  void ghiDongBo(Map<String, Object?> moi) => duLieu = moi;
+
+  @override
+  Future<void> ghi(Map<String, Object?> moi) async => duLieu = moi;
+}
+
+final class _NenTang implements NenTangThietBi {
+  @override
+  Future<KhoaThietBi> khoaCongKhai() async =>
+      (spki: Uint8List(91), mucBaoMat: 'tee');
+
+  @override
+  Future<Uint8List> ky(Uint8List duLieu) async => Uint8List(70);
+
+  @override
+  Future<String?> integrity(int soDuAn, String requestHash) async => null;
+
+  @override
+  Future<ThongTinMay> thongTin() async =>
+      (model: 'm', heDieuHanh: '13', goi: 'com.tsudev.laban.stg');
+
+  @override
+  Future<void> xoaKhoa() async {}
+
+  @override
+  Future<KetQuaNative> kiemTraMoiTruong() async =>
+      const KetQuaNative(coNative: true);
+
+  @override
+  Future<void> cheManHinh({required bool bat}) async {}
+}
+
+void _testThuLai() {
+  test('đã rút đồng ý (Q43): bỏ lượt, không gọi mạng, không hẹn lại', () async {
+    final api = _ApiTat()..mang = true;
+    var hen = 0;
+    final c = ChayDinhDanh(
+      DichVuDinhDanh(
+        api: api,
+        nenTang: _NenTang(),
+        tep: _Kho(),
+        cauHinh: CauHinhDinhDanh(
+          soDuAnCloud: 1,
+          phienBanApp: '0.1.0',
+          build: 1,
+          ngonNgu: () => 'vi',
+        ),
+      ),
+      hen: (d, f) {
+        hen++;
+        return Timer(const Duration(days: 1), () {});
+      },
+      duocChay: () => false,
+    )..chay();
+    await pumpEventQueue();
+    expect(api.goi, 0);
+    expect(hen, 0);
+    expect(c.lanThuLai, 0);
+  });
+
+  test(
+    'mất mạng lúc mở app -> hẹn thử lại 30 s / 2 phút, có mạng -> đăng ký',
+    () async {
+      final api = _ApiTat();
+      final hen = <Duration>[];
+      void Function()? lanSau;
+      final c = ChayDinhDanh(
+        DichVuDinhDanh(
+          api: api,
+          nenTang: _NenTang(),
+          tep: _Kho(),
+          cauHinh: CauHinhDinhDanh(
+            soDuAnCloud: 1,
+            phienBanApp: '0.1.0',
+            build: 1,
+            ngonNgu: () => 'vi',
+          ),
+        ),
+        hen: (d, f) {
+          hen.add(d);
+          lanSau = f;
+          return Timer(const Duration(days: 1), () {});
+        },
+      )..chay();
+      await pumpEventQueue();
+      expect(hen, [const Duration(seconds: 30)]);
+      lanSau!();
+      await pumpEventQueue();
+      expect(hen.last, const Duration(minutes: 2));
+      api.mang = true;
+      lanSau!();
+      await pumpEventQueue();
+      expect(c.lanThuLai, 0);
+      expect(hen, hasLength(2));
+      final truoc = api.goi;
+      c.chay();
+      await pumpEventQueue();
+      expect(api.goi, truoc, reason: 'phiên còn hạn -> không gọi mạng');
+    },
+  );
+}

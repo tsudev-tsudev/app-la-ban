@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
+import android.util.Base64
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyInfo
 import android.security.keystore.KeyProperties
@@ -18,7 +19,10 @@ import com.google.android.play.core.integrity.IntegrityManagerFactory
 import com.google.android.play.core.integrity.StandardIntegrityException
 import com.google.android.play.core.integrity.StandardIntegrityManager.PrepareIntegrityTokenRequest
 import com.google.android.play.core.integrity.StandardIntegrityManager.StandardIntegrityTokenProvider
+import com.google.android.play.core.integrity.StandardIntegrityManager.StandardIntegrityToken
 import com.google.android.play.core.integrity.StandardIntegrityManager.StandardIntegrityTokenRequest
+import com.google.android.play.core.integrity.model.IntegrityDialogResponseCode
+import com.google.android.play.core.integrity.model.IntegrityDialogTypeCode
 import com.google.android.play.core.integrity.model.StandardIntegrityErrorCode
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -29,6 +33,7 @@ import java.security.KeyFactory
 import java.security.KeyPairGenerator
 import java.security.KeyStore
 import java.security.PrivateKey
+import java.security.SecureRandom
 import java.security.Signature
 import java.security.spec.ECGenParameterSpec
 import java.util.concurrent.Executors
@@ -48,6 +53,8 @@ class ThietBiPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAw
     private val chinh = Handler(Looper.getMainLooper())
     private var provider: StandardIntegrityTokenProvider? = null
     private var soDuAnProvider: Long = 0
+    // Token gần nhất của phiên: hộp thoại khắc phục của Play (GET_LICENSED, M2) cần đúng đối tượng token.
+    private var tokenCuoi: StandardIntegrityToken? = null
     private var activity: Activity? = null
     private var cheBat = false
 
@@ -101,6 +108,13 @@ class ThietBiPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAw
                 val soDuAn = call.argument<Number>("soDuAn")?.toLong()
                 val bam = call.argument<String>("requestHash")
                 if (soDuAn == null || bam == null) result.error("integrity.thieu", null, null) else integrity(soDuAn, bam, result, thuLai = true)
+            }
+            // M2 (Q56): app Pro tải ngoài Play (UNLICENSED) -> hộp thoại "Tải từ Google Play" của Play Integrity.
+            // Chỉ là lối khắc phục cho người dùng; quyền lợi vẫn do Worker cấp sau lần xác minh kế tiếp.
+            "hopThoaiBanQuyen" -> {
+                val soDuAn = call.argument<Number>("soDuAn")?.toLong()
+                val a = activity
+                if (soDuAn == null || a == null) result.error("banQuyen.thieu", null, null) else hopThoaiBanQuyen(a, soDuAn, result)
             }
             // Trang tải bản mới (S3 force / soft update), chính sách quyền riêng tư, thư yêu cầu về dữ liệu (A8a).
             // Chỉ mở trang / hộp thư của chính mình + trang Gói thuê bao của Google Play (M1a: huỷ / đổi gói) -
@@ -239,7 +253,10 @@ class ThietBiPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAw
 
     private fun yeuCau(p: StandardIntegrityTokenProvider, soDuAn: Long, bam: String, result: MethodChannel.Result, thuLai: Boolean) {
         p.request(StandardIntegrityTokenRequest.builder().setRequestHash(bam).build())
-            .addOnSuccessListener { t -> result.success(t.token()) }
+            .addOnSuccessListener { t ->
+                tokenCuoi = t
+                result.success(t.token())
+            }
             .addOnFailureListener { e ->
                 // Provider hết hạn (vài giờ / Play cập nhật) -> chuẩn bị lại một lần.
                 if (thuLai && e is StandardIntegrityException &&
@@ -251,6 +268,44 @@ class ThietBiPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAw
                     result.error("integrity.loi", maLoi(e), null)
                 }
             }
+    }
+
+    private fun hopThoaiBanQuyen(a: Activity, soDuAn: Long, result: MethodChannel.Result) {
+        val t = tokenCuoi
+        if (t != null) {
+            hienHopThoai(a, t, result)
+            return
+        }
+        // Chưa có token trong phiên này (app vừa mở): xin một token với hash ngẫu nhiên chỉ để mở hộp thoại - token
+        // này không gửi server nên không thay được thách thức xác minh.
+        val bam = Base64.encodeToString(
+            ByteArray(32).also { SecureRandom().nextBytes(it) },
+            Base64.NO_WRAP or Base64.URL_SAFE or Base64.NO_PADDING,
+        )
+        integrity(soDuAn, bam, object : MethodChannel.Result {
+            override fun success(kq: Any?) {
+                val moi = tokenCuoi
+                if (moi == null) result.error("banQuyen.loi", null, null) else hienHopThoai(a, moi, result)
+            }
+
+            override fun error(ma: String, tb: String?, ct: Any?) = result.error("banQuyen.loi", tb, null)
+
+            override fun notImplemented() = result.notImplemented()
+        }, thuLai = true)
+    }
+
+    private fun hienHopThoai(a: Activity, t: StandardIntegrityToken, result: MethodChannel.Result) {
+        t.showDialog(a, IntegrityDialogTypeCode.GET_LICENSED)
+            .addOnSuccessListener { ma ->
+                result.success(
+                    when (ma) {
+                        IntegrityDialogResponseCode.DIALOG_SUCCESSFUL -> "thanhCong"
+                        IntegrityDialogResponseCode.DIALOG_CANCELLED -> "huy"
+                        else -> "khongKhaDung"
+                    },
+                )
+            }
+            .addOnFailureListener { e -> result.error("banQuyen.loi", maLoi(e), null) }
     }
 
     private fun maLoi(e: Exception): String =

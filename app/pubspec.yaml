@@ -8,31 +8,16 @@ resolution: workspace
 environment:
   sdk: ^3.13.0
 
+# M2 (Q56): toàn bộ app nằm ở packages/app_shell; app này chỉ còn main + Android. M1b: thêm quang_cao ở ĐÂY (app_pro
+# không được phụ thuộc quảng cáo - cổng kiểm).
 dependencies:
-  ar_feature:
-  compass_feature:
-  core:
-  design_system:
+  app_shell:
   flutter:
     sdk: flutter
-  flutter_localizations:
-    sdk: flutter
-  flutter_riverpod: ^3.4.3
-  go_router: ^18.0.2
-  i18n:
-  location_feature:
-  map_feature:
-  network:
-  quyen_loi:
-  security_sdk:
-  settings_feature:
-  storage:
-  waypoint_feature:
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  test_kit:
 
 flutter:
   uses-material-design: true

@@ -819,5 +819,17 @@
   "a9LiteOn": "Chế độ nhẹ đang bật: mặt la bàn bỏ hiệu ứng quay trượt để máy chạy mượt.",
   "@a9LiteOn": {"description": "A9a"},
   "a9LiteOff": "Chế độ nhẹ: tắt - máy đủ mạnh cho hiệu ứng đầy đủ.",
-  "@a9LiteOff": {"description": "A9a"}
+  "@a9LiteOff": {"description": "A9a"},
+  "appTitlePro": "La bàn Pro",
+  "@appTitlePro": {"description": "M2: tên app Pro (bản prod)"},
+  "m2LicenseTitle": "Bản quyền La bàn Pro",
+  "@m2LicenseTitle": {"description": "M2: mục Cài đặt app Pro"},
+  "m2LicenseOk": "Đã xác minh qua Google Play - đủ mọi tính năng Pro",
+  "@m2LicenseOk": {"description": "M2: phụ đề khi Worker đã cấp pro_app"},
+  "m2LicenseMissing": "Chưa xác minh - chạm để tải bản chính thức từ Google Play",
+  "@m2LicenseMissing": {"description": "M2: phụ đề khi chưa có pro_app"},
+  "m2LicenseFixFail": "Không mở được Google Play. Hãy cài La bàn Pro từ Google Play rồi mở lại app.",
+  "@m2LicenseFixFail": {"description": "M2: hộp thoại GET_LICENSED không khả dụng"},
+  "m2LicenseFixDone": "Đã gửi yêu cầu xác minh lại bản quyền.",
+  "@m2LicenseFixDone": {"description": "M2: sau khi hộp thoại Play thành công"}
 }
