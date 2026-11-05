@@ -1,4 +1,5 @@
 import 'package:app_shell/src/cap_nhat.dart';
+import 'package:app_shell/src/chuyen_pro.dart';
 import 'package:app_shell/src/cong_truc_tuyen.dart';
 import 'package:app_shell/src/flavor.dart';
 import 'package:app_shell/src/lam_cung.dart';
@@ -39,8 +40,15 @@ class LaBanApp extends ConsumerWidget {
       routerConfig: ref.watch(routerProvider),
       // Khoá / hạn chế theo Risk Level (S4) rồi cập nhật bắt buộc /
       // khuyến nghị (S3) phủ trên mọi màn.
-      builder: (_, child) =>
-          KhungRuiRo(child: KhungCapNhat(child: child ?? const SizedBox())),
+      // M2b: yêu cầu chuyển dữ liệu từ app kia đẩy màn lên navigator gốc.
+      builder: (_, child) => KhungRuiRo(
+        child: KhungCapNhat(
+          child: KhungChuyenPro(
+            dieuHuong: ref.read(routerProvider).routerDelegate.navigatorKey,
+            child: child ?? const SizedBox(),
+          ),
+        ),
+      ),
       theme: LbTheme.light,
       darkTheme: LbTheme.dark,
       themeMode: switch (cheDo) {

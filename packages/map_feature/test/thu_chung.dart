@@ -47,7 +47,15 @@ final class KhoVungGia implements KhoVungOffline {
 }
 
 final vungThu = <VungOffline>[
-  (id: 1, ten: '', zMin: 0, zMax: 8, taoLuc: gioThu, tongQuan: true),
+  (
+    id: 1,
+    ten: '',
+    zMin: 0,
+    zMax: 8,
+    taoLuc: gioThu,
+    tongQuan: true,
+    khung: khungVietNam,
+  ),
   (
     id: 2,
     ten: 'Vùng 30/10/2026 17:00',
@@ -55,6 +63,7 @@ final vungThu = <VungOffline>[
     zMax: 14,
     taoLuc: gioThu - 3600000,
     tongQuan: false,
+    khung: (tay: 105.7, nam: 20.9, dong: 105.95, bac: 21.1),
   ),
 ];
 

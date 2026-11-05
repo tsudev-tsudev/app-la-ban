@@ -2593,6 +2593,174 @@ abstract class LbL10n {
   /// In vi, this message translates to:
   /// **'Đã gửi yêu cầu xác minh lại bản quyền.'**
   String get m2LicenseFixDone;
+
+  /// M2b: chuyển dữ liệu bản miễn phí -> Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'Chuyển sang La bàn Pro'**
+  String get m2bMoveTitle;
+
+  /// M2b: chuyển dữ liệu bản miễn phí -> Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã cài La bàn Pro - gửi điểm mốc, ảnh và cài đặt sang bản Pro'**
+  String get m2bMoveSubtitle;
+
+  /// M2b: chuyển dữ liệu bản miễn phí -> Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi điểm mốc (kèm ảnh), danh sách vùng bản đồ ngoại tuyến và lựa chọn giao diện sang La bàn Pro trên máy này. Dữ liệu đi thẳng giữa hai ứng dụng, không qua mạng; bản miễn phí giữ nguyên dữ liệu của nó.'**
+  String get m2bMoveIntro;
+
+  /// M2b: chuyển dữ liệu bản miễn phí -> Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'{points} điểm mốc · {photos} ảnh · {areas} vùng ngoại tuyến'**
+  String m2bMoveCounts(int points, int photos, int areas);
+
+  /// M2b: chuyển dữ liệu bản miễn phí -> Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi sang La bàn Pro'**
+  String get m2bMoveSend;
+
+  /// M2b: chuyển dữ liệu bản miễn phí -> Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'Mở La bàn Pro'**
+  String get m2bMoveOpenPro;
+
+  /// M2b: chuyển dữ liệu bản miễn phí -> Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'Máy này chưa có La bàn Pro chính thức từ Google Play.'**
+  String get m2bMoveNotInstalled;
+
+  /// M2b: chuyển dữ liệu bản miễn phí -> Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem La bàn Pro trên Google Play'**
+  String get m2bMoveGetPro;
+
+  /// M2b: chuyển dữ liệu bản miễn phí -> Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'Không gửi được. Hãy dùng Cài đặt > Quyền riêng tư > Xuất dữ liệu rồi chọn tệp đó trong La bàn Pro.'**
+  String get m2bMoveFailed;
+
+  /// M2b: chuyển dữ liệu bản miễn phí -> Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập dữ liệu từ La bàn'**
+  String get m2bImportTitle;
+
+  /// M2b: chuyển dữ liệu bản miễn phí -> Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'Chuyển điểm mốc, ảnh và cài đặt từ bản miễn phí'**
+  String get m2bImportSubtitle;
+
+  /// M2b: chuyển dữ liệu bản miễn phí -> Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'Lấy dữ liệu từ La bàn (bản miễn phí) trên máy này, hoặc chọn tệp đã lưu bằng Cài đặt > Quyền riêng tư > Xuất dữ liệu. Bạn xem lại trước khi nhập.'**
+  String get m2bImportIntro;
+
+  /// M2b: chuyển dữ liệu bản miễn phí -> Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'Lấy từ La bàn trên máy này'**
+  String get m2bImportFromFree;
+
+  /// M2b: chuyển dữ liệu bản miễn phí -> Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thấy La bàn bản miễn phí chính thức trên máy này - hãy chọn tệp xuất.'**
+  String get m2bImportFreeMissing;
+
+  /// M2b: chuyển dữ liệu bản miễn phí -> Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn tệp xuất dữ liệu'**
+  String get m2bImportFile;
+
+  /// M2b: chuyển dữ liệu bản miễn phí -> Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'Xem lại trước khi nhập'**
+  String get m2bImportConfirmTitle;
+
+  /// M2b: chuyển dữ liệu bản miễn phí -> Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'{added} điểm mới · {updated} cập nhật · {same} đã có'**
+  String m2bImportPlan(int added, int updated, int same);
+
+  /// M2b: chuyển dữ liệu bản miễn phí -> Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} ảnh đi kèm điểm mới'**
+  String m2bImportPhotos(int count);
+
+  /// M2b: chuyển dữ liệu bản miễn phí -> Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'Dùng ngôn ngữ, giao diện và tuỳ chọn la bàn của bản miễn phí'**
+  String get m2bImportSettings;
+
+  /// M2b: chuyển dữ liệu bản miễn phí -> Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'{count} mục lỗi sẽ bị bỏ qua'**
+  String m2bImportSkipped(int count);
+
+  /// M2b: chuyển dữ liệu bản miễn phí -> Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhập'**
+  String get m2bImportDo;
+
+  /// M2b: chuyển dữ liệu bản miễn phí -> Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã nhập {added} điểm mới, cập nhật {updated} điểm.'**
+  String m2bImportDone(int added, int updated);
+
+  /// M2b: chuyển dữ liệu bản miễn phí -> Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'Tệp không phải dữ liệu La bàn hợp lệ.'**
+  String get m2bImportBadFile;
+
+  /// M2b: chuyển dữ liệu bản miễn phí -> Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'Không có gì để nhập.'**
+  String get m2bImportEmpty;
+
+  /// M2b: chuyển dữ liệu bản miễn phí -> Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'Tệp xuất dữ liệu cá nhân không chứa ảnh và vùng bản đồ - chỉ nhập điểm và cài đặt.'**
+  String get m2bImportNoPhotos;
+
+  /// M2b: chuyển dữ liệu bản miễn phí -> Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'Tải lại vùng bản đồ ngoại tuyến'**
+  String get m2bAreasTitle;
+
+  /// M2b: chuyển dữ liệu bản miễn phí -> Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'Bản đồ đã tải nằm riêng trong từng ứng dụng nên La bàn Pro cần tải lại (cần mạng).'**
+  String get m2bAreasIntro;
+
+  /// M2b: chuyển dữ liệu bản miễn phí -> Pro
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã tải'**
+  String get m2bAreaDone;
 }
 
 class _LbL10nDelegate extends LocalizationsDelegate<LbL10n> {

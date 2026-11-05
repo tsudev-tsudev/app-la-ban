@@ -16,6 +16,10 @@ typedef VungOffline = ({
 
   /// Gói "Tổng quan Việt Nam" (cả nước, zoom thấp).
   bool tongQuan,
+
+  /// Khung đã tải (M2b: chuyển định nghĩa vùng sang La bàn Pro); null khi
+  /// plugin không trả.
+  KhungBanDo? khung,
 });
 
 /// Tiến độ tải: `daXong` / `tong` tài nguyên (tile + style + glyph), `byte`
@@ -71,8 +75,16 @@ final class KhoVungMapLibre implements KhoVungOffline {
       zMax: r.definition.maxZoom.round(),
       taoLuc: (m['taoLuc'] as num?)?.toInt() ?? 0,
       tongQuan: m['tongQuan'] == true,
+      khung: _khung(r.definition.bounds),
     );
   }
+
+  static KhungBanDo _khung(ml.LatLngBounds b) => (
+    tay: b.southwest.longitude,
+    nam: b.southwest.latitude,
+    dong: b.northeast.longitude,
+    bac: b.northeast.latitude,
+  );
 
   @override
   Future<List<VungOffline>> danhSach() async {

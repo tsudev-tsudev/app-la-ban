@@ -1555,4 +1555,108 @@ class LbL10nVi extends LbL10n {
 
   @override
   String get m2LicenseFixDone => 'Đã gửi yêu cầu xác minh lại bản quyền.';
+
+  @override
+  String get m2bMoveTitle => 'Chuyển sang La bàn Pro';
+
+  @override
+  String get m2bMoveSubtitle =>
+      'Đã cài La bàn Pro - gửi điểm mốc, ảnh và cài đặt sang bản Pro';
+
+  @override
+  String get m2bMoveIntro =>
+      'Gửi điểm mốc (kèm ảnh), danh sách vùng bản đồ ngoại tuyến và lựa chọn giao diện sang La bàn Pro trên máy này. Dữ liệu đi thẳng giữa hai ứng dụng, không qua mạng; bản miễn phí giữ nguyên dữ liệu của nó.';
+
+  @override
+  String m2bMoveCounts(int points, int photos, int areas) {
+    return '$points điểm mốc · $photos ảnh · $areas vùng ngoại tuyến';
+  }
+
+  @override
+  String get m2bMoveSend => 'Gửi sang La bàn Pro';
+
+  @override
+  String get m2bMoveOpenPro => 'Mở La bàn Pro';
+
+  @override
+  String get m2bMoveNotInstalled =>
+      'Máy này chưa có La bàn Pro chính thức từ Google Play.';
+
+  @override
+  String get m2bMoveGetPro => 'Xem La bàn Pro trên Google Play';
+
+  @override
+  String get m2bMoveFailed =>
+      'Không gửi được. Hãy dùng Cài đặt > Quyền riêng tư > Xuất dữ liệu rồi chọn tệp đó trong La bàn Pro.';
+
+  @override
+  String get m2bImportTitle => 'Nhập dữ liệu từ La bàn';
+
+  @override
+  String get m2bImportSubtitle =>
+      'Chuyển điểm mốc, ảnh và cài đặt từ bản miễn phí';
+
+  @override
+  String get m2bImportIntro =>
+      'Lấy dữ liệu từ La bàn (bản miễn phí) trên máy này, hoặc chọn tệp đã lưu bằng Cài đặt > Quyền riêng tư > Xuất dữ liệu. Bạn xem lại trước khi nhập.';
+
+  @override
+  String get m2bImportFromFree => 'Lấy từ La bàn trên máy này';
+
+  @override
+  String get m2bImportFreeMissing =>
+      'Không thấy La bàn bản miễn phí chính thức trên máy này - hãy chọn tệp xuất.';
+
+  @override
+  String get m2bImportFile => 'Chọn tệp xuất dữ liệu';
+
+  @override
+  String get m2bImportConfirmTitle => 'Xem lại trước khi nhập';
+
+  @override
+  String m2bImportPlan(int added, int updated, int same) {
+    return '$added điểm mới · $updated cập nhật · $same đã có';
+  }
+
+  @override
+  String m2bImportPhotos(int count) {
+    return '$count ảnh đi kèm điểm mới';
+  }
+
+  @override
+  String get m2bImportSettings =>
+      'Dùng ngôn ngữ, giao diện và tuỳ chọn la bàn của bản miễn phí';
+
+  @override
+  String m2bImportSkipped(int count) {
+    return '$count mục lỗi sẽ bị bỏ qua';
+  }
+
+  @override
+  String get m2bImportDo => 'Nhập';
+
+  @override
+  String m2bImportDone(int added, int updated) {
+    return 'Đã nhập $added điểm mới, cập nhật $updated điểm.';
+  }
+
+  @override
+  String get m2bImportBadFile => 'Tệp không phải dữ liệu La bàn hợp lệ.';
+
+  @override
+  String get m2bImportEmpty => 'Không có gì để nhập.';
+
+  @override
+  String get m2bImportNoPhotos =>
+      'Tệp xuất dữ liệu cá nhân không chứa ảnh và vùng bản đồ - chỉ nhập điểm và cài đặt.';
+
+  @override
+  String get m2bAreasTitle => 'Tải lại vùng bản đồ ngoại tuyến';
+
+  @override
+  String get m2bAreasIntro =>
+      'Bản đồ đã tải nằm riêng trong từng ứng dụng nên La bàn Pro cần tải lại (cần mạng).';
+
+  @override
+  String get m2bAreaDone => 'Đã tải';
 }
