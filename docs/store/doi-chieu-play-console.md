@@ -132,9 +132,14 @@ Việc cần làm:
 | Tên | Bản quyền La bàn Pro Vĩnh Viễn |
 | Mô tả | Mua một lần: không quảng cáo và mọi tính năng Pro trên các máy dùng cùng tài khoản Google. |
 | Biểu tượng | `design/store/san-pham/khong-chu/pro_tron_doi.png` (3 chấm) |
-| Lựa chọn mua hàng | Mua (Buy), **không** tiêu hao được (app xử lý như non-consumable) |
+| Bước 2 "Tình trạng còn hàng và giá" > **Mã lựa chọn mua hàng** | **`pro-tron-doi`** (ô KHÁC "Mã sản phẩm": chỉ nhận chữ số, chữ thường, **gạch ngang**; người dùng không thấy; app + Worker KHÔNG dùng mã này) |
+| Loại giao dịch mua hàng | **Mua** (không tiêu hao được - app xử lý như non-consumable) |
 | Giá | 149.000 đ |
 | Thuế | Doanh thu từ ứng dụng kỹ thuật số - Dịch vụ |
+
+**Hai ô mã khác nhau (đo 06/11):** bước 1 "Mã sản phẩm" = product ID (gạch dưới / dấu chấm, KHÔNG gạch ngang) ->
+`pro_tron_doi`, chính là mã app + Worker dùng; bước 2 "Mã lựa chọn mua hàng" = purchase option ID (mô hình sản phẩm một lần
+mới của Play, giống mã gói cơ bản của gói thuê bao: CHỈ gạch ngang) -> `pro-tron-doi`. Không phải mâu thuẫn, không cần đổi mã.
 
 **Quy tắc mã sản phẩm của Play** (đúng chữ trong ảnh lỗi người dùng gửi 06/11): *"Phải bắt đầu bằng một chữ số hoặc chữ cái
 viết thường. Có thể chứa chữ số, chữ cái viết thường, dấu gạch dưới và dấu chấm."* -> **dấu gạch ngang `-` KHÔNG hợp lệ**
