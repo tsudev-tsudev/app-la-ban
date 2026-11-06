@@ -767,7 +767,7 @@ Console · trước M1b tài khoản AdMob (RevenueCat KHÔNG còn cần - Q55).
   khoản người dùng: quyền lợi gắn với tài khoản Google trên Play, khôi phục bằng Restore trên máy mới.
 - **M1a - Quyền lợi + Google Play Billing** (làm trước, có thể phát hành trước khi bật quảng cáo):
   1. Sản phẩm Play (người dùng tạo trong Play Console theo runbook): gói đăng ký `pro_thang`, `pro_nam` (base plan +
-     dùng thử 7 ngày cho `pro_nam`) và sản phẩm mua một lần `pro_vinh_vien` (non-consumable) - giá chốt 03/11 (Q55): 19.000 đ / tháng, 99.000 đ / năm, 149.000 đ vĩnh viễn.
+     dùng thử 7 ngày cho `pro_nam`) và sản phẩm mua một lần `pro_tron_doi` (non-consumable; mã cũ `pro_vinh_vien` đã xoá trên Play, đổi 06/11 - Q67) - giá chốt 03/11 (Q55): 19.000 đ / tháng, 99.000 đ / năm, 149.000 đ vĩnh viễn.
   2. App: gói `packages/quyen_loi` (thay phần IAP của `ads_iap`) dùng plugin chính chủ `in_app_purchase` (Play Billing
      Library, không SDK bên thứ ba); `obfuscatedAccountId` = băm định danh cài đặt (không định danh phần cứng); màn Paywall
      vi / en, giá lấy từ Play (`ProductDetails`, không ghi cứng), nút Khôi phục, Quản lý gói (deep link Play subscriptions),

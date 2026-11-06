@@ -9,7 +9,7 @@ import { DS_SAN_PHAM, TRANG_THAI_QL, type SanPham } from './quyen-loi';
 export const QL_YEU_CAU_HAN_MS = 24 * 60 * 60 * 1000;
 
 /** Giá niêm yết (VND, Q55) - CHỈ để ước tính doanh thu thô trên SOC (chưa trừ phí Play / thuế / dùng thử / quy đổi). */
-export const GIA_NIEM_YET: Record<SanPham, number> = { pro_thang: 19_000, pro_nam: 99_000, pro_vinh_vien: 149_000 };
+export const GIA_NIEM_YET: Record<SanPham, number> = { pro_thang: 19_000, pro_nam: 99_000, pro_tron_doi: 149_000 };
 
 export const NGUON_QL = ['play_sub', 'play_inapp', 'pro_app', 'manual'] as const;
 

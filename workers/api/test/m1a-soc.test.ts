@@ -85,7 +85,7 @@ describe('SOC quyền lợi: doanh thu ước tính (AE)', () => {
     expect(kq.theoSanPham).toEqual([
       { sanPham: 'pro_thang', muaMoi: 0, giaHan: 3, hoan: 0, vnd: 57_000 },
       { sanPham: 'pro_nam', muaMoi: 2, giaHan: 0, hoan: 1, vnd: 99_000 },
-      { sanPham: 'pro_vinh_vien', muaMoi: 0, giaHan: 0, hoan: 0, vnd: 0 },
+      { sanPham: 'pro_tron_doi', muaMoi: 0, giaHan: 0, hoan: 0, vnd: 0 },
     ]);
   });
 });

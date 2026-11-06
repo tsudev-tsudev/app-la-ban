@@ -296,12 +296,12 @@ function xuatPro() {
 
 /** Biểu tượng sản phẩm trong Play Console (PNG 32 bit RGBA - Play yêu cầu, 512, 1:1): design/store/san-pham/<mã sản phẩm>.png. */
 function xuatSanPham() {
-  for (const [flavor, ma] of [['pro-thang', 'pro_thang'], ['pro-nam', 'pro_nam'], ['pro-vinh-vien', 'pro_vinh_vien']]) {
+  for (const [flavor, ma] of [['pro-thang', 'pro_thang'], ['pro-nam', 'pro_nam'], ['pro-vinh-vien', 'pro_tron_doi']]) {
     ghi(`design/store/san-pham/${ma}.png`, png(iconKin(512, flavor), 512));
   }
   // Play Console ghi "Đừng chèn văn bản" vào biểu tượng sản phẩm: bản thay thế không chữ - phân biệt gói bằng số chấm
   // trắng trong viên nhãn xanh lá (1 tháng · 2 năm · 3 vĩnh viễn), cùng kích thước / vị trí viên nhãn có chữ.
-  for (const [soCham, ma] of [[1, 'pro_thang'], [2, 'pro_nam'], [3, 'pro_vinh_vien']]) {
+  for (const [soCham, ma] of [[1, 'pro_thang'], [2, 'pro_nam'], [3, 'pro_tron_doi']]) {
     ghi(`design/store/san-pham/khong-chu/${ma}.png`, png(iconKhongChu(512, soCham), 512));
   }
 }

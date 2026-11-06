@@ -56,15 +56,15 @@ describe('docGoiDangKy', () => {
 
 describe('docMuaMotLan', () => {
   it('0 đã mua (vĩnh viễn), 2 chờ, 1 huỷ -> thu hồi; purchaseType 0 = mua thử', () => {
-    expect(docMuaMotLan({ purchaseState: 0, acknowledgementState: 1, purchaseType: 0 }, 'pro_vinh_vien')).toMatchObject({
+    expect(docMuaMotLan({ purchaseState: 0, acknowledgementState: 1, purchaseType: 0 }, 'pro_tron_doi')).toMatchObject({
       trangThai: 'active',
       hetHan: null,
       daXacNhan: true,
       thu: true,
     });
-    expect(docMuaMotLan({ purchaseState: 2 }, 'pro_vinh_vien')?.trangThai).toBe('pending');
-    expect(docMuaMotLan({ purchaseState: 1 }, 'pro_vinh_vien')?.trangThai).toBe('revoked');
-    expect(docMuaMotLan({ purchaseState: 0, productId: 'khac' }, 'pro_vinh_vien')).toBeNull();
+    expect(docMuaMotLan({ purchaseState: 2 }, 'pro_tron_doi')?.trangThai).toBe('pending');
+    expect(docMuaMotLan({ purchaseState: 1 }, 'pro_tron_doi')?.trangThai).toBe('revoked');
+    expect(docMuaMotLan({ purchaseState: 0, productId: 'khac' }, 'pro_tron_doi')).toBeNull();
   });
 });
 
@@ -102,14 +102,14 @@ describe('docRtdn', () => {
       sanPham: 'pro_thang',
       kieu: 2,
     });
-    expect(docRtdn(b64({ packageName: GOI, oneTimeProductNotification: { notificationType: 1, purchaseToken: TOKEN, sku: 'pro_vinh_vien' } }), dsGoi)).toMatchObject({ loai: 'inapp' });
+    expect(docRtdn(b64({ packageName: GOI, oneTimeProductNotification: { notificationType: 1, purchaseToken: TOKEN, sku: 'pro_tron_doi' } }), dsGoi)).toMatchObject({ loai: 'inapp' });
     expect(docRtdn(b64({ packageName: GOI, voidedPurchaseNotification: { purchaseToken: TOKEN, orderId: 'GPA.1', productType: 1 } }), dsGoi)).toEqual({ loai: 'hoan', goi: GOI, token: TOKEN });
     expect(docRtdn(b64({ packageName: GOI, testNotification: { version: '1.0' } }), dsGoi)).toEqual({ loai: 'thu', goi: GOI });
   });
   it('gói lạ / sản phẩm lạ / sai loại sản phẩm / dữ liệu hỏng -> bỏ qua', () => {
     const dsGoi = [GOI];
     expect(docRtdn(b64({ packageName: 'com.khac', testNotification: {} }), dsGoi)).toEqual({ loai: 'bo', lyDo: 'goi' });
-    expect(docRtdn(b64({ packageName: GOI, subscriptionNotification: { notificationType: 2, purchaseToken: TOKEN, subscriptionId: 'pro_vinh_vien' } }), dsGoi)).toEqual({ loai: 'bo', lyDo: 'san-pham' });
+    expect(docRtdn(b64({ packageName: GOI, subscriptionNotification: { notificationType: 2, purchaseToken: TOKEN, subscriptionId: 'pro_tron_doi' } }), dsGoi)).toEqual({ loai: 'bo', lyDo: 'san-pham' });
     expect(docRtdn(b64({ packageName: GOI, subscriptionNotification: { notificationType: 2, purchaseToken: 'ngan', subscriptionId: 'pro_thang' } }), dsGoi)).toEqual({ loai: 'bo', lyDo: 'dang' });
     expect(docRtdn('%%%', dsGoi)).toEqual({ loai: 'bo', lyDo: 'base64' });
     expect(docRtdn(btoa('khong-json'), dsGoi)).toEqual({ loai: 'bo', lyDo: 'json' });

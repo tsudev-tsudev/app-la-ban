@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { b64urlTuByte, byteTuB64url } from './ma-hoa';
 
 /** Sản phẩm Play đã chốt (Q55): hai gói đăng ký + một sản phẩm mua một lần. */
-export const SAN_PHAM = { pro_thang: 'sub', pro_nam: 'sub', pro_vinh_vien: 'inapp' } as const;
+export const SAN_PHAM = { pro_thang: 'sub', pro_nam: 'sub', pro_tron_doi: 'inapp' } as const;
 export type SanPham = keyof typeof SAN_PHAM;
 export const DS_SAN_PHAM = Object.keys(SAN_PHAM) as [SanPham, ...SanPham[]];
 

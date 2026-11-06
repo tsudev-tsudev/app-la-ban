@@ -5,7 +5,9 @@ import 'package:meta/meta.dart';
 enum SanPham {
   proNam('pro_nam', dangKy: true),
   proThang('pro_thang', dangKy: true),
-  proVinhVien('pro_vinh_vien', dangKy: false);
+  // Mã `pro_vinh_vien` đã bị xoá trên Play Console và Play không cho dùng lại
+  // mã đã xoá -> mã mới `pro_tron_doi` (QUYET_DINH Q67, 06/11/2026).
+  proVinhVien('pro_tron_doi', dangKy: false);
 
   new(this.ma, {required this.dangKy});
 
