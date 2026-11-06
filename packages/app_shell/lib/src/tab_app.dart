@@ -1,5 +1,6 @@
 import 'package:app_shell/src/ar.dart';
 import 'package:app_shell/src/bang_an_toan.dart';
+import 'package:app_shell/src/chuyen_pro.dart';
 import 'package:app_shell/src/luu_tru.dart';
 import 'package:app_shell/src/phien_ban.dart';
 import 'package:app_shell/src/pro.dart';
@@ -49,7 +50,13 @@ final dsTabProvider = Provider<List<TabApp>>((ref) {
       duongDan: '/cai-dat',
       icon: LbIcons.caiDat,
       nhan: (l) => l.tabSettings,
-      man: ManCaiDat(phienBan: phienBanApp, mucPro: const MucProApp()),
+      man: ManCaiDat(
+        phienBan: phienBanApp,
+        mucPro: const Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [MucProApp(), MucChuyenPro()],
+        ),
+      ),
     ),
   ];
 });

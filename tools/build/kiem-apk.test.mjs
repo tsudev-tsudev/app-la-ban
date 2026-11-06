@@ -63,3 +63,39 @@ test('receiver exported nhưng giữ bằng quyền hệ thống DUMP (ProfileIn
 `;
   assert.deepEqual(kiemApk({ xmltree: manifest({ them }), tep, thuVienKiemTra: sach }), []);
 });
+
+const quyenChuKy = (muc) => `    E: permission (line=5)
+      A: ${ANDROID}:name(0x01010003)="com.tsudev.laban.permission.CHUYEN_PRO" (Raw: "com.tsudev.laban.permission.CHUYEN_PRO")
+      A: ${ANDROID}:protectionLevel(0x01010009)=(type 0x11)${muc}
+`;
+const provider = (them = '') => `      E: provider (line=60)
+        A: ${ANDROID}:name(0x01010003)="com.tsudev.laban.ChuyenProProvider" (Raw: "x")
+        A: ${ANDROID}:exported(0x01010010)=true
+        A: ${ANDROID}:readPermission(0x01010007)="com.tsudev.laban.permission.CHUYEN_PRO" (Raw: "x")
+${them}      E: activity (line=70)
+        A: ${ANDROID}:name(0x01010003)="com.tsudev.laban.MoChuyenProActivity" (Raw: "x")
+        A: ${ANDROID}:exported(0x01010010)=true
+        A: ${ANDROID}:permission(0x01010006)="com.tsudev.laban.permission.CHUYEN_PRO" (Raw: "x")
+`;
+const coQuyen = (muc, them) => manifest({ them }).replace('    E: application', `${quyenChuKy(muc)}    E: application`);
+const ghi = `        A: ${ANDROID}:writePermission(0x01010008)="com.tsudev.laban.permission.CHUYEN_PRO" (Raw: "x")\n`;
+
+test('M2b: provider + activity giữ bằng quyền signature của chính app -> đạt', () => {
+  const m = phanTichManifest(coQuyen('0x2', provider(ghi)));
+  assert.deepEqual([...m.quyenChuKy], ['com.tsudev.laban.permission.CHUYEN_PRO']);
+  assert.deepEqual(kiemApk({ xmltree: coQuyen('0x2', provider(ghi)), tep, thuVienKiemTra: sach }), []);
+});
+
+test('M2b: quyền normal / provider thiếu quyền ghi -> lỗi', () => {
+  const thuong = kiemApk({ xmltree: coQuyen('0x0', provider(ghi)), tep, thuVienKiemTra: sach });
+  assert.equal(thuong.length, 2);
+  const thieuGhi = kiemApk({ xmltree: coQuyen('0x2', provider()), tep, thuVienKiemTra: sach });
+  assert.deepEqual(thieuGhi, ['provider com.tsudev.laban.ChuyenProProvider exported=true (APP-06)']);
+});
+
+test('M2b: định dạng aapt2 thật (build-tools 36, đo 06/11) "protectionLevel(...)=0x00000002" -> signature', () => {
+  const xml = coQuyen('0x2', provider(ghi)).replace('=(type 0x11)0x2', '=0x00000002');
+  assert.match(xml, /protectionLevel\(0x01010009\)=0x00000002$/m);
+  assert.deepEqual([...phanTichManifest(xml).quyenChuKy], ['com.tsudev.laban.permission.CHUYEN_PRO']);
+  assert.deepEqual(kiemApk({ xmltree: xml, tep, thuVienKiemTra: sach }), []);
+});

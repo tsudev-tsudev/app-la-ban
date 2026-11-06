@@ -38,15 +38,24 @@ android {
             dimension = "env"
             applicationIdSuffix = ".dev"
             manifestPlaceholders["appName"] = "La bàn Pro DEV"
+            // M2b (Q66): quyền signature chung hai app + gói app kia (<queries>).
+            manifestPlaceholders["quyenChuyenPro"] = "com.tsudev.laban.dev.permission.CHUYEN_PRO"
+            manifestPlaceholders["goiKia"] = "com.tsudev.laban.dev"
         }
         create("staging") {
             dimension = "env"
             applicationIdSuffix = ".stg"
             manifestPlaceholders["appName"] = "La bàn Pro STG"
+            // M2b (Q66): quyền signature chung hai app + gói app kia (<queries>).
+            manifestPlaceholders["quyenChuyenPro"] = "com.tsudev.laban.stg.permission.CHUYEN_PRO"
+            manifestPlaceholders["goiKia"] = "com.tsudev.laban.stg"
         }
         create("prod") {
             dimension = "env"
             manifestPlaceholders["appName"] = "La bàn Pro"
+            // M2b (Q66): quyền signature chung hai app + gói app kia (<queries>).
+            manifestPlaceholders["quyenChuyenPro"] = "com.tsudev.laban.permission.CHUYEN_PRO"
+            manifestPlaceholders["goiKia"] = "com.tsudev.laban"
         }
     }
 

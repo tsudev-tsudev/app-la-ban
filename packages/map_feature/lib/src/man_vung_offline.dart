@@ -18,6 +18,39 @@ final FutureProvider<({List<VungOffline> ds, int? byte})> dsVungProvider =
       return (ds: await kho.danhSach(), byte: await kho.dungLuong());
     });
 
+/// Tải một vùng theo style đang dùng (sáng / tối + ngôn ngữ của [context]),
+/// lưu kèm các style còn lại. Dùng chung cho màn này và màn nhập dữ liệu của
+/// La bàn Pro (M2b - tải lại vùng chuyển từ bản miễn phí).
+Stream<TienDoTai> taiVung(
+  BuildContext context,
+  WidgetRef ref, {
+  required String ten,
+  required KhungBanDo khung,
+  required int zMin,
+  required int zMax,
+  required bool tongQuan,
+}) {
+  final goc = ref.read(gocBanDoProvider);
+  final toi = Theme.of(context).brightness == Brightness.dark;
+  final nn = Localizations.localeOf(context).languageCode;
+  final url = urlKieuBanDo(goc, toi: toi, ngonNgu: nn);
+  return ref
+      .read(khoVungOfflineProvider)
+      .tai(
+        ten: ten,
+        khung: khung,
+        zMin: zMin,
+        zMax: zMax,
+        urlKieu: url,
+        urlKieuPhu: [
+          for (final u in moiUrlKieu(goc))
+            if (u != url) u,
+        ],
+        tongQuan: tongQuan,
+        taoLuc: ref.read(gioBanDoProvider)(),
+      );
+}
+
 /// Màn "Bản đồ ngoại tuyến": tải gói tổng quan cả nước / vùng đang xem, xem
 /// dung lượng, xoá vùng.
 class ManVungOffline extends ConsumerStatefulWidget {
@@ -47,10 +80,6 @@ class _ManVungOfflineState extends ConsumerState<ManVungOffline> {
     required int zMax,
   }) {
     final l10n = context.l10n;
-    final goc = ref.read(gocBanDoProvider);
-    final toi = Theme.of(context).brightness == Brightness.dark;
-    final nn = Localizations.localeOf(context).languageCode;
-    final url = urlKieuBanDo(goc, toi: toi, ngonNgu: nn);
     final tb = ScaffoldMessenger.of(context);
     void bao(String s) => tb
       ..hideCurrentSnackBar()
@@ -60,22 +89,16 @@ class _ManVungOfflineState extends ConsumerState<ManVungOffline> {
       _dangTai = muc;
       _tienDo = null;
     });
-    _sub = ref
-        .read(khoVungOfflineProvider)
-        .tai(
+    _sub =
+        taiVung(
+          context,
+          ref,
           ten: ten,
           khung: khung,
           zMin: zMin,
           zMax: zMax,
-          urlKieu: url,
-          urlKieuPhu: [
-            for (final u in moiUrlKieu(goc))
-              if (u != url) u,
-          ],
           tongQuan: muc == 'tong-quan',
-          taoLuc: ref.read(gioBanDoProvider)(),
-        )
-        .listen(
+        ).listen(
           (t) {
             if (mounted) setState(() => _tienDo = t);
           },

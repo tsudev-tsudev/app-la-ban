@@ -5,6 +5,7 @@ import 'package:app_shell/src/app.dart';
 import 'package:app_shell/src/ar.dart';
 import 'package:app_shell/src/ban_do.dart';
 import 'package:app_shell/src/bao_loi.dart';
+import 'package:app_shell/src/chuyen_pro.dart';
 import 'package:app_shell/src/cong_truc_tuyen.dart';
 import 'package:app_shell/src/diem.dart';
 import 'package:app_shell/src/dinh_danh.dart';
@@ -138,6 +139,11 @@ Future<Widget> dungApp(
       ...noiBanDo(flavor),
       ...noiAr(),
       ...noiRiengTu(kho),
+      // M2b: kênh chuyển dữ liệu bản miễn phí <-> Pro (chỉ Android).
+      if (Platform.isAndroid)
+        nenTangChuyenProProvider.overrideWithValue(
+          const NenTangChuyenProKenh(),
+        ),
       ...noiPro(
         pro,
         cauHinh,

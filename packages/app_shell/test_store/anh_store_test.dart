@@ -1,10 +1,14 @@
 // Ảnh chụp màn hình cho Google Play (R2): sinh lại bằng
 // `./tools/build/anh-store.sh` (= flutter test test_store --update-goldens).
 // Nằm ngoài test/ nên cổng không chạy; ảnh ra design/store/play/<vi|en>/.
+// `./tools/build/anh-store.sh --pro` (M2b, --dart-define=PRO=true): dựng app
+// La bàn Pro, ảnh ra design/store/pro/<vi|en>/.
 import 'dart:io';
 
 import 'package:app_shell/src/app.dart';
 import 'package:app_shell/src/diem.dart';
+import 'package:app_shell/src/flavor.dart';
+import 'package:app_shell/src/pro.dart';
 import 'package:compass_feature/compass_feature.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,6 +17,7 @@ import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:i18n/i18n.dart';
 import 'package:location_feature/location_feature.dart';
+import 'package:quyen_loi/quyen_loi.dart';
 import 'package:settings_feature/settings_feature.dart';
 import 'package:test_kit/test_kit.dart';
 import 'package:waypoint_feature/waypoint_feature.dart';
@@ -22,6 +27,15 @@ import '../test/ho_tro.dart';
 /// 1080 x 1920 px (9:16, Play khuyên dùng) ở mật độ 2,625 như máy 1080p.
 const _px = Size(1080, 1920);
 const _dpr = 2.625;
+
+/// Cờ `--dart-define=PRO=true`: ảnh cho listing La bàn Pro (M2b bước 4).
+const _pro = bool.fromEnvironment('PRO');
+
+const _cauHinh = CauHinhSanPham(
+  flavor: Flavor.prod,
+  loai: _pro ? LoaiApp.pro : LoaiApp.mienPhi,
+  phienBan: '0.1.0+1',
+);
 
 const _gocPhut = 1793437200000; // 31/10/2026 09:00 UTC, ms
 
@@ -106,8 +120,18 @@ Widget _app(Locale l) => ProviderScope(
     _viTri,
     // Như noiDiem của app: tab Điểm đọc vị trí qua location_feature.
     viTriDiemProvider.overrideWith(viTriChoDiem),
+    // Như dungApp: mục Cài đặt chọn theo loại app (Pro -> Bản quyền).
+    cauHinhSanPhamProvider.overrideWithValue(_cauHinh),
+    // App Pro cài từ Play: máy chủ đã cấp `pro_app` (vĩnh viễn).
+    if (_pro)
+      trangThaiQuyenLoiProvider.overrideWithValue(
+        const TrangThaiQuyenLoi(
+          MucQuyenLoi.pro,
+          QuyenLoi(pro: true, khongQuangCao: true),
+        ),
+      ),
   ],
-  child: const LaBanApp(cauHinh: cauHinhThuProd),
+  child: const LaBanApp(cauHinh: _cauHinh),
 );
 
 /// Icon Material (nút quay lại của AppBar) - flutter_test không nạp sẵn.
@@ -150,7 +174,8 @@ void main() {
         await tester.pumpWidget(_app(l));
         await tester.pump(const Duration(seconds: 2));
 
-        final dir = '../../../design/store/play/${l.languageCode}';
+        final dir =
+            '../../../design/store/${_pro ? 'pro' : 'play'}/${l.languageCode}';
         var so = 0;
         // pump(d) chỉ dựng MỘT khung -> bơm nhiều khung để luồng dữ liệu /
         // chuyển trang kịp vẽ (mặt la bàn có hoạt ảnh nên không pumpAndSettle).
@@ -204,6 +229,16 @@ void main() {
         await moi(const ManQuyenRiengTu());
         await chup('rieng-tu');
         await ve();
+        // Pro (M2b): ảnh thứ 7 - Cài đặt có "Bản quyền La bàn Pro" đã xác minh,
+        // làm listing Pro khác bản miễn phí (chính sách nội dung lặp lại).
+        if (_pro) {
+          await tester.scrollUntilVisible(
+            find.byKey(const ValueKey('muc-ban-quyen-pro')),
+            300,
+            scrollable: find.byType(Scrollable).last,
+          );
+          await chup('ban-quyen');
+        }
 
         // Qua mốc timer của app trước khi gỡ cây.
         await tester.pumpWidget(const SizedBox());

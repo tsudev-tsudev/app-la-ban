@@ -14,6 +14,7 @@
 | `ACCESS_WIFI_STATE` | MapLibre: trạng thái kết nối khi tải tile | - (quyền thường) |
 | `USE_BIOMETRIC` / `USE_FINGERPRINT` | androidx.biometric trong freeRASP: chỉ kiểm máy CÓ khoá màn hình / sinh trắc (tín hiệu RASP), không đọc vân tay | - (quyền thường) |
 | `BILLING` (com.android.vending) | Play Billing Library qua `in_app_purchase` (M1a, Q55): mở luồng mua La bàn Pro của Google Play | - (quyền thường) |
+| `CHUYEN_PRO` (`com.tsudev.laban.permission.CHUYEN_PRO`, tự khai, `signature`) | M2b (Q66): chỉ La bàn Pro cùng chứng chỉ ký được đọc gói chuyển dữ liệu do người dùng bấm Gửi - dữ liệu đi giữa hai app trên máy, không rời máy | - (quyền chữ ký) |
 | `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` | androidx.core: bảo vệ receiver nội bộ (quyền chữ ký của chính app) | - |
 
 **Đã gỡ** bằng `tools:node="remove"` trong `app/android/app/src/main/AndroidManifest.xml` (Q46):

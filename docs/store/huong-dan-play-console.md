@@ -371,8 +371,11 @@ Mã nguồn sẵn sàng (M2a): `app_pro/`, Worker đã nhận gói Pro (`PI_GOI`
 
 ### F5. Thiết lập app (giống Phần A) - khác biệt so với app miễn phí
 - A3 Quảng cáo: **Không, ứng dụng không chứa quảng cáo**. A6 An toàn dữ liệu: KHÔNG khai Advertising ID, KHÔNG khai lịch sử
-  mua hàng (mua app trả phí do Google xử lý, app không xử lý dữ liệu mua). Nội dung listing riêng ở M2b bước 4 (nêu rõ quan
-  hệ bản miễn phí / Pro - tránh vi phạm chính sách nội dung lặp lại).
+  mua hàng (mua app trả phí do Google xử lý, app không xử lý dữ liệu mua) - điền đúng theo `docs/store/data-safety-pro.md`.
+- A2 Thông tin đăng nhập / ghi chú người duyệt: `docs/store/ghi-chu-reviewer.md` mục "La bàn Pro".
+- A11 Trang thông tin: dán `docs/store/play-listing-pro.md` (vi-VN mặc định + bản dịch en-US; nêu rõ quan hệ bản miễn
+  phí / Pro - tránh vi phạm chính sách nội dung lặp lại). Biểu tượng `design/store/pro/play-icon-512.png`, ảnh nổi bật dùng
+  chung `design/store/play-feature-1024x500.png`, ảnh điện thoại `design/store/pro/<vi|en>/light-*.png`.
 - Thử kín >= 12 người x 14 ngày RIÊNG cho app này (dùng chung 12 tester, chạy cùng lúc với app miễn phí - Q56).
 
 ### F6. Kiểm sau khi cài từ Play (agent làm cùng người dùng)

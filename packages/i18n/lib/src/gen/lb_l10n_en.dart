@@ -1564,6 +1564,110 @@ class LbL10nEn extends LbL10n {
 
   @override
   String get m2LicenseFixDone => 'License re-check requested.';
+
+  @override
+  String get m2bMoveTitle => 'Move to Compass Pro';
+
+  @override
+  String get m2bMoveSubtitle =>
+      'Compass Pro is installed - send waypoints, photos and settings to it';
+
+  @override
+  String get m2bMoveIntro =>
+      'Send your waypoints (with photos), your offline map areas and your display choices to Compass Pro on this device. Data goes straight from app to app, never over the network; this app keeps its own copy.';
+
+  @override
+  String m2bMoveCounts(int points, int photos, int areas) {
+    return '$points waypoints · $photos photos · $areas offline areas';
+  }
+
+  @override
+  String get m2bMoveSend => 'Send to Compass Pro';
+
+  @override
+  String get m2bMoveOpenPro => 'Open Compass Pro';
+
+  @override
+  String get m2bMoveNotInstalled =>
+      'Official Compass Pro from Google Play is not installed on this device.';
+
+  @override
+  String get m2bMoveGetPro => 'See Compass Pro on Google Play';
+
+  @override
+  String get m2bMoveFailed =>
+      'Could not send. Use Settings > Privacy > Export data, then pick that file in Compass Pro.';
+
+  @override
+  String get m2bImportTitle => 'Import from Compass';
+
+  @override
+  String get m2bImportSubtitle =>
+      'Bring waypoints, photos and settings from the free app';
+
+  @override
+  String get m2bImportIntro =>
+      'Take your data from Compass (free app) on this device, or pick a file saved with Settings > Privacy > Export data. You review everything before it is imported.';
+
+  @override
+  String get m2bImportFromFree => 'Take from Compass on this device';
+
+  @override
+  String get m2bImportFreeMissing =>
+      'The official free Compass app is not on this device - pick an export file instead.';
+
+  @override
+  String get m2bImportFile => 'Pick an export file';
+
+  @override
+  String get m2bImportConfirmTitle => 'Review before importing';
+
+  @override
+  String m2bImportPlan(int added, int updated, int same) {
+    return '$added new · $updated updated · $same already here';
+  }
+
+  @override
+  String m2bImportPhotos(int count) {
+    return '$count photos with the new waypoints';
+  }
+
+  @override
+  String get m2bImportSettings =>
+      'Use the language, theme and compass options of the free app';
+
+  @override
+  String m2bImportSkipped(int count) {
+    return '$count broken items will be skipped';
+  }
+
+  @override
+  String get m2bImportDo => 'Import';
+
+  @override
+  String m2bImportDone(int added, int updated) {
+    return 'Imported $added new and updated $updated waypoints.';
+  }
+
+  @override
+  String get m2bImportBadFile => 'This file is not valid Compass data.';
+
+  @override
+  String get m2bImportEmpty => 'Nothing to import.';
+
+  @override
+  String get m2bImportNoPhotos =>
+      'A personal data export has no photos or map areas - only waypoints and settings are imported.';
+
+  @override
+  String get m2bAreasTitle => 'Download offline areas again';
+
+  @override
+  String get m2bAreasIntro =>
+      'Downloaded maps stay inside each app, so Compass Pro needs to download them again (network needed).';
+
+  @override
+  String get m2bAreaDone => 'Downloaded';
 }
 
 /// The translations for English (`en_XA`).
@@ -3151,4 +3255,110 @@ class LbL10nEnXa extends LbL10nEn {
 
   @override
   String get m2LicenseFixDone => '[Łỉçẽñšẽ řẽ-çhẽçk řẽqữẽšťẽđ. ···········]';
+
+  @override
+  String get m2bMoveTitle => '[Mởvẽ ťở Çởmpảšš Přở ········]';
+
+  @override
+  String get m2bMoveSubtitle =>
+      '[Çởmpảšš Přở ỉš ỉñšťảłłẽđ - šẽñđ ŵảỹpởỉñťš, phởťởš ảñđ šẽťťỉñğš ťở ỉť ····························]';
+
+  @override
+  String get m2bMoveIntro =>
+      '[Šẽñđ ỹởữř ŵảỹpởỉñťš (ŵỉťh phởťởš), ỹởữř ởffłỉñẽ mảp ảřẽảš ảñđ ỹởữř đỉšpłảỹ çhởỉçẽš ťở Çởmpảšš Přở ởñ ťhỉš đẽvỉçẽ. Đảťả ğởẽš šťřảỉğhť fřởm ảpp ťở ảpp, ñẽvẽř ởvẽř ťhẽ ñẽťŵởřk; ťhỉš ảpp kẽẽpš ỉťš ởŵñ çởpỹ. ·················································································]';
+
+  @override
+  String m2bMoveCounts(int points, int photos, int areas) {
+    return '[$points ŵảỹpởỉñťš · $photos phởťởš · $areas ởffłỉñẽ ảřẽảš ···············]';
+  }
+
+  @override
+  String get m2bMoveSend => '[Šẽñđ ťở Çởmpảšš Přở ········]';
+
+  @override
+  String get m2bMoveOpenPro => '[Ởpẽñ Çởmpảšš Přở ·······]';
+
+  @override
+  String get m2bMoveNotInstalled =>
+      '[Ởffỉçỉảł Çởmpảšš Přở fřởm Ğởởğłẽ Płảỹ ỉš ñởť ỉñšťảłłẽđ ởñ ťhỉš đẽvỉçẽ. ····························]';
+
+  @override
+  String get m2bMoveGetPro => '[Šẽẽ Çởmpảšš Přở ởñ Ğởởğłẽ Płảỹ ············]';
+
+  @override
+  String get m2bMoveFailed =>
+      '[Çởữłđ ñởť šẽñđ. Ữšẽ Šẽťťỉñğš > Přỉvảçỹ > Ẽxpởřť đảťả, ťhẽñ pỉçk ťhảť fỉłẽ ỉñ Çởmpảšš Přở. ····································]';
+
+  @override
+  String get m2bImportTitle => '[Ỉmpởřť fřởm Çởmpảšš ········]';
+
+  @override
+  String get m2bImportSubtitle =>
+      '[Břỉñğ ŵảỹpởỉñťš, phởťởš ảñđ šẽťťỉñğš fřởm ťhẽ fřẽẽ ảpp ······················]';
+
+  @override
+  String get m2bImportIntro =>
+      '[Ťảkẽ ỹởữř đảťả fřởm Çởmpảšš (fřẽẽ ảpp) ởñ ťhỉš đẽvỉçẽ, ởř pỉçk ả fỉłẽ šảvẽđ ŵỉťh Šẽťťỉñğš > Přỉvảçỹ > Ẽxpởřť đảťả. Ỹởữ řẽvỉẽŵ ẽvẽřỹťhỉñğ bẽfởřẽ ỉť ỉš ỉmpởřťẽđ. ································································]';
+
+  @override
+  String get m2bImportFromFree =>
+      '[Ťảkẽ fřởm Çởmpảšš ởñ ťhỉš đẽvỉçẽ ·············]';
+
+  @override
+  String get m2bImportFreeMissing =>
+      '[Ťhẽ ởffỉçỉảł fřẽẽ Çởmpảšš ảpp ỉš ñởť ởñ ťhỉš đẽvỉçẽ - pỉçk ảñ ẽxpởřť fỉłẽ ỉñšťẽảđ. ·································]';
+
+  @override
+  String get m2bImportFile => '[Pỉçk ảñ ẽxpởřť fỉłẽ ········]';
+
+  @override
+  String get m2bImportConfirmTitle => '[Řẽvỉẽŵ bẽfởřẽ ỉmpởřťỉñğ ··········]';
+
+  @override
+  String m2bImportPlan(int added, int updated, int same) {
+    return '[$added ñẽŵ · $updated ữpđảťẽđ · $same ảłřẽảđỹ hẽřẽ ·············]';
+  }
+
+  @override
+  String m2bImportPhotos(int count) {
+    return '[$count phởťởš ŵỉťh ťhẽ ñẽŵ ŵảỹpởỉñťš ············]';
+  }
+
+  @override
+  String get m2bImportSettings =>
+      '[Ữšẽ ťhẽ łảñğữảğẽ, ťhẽmẽ ảñđ çởmpảšš ởpťỉởñš ởf ťhẽ fřẽẽ ảpp ························]';
+
+  @override
+  String m2bImportSkipped(int count) {
+    return '[$count břởkẽñ ỉťẽmš ŵỉłł bẽ škỉppẽđ ············]';
+  }
+
+  @override
+  String get m2bImportDo => '[Ỉmpởřť ···]';
+
+  @override
+  String m2bImportDone(int added, int updated) {
+    return '[Ỉmpởřťẽđ $added ñẽŵ ảñđ ữpđảťẽđ $updated ŵảỹpởỉñťš. ···············]';
+  }
+
+  @override
+  String get m2bImportBadFile =>
+      '[Ťhỉš fỉłẽ ỉš ñởť vảłỉđ Çởmpảšš đảťả. ···············]';
+
+  @override
+  String get m2bImportEmpty => '[Ñởťhỉñğ ťở ỉmpởřť. ········]';
+
+  @override
+  String get m2bImportNoPhotos =>
+      '[Ả pẽřšởñảł đảťả ẽxpởřť hảš ñở phởťởš ởř mảp ảřẽảš - ởñłỹ ŵảỹpởỉñťš ảñđ šẽťťỉñğš ảřẽ ỉmpởřťẽđ. ······································]';
+
+  @override
+  String get m2bAreasTitle => '[Đởŵñłởảđ ởffłỉñẽ ảřẽảš ảğảỉñ ············]';
+
+  @override
+  String get m2bAreasIntro =>
+      '[Đởŵñłởảđẽđ mảpš šťảỹ ỉñšỉđẽ ẽảçh ảpp, šở Çởmpảšš Přở ñẽẽđš ťở đởŵñłởảđ ťhẽm ảğảỉñ (ñẽťŵởřk ñẽẽđẽđ). ········································]';
+
+  @override
+  String get m2bAreaDone => '[Đởŵñłởảđẽđ ····]';
 }

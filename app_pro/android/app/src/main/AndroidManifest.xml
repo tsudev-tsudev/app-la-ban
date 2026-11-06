@@ -2,11 +2,19 @@
     xmlns:tools="http://schemas.android.com/tools">
     <!-- S2: đăng ký thiết bị / phiên với compass-api (HTTPS). S3: cấm HTTP + chỉ CA hệ thống (xml/mang.xml). -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- M2b (QUYET_DINH Q66): chuyển dữ liệu bản miễn phí -> La bàn Pro. Quyền signature: chỉ app cùng chứng chỉ ký
+         (hai app dùng CHUNG khoá ký Play - runbook Phần F2) được đọc Content Provider / mở activity chuyển. Hai app cùng
+         khai báo để thứ tự cài không quan trọng. -->
+    <permission android:name="${quyenChuyenPro}" android:protectionLevel="signature" />
+    <uses-permission android:name="${quyenChuyenPro}" />
     <!-- R2 (QUYET_DINH Q46): gỡ quyền thư viện kéo theo mà app không cần.
          READ_GSERVICES (fingerprint-android trong freeRASP) đọc GSF ID - định danh cố định, trái Q7; thiếu quyền thư viện bỏ qua nguồn này.
          RECEIVE_BOOT_COMPLETED (truetime trong freeRASP) chỉ để xoá bộ đệm giờ khi khởi động lại máy - không cần chạy lúc boot. -->
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" tools:node="remove" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" tools:node="remove" />
+    <!-- M2b (Q56, Q65): app Pro không bán gì trong app (CuaHangKhongBan, không gọi Play Billing) -> gỡ quyền BILLING
+         mà in_app_purchase kéo theo; Data Safety Pro không có Purchase history. -->
+    <uses-permission android:name="com.android.vending.BILLING" tools:node="remove" />
     <application
         android:label="${appName}"
         android:allowBackup="false"
@@ -48,6 +56,15 @@
             </intent-filter>
             <meta-data android:name="flutter_deeplinking_enabled" android:value="true"/>
         </activity>
+        <!-- M2b: nhận gói chuyển dữ liệu từ bản miễn phí (đọc URI ở luồng nền rồi đưa app lên). -->
+        <activity
+            android:name=".NhanTuMienPhiActivity"
+            android:exported="true"
+            android:permission="${quyenChuyenPro}"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
@@ -60,6 +77,8 @@
 
          In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
     <queries>
+        <!-- M2b: nhìn thấy đúng MỘT gói app kia (Android 11+ package visibility). -->
+        <package android:name="${goiKia}" />
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>

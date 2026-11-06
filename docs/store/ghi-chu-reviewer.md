@@ -45,3 +45,46 @@ Không cần tài khoản / đăng nhập.
 - [ ] Quy tắc miễn trừ thiết bị duyệt đã bật trên Worker prod (runbook mục 4) và đã thử một thiết bị giả lập không bị cấm.
 - [ ] Data Safety điền theo `docs/store/data-safety.md`; Privacy policy URL mở được (vi + en).
 - [ ] Nhãn nút ở mục 1 khớp chuỗi ARB hiện hành (`consentAccept` / `consentOffline`).
+
+## La bàn Pro `com.tsudev.laban.pro` (M2b) - App access + ghi chú
+
+App access: **"All functionality is available without special access"**. Dán bản en; các bước 1-5 ở trên áp nguyên cho app Pro.
+
+### en (dán vào Play Console của app Pro)
+
+No account or login is required. La bàn Pro is the one-time paid, ad-free edition of La bàn (com.tsudev.laban) from the
+same developer; both apps share the same code base and features. Steps 1-5 of the La bàn notes apply unchanged:
+
+1. Welcome screen: "Agree and start" enables online security checks and license verification; "Use offline only" keeps
+   every feature working and sends no data.
+2. License: the app verifies its Google Play license through Play Integrity on our server. A copy installed from Google
+   Play (including review and pre-launch devices) is licensed automatically. Only a copy NOT installed from Google Play
+   shows "Not verified" under Settings > Compass Pro license; tapping it opens Google Play's own GET_LICENSED dialog. No
+   feature is hard-locked on the device.
+3. The app contains no ads, no advertising SDK and no in-app purchases (no Billing permission).
+4. Optional data transfer from the free app: if La bàn (shown as "Compass" in English) is installed, open it > Settings > Move to
+   Compass Pro > Send to Compass Pro. La bàn Pro shows a review screen and imports nothing until "Import" is tapped. Transfer stays on the device (Content Provider
+   protected by a signature permission shared only by the two apps). Without the free app: La bàn Pro > Settings > Import from
+   Compass > Pick an export file (made in La bàn: Settings > Privacy > Export data (JSON)).
+5. Security mechanism and review-device allow-listing: identical to La bàn (see its notes); Developer options check is
+   switched off on our server during review.
+
+Contact during review: contact@tsudev.com
+
+### vi (đối chiếu)
+
+Không tài khoản. La bàn Pro = bản trả phí một lần, không quảng cáo của La bàn, cùng nhà phát triển, cùng mã nguồn.
+1. Màn giới thiệu như bản miễn phí ("Đồng ý" bật kiểm tra bảo mật + xác minh bản quyền).
+2. Bản quyền: Play Integrity `appLicensingVerdict` ở máy chủ; bản cài từ Play (kể cả máy duyệt) tự LICENSED; bản sideload
+   hiện "Chưa xác minh" ở Cài đặt > Bản quyền La bàn Pro, chạm mở hộp thoại GET_LICENSED của Google. Không khoá cứng.
+3. Không quảng cáo, không SDK quảng cáo, không mua trong app (đã gỡ quyền BILLING).
+4. Chuyển dữ liệu từ bản miễn phí (tuỳ chọn): La bàn > Cài đặt > Chuyển sang La bàn Pro > Gửi -> Pro xem lại -> Nhập.
+   Dự phòng: Pro > Cài đặt > Nhập dữ liệu từ La bàn > Chọn tệp xuất dữ liệu (La bàn > Cài đặt > Quyền riêng tư > Xuất).
+5. Bảo mật + miễn trừ thiết bị duyệt + kill-switch Developer options: như La bàn.
+
+### Kiểm trước khi gửi duyệt app Pro
+- [ ] Phần F của `huong-dan-play-console.md` xong: app có phí 99.000 đ, F2 DÙNG CHUNG khoá ký với La bàn (bắt buộc cho quyền
+  `signature` chuyển dữ liệu), liên kết Play Integrity + quyền service account.
+- [ ] Data Safety điền theo `docs/store/data-safety-pro.md` (không Advertising ID, không Purchase history); Ads = No.
+- [ ] Listing theo `docs/store/play-listing-pro.md`, ảnh `design/store/pro/<vi|en>/light-*.png`.
+- [ ] Nhãn mục Cài đặt ở bước 2 / 4 khớp ARB hiện hành (`m2LicenseTitle`, `m2bMoveTitle`, `m2bImportTitle`).
