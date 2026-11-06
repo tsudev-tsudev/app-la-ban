@@ -1,6 +1,7 @@
 # Trạng thái SỐNG - quy trình: AGENTS_KICKOFF.md · lệnh: `./agents.sh help`
 
 ## LOCKS (chỉ tệp ĐANG sửa - xoá ngay khi xong)
+- agent-laban · quyen_loi workers/api tools/build docs · doi ma pro_vinh_vien -> pro_tron_doi
 
 ## Lưu ý đang hiệu lực (<= 8 dòng)
 - S11 CHAN DEV MODE (Q57): ban PROD chan khi bat Developer options / ADB -> thu may that M32 bang ban STAGING; kill-switch: 'chanDevMode' trong tat Remote Config (app) + CHAN_DEV_MODE="0" wrangler (Worker). find S11 CHAN

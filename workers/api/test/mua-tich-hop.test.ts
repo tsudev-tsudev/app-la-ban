@@ -200,15 +200,15 @@ describe('/v1/mua/xac-minh + /v1/status', () => {
   it('mua vĩnh viễn -> hetHan null', async () => {
     const t = await dangKy();
     const token = tokenMoi();
-    play.set(token, { loai: 'inapp', purchaseState: 0, sanPham: 'pro_vinh_vien' });
-    expect((await xacMinh(t, 'pro_vinh_vien', token)).du.quyenLoi).toEqual({ pro: true, khongQuangCao: true, hetHan: null });
+    play.set(token, { loai: 'inapp', purchaseState: 0, sanPham: 'pro_tron_doi' });
+    expect((await xacMinh(t, 'pro_tron_doi', token)).du.quyenLoi).toEqual({ pro: true, khongQuangCao: true, hetHan: null });
   });
 
   it('bản tải ngoài Play (UNRECOGNIZED_VERSION) -> 403, không ghi quyền lợi', async () => {
     const t = await dangKy({ app: 'UNRECOGNIZED_VERSION' });
     const token = tokenMoi();
-    play.set(token, { loai: 'inapp', purchaseState: 0, sanPham: 'pro_vinh_vien' });
-    expect(await xacMinh(t, 'pro_vinh_vien', token)).toMatchObject({ status: 403, du: { code: 'khong-phai-ban-play' } });
+    play.set(token, { loai: 'inapp', purchaseState: 0, sanPham: 'pro_tron_doi' });
+    expect(await xacMinh(t, 'pro_tron_doi', token)).toMatchObject({ status: 403, du: { code: 'khong-phai-ban-play' } });
     expect((await trangThai(t)).quyenLoi.pro).toBe(false);
   });
 
@@ -296,8 +296,8 @@ describe('cron quét quyền lợi', () => {
   it('Voided Purchases -> thu hồi; gói sắp hết hạn được hỏi lại Google', async () => {
     const t = await dangKy();
     const huy = tokenMoi();
-    play.set(huy, { loai: 'inapp', purchaseState: 0, sanPham: 'pro_vinh_vien' });
-    await xacMinh(t, 'pro_vinh_vien', huy);
+    play.set(huy, { loai: 'inapp', purchaseState: 0, sanPham: 'pro_tron_doi' });
+    await xacMinh(t, 'pro_tron_doi', huy);
     const sap = tokenMoi();
     const t2 = await dangKy();
     play.set(sap, { loai: 'sub', trangThai: 'SUBSCRIPTION_STATE_ACTIVE', het: new Date(Date.now() + 3600_000).toISOString(), sanPham: 'pro_thang', ack: true });

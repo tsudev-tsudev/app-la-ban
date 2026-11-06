@@ -121,8 +121,8 @@ void main() {
       expect(donViKy('P1W'), DonViKy.tuan);
     });
     test('mã sản phẩm khớp Worker', () {
-      expect(SanPham.dsMa, {'pro_thang', 'pro_nam', 'pro_vinh_vien'});
-      expect(SanPham.tuMa('pro_vinh_vien')!.dangKy, isFalse);
+      expect(SanPham.dsMa, {'pro_thang', 'pro_nam', 'pro_tron_doi'});
+      expect(SanPham.tuMa('pro_tron_doi')!.dangKy, isFalse);
       expect(SanPham.tuMa('khac'), isNull);
     });
     test('sắp xếp gói theo thứ tự Paywall, bỏ trùng', () {

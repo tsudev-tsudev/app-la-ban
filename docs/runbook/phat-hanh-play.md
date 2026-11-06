@@ -108,11 +108,11 @@ cho staging + prod. Người dùng làm (sau khi tài khoản Play được duy�
      cho service agent Pub/Sub.
 3. **Play Console -> app -> Kiếm tiền bằng Play -> Thiết lập tính năng kiếm tiền**: tích *Bật thông báo theo thời gian
    thực*, chủ đề `projects/app-la-ban/topics/play-rtdn`, nội dung **"Gói thuê bao, giao dịch mua hàng vô hiệu và tất cả
-   các sản phẩm tính phí một lần"** (`pro_vinh_vien` là sản phẩm một lần) -> *Lưu* -> *Gửi thông báo thử* -> agent kiểm
+   các sản phẩm tính phí một lần"** (`pro_tron_doi` là sản phẩm một lần) -> *Lưu* -> *Gửi thông báo thử* -> agent kiểm
    sự kiện `rtdn-thu` trong D1 `quyen_loi_events`.
 4. Tạo sản phẩm theo giá Q55 (cần hồ sơ thanh toán): `pro_thang` (gói thuê bao, base plan `thang` tự gia hạn 1 tháng),
    `pro_nam` (gói thuê bao, base plan `nam` 1 năm + ưu đãi `dung-thu-7-ngay`) - giá đặt ở *Giá và phạm vi cung cấp ->
-   Set prices*. `pro_vinh_vien` là **Sản phẩm một lần** (KHÔNG phải gói thuê bao; mã sản phẩm không dùng lại được sau
+   Set prices*. `pro_tron_doi` (Q67 - thay `pro_vinh_vien` đã xoá, Play cấm dùng lại mã) là **Sản phẩm một lần** (KHÔNG phải gói thuê bao; mã sản phẩm không dùng lại được sau
    khi xoá - tạo nhầm loại thì báo agent đổi mã ở `thuan/quyen-loi.ts` + `packages/quyen_loi`). Biểu tượng:
    `design/store/san-pham/`. License tester: trang tài khoản (ngoài app) -> *Kiểm thử giấy phép*.
 

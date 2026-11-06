@@ -5,6 +5,8 @@ app 4973918380597875482). Người dùng bấm trong Play Console; agent chuẩn
 Nguồn nội dung dán: `docs/store/play-listing.md` (listing), `docs/store/data-safety.md` (An toàn dữ liệu),
 `docs/store/ghi-chu-reviewer.md` (người duyệt), runbook `docs/runbook/phat-hanh-play.md` (PEPK, Pro, RTDN).
 
+> **06/11/2026: đối chiếu trạng thái thật + thứ tự làm + chỗ đang lệch ở `docs/store/doi-chieu-play-console.md`** (đọc tệp đó TRƯỚC).
+
 Trạng thái lúc chụp: "Hoàn tất bước thiết lập ứng dụng" **2/11** (xong: Chính sách quyền riêng tư, Thông tin đăng nhập).
 Thứ tự làm đề xuất: Phần A (9 mục còn lại) -> Phần B (thử nội bộ, làm song song được) -> Phần C (thử kín 12 người x 14 ngày)
 -> Phần D (đăng ký + phát hành công khai).
@@ -273,7 +275,7 @@ Google trả lời trong ~7 ngày. Bị từ chối -> kéo dài thử kín thê
    **Gửi để xem xét**.
 5. Duyệt xong: agent đổi nút "Google Play - sắp có" ở `/tai-ve` thành link Play; làm **E2**.
 6. Nếu R4 bật bán Pro / quảng cáo: trước đó sửa A3 (Quảng cáo), A12 (Mã quảng cáo), A6 (thêm loại dữ liệu AdMob), tạo sản
-   phẩm `pro_thang` / `pro_nam` / `pro_vinh_vien` + RTDN theo runbook phat-hanh-play mục 6.
+   phẩm `pro_thang` / `pro_nam` / `pro_tron_doi` (Q67) + RTDN theo runbook phat-hanh-play mục 6.
 
 ---
 

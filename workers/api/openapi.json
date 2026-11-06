@@ -958,7 +958,7 @@
                     "enum": [
                       "pro_thang",
                       "pro_nam",
-                      "pro_vinh_vien"
+                      "pro_tron_doi"
                     ]
                   },
                   "token": {

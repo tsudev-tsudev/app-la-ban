@@ -75,8 +75,8 @@ void main() {
       find.textContaining('Thanh toán và gói thuê bao'),
       200,
     );
-    await tester.ensureVisible(find.byKey(const ValueKey('goi-pro_vinh_vien')));
-    await tester.tap(find.byKey(const ValueKey('goi-pro_vinh_vien')));
+    await tester.ensureVisible(find.byKey(const ValueKey('goi-pro_tron_doi')));
+    await tester.tap(find.byKey(const ValueKey('goi-pro_tron_doi')));
     await tester.pump();
     expect(find.text('Tiếp tục'), findsOneWidget);
     expect(find.textContaining('không tự gia hạn'), findsOneWidget);
