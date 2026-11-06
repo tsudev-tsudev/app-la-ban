@@ -64,9 +64,12 @@ bt() { java -cp "$CP" com.android.tools.build.bundletool.BundleToolMain "$@"; }
 
 QUYEN=$(bt dump manifest --bundle "$AAB" | sed -n 's/.*uses-permission[^>]*android:name="\([^"]*\)".*/\1/p' | sort -u)
 echo "Quyền: $(echo $QUYEN)"
+DS=docs/store/data-safety.md; [ "$APP" = app_pro ] && DS=docs/store/data-safety-pro.md
 for q in $QUYEN; do
-  grep -q "\`${q##*.}\`" docs/store/data-safety.md || { echo "Quyền $q chưa khai ở docs/store/data-safety.md" >&2; exit 1; }
+  grep -q "\`${q##*.}\`" "$DS" || { echo "Quyền $q chưa khai ở $DS" >&2; exit 1; }
 done
+# M2b: app Pro không bán trong app -> không được còn quyền BILLING (đã gỡ ở manifest app_pro).
+if [ "$APP" = app_pro ] && printf '%s\n' $QUYEN | grep -qx 'com.android.vending.BILLING'; then echo "AAB Pro còn quyền BILLING" >&2; exit 1; fi
 
 TAM=$(mktemp -d); trap 'rm -rf "$TAM"' EXIT
 # M2 (Q56): AAB Pro không được chứa SDK quảng cáo / Advertising ID (Data Safety riêng không khai Advertising ID).

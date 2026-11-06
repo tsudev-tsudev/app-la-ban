@@ -92,3 +92,10 @@ test('M2b: quyền normal / provider thiếu quyền ghi -> lỗi', () => {
   const thieuGhi = kiemApk({ xmltree: coQuyen('0x2', provider()), tep, thuVienKiemTra: sach });
   assert.deepEqual(thieuGhi, ['provider com.tsudev.laban.ChuyenProProvider exported=true (APP-06)']);
 });
+
+test('M2b: định dạng aapt2 thật (build-tools 36, đo 06/11) "protectionLevel(...)=0x00000002" -> signature', () => {
+  const xml = coQuyen('0x2', provider(ghi)).replace('=(type 0x11)0x2', '=0x00000002');
+  assert.match(xml, /protectionLevel\(0x01010009\)=0x00000002$/m);
+  assert.deepEqual([...phanTichManifest(xml).quyenChuKy], ['com.tsudev.laban.permission.CHUYEN_PRO']);
+  assert.deepEqual(kiemApk({ xmltree: xml, tep, thuVienKiemTra: sach }), []);
+});

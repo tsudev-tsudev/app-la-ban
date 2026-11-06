@@ -12,6 +12,9 @@
          RECEIVE_BOOT_COMPLETED (truetime trong freeRASP) chỉ để xoá bộ đệm giờ khi khởi động lại máy - không cần chạy lúc boot. -->
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" tools:node="remove" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" tools:node="remove" />
+    <!-- M2b (Q56, Q65): app Pro không bán gì trong app (CuaHangKhongBan, không gọi Play Billing) -> gỡ quyền BILLING
+         mà in_app_purchase kéo theo; Data Safety Pro không có Purchase history. -->
+    <uses-permission android:name="com.android.vending.BILLING" tools:node="remove" />
     <application
         android:label="${appName}"
         android:allowBackup="false"

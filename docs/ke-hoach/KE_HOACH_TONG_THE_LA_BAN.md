@@ -78,7 +78,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 26 | M1 | Gói Pro trong app + quảng cáo (chia M1a quyền lợi + Play Billing / M1b quảng cáo), v1.1.0 sau Release Gate | R4 | 🟨 M1a bước 3 (máy chủ) ✅ 03/11 (b145e92, PR #66) · bước 2 (app) ✅ 04/11 (`packages/quyen_loi` + Paywall, Q61; prod chưa mở bán) · bước 4 phần SOC + 5 (trang Quyền lợi SOC, Q64) ✅ 04/11 · còn bước 1 (người dùng tạo sản phẩm + RTDN_EMAIL), cổng máy thật license tester |
 | 27 | R0 | Bản APK thử: khoá ký, script phát hành GitHub Release + R2, trang tải | A5 | ✅ 28/10 |
 | 28 | I1 | iOS (đầu 2027): build, App Attest, Privacy Manifest, TestFlight, App Store | R4, máy Mac | ⬜ |
-| 29 | M2 | App song song "La bàn Pro" trả phí một lần, không quảng cáo (Q56) | R2b, M1a bước 3 (bảng `quyen_loi`) | 🟨 M2a ✅ 05/11 (vỏ app `app_shell` + `app_pro`, bản quyền GET_LICENSED, Worker + SOC theo gói, Q65) · M2b bước 3 code ✅ 05/11 (chưa thử máy thật) · còn M2b bước 4 (listing) + Play Console Phần F (người dùng) · chạy CÙNG R4 (người dùng chốt 03/11: dùng chung cửa sổ thử kín 14 ngày; M1a bước 3 phần máy chủ làm trước) · logo Pro ✅ 03/11 |
+| 29 | M2 | App song song "La bàn Pro" trả phí một lần, không quảng cáo (Q56) | R2b, M1a bước 3 (bảng `quyen_loi`) | 🟨 M2a ✅ 05/11 (vỏ app `app_shell` + `app_pro`, bản quyền GET_LICENSED, Worker + SOC theo gói, Q65) · M2b bước 3 code ✅ 05/11 (build Kotlin ✅ 06/11, chưa thử máy thật) · M2b bước 4 listing / Data Safety / ảnh store ✅ 06/11 · còn thử máy thật + Play Console Phần F (người dùng) · chạy CÙNG R4 (người dùng chốt 03/11: dùng chung cửa sổ thử kín 14 ngày; M1a bước 3 phần máy chủ làm trước) · logo Pro ✅ 03/11 |
 | 30 | A9 | Thiết bị thiếu phần cứng + làm mới giao diện web / nút app + chống nhấp nháy (chia A9a / A9b / A9c) - PHIÊN SONG SONG `../app-la-ban-a9` | A8 | ✅ 04/11 · A9c #70 (3f7c3a6) · A9a #71 (b970562) · A9b #72 (e5bd627) · web đã deploy · APK gộp + thử M32 staging ở phiên chính |
 | 31 | S11 | Chặn chế độ Nhà phát triển (app) + khiên web mạnh (Q57, Q58) | S4, S9, M1a bước 3 (cùng Worker) | 🟨 03/11 (adf3102 PR #67, v0.1.0-beta.15 PR #68): Worker staging + prod, landing + admin, APK đã phát hành · M32 04/11: prod bật ADB -> màn chặn ✅, staging không chặn ✅ · ⛔ còn tắt -> dùng lại <= 5 s + 403 ở SOC (người dùng) · kill-switch ký được từ Q62 |
 
@@ -863,6 +863,17 @@ Console · trước M1b tài khoản AdMob (RevenueCat KHÔNG còn cần - Q55).
 - Phát sinh M2b còn lại: build APK dev hai app + thử máy thật (gửi / nhận / Lấy từ La bàn / tệp dự phòng, đủ 100 % điểm);
   `aapt2 dump xmltree` kiểm định dạng `protectionLevel` khớp `kiem-apk-luat.mjs`; bước 4 store (listing vi / en Pro,
   `anh-store.sh --pro`, Data Safety Pro, ghi chú reviewer, `assetlinks.json` gói Pro sau Phần F).
+- Kết quả M2b build + bước 4 (06/11, cùng nhánh `phase/m2b-chuyen-du-lieu`, PR #102): Kotlin hai app biên dịch được (APK
+  dev debug + staging release, JDK 21 `~/tools/java/jdk21` - JDK 17 vỡ ở `maplibre_gl` "invalid source release: 21");
+  `aapt2` build-tools 36 in `protectionLevel(0x01010009)=0x00000002` -> thêm test định dạng thật vào `kiem-apk.test.mjs`,
+  `kiem-apk.mjs` APK release hai app xanh. Manifest Pro gỡ `com.android.vending.BILLING` (in_app_purchase kéo theo, Pro không
+  bán trong app) + `build-aab.sh --pro` dừng nếu còn và so quyền với `data-safety-pro.md`. Bước 4: `docs/store/play-listing-pro.md`
+  (vi / en, nêu rõ quan hệ miễn phí / Pro, `kiem-listing.mjs` kiểm cả hai tệp), `data-safety-pro.md` (không Advertising ID,
+  không Purchase history), `ghi-chu-reviewer.md` mục La bàn Pro, `huong-dan-play-console.md` F5 trỏ tệp, `anh-store.sh --pro`
+  (`--dart-define=PRO=true` -> `design/store/pro/<vi|en>/` 28 ảnh, ảnh 7 riêng Pro: Cài đặt bản quyền đã xác minh), chính sách quyền riêng tư landing nêu app Pro (06/11).
+- Phát sinh M2b còn lại (cần người dùng): thử máy thật M32 (APK staging release hai app ký cùng khoá upload: gửi / nhận /
+  Lấy từ La bàn / tệp dự phòng, đủ 100 % điểm); Phần F (F2 dùng chung khoá ký) -> LICENSED / UNLICENSED trên máy thật;
+  `assetlinks.json` thêm gói Pro sau F (chứng chỉ Play app Pro).
 - Cổng: APK Pro không chứa lớp `com.google.android.gms.ads` (kiểm bằng `apkanalyzer dex packages`); bản cài từ Play nhận
   `LICENSED` + quyền lợi `pro_app`, bản sideload nhận `UNLICENSED` + hộp thoại; chuyển dữ liệu từ bản miễn phí trên máy
   thật đủ 100 % điểm mốc; golden + cổng `day-du` xanh.
