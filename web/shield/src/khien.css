@@ -29,27 +29,26 @@ html[data-khien-nghi] [data-nhay-cam] {
   gap: var(--lb-space-sm, 12px);
   padding: var(--lb-space-lg, 24px);
   text-align: center;
-  /* Q60: xanh dương + trắng. Chữ #0B1220 / tiêu đề #1A56DB trên nền sáng đạt AA. */
-  background: linear-gradient(160deg, #ffffff 0%, #eef4ff 55%, #dbe8ff 100%);
-  color: #0b1220;
+  /* Q68: đen tuyền + tím, mặc định Tối (hệ tsudev). Dự phòng cứng khi token chưa nạp; chữ đạt AA cả hai chế độ. */
+  background: radial-gradient(48rem 28rem at 50% -8rem, rgb(169 112 255 / 0.16), transparent 70%), #0a0a0a;
+  color: #ededed;
   font: var(--lb-type-body, 400 1rem/1.5rem system-ui, sans-serif);
 }
 
 .khien-phu h2 {
   margin: 0;
   font: var(--lb-type-headline, 700 1.75rem/2.25rem system-ui, sans-serif);
-  color: #1a56db;
+  font-weight: 600;
+  color: #c4a1ff;
 }
 
-@media (prefers-color-scheme: dark) {
-  .khien-phu {
-    background: linear-gradient(160deg, #0b1220 0%, #0f1f3d 60%, #13306b 100%);
-    color: #e8eef7;
-  }
+[data-theme='light'] .khien-phu {
+  background: radial-gradient(48rem 28rem at 50% -8rem, rgb(124 58 237 / 0.1), transparent 70%), #fafafa;
+  color: #0a0a0a;
+}
 
-  .khien-phu h2 {
-    color: #8ab4ff;
-  }
+[data-theme='light'] .khien-phu h2 {
+  color: #6d28d9;
 }
 
 .khien-phu p {

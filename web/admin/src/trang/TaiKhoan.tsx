@@ -164,13 +164,13 @@ export function TaiKhoan() {
             <legend>{t.giaoDienNhan}</legend>
             {(
               [
-                ['', t.theoHeThong],
                 ['light', t.giaoDienSang],
                 ['dark', t.giaoDienToi],
+                ['system', t.theoHeThong],
               ] as const
             ).map(([v, nhan]) => (
               <label key={v} className="hang">
-                <input type="radio" name="chuDe" checked={(tuyChon.chuDe ?? '') === v} onChange={() => doiTuyChon({ chuDe: v === '' ? null : v })} />
+                <input type="radio" name="chuDe" checked={tuyChon.chuDe === v} onChange={() => doiTuyChon({ chuDe: v })} />
                 <span>{nhan}</span>
               </label>
             ))}

@@ -180,6 +180,7 @@ const ban = await napBanApk();
     font-size: clamp(2.25rem, 6vw, 4rem);
     line-height: 1.08;
     letter-spacing: -0.03em;
+    font-weight: 600;
   }
   .nhan-mau {
     display: block;
@@ -237,7 +238,6 @@ const ban = await napBanApk();
   }
   .tinh-nang:hover {
     transform: translateY(-3px);
-    box-shadow: var(--lb-shadow-md);
   }
   .the-dau {
     display: flex;
@@ -268,7 +268,7 @@ const ban = await napBanApk();
     display: flex;
     gap: var(--lb-space-md);
     padding: var(--lb-space-lg);
-    border-radius: var(--lb-radius-lg);
+    border-radius: var(--lb-radius-sm);
     background: var(--lb-color-surface-raised);
     border: var(--vien);
   }
@@ -316,7 +316,7 @@ const ban = await napBanApk();
     align-content: start;
     padding: var(--lb-space-lg);
     padding-top: calc(var(--lb-space-lg) + 6px);
-    border-radius: var(--lb-radius-lg);
+    border-radius: var(--lb-radius-sm);
     background: var(--lb-color-surface-raised);
     border: var(--vien);
     overflow: hidden;
@@ -381,16 +381,16 @@ const ban = await napBanApk();
     align-items: center;
     gap: var(--lb-space-lg);
     padding: clamp(24px, 5vw, 48px);
-    border-radius: var(--lb-radius-xl);
-    background: linear-gradient(120deg, var(--lb-color-gradient-start), var(--lb-color-gradient-end));
-    color: var(--lb-color-on-gradient);
-    box-shadow: var(--lb-shadow-lg);
+    border-radius: var(--lb-radius-sm);
+    border: 1px solid var(--lb-color-outline);
+    background: var(--quang) no-repeat, var(--lb-color-surface);
+    color: var(--lb-color-text);
   }
   .cuoi p {
     margin-top: var(--lb-space-xs);
   }
   .nut-sang {
-    background: var(--lb-color-on-gradient);
-    color: var(--lb-color-gradient-start);
+    background: var(--nut-nen);
+    color: var(--nut-chu);
   }
 </style>

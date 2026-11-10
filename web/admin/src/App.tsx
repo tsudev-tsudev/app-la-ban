@@ -100,9 +100,16 @@ export function App() {
   }, [nn, t.tieuDe]);
   useEffect(() => {
     const h = document.documentElement;
-    if (tc.chuDe) h.dataset.theme = tc.chuDe;
-    else delete h.dataset.theme;
     h.dataset.matDo = tc.matDo;
+    // Q68: CSS không hỏi hệ điều hành; "Hệ thống" giải ở đây và đổi ngay khi hệ điều hành đổi.
+    const mq = matchMedia('(prefers-color-scheme: dark)');
+    const ap = () => {
+      h.dataset.theme = tc.chuDe === 'system' ? (mq.matches ? 'dark' : 'light') : tc.chuDe;
+    };
+    ap();
+    if (tc.chuDe !== 'system') return;
+    mq.addEventListener('change', ap);
+    return () => mq.removeEventListener('change', ap);
   }, [tc.chuDe, tc.matDo]);
 
   const doiTc = useCallback((p: Partial<TuyChon>) => {
@@ -149,8 +156,13 @@ export function App() {
     };
   }, [dangVao, napToi]);
 
-  const laToi = tc.chuDe ? tc.chuDe === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
-  const doiChuDe = useCallback(() => doiTc({ chuDe: laToi ? 'light' : 'dark' }), [doiTc, laToi]);
+  // Vòng Sáng -> Tối -> Hệ thống; nhãn nút nói chế độ ĐANG dùng.
+  const doiChuDe = useCallback(
+    () => doiTc({ chuDe: tc.chuDe === 'light' ? 'dark' : tc.chuDe === 'dark' ? 'system' : 'light' }),
+    [doiTc, tc.chuDe],
+  );
+  const laToi = tc.chuDe === 'system' ? matchMedia('(prefers-color-scheme: dark)').matches : tc.chuDe === 'dark';
+  const nhanChuDe = tc.chuDe === 'light' ? t.giaoDienSang : tc.chuDe === 'dark' ? t.giaoDienToi : t.giaoDienHeThong;
   const doiNn = useCallback(() => {
     const moi = nn === 'vi' ? 'en' : 'vi';
     datNn(moi);
@@ -308,8 +320,8 @@ export function App() {
       <button type="button" className="nut nut-phu" onClick={doiNn} lang={nn === 'vi' ? 'en' : 'vi'}>
         {t.doiNgonNgu}
       </button>
-      <button type="button" className="nut nut-phu" onClick={doiChuDe}>
-        {laToi ? t.giaoDienSang : t.giaoDienToi}
+      <button type="button" className="nut nut-phu" onClick={doiChuDe} title={t.lenhDoiGiaoDien}>
+        {nhanChuDe}
       </button>
     </div>
   );
@@ -448,8 +460,8 @@ export function App() {
                 <button type="button" className="nut-bieu-tuong" onClick={doiNn} aria-label={t.lenhDoiNgonNgu} title={t.lenhDoiNgonNgu}>
                   <BieuTuong ten="ngon-ngu" />
                 </button>
-                <button type="button" className="nut-bieu-tuong" onClick={doiChuDe} aria-label={laToi ? t.giaoDienSang : t.giaoDienToi} title={laToi ? t.giaoDienSang : t.giaoDienToi}>
-                  <BieuTuong ten={laToi ? 'mat-troi' : 'mat-trang'} />
+                <button type="button" className="nut-bieu-tuong" onClick={doiChuDe} aria-label={`${nhanChuDe} - ${t.lenhDoiGiaoDien}`} title={`${nhanChuDe} - ${t.lenhDoiGiaoDien}`}>
+                  <BieuTuong ten={tc.chuDe === 'light' ? 'mat-troi' : tc.chuDe === 'dark' ? 'mat-trang' : 'man-hinh'} />
                 </button>
                 <button type="button" className="nut-bieu-tuong" onClick={() => datMoPhim(true)} aria-label={t.phimTat} title={t.phimTat}>
                   <BieuTuong ten="ban-phim" />

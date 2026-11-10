@@ -1,6 +1,11 @@
 # La bàn (Smart Compass)
 
 App la bàn đa nền tảng (Flutter, Android + iOS, vi/en) kèm nền tảng chống can thiệp và Admin SOC trên Cloudflare.
+Một sản phẩm của [tsudev](https://tsudev.com).
+
+**Hạng sản phẩm: B - app có kết nối** (tsudev `AUTH_AND_ACCOUNT.md` mục 1): người dùng không cần tài khoản, nhưng
+xác minh thiết bị, quyền lợi Pro và báo cáo sự cố cần máy chủ `compass-api.tsudev.com`. Admin SOC sau Cloudflare Access.
+
 Mã nguồn độc quyền - xem `LICENSE`.
 
 | Thành phần | Thư mục | Tên miền |

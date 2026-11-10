@@ -1,12 +1,28 @@
 ---
-// Logo ngang (design/logo) - bản sáng / tối theo prefers-color-scheme, không JS.
+// Logo ngang (design/logo). Q68: bản sáng / tối theo data-theme của <html> (mặc định Tối, đổi bằng bộ chọn ở chân trang),
+// không theo prefers-color-scheme - CSS không hỏi hệ điều hành.
 interface Props {
   rong?: number;
 }
 const { rong = 132 } = Astro.props;
 const cao = Math.round((rong * 160) / 578);
 ---
-<picture>
-  <source srcset="/logo-nen-toi.svg" media="(prefers-color-scheme: dark)" />
-  <img src="/logo.svg" alt="La bàn" width={rong} height={cao} />
-</picture>
+<span class="logo">
+  <img class="logo-toi" src="/logo-nen-toi.svg" alt="La bàn" width={rong} height={cao} />
+  <img class="logo-sang" src="/logo.svg" alt="La bàn" width={rong} height={cao} />
+</span>
+
+<style>
+  .logo {
+    display: inline-block;
+  }
+  .logo-sang {
+    display: none;
+  }
+  :global([data-theme='light']) .logo-sang {
+    display: block;
+  }
+  :global([data-theme='light']) .logo-toi {
+    display: none;
+  }
+</style>

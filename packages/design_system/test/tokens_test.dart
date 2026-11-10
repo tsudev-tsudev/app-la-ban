@@ -37,9 +37,10 @@ void main() {
     });
   }
 
-  test('cyan thương hiệu giữ nguyên ở cả hai theme', () {
-    expect(LbColors.light.primary, const Color(0xFF00E5FF));
+  test('tím hệ tsudev (Q68) giữ nguyên ở cả hai theme', () {
+    expect(LbColors.light.primary, const Color(0xFFA970FF));
     expect(LbColors.dark.primary, LbColors.light.primary);
+    expect(LbColors.dark.bg, const Color(0xFF0A0A0A));
   });
 
   test('thang khoảng cách theo lưới 4/8pt', () {

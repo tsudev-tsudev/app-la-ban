@@ -24,11 +24,14 @@
 :root {
   --rong: 1120px;
   --le: max(16px, calc((100% - var(--rong)) / 2));
-  /* Q60: xanh dương + trắng, gradient xanh dương -> cyan làm điểm nhấn (token gradient-start / gradient-end). */
-  --gradient: linear-gradient(135deg, var(--lb-color-gradient-start), var(--lb-color-gradient-end));
-  --nen-hero: radial-gradient(1200px 600px at 85% -10%, color-mix(in srgb, var(--lb-color-gradient-end) 22%, transparent), transparent 60%),
-    radial-gradient(900px 500px at -10% 20%, color-mix(in srgb, var(--lb-color-gradient-start) 18%, transparent), transparent 60%),
-    linear-gradient(180deg, var(--lb-color-tint), var(--lb-color-bg));
+  /* Q68: đen tuyền + tím của hệ tsudev, ngôn ngữ thiết kế kiểu Supabase (phiếu docs/phieu/20261110-05): MỘT nền liền
+     mạch, tím chỉ ở điểm nhấn, một quầng tím TĨNH ở đỉnh trang; gradient tím -> tím hồng chỉ cho chữ nhấn, không cho nút. */
+  --gradient: linear-gradient(90deg, var(--lb-color-gradient-start), var(--lb-color-gradient-end));
+  --nen-hero: transparent;
+  --quang: radial-gradient(64rem 34rem at 50% -12rem, color-mix(in srgb, var(--lb-color-primary) 16%, transparent), transparent 70%);
+  /* Nút chính: Tối = tím sáng + mực đen, Sáng = tím đậm + chữ trắng (bảng §2). */
+  --nut-nen: var(--lb-color-primary);
+  --nut-chu: var(--lb-color-on-primary);
   --vien: 1px solid var(--lb-color-outline);
 }
 
@@ -38,8 +41,14 @@
   box-sizing: border-box;
 }
 
+[data-theme='light'] {
+  --nut-nen: var(--lb-color-primary-deep);
+  --nut-chu: var(--lb-color-on-primary-deep);
+}
+
 html {
-  color-scheme: light dark;
+  color-scheme: dark light;
+  background: var(--lb-color-bg);
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
   scroll-padding-top: 80px;
@@ -61,7 +70,7 @@ body {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  background: var(--lb-color-bg);
+  background: var(--quang) no-repeat, var(--lb-color-bg);
   color: var(--lb-color-text);
   font: var(--lb-type-body);
   text-rendering: optimizeLegibility;
@@ -117,7 +126,7 @@ code,
   padding-block: clamp(48px, 8vw, 96px);
 }
 .vung-phu {
-  background: var(--lb-color-tint);
+  background: transparent;
 }
 .dau-vung {
   display: grid;
@@ -133,12 +142,11 @@ code,
   align-items: center;
   gap: var(--lb-space-xs);
   width: fit-content;
-  padding: 4px 12px;
-  border-radius: 999px;
-  background: var(--lb-color-surface-raised);
-  border: var(--vien);
   color: var(--lb-color-primary-deep);
-  font: var(--lb-type-label);
+  font: var(--lb-type-caption);
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 .cham {
   width: 8px;
@@ -152,31 +160,35 @@ code,
   align-items: center;
   justify-content: center;
   gap: var(--lb-space-xs);
-  min-height: 48px;
-  padding: 12px 22px;
-  border-radius: var(--lb-radius-md);
+  min-height: 44px;
+  padding: 10px 18px;
+  border-radius: 6px;
   font: var(--lb-type-label);
-  font-size: 1rem;
+  font-weight: 500;
+  font-size: 0.9375rem;
   text-decoration: none;
   border: 1px solid transparent;
-  transition: transform var(--lb-motion-fast) ease, box-shadow var(--lb-motion-normal) ease, background var(--lb-motion-normal) ease;
+  transition: background var(--lb-motion-fast) ease, border-color var(--lb-motion-fast) ease;
 }
 .nut:hover {
   text-decoration: none;
-  transform: translateY(-1px);
 }
 .nut-chinh {
-  background: var(--gradient);
-  color: var(--lb-color-on-gradient);
-  box-shadow: var(--lb-shadow-md);
+  background: var(--nut-nen);
+  color: var(--nut-chu);
+  border-color: color-mix(in srgb, var(--nut-nen) 80%, var(--lb-color-text));
 }
 .nut-chinh:hover {
-  box-shadow: var(--lb-shadow-lg);
+  background: color-mix(in srgb, var(--nut-nen) 88%, var(--lb-color-text));
+  color: var(--nut-chu);
 }
 .nut-phu {
-  background: var(--lb-color-surface-raised);
+  background: var(--lb-color-surface);
   color: var(--lb-color-text);
-  border-color: var(--lb-color-outline);
+  border-color: var(--lb-color-outline-strong);
+}
+.nut-phu:hover {
+  background: var(--lb-color-surface-raised);
 }
 .nut-tat {
   background: transparent;
@@ -193,11 +205,14 @@ code,
 }
 
 .the {
-  background: var(--lb-color-surface-raised);
+  background: var(--lb-color-surface);
   border: var(--vien);
-  border-radius: var(--lb-radius-lg);
+  border-radius: var(--lb-radius-sm);
   padding: var(--lb-space-lg);
-  box-shadow: var(--lb-shadow-sm);
+  transition: border-color var(--lb-motion-fast) ease, background var(--lb-motion-fast) ease;
+}
+.the:hover {
+  border-color: var(--lb-color-outline-strong);
 }
 .luoi {
   display: grid;
@@ -209,8 +224,9 @@ code,
   place-items: center;
   width: 48px;
   height: 48px;
-  border-radius: var(--lb-radius-md);
-  background: color-mix(in srgb, var(--lb-color-gradient-start) 14%, var(--lb-color-surface-raised));
+  border-radius: var(--lb-radius-sm);
+  background: color-mix(in srgb, var(--lb-color-primary) 10%, var(--lb-color-surface));
+  border: 1px solid color-mix(in srgb, var(--lb-color-primary) 35%, transparent);
   color: var(--lb-color-primary-deep);
   flex: none;
 }
@@ -240,6 +256,7 @@ code,
 }
 .dau-trang h1 {
   font: var(--lb-type-display);
+  font-weight: 600;
   font-size: clamp(2rem, 5vw, 3rem);
   line-height: 1.15;
   letter-spacing: -0.02em;

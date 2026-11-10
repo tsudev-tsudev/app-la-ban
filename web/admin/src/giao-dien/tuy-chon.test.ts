@@ -10,7 +10,7 @@ describe('tuỳ chọn hiển thị', () => {
 
   it('giá trị lạ bị bỏ, người xem không tự tắt được thuỷ vân', () => {
     expect(docTuyChon(JSON.stringify({ chuDe: 'tim', matDo: 'gon', thuyVan: 'tat', cheKhiRoi: 'co' }))).toEqual({
-      chuDe: null,
+      chuDe: 'dark',
       matDo: 'gon',
       thuyVan: 'nhe',
       cheKhiRoi: false,
@@ -23,5 +23,10 @@ describe('tuỳ chọn hiển thị', () => {
     expect(tuyChonHieuLuc(MAC_DINH, { thuyVan: { bat: false, mucToiThieu: 'nhe' }, epCheKhiRoi: false }).thuyVanBat).toBe(false);
     expect(tuyChonHieuLuc(MAC_DINH, { thuyVan: { bat: true, mucToiThieu: 'chuan' }, epCheKhiRoi: true })).toEqual({ thuyVanBat: true, thuyVan: 'chuan', cheKhiRoi: true });
     expect(tuyChonHieuLuc({ ...MAC_DINH, thuyVan: 'chuan', cheKhiRoi: true }, { thuyVan: { bat: true, mucToiThieu: 'nhe' }, epCheKhiRoi: false })).toMatchObject({ thuyVan: 'chuan', cheKhiRoi: true });
+  });
+  it('Q68: mặc định Tối, nhận Hệ thống, giá trị lạ / cũ "warm" -> Tối', () => {
+    expect(docTuyChon(null).chuDe).toBe('dark');
+    expect(docTuyChon(JSON.stringify({ chuDe: 'system' })).chuDe).toBe('system');
+    expect(docTuyChon(JSON.stringify({ chuDe: 'warm' })).chuDe).toBe('dark');
   });
 });

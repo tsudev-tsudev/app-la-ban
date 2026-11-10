@@ -58,11 +58,12 @@ bằng font khác.
 
 ## 5. Màu và chữ
 
-- Nguồn: `design/tokens.json` (Spec §2.1). Cyan `#00E5FF` **không làm màu chữ trên nền sáng** (1,5:1) - chỉ điểm nhấn;
-  chữ nhấn dùng `primaryDeep`. Coral `#FF6D00` trên nền sáng 2,7:1 -> chỉ làm hình có viền / chữ trên coral dùng
+- Nguồn: `design/tokens.json` (Spec §2.1). **Từ Q68 (10/11/2026) giao diện dùng bảng đen tuyền + tím của hệ tsudev**:
+  `primary` tím `#A970FF` là NỀN (chữ `onPrimary` mực đen), không làm màu chữ trên nền sáng; chữ nhấn dùng `primaryDeep`
+  (Sáng `#7C3AED`, Tối `#C4A1FF`). Kim logo GIỮ cyan / coral (nhận diện riêng của La bàn, mục 2). Coral `#FF6D00` trên nền sáng 2,7:1 -> chỉ làm hình có viền / chữ trên coral dùng
   `onAccent`; chữ màu coral dùng `accentStrong`. Biến thể `*Strong` là bản an toàn cho chữ trạng thái.
 - Chữ: Be Vietnam Pro (đủ dấu tiếng Việt). Telemetry (`LbType.telemetry*`) bật tabular figures. Web: biến CSS
-  `--lb-*`, lớp `.lb-tabular`; theme theo `prefers-color-scheme` hoặc `data-theme="light|dark"` trên `<html>`.
+  `--lb-*`, lớp `.lb-tabular`; theme theo `data-theme="light|dark"` trên `<html>` (mặc định Tối; "Hệ thống" do JavaScript giải - Q68).
 
 ## 6. Bộ icon 24dp
 

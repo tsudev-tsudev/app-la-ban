@@ -29,6 +29,15 @@ const nav = [
   { href: `${chu}#bao-mat`, nhan: t.nav.baoMat },
   { href: duong('huong'), nhan: t.nav.huongDan },
 ];
+// Q68 (phiếu docs/phieu/20261110-05): Sáng / Tối / Hệ thống, mặc định Tối. public/js/theme.js (hợp đồng chung hệ tsudev:
+// localStorage "tsudev-theme" = light|dark|system, "warm" cũ -> light, thiếu -> dark) nạp CHẶN ngay sau meta theme-color,
+// trước CSS; đặt data-theme + màu thanh địa chỉ trước khung hình đầu. edge/_worker.ts gắn nonce cho mọi <script> nên tệp
+// chạy được dưới 'strict-dynamic'. Tệp KHÔNG có comment (vệ sinh bản build B-05).
+const cheDo = [
+  { ma: 'light', ten: t.chan.sang, icon: '<circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"/>' },
+  { ma: 'dark', ten: t.chan.toi, icon: '<path d="M20.5 14.3A8.5 8.5 0 1 1 9.7 3.5a6.8 6.8 0 0 0 10.8 10.8Z"/>' },
+  { ma: 'system', ten: t.chan.heThong, icon: '<rect x="2.8" y="4.4" width="18.4" height="12.2" rx="1.6"/><path d="M8.6 20.2h6.8M12 16.6v3.6"/>' },
+];
 const linkKhac = trang === '404' || trang === 'diem' ? DUONG_DAN.chu[khac] : DUONG_DAN[trang][khac];
 const jsonLd =
   trang === 'chu'
@@ -46,14 +55,14 @@ const jsonLd =
     : null;
 ---
 <!doctype html>
-<html lang={t.lang}>
+<html lang={t.lang} data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{meta.tieuDe}</title>
     <meta name="description" content={meta.moTa} />
-    <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0B1220" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#0a0a0a" />
+    <script is:inline src="/js/theme.js"></script>
     {trang === '404' || trang === 'diem' ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={url(DUONG_DAN[trang][lang])} />}
     {
       trang !== '404' && trang !== 'diem' && (
@@ -128,6 +137,15 @@ const jsonLd =
         <span>{t.chan.banQuyen}</span>
         <span><a href="mailto:contact@tsudev.com">{t.chan.lienHe}: contact@tsudev.com</a></span>
         <span><a href="/fonts/OFL.txt">{t.chan.giayPhepFont}</a></span>
+        <div class="giao-dien" id="giao-dien" role="radiogroup" aria-label={t.chan.giaoDien} hidden>
+          {cheDo.map((c) => (
+            <button type="button" role="radio" aria-checked={c.ma === 'dark' ? 'true' : 'false'} tabindex={c.ma === 'dark' ? '0' : '-1'}
+                    aria-label={c.ten} title={c.ten} data-chon-giao-dien={c.ma}>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"
+                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" set:html={c.icon} />
+            </button>
+          ))}
+        </div>
       </div>
     </footer>
   </body>
@@ -156,9 +174,9 @@ const jsonLd =
     justify-content: space-between;
     gap: var(--lb-space-md);
     min-height: 68px;
-    background: var(--lb-glass-fill);
-    backdrop-filter: blur(var(--lb-glass-blur)) saturate(1.4);
-    -webkit-backdrop-filter: blur(var(--lb-glass-blur)) saturate(1.4);
+    background: color-mix(in srgb, var(--lb-color-bg) 80%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--lb-color-outline);
   }
   .thuong-hieu {
@@ -264,8 +282,6 @@ const jsonLd =
   .chan {
     margin-top: auto;
     padding-block: var(--lb-space-xxl) var(--lb-space-lg);
-    border-top: 1px solid var(--lb-color-outline);
-    background: var(--lb-color-surface);
     font: var(--lb-type-body-small);
   }
   .chan-tren {
@@ -289,21 +305,56 @@ const jsonLd =
     gap: var(--lb-space-sm);
   }
   .chan-cot a {
-    color: var(--lb-color-text);
+    color: var(--lb-color-text-muted);
     text-decoration: none;
   }
   .chan-cot a:hover {
-    color: var(--lb-color-primary-deep);
-    text-decoration: underline;
+    color: var(--lb-color-text);
   }
   .chan-duoi {
     display: flex;
     flex-wrap: wrap;
     gap: var(--lb-space-xs) var(--lb-space-lg);
     margin-top: var(--lb-space-xl);
-    padding-top: var(--lb-space-md);
-    border-top: 1px solid var(--lb-color-outline);
+    align-items: center;
     color: var(--lb-color-text-muted);
+  }
+  /* Bộ chọn giao diện: hàng cuối chân trang, nằm bên phải (phiếu 20261110-05 mục 3) */
+  .giao-dien {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    margin-left: auto;
+    padding: 2px;
+    border: 1px solid var(--lb-color-outline);
+    border-radius: 999px;
+    background: var(--lb-color-surface);
+  }
+  .giao-dien[hidden] {
+    display: none;
+  }
+  .giao-dien button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--lb-color-text-muted);
+    cursor: pointer;
+  }
+  .giao-dien button:hover,
+  .giao-dien button[aria-checked='true'] {
+    color: var(--lb-color-text);
+  }
+  .giao-dien button[aria-checked='true'] {
+    background: var(--lb-color-surface-raised);
+  }
+  .giao-dien svg {
+    display: block;
   }
   .chan-duoi a {
     color: inherit;
