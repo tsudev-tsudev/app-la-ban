@@ -66,11 +66,11 @@ test('sinhDart tạo lớp và hằng đúng', () => {
   assert.equal(sinhDart(mini), d, 'sinh lặp lại phải giống hệt');
 });
 
-test('sinhCss có biến theme, dark theo media và data-theme, không comment', () => {
+test('sinhCss: mặc định Tối ở :root, Sáng theo data-theme, không treo vào media (Q68), không comment', () => {
   const c = sinhCss(mini);
-  assert.match(c, /--lb-color-bg:#ffffff/);
-  assert.match(c, /@media \(prefers-color-scheme:dark\)\{:root:not\(\[data-theme="light"\]\)\{--lb-color-bg:#000000/);
-  assert.match(c, /\[data-theme="dark"\]\{--lb-color-bg:#000000/);
+  assert.match(c, /:root,\[data-theme="dark"\]\{--lb-color-bg:#000000/);
+  assert.match(c, /\[data-theme="light"\]\{--lb-color-bg:#ffffff/);
+  assert.doesNotMatch(c, /prefers-color-scheme/);
   assert.match(c, /--lb-type-num:600 2rem\/2\.5rem var\(--lb-font-family\)/);
   assert.doesNotMatch(c, /\/\*/);
 });

@@ -149,9 +149,9 @@ export function sinhCss(tokens) {
   for (const [k, v] of Object.entries(tokens.motion)) chung.push(`--lb-motion-${k}:${v}ms`);
   return [
     `:root{${chung.join(';')}}`,
-    `:root,[data-theme="light"]{${bien('light')}}`,
-    `@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){${bien('dark')}}}`,
-    `[data-theme="dark"]{${bien('dark')}}`,
+    // Q68: mặc định Tối, chỉ JavaScript được hỏi hệ điều hành ("Hệ thống") - CSS không treo bảng màu vào @media
+    `:root,[data-theme="dark"]{${bien('dark')}}`,
+    `[data-theme="light"]{${bien('light')}}`,
     `.lb-tabular{font-variant-numeric:tabular-nums}`,
     '',
   ].join('\n');

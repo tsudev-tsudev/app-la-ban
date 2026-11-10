@@ -18,14 +18,25 @@ final dongYThu = DongYXuLy(
   luc: DateTime.utc(2026, 10, 30),
 );
 
-/// `cai_dat.json` đã qua màn giới thiệu + trả lời thông báo dữ liệu.
+/// `cai_dat.json` đã qua màn giới thiệu + trả lời thông báo dữ liệu. Giao diện
+/// "Hệ thống" để ô ma trận sáng / tối đi đúng đường thật qua [datHeThong]
+/// (mặc định của app là Tối - Q68 - có test riêng ở settings_feature).
 Map<String, Object?> caiDatDaXemJson([Map<String, Object?> them = const {}]) =>
-    {'daXemGioiThieu': true, 'dongY': dongYThu.toJson(), ...them};
+    {
+      'daXemGioiThieu': true,
+      'dongY': dongYThu.toJson(),
+      'cheDo': CheDoGiaoDien.heThong.name,
+      ...them,
+    };
 
 /// Cài đặt ban đầu đã qua màn giới thiệu.
 class CaiDatDaXem extends CaiDatNotifier {
   @override
-  CaiDat build() => CaiDat(daXemGioiThieu: true, dongY: dongYThu);
+  CaiDat build() => CaiDat(
+    daXemGioiThieu: true,
+    dongY: dongYThu,
+    cheDo: CheDoGiaoDien.heThong,
+  );
 }
 
 /// Đặt ngôn ngữ / sáng tối / cỡ chữ của HỆ THỐNG theo ô [o] (app để "Theo

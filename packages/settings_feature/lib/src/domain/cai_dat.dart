@@ -24,7 +24,8 @@ enum CheDoGiaoDien { heThong, sang, toi }
 final class CaiDat {
   const new({
     this.ngonNgu = LuaChonNgonNgu.heThong,
-    this.cheDo = CheDoGiaoDien.heThong,
+    this.cheDo =
+        CheDoGiaoDien.toi, // Q68: mặc định Tối (hệ tsudev, phiếu 20261110-05)
     this.daXemGioiThieu = false,
     this.dongY,
     this.baoLoi = false,
@@ -40,7 +41,7 @@ final class CaiDat {
         LuaChonNgonNgu.heThong,
     cheDo:
         CheDoGiaoDien.values.where((v) => v.name == j['cheDo']).firstOrNull ??
-        CheDoGiaoDien.heThong,
+        CheDoGiaoDien.toi,
     daXemGioiThieu: j['daXemGioiThieu'] == true,
     dongY: DongYXuLy.tuJson(j['dongY']),
     baoLoi: j['baoLoi'] == true,

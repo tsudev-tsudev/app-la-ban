@@ -7,7 +7,7 @@ project hay cổng dev với các repo khác trên máy (`ubnd`, `ban-do-3d`, `t
 > này rồi chạy `./agents.sh sync-agents-md` (cổng phát hành kiểm tra hai tệp trùng nhau).
 
 ## Sản phẩm (tóm tắt - chi tiết ở kế hoạch)
-- App la bàn Flutter cho Android + iOS, song ngữ vi/en, màu tươi sáng (Electric Cyan / Royal Blue / Sunrise Coral), logo + bộ icon riêng.
+- App la bàn Flutter cho Android + iOS, song ngữ vi/en, giao diện đen tuyền + tím của hệ tsudev (Q68, mặc định Tối; logo kim cyan / coral riêng), bộ icon riêng.
 - Nền tảng bảo mật: Security SDK trong app (RASP + attestation + ký request) -> API Worker -> Threat Engine -> Admin SOC giám sát
   thiết bị / IP, can thiệp thiết bị vi phạm. Web (landing + admin) có lớp khiên chống sao chép / DevTools + CSP nghiêm.
 - Phát hành Google Play + App Store; quảng cáo / IAP CHỈ bật sau Release Gate (phase M1).

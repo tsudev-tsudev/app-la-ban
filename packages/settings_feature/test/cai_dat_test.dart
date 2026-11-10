@@ -6,10 +6,10 @@ import 'package:settings_feature/settings_feature.dart';
 import 'package:storage/storage.dart';
 
 void main() {
-  test('CaiDat mặc định theo hệ thống, chưa xem giới thiệu', () {
+  test('CaiDat mặc định: ngôn ngữ hệ thống, giao diện Tối (Q68)', () {
     const c = CaiDat();
     expect(c.ngonNgu, LuaChonNgonNgu.heThong);
-    expect(c.cheDo, CheDoGiaoDien.heThong);
+    expect(c.cheDo, CheDoGiaoDien.toi);
     expect(c.daXemGioiThieu, isFalse);
   });
 
@@ -33,13 +33,13 @@ void main() {
     addTearDown(c.dispose);
     c.read(caiDatProvider.notifier)
       ..datNgonNgu(LuaChonNgonNgu.vi)
-      ..datCheDo(CheDoGiaoDien.toi)
+      ..datCheDo(CheDoGiaoDien.sang)
       ..xongGioiThieu();
     expect(
       c.read(caiDatProvider),
       const CaiDat(
         ngonNgu: LuaChonNgonNgu.vi,
-        cheDo: CheDoGiaoDien.toi,
+        cheDo: CheDoGiaoDien.sang,
         daXemGioiThieu: true,
       ),
     );
@@ -56,10 +56,10 @@ void main() {
     expect(
       CaiDat.tuJson(const {
         'ngonNgu': 'fr',
-        'cheDo': 'toi',
+        'cheDo': 'heThong',
         'daXemGioiThieu': 1,
       }),
-      const CaiDat(cheDo: CheDoGiaoDien.toi),
+      const CaiDat(cheDo: CheDoGiaoDien.heThong),
     );
   });
 
@@ -67,13 +67,13 @@ void main() {
     final tm = Directory.systemTemp.createTempSync('cai_dat');
     addTearDown(() => tm.deleteSync(recursive: true));
     final duong = '${tm.path}/cai_dat.json';
-    TepJson.mo(duong).ghiDongBo(const {'cheDo': 'toi'});
+    TepJson.mo(duong).ghiDongBo(const {'cheDo': 'sang'});
     final kho = KhoCaiDatTep(TepJson.mo(duong));
     final c = ProviderContainer(
       overrides: [khoCaiDatProvider.overrideWithValue(kho)],
     );
     addTearDown(c.dispose);
-    expect(c.read(caiDatProvider).cheDo, CheDoGiaoDien.toi);
+    expect(c.read(caiDatProvider).cheDo, CheDoGiaoDien.sang);
     c.read(caiDatProvider.notifier)
       ..datNgonNgu(LuaChonNgonNgu.en)
       ..xongGioiThieu();
@@ -82,7 +82,7 @@ void main() {
       CaiDat.tuJson(TepJson.mo(duong).duLieu),
       const CaiDat(
         ngonNgu: LuaChonNgonNgu.en,
-        cheDo: CheDoGiaoDien.toi,
+        cheDo: CheDoGiaoDien.sang,
         daXemGioiThieu: true,
       ),
     );

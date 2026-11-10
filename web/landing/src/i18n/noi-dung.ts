@@ -24,7 +24,7 @@ export type NoiDung = {
   doiNgonNgu: string;
   boQua: string;
   nav: { tinhNang: string; baoMat: string; huongDan: string; taiVe: string; menu: string };
-  chan: { banQuyen: string; lienHe: string; giayPhepFont: string; trangThai: string };
+  chan: { banQuyen: string; lienHe: string; giayPhepFont: string; trangThai: string; giaoDien: string; sang: string; toi: string; heThong: string };
   trang: Record<TrangId, { tieuDe: string; moTa: string }>;
   chu: {
     nhan: string;
@@ -139,7 +139,7 @@ const vi: NoiDung = {
   doiNgonNgu: 'English',
   boQua: 'Bỏ qua tới nội dung',
   nav: { tinhNang: 'Tính năng', baoMat: 'Bảo mật', huongDan: 'Hướng dẫn', taiVe: 'Tải về', menu: 'Mở menu' },
-  chan: { banQuyen: '© 2026 TsuDev. Bảo lưu mọi quyền.', lienHe: 'Liên hệ', giayPhepFont: 'Phông Be Vietnam Pro (OFL)', trangThai: 'Trạng thái dịch vụ' },
+  chan: { banQuyen: '© 2026 TsuDev. Bảo lưu mọi quyền.', lienHe: 'Liên hệ', giayPhepFont: 'Phông Be Vietnam Pro (OFL)', trangThai: 'Trạng thái dịch vụ', giaoDien: 'Giao diện', sang: 'Sáng', toi: 'Tối', heThong: 'Hệ thống' },
   trang: {
     chu: { tieuDe: 'La bàn - La bàn thông minh, chính xác, riêng tư', moTa: 'La bàn thông minh cho Android: bắc thực theo mô hình từ trường WMM, hiệu chuẩn hướng dẫn, toạ độ, độ cao, thước thuỷ - không quảng cáo theo dõi, dữ liệu mã hoá trên máy.' },
     tai: { tieuDe: 'Tải La bàn cho Android - bản thử nghiệm', moTa: 'Tải tệp APK La bàn bản thử nghiệm cho Android, kèm mã SHA-256 để kiểm toàn vẹn và hướng dẫn cài đặt từng bước.' },
@@ -374,7 +374,7 @@ const en: NoiDung = {
   doiNgonNgu: 'Tiếng Việt',
   boQua: 'Skip to content',
   nav: { tinhNang: 'Features', baoMat: 'Security', huongDan: 'Guide', taiVe: 'Download', menu: 'Open menu' },
-  chan: { banQuyen: '© 2026 TsuDev. All rights reserved.', lienHe: 'Contact', giayPhepFont: 'Be Vietnam Pro font (OFL)', trangThai: 'Service status' },
+  chan: { banQuyen: '© 2026 TsuDev. All rights reserved.', lienHe: 'Contact', giayPhepFont: 'Be Vietnam Pro font (OFL)', trangThai: 'Service status', giaoDien: 'Theme', sang: 'Light', toi: 'Dark', heThong: 'System' },
   trang: {
     chu: { tieuDe: 'La bàn - Smart Compass, accurate and private', moTa: 'A smart compass for Android: true north from the World Magnetic Model, guided calibration, coordinates, altitude and a bubble level - no tracking ads, data encrypted on device.' },
     tai: { tieuDe: 'Download La bàn for Android - beta', moTa: 'Download the La bàn beta APK for Android with its SHA-256 checksum and step-by-step install guide.' },

@@ -3,10 +3,12 @@
 import { laMucThuyVan, type MucThuyVan } from '../khien/dau-vet';
 
 export type MatDo = 'thoang' | 'gon';
-export type TuyChon = { chuDe: 'light' | 'dark' | null; matDo: MatDo; thuyVan: MucThuyVan; cheKhiRoi: boolean };
+/** Q68 (phiếu docs/phieu/20261110-05): Sáng / Tối / Hệ thống, mặc định Tối. */
+export type ChuDe = 'light' | 'dark' | 'system';
+export type TuyChon = { chuDe: ChuDe; matDo: MatDo; thuyVan: MucThuyVan; cheKhiRoi: boolean };
 
 const KHOA = 'soc-tuy-chon';
-export const MAC_DINH: TuyChon = { chuDe: null, matDo: 'thoang', thuyVan: 'nhe', cheKhiRoi: false };
+export const MAC_DINH: TuyChon = { chuDe: 'dark', matDo: 'thoang', thuyVan: 'nhe', cheKhiRoi: false };
 
 /** Chuỗi JSON đã lưu -> tuỳ chọn hợp lệ; trường hỏng / lạ lấy mặc định (không tin dữ liệu trong kho). */
 export function docTuyChon(json: string | null, chuDeCu: string | null = null): TuyChon {
@@ -19,7 +21,7 @@ export function docTuyChon(json: string | null, chuDeCu: string | null = null): 
   }
   const chuDe = x.chuDe ?? chuDeCu;
   return {
-    chuDe: chuDe === 'light' || chuDe === 'dark' ? chuDe : null,
+    chuDe: chuDe === 'light' || chuDe === 'dark' || chuDe === 'system' ? chuDe : MAC_DINH.chuDe,
     matDo: x.matDo === 'gon' ? 'gon' : 'thoang',
     thuyVan: laMucThuyVan(x.thuyVan) ? x.thuyVan : MAC_DINH.thuyVan,
     cheKhiRoi: x.cheKhiRoi === true,

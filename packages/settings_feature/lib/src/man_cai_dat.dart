@@ -54,9 +54,9 @@ class ManCaiDat extends ConsumerWidget {
             child: Column(
               children: [
                 for (final (v, ten) in [
-                  (CheDoGiaoDien.heThong, l10n.optionSystem),
                   (CheDoGiaoDien.sang, l10n.themeLight),
                   (CheDoGiaoDien.toi, l10n.themeDark),
+                  (CheDoGiaoDien.heThong, l10n.optionSystem),
                 ])
                   RadioListTile<CheDoGiaoDien>(
                     key: ValueKey('che-do-${v.name}'),
