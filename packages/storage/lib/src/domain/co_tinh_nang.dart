@@ -6,8 +6,9 @@ enum CoTinhNang {
   chiaSe,
   dongBo;
 
-  /// Mặc định khi chưa có ghi đè: mọi cờ bật. (Q69: không còn cờ quảng cáo - sản phẩm TsuDEV không quảng cáo;
-  /// khoá `quangCao` / `quang-cao` cũ trong JSON / Remote Config bị bỏ qua như khoá lạ.)
+  /// Mặc định khi chưa có ghi đè: mọi cờ bật. Q69: không còn cờ quảng
+  /// cáo (TsuDEV không quảng cáo); khoá `quangCao` / `quang-cao` cũ trong
+  /// JSON / Remote Config bị bỏ qua như khoá lạ.
   bool get macDinh => true;
 }
 
