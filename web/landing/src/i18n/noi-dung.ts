@@ -161,7 +161,7 @@ const vi: NoiDung = {
     soLieu: [
       { so: '±0,5°', nhan: 'mục tiêu sai số sau hiệu chuẩn' },
       { so: '60 FPS', nhan: 'mặt la bàn mượt, tiết kiệm pin' },
-      { so: '0', nhan: 'quảng cáo theo dõi trong bản thử' },
+      { so: '0', nhan: 'quảng cáo - không bao giờ' },
       { so: '2', nhan: 'ngôn ngữ: Tiếng Việt, English' },
     ],
     tinhNangTieuDe: 'Mọi thứ bạn cần để định hướng',
@@ -202,7 +202,7 @@ const vi: NoiDung = {
     trangThaiLoTrinh: { xong: 'Hoàn thành', dang: 'Đang làm', sau: 'Kế hoạch' },
     hoiDapTieuDe: 'Câu hỏi thường gặp',
     hoiDap: [
-      { tieuDe: 'Ứng dụng có miễn phí không?', noiDung: 'Có. Bản thử nghiệm miễn phí và không có quảng cáo. Sau khi phát hành chính thức có thể có gói Pro tuỳ chọn; các tính năng la bàn cơ bản luôn miễn phí.' },
+      { tieuDe: 'Ứng dụng có miễn phí không?', noiDung: 'Có. La bàn miễn phí và không bao giờ có quảng cáo. Sau khi phát hành chính thức có thể có gói Pro tuỳ chọn và nút Ủng hộ; các tính năng la bàn cơ bản luôn miễn phí.' },
       { tieuDe: 'Vì sao chưa có trên Google Play?', noiDung: 'Ứng dụng đang ở giai đoạn thử nghiệm. Bạn có thể tải APK trực tiếp từ trang này; khi lên Google Play, bản trên Play dùng cùng chữ ký nên cập nhật đè lên được.' },
       { tieuDe: 'Khi nào có bản iPhone?', noiDung: 'Dự kiến đầu năm 2027. Chúng tôi ưu tiên hoàn thiện Android trước.' },
       { tieuDe: 'Cài APK ngoài Google Play có an toàn không?', noiDung: 'Chỉ tải từ compass.tsudev.com hoặc trang phát hành GitHub chính thức. Mỗi bản có mã SHA-256 và chữ ký số cố định để bạn tự kiểm.' },
@@ -396,7 +396,7 @@ const en: NoiDung = {
     soLieu: [
       { so: '±0.5°', nhan: 'target error after calibration' },
       { so: '60 FPS', nhan: 'smooth dial, battery friendly' },
-      { so: '0', nhan: 'tracking ads in the beta' },
+      { so: '0', nhan: 'ads - ever' },
       { so: '2', nhan: 'languages: Vietnamese, English' },
     ],
     tinhNangTieuDe: 'Everything you need to find your way',
@@ -437,7 +437,7 @@ const en: NoiDung = {
     trangThaiLoTrinh: { xong: 'Done', dang: 'In progress', sau: 'Planned' },
     hoiDapTieuDe: 'Frequently asked questions',
     hoiDap: [
-      { tieuDe: 'Is it free?', noiDung: 'Yes. The beta is free with no ads. After launch there may be an optional Pro plan; core compass features stay free.' },
+      { tieuDe: 'Is it free?', noiDung: 'Yes. Compass is free and will never show ads. After launch there may be an optional Pro plan and a Support button; core compass features stay free.' },
       { tieuDe: 'Why is it not on Google Play yet?', noiDung: 'The app is in beta. You can download the APK here; the Play version will use the same signature, so it updates in place.' },
       { tieuDe: 'When is the iPhone version coming?', noiDung: 'Planned for early 2027. Android comes first.' },
       { tieuDe: 'Is installing an APK outside Google Play safe?', noiDung: 'Only download from compass.tsudev.com or the official GitHub release page. Every build has a SHA-256 checksum and a fixed signing certificate you can verify.' },

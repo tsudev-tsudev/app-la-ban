@@ -147,7 +147,7 @@ void main() {
         child: khungThu(const Scaffold(body: MucPro()), o: oChup.first),
       ),
     );
-    expect(find.text('Gỡ quảng cáo, ủng hộ phát triển'), findsOneWidget);
+    expect(find.text('Tính năng Pro, ủng hộ phát triển'), findsOneWidget);
     await dv.capNhatTuMayChu(const QuyenLoi(pro: true, khongQuangCao: true));
     await tester.pump();
     expect(find.text('Đang dùng'), findsOneWidget);

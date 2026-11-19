@@ -48,7 +48,7 @@ Mỗi lần đổi một mục trong Play Console: bấm **Lưu** ở góc dư�
 |---|---|---|---|
 | Chính sách quyền riêng tư | `https://compass.tsudev.com/quyen-rieng-tu` | landing (cập nhật 06/11, đã nêu app Pro) | dùng URL en hay trang chủ |
 | Quyền truy cập vào ứng dụng (Thông tin đăng nhập) | "Tất cả chức năng đều có thể dùng mà không cần quyền truy cập đặc biệt" + hướng dẫn en | `ghi-chu-reviewer.md` phần đầu | chọn "có hạn chế" |
-| Quảng cáo | **Không, ứng dụng của tôi không chứa quảng cáo** | M1b chưa bật (quảng cáo chỉ sau Release Gate) | chọn "Có" vì kế hoạch có AdMob - SAI cho bản hiện tại |
+| Quảng cáo | **Không, ứng dụng của tôi không chứa quảng cáo** | Q69: không quảng cáo - vĩnh viễn (M1b huỷ 19/11/2026) | chọn "Có" - SAI |
 | Mã nhận dạng quảng cáo | **Không** dùng | APK không có `AD_ID` | |
 | Mức phân loại nội dung (IARC) | Loại: **Tất cả các loại ứng dụng khác**; Không cho mọi câu bạo lực / tình dục / chất kích thích / cờ bạc; tương tác người dùng: **Không**; chia sẻ vị trí hiện tại: **Không**; **mua hàng kỹ thuật số: Có** | `huong-dan-play-console.md` A4 | quên "mua hàng kỹ thuật số" khi đã có gói thuê bao |
 | Đối tượng mục tiêu | 13-15, 16-17, 18+ (KHÔNG chọn dưới 13) | A5 | chọn "mọi độ tuổi" -> kéo Chính sách gia đình |
@@ -60,8 +60,8 @@ Mỗi lần đổi một mục trong Play Console: bấm **Lưu** ở góc dư�
 | Trang thông tin chính | dán `play-listing.md` (vi-VN mặc định + bản dịch en-US), ảnh `design/store/play/<vi|en>/light-*.png` (6 ảnh), biểu tượng `design/store/play-icon-512.png`, ảnh nổi bật `design/store/play-feature-1024x500.png` | `play-listing.md` | dán ảnh của app Pro (`design/store/pro/`) vào app miễn phí |
 
 ### 2.1 Trang thông tin có câu "không quảng cáo theo dõi" + có gói Pro
-Mô tả hiện tại hợp lệ vì chưa có quảng cáo. **Khi M1b bật AdMob**: sửa đồng thời `play-listing.md`, mục Quảng cáo = Có,
-An toàn dữ liệu thêm loại AdMob - trong CÙNG một lần "Gửi thay đổi để xem xét".
+Mô tả hợp lệ: app không có quảng cáo và sẽ không có (Q69 - M1b AdMob đã huỷ 19/11/2026); `build-aab.sh` chặn AAB có lớp
+quảng cáo / quyền `AD_ID`, nên mục Quảng cáo = Không luôn khớp bản AAB.
 
 ### 2.2 Mua trong ứng dụng
 Play tự hiện nhãn "Mua hàng trong ứng dụng" khi app có gói thuê bao / sản phẩm đang hoạt động. Bản prod hiện ĐÓNG bán
@@ -209,7 +209,7 @@ B2b). Người dùng và quyền > service account `la-ban-integrity@...` > Quy�
 
 | # | Mâu thuẫn | Cách tránh |
 |---|---|---|
-| 1 | Trang thông tin La bàn nói "không quảng cáo" nhưng mục Quảng cáo = Có (hoặc ngược lại) | Hiện tại: cả hai "không". Đổi thì đổi cùng lúc |
+| 1 | Trang thông tin La bàn nói "không quảng cáo" nhưng mục Quảng cáo = Có (hoặc ngược lại) | Cả hai "không" - vĩnh viễn (Q69) |
 | 2 | Có gói thuê bao nhưng An toàn dữ liệu thiếu "Lịch sử mua hàng" / IARC thiếu "mua hàng kỹ thuật số" | khai đủ ở app La bàn |
 | 3 | App Pro khai "Lịch sử mua hàng" hoặc "Mã quảng cáo" | app Pro KHÔNG khai hai mục này |
 | 4 | Hai listing gần giống nhau (nội dung lặp lại / spam) | dùng đúng `play-listing.md` cho La bàn và `play-listing-pro.md` cho Pro, ảnh Pro có ảnh 7 riêng |

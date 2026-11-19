@@ -13,7 +13,7 @@ Không dùng từ ngữ xếp hạng / khuyến mãi ("số 1", "tốt nhất", 
 | Email liên hệ | contact@tsudev.com |
 | Website | https://compass.tsudev.com |
 | Chính sách quyền riêng tư | https://compass.tsudev.com/quyen-rieng-tu (en: https://compass.tsudev.com/en/privacy) |
-| Quảng cáo | Không (ads chỉ bật sau Release Gate M1) |
+| Quảng cáo | **Không** - vĩnh viễn (Q69: sản phẩm TsuDEV không quảng cáo) |
 | Mua trong ứng dụng | Có trong mã (gói La bàn Pro, Q55 / Q61) nhưng đóng ở prod tới R4; IARC khai sẵn "mua hàng kỹ thuật số" |
 | Biểu tượng 512 x 512 | `design/store/play-icon-512.png` |
 | Ảnh nổi bật 1024 x 500 | `design/store/play-feature-1024x500.png` (`node tools/build/thuong-hieu.mjs` sinh) |

@@ -41,7 +41,7 @@ final ruiRoProvider = Provider<({MucRuiRo muc, String? ref})>((ref) {
 /// Cờ tính năng nhạy cảm bị tắt theo mức rủi ro (Spec §7.3: MEDIUM trở lên).
 Set<CoTinhNang> coTatTheoRuiRo(MucRuiRo muc) => muc.choTinhNangNhayCam
     ? const {}
-    : const {CoTinhNang.chiaSe, CoTinhNang.dongBo, CoTinhNang.quangCao};
+    : const {CoTinhNang.chiaSe, CoTinhNang.dongBo};
 
 /// `rasp.json` + dịch vụ RASP gửi qua kênh đã ký của [dv].
 DichVuRasp taoDichVuRasp(KhoLuuTru kho, DichVuDinhDanh dv) {

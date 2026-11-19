@@ -120,7 +120,7 @@ void main() {
     );
   });
 
-  test('MEDIUM trở lên tắt chia sẻ / đồng bộ / quảng cáo, giữ bản đồ', () {
+  test('MEDIUM trở lên tắt chia sẻ / đồng bộ, giữ bản đồ', () {
     final c = ProviderContainer(
       overrides: [
         tinhTrangProvider.overrideWithValue(tt(TrangThaiThietBi.suspicious)),

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Build AAB prod cho Google Play (R2): ./tools/build/build-aab.sh [--pro] [--khong-build]
-#   --pro: app "La bàn Pro" (app_pro/, M2 - Q56, Q65) -> build/phat-hanh/pro/<pb>/la-ban-pro-<pb>.aab + kiểm KHÔNG có quảng cáo.
+#   --pro: app "La bàn Pro" (app_pro/, M2 - Q56, Q65) -> build/phat-hanh/pro/<pb>/la-ban-pro-<pb>.aab. Mọi AAB đều kiểm KHÔNG có quảng cáo (Q69).
 #   1. flutter build appbundle prod release --obfuscate --split-debug-info (3 ABI - Play tự tách theo máy)
 #   2. jarsigner verify + so chứng chỉ với khoá upload ngoài repo (QUYET_DINH Q34: Play App Signing dùng CHÍNH khoá này)
 #   3. quyền trong manifest đã gộp phải khớp docs/store/data-safety.md mục 1
@@ -72,13 +72,13 @@ done
 if [ "$APP" = app_pro ] && printf '%s\n' $QUYEN | grep -qx 'com.android.vending.BILLING'; then echo "AAB Pro còn quyền BILLING" >&2; exit 1; fi
 
 TAM=$(mktemp -d); trap 'rm -rf "$TAM"' EXIT
-# M2 (Q56): AAB Pro không được chứa SDK quảng cáo / Advertising ID (Data Safety riêng không khai Advertising ID).
-if [ "$APP" = app_pro ]; then
-  (cd "$TAM" && unzip -qo "$AAB" 'base/dex/*' 'base/manifest/*')
-  if grep -qa 'com/google/android/gms/ads' "$TAM"/base/dex/*.dex; then echo "AAB Pro có lớp com.google.android.gms.ads" >&2; exit 1; fi
-  if printf '%s\n' $QUYEN | grep -qx 'com.google.android.gms.permission.AD_ID'; then echo "AAB Pro xin quyền AD_ID" >&2; exit 1; fi
-  echo "✓ AAB Pro không có lớp / quyền quảng cáo"
+# Q69 (T4, PRODUCT_POLICY mục 3): KHÔNG app nào (miễn phí lẫn Pro) chứa SDK quảng cáo / Advertising ID.
+(cd "$TAM" && unzip -qo "$AAB" 'base/dex/*' 'base/manifest/*')
+if grep -qaE 'com/google/android/gms/ads|com/applovin|com/unity3d/ads|com/facebook/ads|com/ironsource' "$TAM"/base/dex/*.dex; then
+  echo "AAB $TEN có lớp SDK quảng cáo" >&2; exit 1
 fi
+if printf '%s\n' $QUYEN | grep -qx 'com.google.android.gms.permission.AD_ID'; then echo "AAB $TEN xin quyền AD_ID" >&2; exit 1; fi
+echo "✓ AAB $TEN không có lớp / quyền quảng cáo"
 bt build-apks --bundle "$AAB" --output "$TAM/la-ban.apks" --overwrite --aapt2 "$BT/aapt2" >/dev/null
 {
   echo "La bàn $TEN - download size Google Play (bundletool get-size total, byte nén, MIN-MAX)"

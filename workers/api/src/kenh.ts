@@ -78,7 +78,7 @@ export function dangKyKenh(app: Hono<MoiTruongHono>, boTuyen: BoTuyen): void {
         mucTin: z.string(),
         ref: z.string().nullable(),
         banMoi: z.object({ phienBan: z.string(), maPhienBan: z.number().int() }).nullable(),
-        /** M1a (Q55): quyền lợi do Worker xác minh với Google - app chỉ hiển thị / bỏ quảng cáo theo trường này. */
+        /** M1a (Q55): quyền lợi do Worker xác minh với Google - app chỉ hiển thị theo trường này (`khongQuangCao` giữ cho định dạng đã ký - Q69 không còn quảng cáo). */
         quyenLoi: schemaQuyenLoi,
         /** S11 (Q57): true = Worker đang chặn vì Developer options / ADB -> app hiện màn chặn toàn phần. */
         cheDoPhatTrien: z.boolean(),

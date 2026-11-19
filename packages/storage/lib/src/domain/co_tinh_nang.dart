@@ -4,11 +4,12 @@ enum CoTinhNang {
   banDo,
   ar,
   chiaSe,
-  dongBo,
-  quangCao;
+  dongBo;
 
-  /// Mặc định khi chưa có ghi đè. Quảng cáo chỉ bật sau Release Gate (Q17).
-  bool get macDinh => this != CoTinhNang.quangCao;
+  /// Mặc định khi chưa có ghi đè: mọi cờ bật. Q69: không còn cờ quảng
+  /// cáo (TsuDEV không quảng cáo); khoá `quangCao` / `quang-cao` cũ trong
+  /// JSON / Remote Config bị bỏ qua như khoá lạ.
+  bool get macDinh => true;
 }
 
 /// Giá trị cuối của mọi cờ. Thứ tự ưu tiên (cao -> thấp): chế độ an toàn tắt

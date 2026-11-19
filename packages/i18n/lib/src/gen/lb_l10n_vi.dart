@@ -1264,10 +1264,7 @@ class LbL10nVi extends LbL10n {
 
   @override
   String get m1ProTagline =>
-      'Gỡ quảng cáo và ủng hộ La bàn tiếp tục phát triển.';
-
-  @override
-  String get m1BenefitNoAds => 'Không quảng cáo trên mọi màn hình';
+      'Ủng hộ La bàn tiếp tục phát triển và nhận tính năng Pro mới sớm nhất.';
 
   @override
   String get m1BenefitFree =>
@@ -1403,7 +1400,7 @@ class LbL10nVi extends LbL10n {
   String get m1Dismiss => 'Đóng';
 
   @override
-  String get m1SettingsSubFree => 'Gỡ quảng cáo, ủng hộ phát triển';
+  String get m1SettingsSubFree => 'Tính năng Pro, ủng hộ phát triển';
 
   @override
   String get m1SettingsSubPro => 'Đang dùng';
