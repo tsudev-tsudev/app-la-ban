@@ -90,22 +90,28 @@ test('lib/ không được import gói chỉ có ở dev_dependencies', () => {
   assert.deepEqual(loi, ['c/lib/a.dart: mã lib/ import design_system chỉ có ở dev_dependencies']);
 });
 
-test('M2 (Q56): app Pro / app_shell không phụ thuộc quảng cáo kể cả bắc cầu; app miễn phí được', () => {
-  const loi = kiemLop({
+test('Q69: không gói / app nào phụ thuộc quảng cáo - kể cả app miễn phí và dev_dependencies', () => {
+  const sach = kiemLop({
     core: goi(),
-    ads_iap: goi(['core']),
     quyen_loi: goi(['core']),
     app_shell: goi(['quyen_loi']),
-    la_ban: goi(['app_shell', 'ads_iap']),
+    la_ban: goi(['app_shell']),
     la_ban_pro: goi(['app_shell']),
   });
-  assert.deepEqual(loi, []);
-  const loi2 = kiemLop({
+  assert.deepEqual(sach, []);
+  const loi = kiemLop({
     core: goi(),
-    ads_iap: goi(['core']),
-    quyen_loi: goi(['ads_iap']),
+    quyen_loi: goi(['core', 'google_mobile_ads']),
     app_shell: goi(['quyen_loi']),
-    la_ban_pro: goi(['app_shell']),
+    la_ban: goi(['app_shell', 'quang_cao']),
+    la_ban_pro: goi(['app_shell'], [], ['unity_ads_plugin']),
   });
-  assert.equal(loi2.filter((l) => l.includes('quảng cáo')).length, 2);
+  assert.deepEqual(
+    loi.filter((l) => l.includes('quảng cáo')),
+    [
+      'quyen_loi: không được phụ thuộc quảng cáo (google_mobile_ads) - Q69',
+      'la_ban: không được phụ thuộc quảng cáo (quang_cao) - Q69',
+      'la_ban_pro: không được phụ thuộc quảng cáo (unity_ads_plugin) - Q69',
+    ],
+  );
 });

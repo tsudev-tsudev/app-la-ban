@@ -187,7 +187,6 @@ class _LoiIch extends StatelessWidget {
     return Column(
       children: [
         for (final (icon, chu) in [
-          (Icons.block, l10n.m1BenefitNoAds),
           (Icons.explore, l10n.m1BenefitFree),
           (Icons.auto_awesome, l10n.m1BenefitNew),
           (Icons.favorite, l10n.m1BenefitSupport),

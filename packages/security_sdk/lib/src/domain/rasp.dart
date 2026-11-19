@@ -232,7 +232,7 @@ enum MucRuiRo {
   /// Bình thường, gửi sự kiện nền.
   thap,
 
-  /// Tắt tính năng nhạy cảm (chia sẻ, đồng bộ, quảng cáo thưởng).
+  /// Tắt tính năng nhạy cảm (chia sẻ, đồng bộ).
   trungBinh,
 
   /// Chặn tính năng cần API, hiện băng thông báo + mã REF; la bàn offline

@@ -2093,14 +2093,8 @@ abstract class LbL10n {
   /// M1a
   ///
   /// In vi, this message translates to:
-  /// **'Gỡ quảng cáo và ủng hộ La bàn tiếp tục phát triển.'**
+  /// **'Ủng hộ La bàn tiếp tục phát triển và nhận tính năng Pro mới sớm nhất.'**
   String get m1ProTagline;
-
-  /// M1a
-  ///
-  /// In vi, this message translates to:
-  /// **'Không quảng cáo trên mọi màn hình'**
-  String get m1BenefitNoAds;
 
   /// M1a
   ///
@@ -2321,7 +2315,7 @@ abstract class LbL10n {
   /// M1a
   ///
   /// In vi, this message translates to:
-  /// **'Gỡ quảng cáo, ủng hộ phát triển'**
+  /// **'Tính năng Pro, ủng hộ phát triển'**
   String get m1SettingsSubFree;
 
   /// M1a

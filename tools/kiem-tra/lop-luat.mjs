@@ -17,7 +17,6 @@ export const TANG = {
   map_feature: 2,
   ar_feature: 2,
   settings_feature: 2,
-  ads_iap: 2,
   quyen_loi: 2,
   // M2 (Q56): vỏ app dùng chung; hai app chỉ còn main + Android.
   app_shell: 3,
@@ -25,11 +24,26 @@ export const TANG = {
   la_ban_pro: 4,
 };
 
-/** App / gói KHÔNG được chứa quảng cáo kể cả bắc cầu (M2, Q56: APK Pro không có SDK quảng cáo). */
-export const KHONG_QUANG_CAO = new Set(['la_ban_pro', 'app_shell']);
-
-/** Gói nội bộ / SDK mang quảng cáo. */
-export const GOI_QUANG_CAO = new Set(['quang_cao', 'ads_iap', 'google_mobile_ads']);
+/**
+ * Gói nội bộ / SDK mang quảng cáo. Q69 (T4, tsudev-standards PRODUCT_POLICY mục 3): KHÔNG gói / app nào trong workspace
+ * được phụ thuộc (kể cả dev_dependencies) - bản miễn phí cũng không quảng cáo; AAB còn được kiểm dex + `AD_ID` ở build-aab.sh.
+ */
+export const GOI_QUANG_CAO = new Set([
+  'quang_cao',
+  'ads_iap',
+  'google_mobile_ads',
+  'gma_mediation_applovin',
+  'gma_mediation_meta',
+  'gma_mediation_unity',
+  'applovin_max',
+  'unity_ads_plugin',
+  'easy_audience_network',
+  'facebook_audience_network',
+  'ironsource_mediation',
+  'appodeal_flutter',
+  'yandex_mobileads',
+  'advertising_id',
+]);
 
 /** Gói chỉ được khai báo ở dev_dependencies và chỉ import trong test/. */
 export const CHI_TEST = new Set(['test_kit', 'flutter_test']);
@@ -81,16 +95,8 @@ export function kiemLop(dsGoi) {
         loi.push(`${ten} (tầng ${tang}) không được phụ thuộc ${d} (tầng ${td})`);
       }
     }
-    if (KHONG_QUANG_CAO.has(ten)) {
-      const da = new Set();
-      const hang = [...g.deps];
-      while (hang.length) {
-        const d = hang.pop();
-        if (da.has(d)) continue;
-        da.add(d);
-        if (GOI_QUANG_CAO.has(d)) loi.push(`${ten}: không được phụ thuộc quảng cáo (${d}) - Q56`);
-        hang.push(...(dsGoi[d]?.deps ?? []));
-      }
+    for (const d of [...g.deps, ...g.devDeps]) {
+      if (GOI_QUANG_CAO.has(d)) loi.push(`${ten}: không được phụ thuộc quảng cáo (${d}) - Q69`);
     }
     const khaiBao = new Set([...g.deps, ...g.devDeps, ten]);
     for (const t of g.tep) {

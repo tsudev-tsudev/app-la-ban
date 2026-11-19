@@ -1270,10 +1270,8 @@ class LbL10nEn extends LbL10n {
   String get m1ProTitle => 'Compass Pro';
 
   @override
-  String get m1ProTagline => 'Remove ads and help Compass keep growing.';
-
-  @override
-  String get m1BenefitNoAds => 'No ads on any screen';
+  String get m1ProTagline =>
+      'Help Compass keep growing and get new Pro features first.';
 
   @override
   String get m1BenefitFree =>
@@ -1410,7 +1408,7 @@ class LbL10nEn extends LbL10n {
   String get m1Dismiss => 'Dismiss';
 
   @override
-  String get m1SettingsSubFree => 'Remove ads, support development';
+  String get m1SettingsSubFree => 'Pro features, support development';
 
   @override
   String get m1SettingsSubPro => 'Active';
@@ -2953,10 +2951,7 @@ class LbL10nEnXa extends LbL10nEn {
 
   @override
   String get m1ProTagline =>
-      '[Řẽmởvẽ ảđš ảñđ hẽłp Çởmpảšš kẽẽp ğřởŵỉñğ. ·················]';
-
-  @override
-  String get m1BenefitNoAds => '[Ñở ảđš ởñ ảñỹ šçřẽẽñ ········]';
+      '[Hẽłp Çởmpảšš kẽẽp ğřởŵỉñğ ảñđ ğẽť ñẽŵ Přở fẽảťữřẽš fỉřšť. ·······················]';
 
   @override
   String get m1BenefitFree =>
@@ -3097,7 +3092,7 @@ class LbL10nEnXa extends LbL10nEn {
 
   @override
   String get m1SettingsSubFree =>
-      '[Řẽmởvẽ ảđš, šữppởřť đẽvẽłởpmẽñť ·············]';
+      '[Přở fẽảťữřẽš, šữppởřť đẽvẽłởpmẽñť ··············]';
 
   @override
   String get m1SettingsSubPro => '[Ảçťỉvẽ ···]';

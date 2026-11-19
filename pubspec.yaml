@@ -20,7 +20,6 @@ workspace:
   - packages/network
   - packages/storage
   - packages/i18n
-  - packages/ads_iap
   - packages/quyen_loi
   - packages/test_kit
 dev_dependencies:
