@@ -8,8 +8,8 @@ resolution: workspace
 environment:
   sdk: ^3.13.0
 
-# M2 (Q56): toàn bộ app nằm ở packages/app_shell; app này chỉ còn main + Android. M1b: thêm quang_cao ở ĐÂY (app_pro
-# không được phụ thuộc quảng cáo - cổng kiểm).
+# M2 (Q56): toàn bộ app nằm ở packages/app_shell; app này chỉ còn main + Android. Q69: KHÔNG thêm gói / SDK quảng cáo
+# (cổng: tools/kiem-tra/lop-luat.mjs + build-aab.sh kiểm dex / AD_ID).
 dependencies:
   app_shell:
   flutter:

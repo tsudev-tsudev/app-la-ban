@@ -34,7 +34,7 @@ Như `data-safety.md` mục 2 (có thu thập tuỳ chọn, mã hoá khi truyề
 | App info and performance > Crash logs | Có (tuỳ chọn riêng) | **Có** (giống) | S10b |
 | App info and performance > Diagnostics | Có, chia sẻ Talsec | **Có, chia sẻ Talsec** (giống) | thêm `appLicensingVerdict` của Play Integrity (bản quyền Pro) trong cùng phán quyết - không phải loại dữ liệu mới |
 | Financial info > Purchase history | Có (khi mua Pro trong app) | **KHÔNG khai** | app Pro không có mua trong app; giá tải do Google Play thu, TsuDev không nhận lịch sử mua (chỉ nhận phán quyết LICENSED / UNLICENSED) |
-| Device or other IDs > Advertising ID | Không (tới M1b) | **KHÔNG** (vĩnh viễn) | APK không có SDK quảng cáo, không quyền `AD_ID` |
+| Device or other IDs > Advertising ID | **KHÔNG** (vĩnh viễn - Q69) | **KHÔNG** (vĩnh viễn) | APK không có SDK quảng cáo, không quyền `AD_ID` |
 
 Mọi dòng "Có" vẫn là **tuỳ chọn**: "Chỉ dùng ngoại tuyến" hoặc rút đồng ý -> app không gửi gì (khi đó bản quyền chưa xác
 minh, app vẫn đủ tính năng bản miễn phí - không khoá cứng ở client, Q56).

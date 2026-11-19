@@ -10,7 +10,7 @@ project hay cổng dev với các repo khác trên máy (`ubnd`, `ban-do-3d`, `t
 - App la bàn Flutter cho Android + iOS, song ngữ vi/en, giao diện đen tuyền + tím của hệ tsudev (Q68, mặc định Tối; logo kim cyan / coral riêng), bộ icon riêng.
 - Nền tảng bảo mật: Security SDK trong app (RASP + attestation + ký request) -> API Worker -> Threat Engine -> Admin SOC giám sát
   thiết bị / IP, can thiệp thiết bị vi phạm. Web (landing + admin) có lớp khiên chống sao chép / DevTools + CSP nghiêm.
-- Phát hành Google Play + App Store; quảng cáo / IAP CHỈ bật sau Release Gate (phase M1).
+- Phát hành Google Play + App Store; KHÔNG quảng cáo (Q69 - luật lớp + build-aab.sh chặn); IAP CHỈ bật sau Release Gate (phase M1).
 
 ## Stack (chốt ở QUYET_DINH.md - đổi phải ghi lại ở đó)
 - App: Flutter stable (ghim commit ở `.flutter-version`, SDK tại `~/tools/flutter`), Dart 3, Impeller, Riverpod, go_router, Drift + SQLCipher, dio, ARB i18n,
@@ -22,10 +22,10 @@ project hay cổng dev với các repo khác trên máy (`ubnd`, `ban-do-3d`, `t
 
 ## Cấu trúc thư mục (dựng ở N0 - phase sau chỉ thêm đúng chỗ)
 ```
-app/                    La bàn miễn phí: chỉ main + Android (flavors dev/staging/prod) - vỏ app ở packages/app_shell (Q65)
+app/                    La bàn miễn phí (không quảng cáo - Q69): chỉ main + Android (flavors dev/staging/prod) - vỏ app ở packages/app_shell (Q65)
 app_pro/                La bàn Pro (com.tsudev.laban.pro, Q56): chỉ main + Android, KHÔNG phụ thuộc quảng cáo
 packages/               core · design_system · sensors · compass_feature · location_feature · waypoint_feature · map_feature
-                        ar_feature · settings_feature · security_sdk · network · storage · i18n · ads_iap · quyen_loi (Pro + Play Billing)
+                        ar_feature · settings_feature · security_sdk · network · storage · i18n · quyen_loi (Pro + Play Billing)
                         app_shell (vỏ app dùng chung: entry, DI, router, theme - nhận CauHinhSanPham)
 native/                 android/ (Kotlin + cpp/) · ios/ (Swift) - mã nền tảng của plugin nội bộ
 workers/api/            Worker la-ban-api: src/ (routes, threat/, attest/, admin/) · migrations/ (D1, BẤT BIẾN) · wrangler.toml

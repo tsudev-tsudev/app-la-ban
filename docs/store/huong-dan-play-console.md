@@ -18,7 +18,7 @@ Thứ tự làm đề xuất: Phần A (9 mục còn lại) -> Phần B (thử n
 >    TRƯỚC mỗi lần gửi duyệt (thử kín, công khai, bản cập nhật) làm E0 + E1; duyệt xong làm E2.
 > 2. **Miễn trừ ASN Google ở SOC** (runbook phat-hanh-play mục 4) - để thiết bị duyệt không bị Threat Engine cấm.
 > 3. **Khai báo phải khớp bản AAB.** Mục nào khai "Không" (quảng cáo, mã quảng cáo...) thì AAB không được có SDK / quyền
->    tương ứng (`build-aab.sh` đã kiểm quyền). Khi bật quảng cáo (M1b) hoặc bán Pro (R4) -> sửa khai báo TRƯỚC khi gửi bản đó.
+>    tương ứng (`build-aab.sh` đã kiểm quyền + lớp quảng cáo). Không bao giờ có quảng cáo (Q69); khi bán Pro (R4) -> sửa khai báo TRƯỚC khi gửi bản đó.
 
 ---
 
@@ -37,8 +37,8 @@ Kiểm lại URL đã nhập là `https://compass.tsudev.com/quyen-rieng-tu` (đ
 
 ### A3. Quảng cáo (ảnh 03)
 - Chọn **"Không, ứng dụng của tôi không chứa quảng cáo"** -> **Lưu**.
-- Lý do: AAB hiện tại không có SDK quảng cáo (AdMob chỉ vào ở M1b sau Release Gate). Khi phát hành bản có AdMob ->
-  quay lại đổi thành "Có" trước khi gửi bản đó (nhãn "Chứa quảng cáo" hiện trên Play).
+- Lý do: AAB không có SDK quảng cáo và sẽ không bao giờ có (Q69, 19/11/2026 - chính sách toàn hệ TsuDEV; M1b AdMob đã
+  huỷ). `build-aab.sh` chặn AAB có lớp quảng cáo / quyền `AD_ID`.
 - Mục này phải xong trước A5 (ảnh 05 báo "Hoàn thành phần Quảng cáo").
 
 ### A4. Mức phân loại nội dung - bảng câu hỏi IARC (ảnh 04)
@@ -157,7 +157,7 @@ Kiểm lần cuối mô tả: không chữ "tốt nhất / số 1 / miễn phí"
 Không nằm trong 11 dòng nhưng Play có thể yêu cầu - mở trang **Nội dung ứng dụng**, tab "Việc cần làm":
 | Trang | Trả lời |
 |---|---|
-| **Mã nhận dạng quảng cáo** (Advertising ID) | "Ứng dụng có sử dụng mã nhận dạng quảng cáo không?" -> **Không** (AAB không có quyền `AD_ID`). Đổi thành Có khi thêm AdMob (M1b) |
+| **Mã nhận dạng quảng cáo** (Advertising ID) | "Ứng dụng có sử dụng mã nhận dạng quảng cáo không?" -> **Không** (AAB không có quyền `AD_ID`) - vĩnh viễn (Q69) |
 | Quyền truy cập ảnh và video / Dịch vụ trên nền trước / Vị trí ở chế độ nền | Không áp dụng - app không xin các quyền này. Nếu Play hỏi -> báo agent kiểm lại AAB |
 | Ứng dụng VPN, Chính sách Gia đình, Tin tức | Không |
 
@@ -274,7 +274,7 @@ Google trả lời trong ~7 ngày. Bị từ chối -> kéo dài thử kín thê
 4. Làm **E1** -> **Tổng quan về việc xuất bản** -> bật **Quản lý việc xuất bản** (để tự bấm xuất bản sau khi duyệt) ->
    **Gửi để xem xét**.
 5. Duyệt xong: agent đổi nút "Google Play - sắp có" ở `/tai-ve` thành link Play; làm **E2**.
-6. Nếu R4 bật bán Pro / quảng cáo: trước đó sửa A3 (Quảng cáo), A12 (Mã quảng cáo), A6 (thêm loại dữ liệu AdMob), tạo sản
+6. Nếu R4 bật bán Pro: trước đó kiểm A6 (Lịch sử mua hàng), A4 (mua hàng kỹ thuật số), tạo sản
    phẩm `pro_thang` / `pro_nam` / `pro_tron_doi` (Q67) + RTDN theo runbook phat-hanh-play mục 6.
 
 ---
@@ -296,7 +296,7 @@ Mục tiêu: máy của người duyệt / pre-launch report (luôn bật ADB, n
 2. **Tổng quan về việc xuất bản**: không còn lỗi đỏ; cảnh báo vàng đọc hết (thiếu ký hiệu gỡ lỗi = chấp nhận được).
 3. **Chính sách quyền riêng tư** mở được: `https://compass.tsudev.com/quyen-rieng-tu` (agent đo `curl -sL`).
 4. **Bản AAB** là bản mới nhất agent build (versionCode cao hơn mọi bản đã tải), targetSdk 36, đã có chứng chỉ Play (>= beta.17).
-5. **An toàn dữ liệu (A6)** và **Quảng cáo (A3)** khớp bản AAB: chưa có AdMob -> "Không có quảng cáo"; chưa mở bán Pro
+5. **An toàn dữ liệu (A6)** và **Quảng cáo (A3)** khớp bản AAB: "Không có quảng cáo" (Q69 - vĩnh viễn); chưa mở bán Pro
    trong prod (`moBanProTrongProd = false`) -> giữ khai báo như A4 / A6.
 6. **Thông tin đăng nhập (A2)**: "Không cần đăng nhập" - app không có tài khoản; mọi tính năng mở ngay.
 7. **Ghi chú cho người duyệt** (`docs/store/ghi-chu-reviewer.md`, dán vào ô ghi chú bản phát hành nếu Play hỏi): giải thích

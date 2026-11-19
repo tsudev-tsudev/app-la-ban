@@ -13,8 +13,8 @@ World Editor 3D. Yêu cầu bảo mật chi tiết (mã `SEC-...`): `KE_HOACH_BA
 1. Mục tiêu bảo mật là **phòng thủ nhiều lớp, đo được**; server quyết định tin cậy, client chỉ gửi tín hiệu (Spec §0, §15).
 2. Backend Cloudflare thay cho K8s/Postgres của spec (QUYET_DINH Q3); bảng dữ liệu giữ đúng tên trường Spec §6.4.
 3. Bảo vệ giao diện web (chống sao chép, chuột phải, DevTools) là lớp răn đe có bật/tắt từ xa, không thay kiểm soát server.
-4. Quảng cáo / IAP chỉ bật sau Release Gate (Spec §12.1). Người dùng có quyền lợi `khongQuangCao` (gói Pro trong app hoặc
-   app trả phí "La bàn Pro") KHÔNG BAO GIỜ khởi tạo SDK quảng cáo; quyền lợi do Worker xác minh với Google Play (Q55, Q56).
+4. **Không quảng cáo** (Q69, 19/11/2026 - chính sách toàn hệ TsuDEV): không app nào chứa SDK quảng cáo / `AD_ID`; nguồn
+   thu chỉ là gói Pro + Ủng hộ. Mua trong app chỉ bật sau Release Gate (Spec §12.1); quyền lợi do Worker xác minh với Google Play (Q55, Q56).
 5. Mọi tính năng: vi + en, light + dark, không overflow, có test.
 6. **Android trước** (QUYET_DINH Q33, chốt 28/10/2026): mọi phase chỉ thi công + nghiệm thu phần Android; phần iOS gom vào
    phase I1 (đầu năm 2027, khi có máy Mac + Apple Developer). Bản thử phát hành dạng APK tải trực tiếp (R0, Q34) trước khi lên Play.
@@ -75,7 +75,7 @@ Một phase = một phiên = nhánh `phase/<mã>` = một PR. Ký hiệu: ⬜ ch
 | 23 | R2 | Sẵn sàng store | A8, S4 | ⛔ R2a ✅ 31/10 (AAB + Data Safety + listing + ảnh store, Q46) · R2b: tài khoản Play cá nhân duyệt 04/11, app đã tạo, thiết lập 2/11; hướng dẫn từng trang `docs/store/huong-dan-play-console.md` (04/11, bản 2: E0-E2); **Thử nghiệm nội bộ chạy 04/11**: AAB beta.16 lên kênh, link `https://play.google.com/apps/internaltest/4700876326543944136`, M32 cài từ Play ✅; khoá ký Google Play tạo -> chấp nhận 2 chứng chỉ (Q63, beta.17) · ⛔ còn: liên kết Play Integrity (Được bảo vệ bằng Play) -> `PLAY_RECOGNIZED`, Phần A 11/11, thử kín 12 x 14 ngày |
 | 24 | R3 | QA tổng + kiểm thử bảo mật (chia R3a / R3b) | R2, S9, S10 | ✅ 03/11 (0 Critical / High mở) · R3a ✅ 02/11 (gitleaks / osv-scanner / Semgrep vào cổng, ZAP + MobSF + SSL Labs A+, 0 High, minSdk 26, Q50) · R3b ✅ 02/11 (E2E + nâng cấp beta.7->13 + 5 kịch bản SEC-TEST trên M32, sửa 2 lỗi, Q51) · R3c ✅ 03/11 (#48-#50, Q52: DO -> D1 nonce + giới hạn; staging p95 < 300 ms; D1 prod chuyển ICN -> SIN (Q53): prod p50 8-49 ms, p95 < 250 ms mẫu nhỏ - đo lại 24 h) |
 | 25 | R4 | Phát hành v1.0.0 + OTA | R3 | ⬜ (tài khoản cá nhân: cần thử kín >= 12 người x 14 ngày trước production) |
-| 26 | M1 | Gói Pro trong app + quảng cáo (chia M1a quyền lợi + Play Billing / M1b quảng cáo), v1.1.0 sau Release Gate | R4 | 🟨 M1a bước 3 (máy chủ) ✅ 03/11 (b145e92, PR #66) · bước 2 (app) ✅ 04/11 (`packages/quyen_loi` + Paywall, Q61; prod chưa mở bán) · bước 4 phần SOC + 5 (trang Quyền lợi SOC, Q64) ✅ 04/11 · còn bước 1 (người dùng tạo sản phẩm + RTDN_EMAIL), cổng máy thật license tester |
+| 26 | M1 | Gói Pro trong app (M1a quyền lợi + Play Billing; ~~M1b quảng cáo~~ huỷ 19/11 - Q69), v1.1.0 sau Release Gate | R4 | 🟨 M1a bước 3 (máy chủ) ✅ 03/11 (b145e92, PR #66) · bước 2 (app) ✅ 04/11 (`packages/quyen_loi` + Paywall, Q61; prod chưa mở bán) · bước 4 phần SOC + 5 (trang Quyền lợi SOC, Q64) ✅ 04/11 · còn bước 1 (người dùng tạo sản phẩm + RTDN_EMAIL), cổng máy thật license tester |
 | 27 | R0 | Bản APK thử: khoá ký, script phát hành GitHub Release + R2, trang tải | A5 | ✅ 28/10 |
 | 28 | I1 | iOS (đầu 2027): build, App Attest, Privacy Manifest, TestFlight, App Store | R4, máy Mac | ⬜ |
 | 29 | M2 | App song song "La bàn Pro" trả phí một lần, không quảng cáo (Q56) | R2b, M1a bước 3 (bảng `quyen_loi`) | 🟨 M2a ✅ 05/11 (vỏ app `app_shell` + `app_pro`, bản quyền GET_LICENSED, Worker + SOC theo gói, Q65) · M2b bước 3 code ✅ 05/11 (build Kotlin ✅ 06/11, chưa thử máy thật) · M2b bước 4 listing / Data Safety / ảnh store ✅ 06/11 · còn thử máy thật + Play Console Phần F (người dùng) · chạy CÙNG R4 (người dùng chốt 03/11: dùng chung cửa sổ thử kín 14 ngày; M1a bước 3 phần máy chủ làm trước) · logo Pro ✅ 03/11 |
@@ -90,7 +90,7 @@ Integrity API + service account (Apple Team ID dời sang I1) · trước S6 b�
 Policy · trước I1 (đầu 2027) máy Mac hoặc Codemagic + Apple Developer · trước R4 chốt đơn vị pentest, bấm phát hành · trước M1 / M2: hồ sơ thanh toán Play (merchant) + khai báo
 nhà giao dịch (trader - địa chỉ / điện thoại có thể hiện công khai trên Play), giá đã chốt 03/11 (Q55 / Q56), Pub/Sub
 cho RTDN trong dự án Cloud 930761930572, cấp service account quyền "Xem dữ liệu tài chính / quản lý đơn hàng" trong Play
-Console · trước M1b tài khoản AdMob (RevenueCat KHÔNG còn cần - Q55).
+Console (RevenueCat KHÔNG còn cần - Q55; AdMob KHÔNG cần - M1b huỷ, Q69).
 
 ## 4. Thẻ phase
 
@@ -759,8 +759,8 @@ Console · trước M1b tài khoản AdMob (RevenueCat KHÔNG còn cần - Q55).
   cùng 12 tester trong CÙNG cửa sổ 14 ngày (tài khoản cá nhân), production hai app cùng đợt.
 - Cổng: crash-free >= 99,8%; không sự cố mở. Bắt đầu đếm 4 tuần Release Gate.
 
-### M1 - Gói Pro trong app + quảng cáo (chia M1a / M1b)
-- Đọc thêm: Spec §12; SEC-IAP; QUYET_DINH Q17, Q55.
+### M1 - Gói Pro trong app (M1a; M1b quảng cáo ĐÃ HUỶ - Q69)
+- Đọc thêm: Spec §12; SEC-IAP; QUYET_DINH Q55, Q69 (thay Q17).
 - Nguyên tắc: (1) quyền lợi (entitlement) do Worker quyết - app chỉ hiển thị theo `/v1/status` đã ký; (2) có quyền lợi
   `khongQuangCao` thì KHÔNG khởi tạo AdMob / UMP (không chỉ ẩn banner); (3) KHÔNG khoá lại tính năng đang miễn phí ở bản beta
   (la bàn, toạ độ, điểm mốc, chia sẻ, bản đồ offline, Camera AR) - giới hạn miễn phí chỉ áp cho tính năng MỚI; (4) không tài
@@ -784,7 +784,8 @@ Console · trước M1b tài khoản AdMob (RevenueCat KHÔNG còn cần - Q55).
      xử lý hoàn tiền qua khiếu nại).
   5. SOC: trang Quyền lợi (tra theo thiết bị / băm token, lịch sử RTDN, thu hồi thủ công four-eyes + audit), số liệu doanh
      thu ước tính từ AE (không PII). Data Safety: thêm "Lịch sử mua hàng" (thu thập, không chia sẻ); chính sách quyền riêng tư.
-- **M1b - Quảng cáo** (chỉ bật qua Remote Config khi đạt Release Gate §12.1): gói `packages/quang_cao` (AdMob + UMP; ATT ở
+- ~~**M1b - Quảng cáo**~~ **ĐÃ HUỶ 19/11/2026 (Q69, PRODUCT_POLICY mục 3 - sản phẩm TsuDEV không quảng cáo; T4 gỡ `ads_iap`, cờ
+  `quangCao`, luật lớp cấm quảng cáo mọi gói). Giữ nội dung dưới đây chỉ làm lịch sử.** (chỉ bật qua Remote Config khi đạt Release Gate §12.1): gói `packages/quang_cao` (AdMob + UMP; ATT ở
   I1) CHỈ app miễn phí phụ thuộc; khởi tạo lười sau đồng ý UMP VÀ khi `khongQuangCao = false`; banner thích ứng chỗ dành
   sẵn, không che la bàn / telemetry, ẩn trong AR; interstitial giới hạn tần suất (<= 1 / 5 phút, <= 3 / phiên, không bao
   giờ khi đang đo / điều hướng); rewarded xác minh SSV ở Worker; thiết bị restricted / banned không nhận quảng cáo / thưởng;
@@ -887,7 +888,7 @@ Console · trước M1b tài khoản AdMob (RevenueCat KHÔNG còn cần - Q55).
   `packages/i18n` (chuỗi mới gom MỘT khối cuối tệp ARB, tiền tố `a9`), `design/tokens.json` + `design/tools`, `web/landing/src`
   (giao diện), `web/admin/src` CHỈ phần trình bày (CSS, theme, component hiển thị - không đổi luồng tải dữ liệu / auth),
   golden trong các gói trên, `app/lib` chỉ khi bắt buộc (khai báo trong PR).
-- **CẤM sửa** (phiên chính giữ): `workers/**`, `web/shield/**`, `packages/{security_sdk,network,storage,ads_iap,core}`,
+- **CẤM sửa** (phiên chính giữ): `workers/**`, `web/shield/**`, `packages/{security_sdk,network,storage,core}`,
   `native/**`, `app/lib/src/lam_cung.dart`, `tools/**`, `QUYET_DINH.md`, `docs/ke-hoach/**`, `CLAUDE.md` / `AGENTS.md`,
   pubspec `version` + `phienBanApp` (phiên chính phát hành APK). Cần đổi vùng cấm -> ghi vào phiếu bàn giao, không tự làm.
 - **A9a - Thiết bị thiếu phần cứng (Q59)**: domain thuần `NangLucThietBi` (có từ kế / gyro / gia tốc / GPS / camera) +
