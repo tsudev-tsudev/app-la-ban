@@ -32,6 +32,7 @@ Kiểm lại mỗi bản: `./tools/build/build-aab.sh` đọc quyền từ AAB (
 | Mọi dữ liệu được mã hoá khi truyền? | **Có** | HTTPS TLS 1.2+ có ghim chứng chỉ (SEC-NET); freeRASP gửi qua HTTPS |
 | Người dùng có thể yêu cầu xoá dữ liệu? | **Có** | Cài đặt > Quyền riêng tư > Xoá toàn bộ (trên máy) + email privacy@tsudev.com kèm mã thiết bị (máy chủ, 72 giờ làm việc) |
 | Tài khoản | Không có tài khoản -> không cần URL xoá tài khoản | |
+| Phương thức tạo tài khoản | **Ứng dụng của tôi không cho phép người dùng tạo tài khoản**; câu phụ "Người dùng có thể đăng nhập bằng tài khoản tạo bên ngoài ứng dụng?" = **Không** | app không có màn đăng nhập nào (rà 21/11/2026: Play đang để "Có - Định danh bên ngoài (liên kết SIM...)" -> SAI, đã sửa) |
 | Tuân thủ Chính sách gia đình | Không nhắm trẻ em (13+) | |
 | Đánh giá bảo mật độc lập (MASA) | Không (chưa) | |
 
