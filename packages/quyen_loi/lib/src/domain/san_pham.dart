@@ -1,21 +1,22 @@
 import 'package:meta/meta.dart';
 
-/// Sản phẩm Play đã chốt (QUYET_DINH Q55) - khớp `SAN_PHAM` của Worker
-/// (`workers/api/src/thuan/quyen-loi.ts`). Thứ tự = thứ tự hiện trên Paywall.
+/// Sản phẩm Play theo hợp đồng chung TsuDEV (PRODUCT_POLICY 7.4, QUYET_DINH
+/// Q70) - khớp `SAN_PHAM` của Worker (`workers/api/src/thuan/quyen-loi.ts`).
+/// Thuê bao `tsudev_pro` chỉ có MỘT gói cơ sở trả trước `nam` (P1Y, không tự
+/// gia hạn). Mã cũ `pro_thang` / `pro_nam` / `pro_tron_doi` đã bỏ.
 enum SanPham {
-  proNam('pro_nam', dangKy: true),
-  proThang('pro_thang', dangKy: true),
-  // Mã `pro_vinh_vien` đã bị xoá trên Play Console và Play không cho dùng lại
-  // mã đã xoá -> mã mới `pro_tron_doi` (QUYET_DINH Q67, 06/11/2026).
-  proVinhVien('pro_tron_doi', dangKy: false);
+  tsudevPro('tsudev_pro', dangKy: true, goiCoSo: 'nam');
 
-  new(this.ma, {required this.dangKy});
+  new(this.ma, {required this.dangKy, this.goiCoSo});
 
   /// Product ID trên Play Console.
   final String ma;
 
-  /// true: gói đăng ký tự gia hạn; false: mua một lần (non-consumable).
+  /// true: thuê bao (Play subscription); false: mua một lần.
   final bool dangKy;
+
+  /// Gói cơ sở (base plan) DUY NHẤT được bán; ưu đãi của gói khác bị bỏ qua.
+  final String? goiCoSo;
 
   static SanPham? tuMa(String ma) {
     for (final s in values) {

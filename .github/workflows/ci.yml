@@ -1,0 +1,95 @@
+# CI bảo mật tối thiểu (phiếu 20261118-AN1C) - bổ sung, KHÔNG thay cổng máy ./tools/kiem-tra/cong.sh day-du.
+# Action ghim SHA; công cụ tải ngoài ghim phiên bản + checksum; quyền mặc định chỉ đọc.
+name: CI
+on:
+  push: { branches: [main] }
+  pull_request:
+permissions: { contents: read }
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  FLUTTER_VERSION: '3.47.8'
+  FLUTTER_COMMIT: '737ba8f885dc774b53b442759999a312c9461e4e'
+
+jobs:
+  standards:
+    name: Quy ước tsudev
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false }
+      - run: bash .standards/scripts/sync-standards.sh --check
+
+  gitleaks:
+    name: Quét lộ bí mật (gitleaks)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      GITLEAKS_VERSION: '8.30.1'
+      GITLEAKS_SHA256: '551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { fetch-depth: 0, persist-credentials: false }
+      - run: |
+          set -euo pipefail
+          tarball="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          curl -sSfL -o "$RUNNER_TEMP/$tarball" "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/${tarball}"
+          echo "${GITLEAKS_SHA256}  $RUNNER_TEMP/$tarball" | sha256sum -c -
+          tar -xzf "$RUNNER_TEMP/$tarball" -C "$RUNNER_TEMP" gitleaks
+          "$RUNNER_TEMP/gitleaks" git . --no-banner --redact --exit-code 1 -c .gitleaks.toml
+
+  web:
+    name: Worker + web (lint, typecheck, test, build, audit)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env: { ASTRO_TELEMETRY_DISABLED: '1', WRANGLER_SEND_METRICS: 'false' }
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with: { node-version-file: .nvmrc }
+      - name: Cài phụ thuộc đúng lockfile (npm ghim phiên bản)
+        run: npx -y npm@11.21.2 ci --no-fund --no-audit
+      - name: Lỗ hổng phụ thuộc chạy thật (high trở lên)
+        run: npm audit --omit=dev --audit-level=high
+      - name: Lint, typecheck, test
+        run: |
+          set -euo pipefail
+          npm run lint
+          npm run typecheck
+          npm test
+          node --test 'tools/build/*.test.mjs' 'tools/cloudflare/*.test.mjs' 'tools/kiem-tra/*.test.mjs' 'tools/cau-hinh/*.test.mjs' 'tools/sao-luu/*.test.mjs'
+      - name: Build web + Worker, vệ sinh bản build
+        run: |
+          set -euo pipefail
+          npm run build -w web/landing
+          npm run build -w web/admin
+          node web/status/build.mjs
+          npm run build -w workers/api
+          node tools/kiem-tra/ve-sinh-ban-build.mjs web/landing/dist web/admin/dist web/status/dist
+
+  flutter:
+    name: App Flutter (analyze + test mọi gói)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false }
+      - name: Flutter (ghim commit)
+        run: |
+          git clone --depth 1 -b "$FLUTTER_VERSION" https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
+          test "$(git -C "$RUNNER_TEMP/flutter" rev-parse HEAD)" = "$FLUTTER_COMMIT"
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+      - name: Phân tích + test (golden dùng font cố định trong design/fonts)
+        run: |
+          set -euo pipefail
+          flutter pub get
+          for goi in packages/* app app_pro; do
+            [ -f "$goi/pubspec.yaml" ] || continue
+            echo "::group::$goi"
+            (cd "$goi" && flutter analyze --fatal-infos --fatal-warnings)
+            if [ -d "$goi/test" ]; then (cd "$goi" && flutter test --reporter failures-only); fi
+            echo "::endgroup::"
+          done

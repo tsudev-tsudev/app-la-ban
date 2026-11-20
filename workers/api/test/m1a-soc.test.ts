@@ -61,8 +61,9 @@ describe('SOC quyền lợi: tra cứu + bộ lọc', () => {
 
 describe('SOC quyền lợi: doanh thu ước tính (AE)', () => {
   it('điểm AE: không PII, hoàn tiền âm, RTDN có thu tiền = RECOVERED / RENEWED', () => {
-    expect(diemDoanhThu('pro_nam', 'mua-moi', false)).toEqual({ indexes: ['doanh-thu'], blobs: ['doanh-thu', 'pro_nam', 'mua-moi', '0'], doubles: [1, 99_000] });
-    expect(diemDoanhThu('pro_thang', 'hoan', true).doubles).toEqual([1, -GIA_NIEM_YET.pro_thang]);
+    expect(diemDoanhThu('tsudev_pro', 'mua-moi', false)).toEqual({ indexes: ['doanh-thu'], blobs: ['doanh-thu', 'tsudev_pro', 'mua-moi', '0'], doubles: [1, 490_000] });
+    expect(diemDoanhThu('pro_tron_doi', 'mua-moi', false).doubles).toEqual([1, 0]);
+    expect(diemDoanhThu('tsudev_pro', 'hoan', true).doubles).toEqual([1, -GIA_NIEM_YET.tsudev_pro]);
     expect([1, 2, 3, 4, 7, 13].map(rtdnCoThuTien)).toEqual([true, true, false, false, false, false]);
   });
 
@@ -74,18 +75,18 @@ describe('SOC quyền lợi: doanh thu ước tính (AE)', () => {
 
   it('gộp theo sản phẩm, mua thử tách riêng, sự kiện lạ bỏ qua', () => {
     const kq = tongHopDoanhThu([
-      { sanPham: 'pro_nam', suKien: 'mua-moi', thu: '0', n: '2', vnd: '198000' },
-      { sanPham: 'pro_nam', suKien: 'hoan', thu: '0', n: 1, vnd: -99000 },
-      { sanPham: 'pro_thang', suKien: 'gia-han', thu: '0', n: 3, vnd: 57000 },
-      { sanPham: 'pro_thang', suKien: 'mua-moi', thu: '1', n: 4, vnd: 76000 },
-      { sanPham: 'pro_thang', suKien: 'la', thu: '0', n: 9, vnd: 9 },
+      { sanPham: 'tsudev_pro', suKien: 'mua-moi', thu: '0', n: '2', vnd: '980000' },
+      { sanPham: 'tsudev_pro', suKien: 'hoan', thu: '0', n: 1, vnd: -490000 },
+      { sanPham: 'tsudev_pro', suKien: 'gia-han', thu: '0', n: 3, vnd: 1470000 },
+      { sanPham: 'tsudev_pro', suKien: 'mua-moi', thu: '1', n: 4, vnd: 1960000 },
+      { sanPham: 'tsudev_pro', suKien: 'la', thu: '0', n: 9, vnd: 9 },
+      { sanPham: 'pro_thang', suKien: 'gia-han', thu: '0', n: 1, vnd: 19000 },
     ]);
-    expect(kq.tongVnd).toBe(156_000);
+    expect(kq.tongVnd).toBe(1_979_000);
     expect(kq.soMuaThu).toBe(4);
     expect(kq.theoSanPham).toEqual([
-      { sanPham: 'pro_thang', muaMoi: 0, giaHan: 3, hoan: 0, vnd: 57_000 },
-      { sanPham: 'pro_nam', muaMoi: 2, giaHan: 0, hoan: 1, vnd: 99_000 },
-      { sanPham: 'pro_tron_doi', muaMoi: 0, giaHan: 0, hoan: 0, vnd: 0 },
+      { sanPham: 'tsudev_pro', muaMoi: 2, giaHan: 3, hoan: 1, vnd: 1_960_000 },
+      { sanPham: 'pro_thang', muaMoi: 0, giaHan: 1, hoan: 0, vnd: 19_000 },
     ]);
   });
 });

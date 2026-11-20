@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:i18n/i18n.dart';
 import 'package:quyen_loi/quyen_loi.dart';
 import 'package:test_kit/test_kit.dart';
 
@@ -8,18 +11,23 @@ import 'dich_vu_test.dart' show CuaHangGia;
 
 const _goi = [
   GoiBan(
-    sanPham: SanPham.proNam,
-    giaHienThi: '99.000 ₫',
+    sanPham: SanPham.tsudevPro,
+    giaHienThi: '490.000 ₫',
     donVi: DonViKy.nam,
-    ngayDungThu: 7,
   ),
-  GoiBan(
-    sanPham: SanPham.proThang,
-    giaHienThi: '19.000 ₫',
-    donVi: DonViKy.thang,
-  ),
-  GoiBan(sanPham: SanPham.proVinhVien, giaHienThi: '149.000 ₫'),
 ];
+
+/// Điều khoản nguyên văn của PRODUCT_POLICY 7.5 trong bản bộ quy ước đã đồng
+/// bộ (`.standards/`, gốc repo) - không chép tay vào test.
+String dieuKhoanPolicy(String ngonNgu) {
+  final md = File('../../.standards/docs/PRODUCT_POLICY.md').readAsStringSync();
+  final mau = ngonNgu == 'vi'
+      ? RegExp(r'nguyên văn \(vi\): "([^"]+)"')
+      : RegExp(r'\(en\): "([^"]+)"');
+  final m = mau.firstMatch(md);
+  if (m == null) throw StateError('Không thấy điều khoản $ngonNgu');
+  return m.group(1)!.replaceAll(RegExp(r'\s*\n\s*-?\s*'), ' ').trim();
+}
 
 void main() {
   setUpAll(napFontThat);
@@ -65,21 +73,31 @@ void main() {
     await chupGolden(tester, 'man_pro', dung);
   });
 
-  testWidgets('giá từ Play + điều khoản tự gia hạn + dùng thử', (tester) async {
+  testWidgets('một gói 1 năm, điều khoản 7.5 nguyên văn đứng TRƯỚC nút mua', (
+    tester,
+  ) async {
     await tester.pumpWidget(dung(oChup.first));
     await tester.pump(const Duration(seconds: 1));
-    expect(find.textContaining('99.000 ₫ / năm'), findsWidgets);
-    expect(find.textContaining('7 ngày dùng thử miễn phí'), findsOneWidget);
-    expect(find.text('Bắt đầu dùng thử miễn phí'), findsOneWidget);
-    await tester.scrollUntilVisible(
-      find.textContaining('Thanh toán và gói thuê bao'),
-      200,
+    expect(find.textContaining('490.000 ₫ cho 1 năm'), findsWidgets);
+    expect(find.byType(RadioListTile<SanPham>), findsOneWidget);
+    expect(find.textContaining('dùng thử'), findsNothing);
+    expect(find.textContaining('tự gia hạn với giá'), findsNothing);
+    final dk = find.byKey(const ValueKey('dieu-khoan-pro'));
+    expect(
+      tester.widget<Text>(dk).data,
+      dieuKhoanPolicy('vi').replaceAll('{giá}', '490.000 ₫'),
     );
-    await tester.ensureVisible(find.byKey(const ValueKey('goi-pro_tron_doi')));
-    await tester.tap(find.byKey(const ValueKey('goi-pro_tron_doi')));
-    await tester.pump();
+    final nut = find.byKey(const ValueKey('mua-pro'));
+    expect(tester.getTopLeft(dk).dy, lessThan(tester.getTopLeft(nut).dy));
     expect(find.text('Tiếp tục'), findsOneWidget);
-    expect(find.textContaining('không tự gia hạn'), findsOneWidget);
+  });
+
+  test('ARB en khớp PRODUCT_POLICY 7.5 (en) nguyên văn', () async {
+    final en = await LbL10n.delegate.load(const Locale('en'));
+    expect(
+      en.m1TermsPrepaid('X'),
+      dieuKhoanPolicy('en').replaceAll('{price}', 'X'),
+    );
   });
 
   testWidgets('mua -> Play -> máy chủ xác minh -> thành công', (tester) async {
@@ -89,10 +107,10 @@ void main() {
     await tester.pump(const Duration(seconds: 1));
     await tester.tap(find.byKey(const ValueKey('mua-pro')));
     await tester.pump();
-    expect(ch.daMua.single.$1, SanPham.proNam);
+    expect(ch.daMua.single.$1, SanPham.tsudevPro);
     ch.luong.add([
       const GiaoDich(
-        maSanPham: 'pro_nam',
+        maSanPham: 'tsudev_pro',
         token: 'tok-abcdef',
         loai: LoaiGiaoDich.daMua,
         canHoanTat: true,
@@ -116,7 +134,7 @@ void main() {
     await tester.pump();
     ch.luong.add([
       const GiaoDich(
-        maSanPham: 'pro_nam',
+        maSanPham: 'tsudev_pro',
         token: 'tok-abcdef',
         loai: LoaiGiaoDich.daMua,
       ),

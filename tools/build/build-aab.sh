@@ -38,8 +38,8 @@ if [ "$BUILD" = 1 ]; then
   (cd "$APP/android" && ./gradlew --stop >/dev/null)
 fi
 [ -f "$AAB" ] || { echo "Chưa có $AAB" >&2; exit 1; }
-cp "$AAB" "$RA/$TEN_TEP-$TEN.aab"
-AAB="$RA/$TEN_TEP-$TEN.aab"
+cp "$AAB" "$RA/${TEN_TEP}_${TEN}_android.aab"
+AAB="$RA/${TEN_TEP}_${TEN}_android.aab"
 
 # Chứng chỉ ký AAB = chứng chỉ khoá upload.
 STORE=$(grep '^storeFile=' "$KEY_PROPS" | cut -d= -f2-)

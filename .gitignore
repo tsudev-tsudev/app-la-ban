@@ -43,3 +43,4 @@ coverage/
 # Build NDK / Kotlin cục bộ (S4)
 .cxx/
 .kotlin/
+**/test/failures/

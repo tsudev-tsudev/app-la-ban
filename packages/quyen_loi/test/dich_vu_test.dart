@@ -7,8 +7,11 @@ final class CuaHangGia implements CuaHang {
   bool coBilling = true;
   bool moDuoc = true;
   List<GoiBan> goi = const [
-    GoiBan(sanPham: SanPham.proNam, giaHienThi: '99.000 đ', ngayDungThu: 7),
-    GoiBan(sanPham: SanPham.proVinhVien, giaHienThi: '149.000 đ'),
+    GoiBan(
+      sanPham: SanPham.tsudevPro,
+      giaHienThi: '490.000 đ',
+      donVi: DonViKy.nam,
+    ),
   ];
   List<GiaoDich> quaKhu = const [];
   List<GiaoDich> chuaXong = const [];
@@ -44,7 +47,12 @@ final class CuaHangGia implements CuaHang {
 const _pro = QuyenLoi(pro: true, khongQuangCao: true, hetHan: 10000);
 
 GiaoDich _gd(String token, {LoaiGiaoDich loai = LoaiGiaoDich.daMua}) =>
-    GiaoDich(maSanPham: 'pro_nam', token: token, loai: loai, canHoanTat: true);
+    GiaoDich(
+      maSanPham: 'tsudev_pro',
+      token: token,
+      loai: loai,
+      canHoanTat: true,
+    );
 
 void main() {
   late CuaHangGia ch;
@@ -88,10 +96,10 @@ void main() {
       expect(dv.mua.giaiDoan, GiaiDoanMua.sanSang);
       await dv.muaGoi(dv.mua.goi.first);
       expect(dv.mua.giaiDoan, GiaiDoanMua.dangMua);
-      expect(ch.daMua.single.$1, SanPham.proNam);
+      expect(ch.daMua.single.$1, SanPham.tsudevPro);
       ch.luong.add([_gd('tok-1')]);
       await pumpEventQueue();
-      expect(guiMayChu.single, (SanPham.proNam, 'tok-1'));
+      expect(guiMayChu.single, (SanPham.tsudevPro, 'tok-1'));
       expect(ch.daHoanTat, ['tok-1']);
       expect(dv.mua.giaiDoan, GiaiDoanMua.thanhCong);
       expect(dv.trangThai.coPro, isTrue);

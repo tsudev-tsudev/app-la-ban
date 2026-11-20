@@ -1271,7 +1271,7 @@ class LbL10nEn extends LbL10n {
 
   @override
   String get m1ProTagline =>
-      'Help Compass keep growing and get new Pro features first.';
+      'Help Compass keep growing. Every current feature stays free.';
 
   @override
   String get m1BenefitFree =>
@@ -1284,39 +1284,20 @@ class LbL10nEn extends LbL10n {
   String get m1BenefitSupport => 'Support an independent developer';
 
   @override
-  String get m1PlanYear => 'Yearly';
-
-  @override
-  String get m1PlanMonth => 'Monthly';
-
-  @override
-  String get m1PlanLifetime => 'Lifetime';
+  String get m1PlanYear => 'TsuDEV Pro - 1 year';
 
   @override
   String m1PricePerYear(String price) {
-    return '$price / year';
+    return '$price for 1 year';
   }
 
   @override
-  String m1PricePerMonth(String price) {
-    return '$price / month';
-  }
-
-  @override
-  String m1PriceOnce(String price) {
-    return '$price - one-time payment';
-  }
-
-  @override
-  String m1TrialBadge(int days) {
-    return '$days-day free trial';
+  String m1TermsPrepaid(String price) {
+    return 'TsuDEV Pro $price for 1 year, does NOT renew automatically. Renewing early adds 1 year to your remaining time. If it expires without renewal, the app returns to the free version and stops syncing to the cloud; data on your device stays intact, and your cloud copy can be downloaded for 90 days before it is deleted.';
   }
 
   @override
   String get m1Continue => 'Continue';
-
-  @override
-  String get m1StartTrial => 'Start free trial';
 
   @override
   String get m1Restore => 'Restore purchases';
@@ -1326,20 +1307,6 @@ class LbL10nEn extends LbL10n {
 
   @override
   String get m1ManageFailed => 'Couldn\'t open Google Play on this device.';
-
-  @override
-  String m1TermsSub(String price) {
-    return 'The subscription renews automatically at $price until you cancel. Cancel anytime in Google Play > Payments & subscriptions, at least 24 hours before the current period ends to avoid being charged for the next one. Payment is charged to your Google Play account when you confirm the purchase.';
-  }
-
-  @override
-  String m1TermsTrial(int days, String price) {
-    return 'After the $days-day trial you will be charged $price unless you cancel before the trial ends.';
-  }
-
-  @override
-  String get m1TermsLifetime =>
-      'One-time payment, no auto-renewal. Use it on any device signed in to the same Google account (Restore purchases).';
 
   @override
   String get m1Loading => 'Loading plans from Google Play…';
@@ -2951,7 +2918,7 @@ class LbL10nEnXa extends LbL10nEn {
 
   @override
   String get m1ProTagline =>
-      '[Hẽłp Çởmpảšš kẽẽp ğřởŵỉñğ ảñđ ğẽť ñẽŵ Přở fẽảťữřẽš fỉřšť. ·······················]';
+      '[Hẽłp Çởmpảšš kẽẽp ğřởŵỉñğ. Ẽvẽřỹ çữřřẽñť fẽảťữřẽ šťảỹš fřẽẽ. ························]';
 
   @override
   String get m1BenefitFree =>
@@ -2966,39 +2933,20 @@ class LbL10nEnXa extends LbL10nEn {
       '[Šữppởřť ảñ ỉñđẽpẽñđẽñť đẽvẽłởpẽř ·············]';
 
   @override
-  String get m1PlanYear => '[Ỹẽảřłỹ ···]';
-
-  @override
-  String get m1PlanMonth => '[Mởñťhłỹ ···]';
-
-  @override
-  String get m1PlanLifetime => '[Łỉfẽťỉmẽ ····]';
+  String get m1PlanYear => '[ŤšữĐẼV Přở - 1 ỹẽảř ········]';
 
   @override
   String m1PricePerYear(String price) {
-    return '[$price / ỹẽảř ···]';
+    return '[$price fởř 1 ỹẽảř ·····]';
   }
 
   @override
-  String m1PricePerMonth(String price) {
-    return '[$price / mởñťh ····]';
-  }
-
-  @override
-  String m1PriceOnce(String price) {
-    return '[$price - ởñẽ-ťỉmẽ pảỹmẽñť ········]';
-  }
-
-  @override
-  String m1TrialBadge(int days) {
-    return '[$days-đảỹ fřẽẽ ťřỉảł ······]';
+  String m1TermsPrepaid(String price) {
+    return '[ŤšữĐẼV Přở $price fởř 1 ỹẽảř, đởẽš ÑỞŤ řẽñẽŵ ảữťởmảťỉçảłłỹ. Řẽñẽŵỉñğ ẽảřłỹ ảđđš 1 ỹẽảř ťở ỹởữř řẽmảỉñỉñğ ťỉmẽ. Ỉf ỉť ẽxpỉřẽš ŵỉťhởữť řẽñẽŵảł, ťhẽ ảpp řẽťữřñš ťở ťhẽ fřẽẽ vẽřšỉởñ ảñđ šťởpš šỹñçỉñğ ťở ťhẽ çłởữđ; đảťả ởñ ỹởữř đẽvỉçẽ šťảỹš ỉñťảçť, ảñđ ỹởữř çłởữđ çởpỹ çảñ bẽ đởŵñłởảđẽđ fởř 90 đảỹš bẽfởřẽ ỉť ỉš đẽłẽťẽđ. ····························································································································]';
   }
 
   @override
   String get m1Continue => '[Çởñťỉñữẽ ····]';
-
-  @override
-  String get m1StartTrial => '[Šťảřť fřẽẽ ťřỉảł ·······]';
 
   @override
   String get m1Restore => '[Řẽšťởřẽ pữřçhảšẽš ·······]';
@@ -3009,20 +2957,6 @@ class LbL10nEnXa extends LbL10nEn {
   @override
   String get m1ManageFailed =>
       '[Çởữłđñ\'ť ởpẽñ Ğởởğłẽ Płảỹ ởñ ťhỉš đẽvỉçẽ. ·················]';
-
-  @override
-  String m1TermsSub(String price) {
-    return '[Ťhẽ šữbšçřỉpťỉởñ řẽñẽŵš ảữťởmảťỉçảłłỹ ảť $price ữñťỉł ỹởữ çảñçẽł. Çảñçẽł ảñỹťỉmẽ ỉñ Ğởởğłẽ Płảỹ > Pảỹmẽñťš & šữbšçřỉpťỉởñš, ảť łẽảšť 24 hởữřš bẽfởřẽ ťhẽ çữřřẽñť pẽřỉởđ ẽñđš ťở ảvởỉđ bẽỉñğ çhảřğẽđ fởř ťhẽ ñẽxť ởñẽ. Pảỹmẽñť ỉš çhảřğẽđ ťở ỹởữř Ğởởğłẽ Płảỹ ảççởữñť ŵhẽñ ỹởữ çởñfỉřm ťhẽ pữřçhảšẽ. ··················································································································]';
-  }
-
-  @override
-  String m1TermsTrial(int days, String price) {
-    return '[Ảfťẽř ťhẽ $days-đảỹ ťřỉảł ỹởữ ŵỉłł bẽ çhảřğẽđ $price ữñłẽšš ỹởữ çảñçẽł bẽfởřẽ ťhẽ ťřỉảł ẽñđš. ·································]';
-  }
-
-  @override
-  String get m1TermsLifetime =>
-      '[Ởñẽ-ťỉmẽ pảỹmẽñť, ñở ảữťở-řẽñẽŵảł. Ữšẽ ỉť ởñ ảñỹ đẽvỉçẽ šỉğñẽđ ỉñ ťở ťhẽ šảmẽ Ğởởğłẽ ảççởữñť (Řẽšťởřẽ pữřçhảšẽš). ··············································]';
 
   @override
   String get m1Loading => '[Łởảđỉñğ płảñš fřởm Ğởởğłẽ Płảỹ… ·············]';

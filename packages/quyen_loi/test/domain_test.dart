@@ -120,16 +120,18 @@ void main() {
       expect(donViKy('P1Y'), DonViKy.nam);
       expect(donViKy('P1W'), DonViKy.tuan);
     });
-    test('mã sản phẩm khớp Worker', () {
-      expect(SanPham.dsMa, {'pro_thang', 'pro_nam', 'pro_tron_doi'});
-      expect(SanPham.tuMa('pro_tron_doi')!.dangKy, isFalse);
-      expect(SanPham.tuMa('khac'), isNull);
+    test('mã sản phẩm khớp hợp đồng TsuDEV + Worker (Q70)', () {
+      expect(SanPham.dsMa, {'tsudev_pro'});
+      expect(SanPham.tsudevPro.dangKy, isTrue);
+      expect(SanPham.tsudevPro.goiCoSo, 'nam');
+      for (final cu in ['pro_thang', 'pro_nam', 'pro_tron_doi', 'thang']) {
+        expect(SanPham.tuMa(cu), isNull);
+      }
     });
     test('sắp xếp gói theo thứ tự Paywall, bỏ trùng', () {
-      const t = GoiBan(sanPham: SanPham.proThang, giaHienThi: 'a');
-      const v = GoiBan(sanPham: SanPham.proVinhVien, giaHienThi: 'b');
-      const n = GoiBan(sanPham: SanPham.proNam, giaHienThi: 'c');
-      expect(sapXepGoi([v, t, n, t]), [n, t, v]);
+      const a = GoiBan(sanPham: SanPham.tsudevPro, giaHienThi: 'a');
+      const b = GoiBan(sanPham: SanPham.tsudevPro, giaHienThi: 'b');
+      expect(sapXepGoi([a, b, a]), [a]);
     });
   });
 
@@ -150,7 +152,7 @@ void main() {
   });
 
   group('máy trạng thái Paywall', () {
-    const g = GoiBan(sanPham: SanPham.proNam, giaHienThi: '99.000 đ');
+    const g = GoiBan(sanPham: SanPham.tsudevPro, giaHienThi: '490.000 đ');
     TrangThaiMua chay(List<SuKienMua> ds) =>
         ds.fold(const TrangThaiMua(), chuyenTrangThai);
 

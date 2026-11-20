@@ -182,8 +182,8 @@ describe('/v1/mua/xac-minh + /v1/status', () => {
     expect((await trangThai(t)).quyenLoi).toEqual({ pro: false, khongQuangCao: false, hetHan: null });
     const token = tokenMoi();
     const het = sauMotNam();
-    play.set(token, { loai: 'sub', trangThai: 'SUBSCRIPTION_STATE_ACTIVE', het, sanPham: 'pro_nam' });
-    const r = await xacMinh(t, 'pro_nam', token);
+    play.set(token, { loai: 'sub', trangThai: 'SUBSCRIPTION_STATE_ACTIVE', het, sanPham: 'tsudev_pro' });
+    const r = await xacMinh(t, 'tsudev_pro', token);
     expect(r).toMatchObject({ status: 200, du: { trangThai: 'active', quyenLoi: { pro: true, khongQuangCao: true, hetHan: Date.parse(het) } } });
     expect((await trangThai(t)).quyenLoi).toEqual({ pro: true, khongQuangCao: true, hetHan: Date.parse(het) });
     const dong = await db.prepare('SELECT * FROM quyen_loi WHERE source = ? ORDER BY created_at DESC LIMIT 1').bind('play_sub').first<Record<string, unknown>>();
@@ -193,63 +193,64 @@ describe('/v1/mua/xac-minh + /v1/status', () => {
     expect(await cho(async () => daAck.includes(token))).toBe(true);
     expect(await cho(async () => (await db.prepare('SELECT acknowledged AS a FROM quyen_loi WHERE id = ?').bind(dong?.id).first<{ a: number }>())?.a === 1)).toBe(true);
     // Gọi lại (khôi phục trên cùng máy) không tạo dòng mới.
-    expect((await xacMinh(t, 'pro_nam', token)).status).toBe(200);
+    expect((await xacMinh(t, 'tsudev_pro', token)).status).toBe(200);
     expect((await db.prepare('SELECT count(*) AS n FROM quyen_loi_devices WHERE device_id = ?').bind(t.id).first<{ n: number }>())?.n).toBe(1);
   });
 
-  it('mua vĩnh viễn -> hetHan null', async () => {
+  it('mã cũ pro_tron_doi / pro_thang / pro_nam bị bỏ (Q70) -> 422, không gọi Google', async () => {
     const t = await dangKy();
-    const token = tokenMoi();
-    play.set(token, { loai: 'inapp', purchaseState: 0, sanPham: 'pro_tron_doi' });
-    expect((await xacMinh(t, 'pro_tron_doi', token)).du.quyenLoi).toEqual({ pro: true, khongQuangCao: true, hetHan: null });
+    for (const ma of ['pro_tron_doi', 'pro_thang', 'pro_nam']) {
+      expect((await xacMinh(t, ma, tokenMoi())).status).toBe(422);
+    }
+    expect((await trangThai(t)).quyenLoi.pro).toBe(false);
   });
 
   it('bản tải ngoài Play (UNRECOGNIZED_VERSION) -> 403, không ghi quyền lợi', async () => {
     const t = await dangKy({ app: 'UNRECOGNIZED_VERSION' });
     const token = tokenMoi();
-    play.set(token, { loai: 'inapp', purchaseState: 0, sanPham: 'pro_tron_doi' });
-    expect(await xacMinh(t, 'pro_tron_doi', token)).toMatchObject({ status: 403, du: { code: 'khong-phai-ban-play' } });
+    play.set(token, { loai: 'sub', trangThai: 'SUBSCRIPTION_STATE_ACTIVE', het: sauMotNam(), sanPham: 'tsudev_pro' });
+    expect(await xacMinh(t, 'tsudev_pro', token)).toMatchObject({ status: 403, du: { code: 'khong-phai-ban-play' } });
     expect((await trangThai(t)).quyenLoi.pro).toBe(false);
   });
 
   it('token Google không biết -> 422 + PURCHASE_TOKEN_INVALID; gói / sản phẩm lạ -> 422; chưa ký -> 401', async () => {
     const t = await dangKy();
-    expect(await xacMinh(t, 'pro_thang', tokenMoi())).toMatchObject({ status: 422, du: { code: 'token-sai' } });
+    expect(await xacMinh(t, 'tsudev_pro', tokenMoi())).toMatchObject({ status: 422, du: { code: 'token-sai' } });
     expect(await choSuKien(t.id, 'PURCHASE_TOKEN_INVALID')).toBe(1);
-    expect((await xacMinh(t, 'pro_thang', tokenMoi(), 'com.ke.gia')).status).toBe(422);
+    expect((await xacMinh(t, 'tsudev_pro', tokenMoi(), 'com.ke.gia')).status).toBe(422);
     expect((await goiKy(t, '/v1/mua/xac-minh', { sanPham: 'pro_mien_phi', token: tokenMoi(), goi: GOI })).status).toBe(422);
-    expect((await goi('/v1/mua/xac-minh', { body: JSON.stringify({ sanPham: 'pro_thang', token: tokenMoi(), goi: GOI }) })).status).toBe(401);
+    expect((await goi('/v1/mua/xac-minh', { body: JSON.stringify({ sanPham: 'tsudev_pro', token: tokenMoi(), goi: GOI }) })).status).toBe(401);
   });
 
   it('một token vượt N = 2 thiết bị hoạt động -> 403 + PURCHASE_TOKEN_SHARED; máy đã gắn vẫn làm mới được', async () => {
     const token = tokenMoi();
-    play.set(token, { loai: 'sub', trangThai: 'SUBSCRIPTION_STATE_ACTIVE', het: sauMotNam(), sanPham: 'pro_thang', ack: true });
+    play.set(token, { loai: 'sub', trangThai: 'SUBSCRIPTION_STATE_ACTIVE', het: sauMotNam(), sanPham: 'tsudev_pro', ack: true });
     const a = await dangKy();
     const b = await dangKy();
     const c = await dangKy();
-    expect((await xacMinh(a, 'pro_thang', token)).status).toBe(200);
-    expect((await xacMinh(b, 'pro_thang', token)).status).toBe(200);
-    expect(await xacMinh(c, 'pro_thang', token)).toMatchObject({ status: 403, du: { code: 'token-qua-so-thiet-bi' } });
+    expect((await xacMinh(a, 'tsudev_pro', token)).status).toBe(200);
+    expect((await xacMinh(b, 'tsudev_pro', token)).status).toBe(200);
+    expect(await xacMinh(c, 'tsudev_pro', token)).toMatchObject({ status: 403, du: { code: 'token-qua-so-thiet-bi' } });
     expect(await choSuKien(c.id, 'PURCHASE_TOKEN_SHARED')).toBe(1);
-    expect((await xacMinh(a, 'pro_thang', token)).status).toBe(200);
+    expect((await xacMinh(a, 'tsudev_pro', token)).status).toBe(200);
     expect((await trangThai(c)).quyenLoi.pro).toBe(false);
   });
 
-  it('nâng cấp gói: token mới có linkedPurchaseToken -> token cũ bị thu hồi', async () => {
+  it('nạp thêm / đổi gói: token mới có linkedPurchaseToken -> token cũ bị thu hồi', async () => {
     const t = await dangKy();
     const cu = tokenMoi();
     const moi = tokenMoi();
-    play.set(cu, { loai: 'sub', trangThai: 'SUBSCRIPTION_STATE_ACTIVE', het: sauMotNam(), sanPham: 'pro_thang', ack: true });
-    play.set(moi, { loai: 'sub', trangThai: 'SUBSCRIPTION_STATE_ACTIVE', het: sauMotNam(), sanPham: 'pro_nam', ack: true, lienKet: cu });
-    await xacMinh(t, 'pro_thang', cu);
-    expect((await xacMinh(t, 'pro_nam', moi)).du.quyenLoi.pro).toBe(true);
+    play.set(cu, { loai: 'sub', trangThai: 'SUBSCRIPTION_STATE_ACTIVE', het: sauMotNam(), sanPham: 'tsudev_pro', ack: true });
+    play.set(moi, { loai: 'sub', trangThai: 'SUBSCRIPTION_STATE_ACTIVE', het: sauMotNam(), sanPham: 'tsudev_pro', ack: true, lienKet: cu });
+    await xacMinh(t, 'tsudev_pro', cu);
+    expect((await xacMinh(t, 'tsudev_pro', moi)).du.quyenLoi.pro).toBe(true);
     const { results } = await db
-      .prepare('SELECT q.product_id AS p, q.state AS s, q.reason AS r FROM quyen_loi q JOIN quyen_loi_devices d ON d.entitlement_id = q.id WHERE d.device_id = ? ORDER BY p')
+      .prepare('SELECT q.product_id AS p, q.state AS s, q.reason AS r FROM quyen_loi q JOIN quyen_loi_devices d ON d.entitlement_id = q.id WHERE d.device_id = ? ORDER BY p, s')
       .bind(t.id)
       .all<{ p: string; s: string; r: string | null }>();
     expect(results).toEqual([
-      { p: 'pro_nam', s: 'active', r: null },
-      { p: 'pro_thang', s: 'revoked', r: 'thay-the' },
+      { p: 'tsudev_pro', s: 'active', r: null },
+      { p: 'tsudev_pro', s: 'revoked', r: 'thay-the' },
     ]);
   });
 });
@@ -268,17 +269,17 @@ describe('/v1/play/rtdn', () => {
     const t = await dangKy();
     const token = tokenMoi();
     const het1 = new Date(Date.now() + 30 * 86_400_000).toISOString();
-    play.set(token, { loai: 'sub', trangThai: 'SUBSCRIPTION_STATE_ACTIVE', het: het1, sanPham: 'pro_thang', ack: true });
-    await xacMinh(t, 'pro_thang', token);
+    play.set(token, { loai: 'sub', trangThai: 'SUBSCRIPTION_STATE_ACTIVE', het: het1, sanPham: 'tsudev_pro', ack: true });
+    await xacMinh(t, 'tsudev_pro', token);
     const het2 = new Date(Date.now() + 60 * 86_400_000).toISOString();
-    play.set(token, { loai: 'sub', trangThai: 'SUBSCRIPTION_STATE_ACTIVE', het: het2, sanPham: 'pro_thang', ack: true });
-    const sub = (kieu: number) => ({ packageName: GOI, subscriptionNotification: { notificationType: kieu, purchaseToken: token, subscriptionId: 'pro_thang' } });
+    play.set(token, { loai: 'sub', trangThai: 'SUBSCRIPTION_STATE_ACTIVE', het: het2, sanPham: 'tsudev_pro', ack: true });
+    const sub = (kieu: number) => ({ packageName: GOI, subscriptionNotification: { notificationType: kieu, purchaseToken: token, subscriptionId: 'tsudev_pro' } });
     expect(await rtdn(sub(2))).toMatchObject({ status: 200, du: { xuLy: 'sub' } });
     expect((await trangThai(t)).quyenLoi.hetHan).toBe(Date.parse(het2));
-    play.set(token, { loai: 'sub', trangThai: 'SUBSCRIPTION_STATE_ON_HOLD', het: het2, sanPham: 'pro_thang', ack: true });
+    play.set(token, { loai: 'sub', trangThai: 'SUBSCRIPTION_STATE_ON_HOLD', het: het2, sanPham: 'tsudev_pro', ack: true });
     await rtdn(sub(5));
     expect((await trangThai(t)).quyenLoi.pro).toBe(false);
-    play.set(token, { loai: 'sub', trangThai: 'SUBSCRIPTION_STATE_ACTIVE', het: het2, sanPham: 'pro_thang', ack: true });
+    play.set(token, { loai: 'sub', trangThai: 'SUBSCRIPTION_STATE_ACTIVE', het: het2, sanPham: 'tsudev_pro', ack: true });
     await rtdn(sub(1));
     expect((await trangThai(t)).quyenLoi.pro).toBe(true);
     expect(await rtdn({ packageName: GOI, voidedPurchaseNotification: { purchaseToken: token, orderId: 'GPA.1', productType: 1 } })).toMatchObject({ status: 200, du: { xuLy: 'hoan' } });
@@ -296,14 +297,14 @@ describe('cron quét quyền lợi', () => {
   it('Voided Purchases -> thu hồi; gói sắp hết hạn được hỏi lại Google', async () => {
     const t = await dangKy();
     const huy = tokenMoi();
-    play.set(huy, { loai: 'inapp', purchaseState: 0, sanPham: 'pro_tron_doi' });
-    await xacMinh(t, 'pro_tron_doi', huy);
+    play.set(huy, { loai: 'sub', trangThai: 'SUBSCRIPTION_STATE_ACTIVE', het: sauMotNam(), sanPham: 'tsudev_pro', ack: true });
+    await xacMinh(t, 'tsudev_pro', huy);
     const sap = tokenMoi();
     const t2 = await dangKy();
-    play.set(sap, { loai: 'sub', trangThai: 'SUBSCRIPTION_STATE_ACTIVE', het: new Date(Date.now() + 3600_000).toISOString(), sanPham: 'pro_thang', ack: true });
-    await xacMinh(t2, 'pro_thang', sap);
+    play.set(sap, { loai: 'sub', trangThai: 'SUBSCRIPTION_STATE_ACTIVE', het: new Date(Date.now() + 3600_000).toISOString(), sanPham: 'tsudev_pro', ack: true });
+    await xacMinh(t2, 'tsudev_pro', sap);
     const het = sauMotNam();
-    play.set(sap, { loai: 'sub', trangThai: 'SUBSCRIPTION_STATE_ACTIVE', het, sanPham: 'pro_thang', ack: true });
+    play.set(sap, { loai: 'sub', trangThai: 'SUBSCRIPTION_STATE_ACTIVE', het, sanPham: 'tsudev_pro', ack: true });
     dsHuy = [huy];
     const kq = await goi('/thu/quet-quyen-loi', { body: '{}' });
     expect(kq.status).toBe(200);

@@ -28,8 +28,9 @@ final trangThaiQuyenLoiProvider = Provider<TrangThaiQuyenLoi>((ref) {
 /// ẩn nút.
 final moQuanLyGoiProvider = Provider<Future<bool> Function()?>((_) => null);
 
-/// Paywall La bàn Pro (M1a bước 2): giá lấy từ Play, điều khoản tự gia hạn
-/// theo chính sách Play, Khôi phục, Quản lý gói. Mọi vùng đổi trạng thái dùng
+/// Paywall La bàn Pro: gói TsuDEV Pro 1 năm trả trước (Q70), giá lấy từ Play,
+/// điều khoản PRODUCT_POLICY 7.5 nguyên văn đứng TRƯỚC nút mua, Khôi phục,
+/// Quản lý gói. Mọi vùng đổi trạng thái dùng
 /// ô cố định (A9c - không nhảy layout).
 class ManPro extends ConsumerStatefulWidget {
   const new({super.key});
@@ -39,7 +40,7 @@ class ManPro extends ConsumerStatefulWidget {
 }
 
 class _ManProState extends ConsumerState<ManPro> {
-  SanPham _chon = SanPham.proNam;
+  SanPham _chon = SanPham.tsudevPro;
 
   @override
   void initState() {
@@ -89,6 +90,10 @@ class _ManProState extends ConsumerState<ManPro> {
                         khiThuLai: () => unawaited(dv.taiGoi()),
                       ),
                       const SizedBox(height: LbSpacing.sm),
+                      if (chon != null) ...[
+                        _DieuKhoan(goi: chon),
+                        const SizedBox(height: LbSpacing.sm),
+                      ],
                       SizedBox(
                         height: 52,
                         child: FilledButton(
@@ -96,16 +101,11 @@ class _ManProState extends ConsumerState<ManPro> {
                           onPressed: chon == null || s.ban
                               ? null
                               : () => unawaited(dv.muaGoi(chon)),
-                          child: Text(
-                            chon?.ngayDungThu != null
-                                ? l10n.m1StartTrial
-                                : l10n.m1Continue,
-                          ),
+                          child: Text(l10n.m1Continue),
                         ),
                       ),
                     ],
                     _ThongBao(s: s, boLoi: dv.boLoi),
-                    if (!ql.coPro && chon != null) _DieuKhoan(goi: chon),
                     const SizedBox(height: LbSpacing.sm),
                     TextButton(
                       key: const ValueKey('khoi-phuc'),
@@ -270,34 +270,24 @@ class _TheGoi extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final ten = switch (goi.sanPham) {
-      SanPham.proNam => l10n.m1PlanYear,
-      SanPham.proThang => l10n.m1PlanMonth,
-      SanPham.proVinhVien => l10n.m1PlanLifetime,
+      SanPham.tsudevPro => l10n.m1PlanYear,
     };
     final gia = giaTheoKy(l10n, goi);
-    final thu = goi.ngayDungThu;
     return Card(
       margin: const EdgeInsets.symmetric(vertical: LbSpacing.xxs),
       child: RadioListTile<SanPham>(
         key: ValueKey('goi-${goi.sanPham.ma}'),
         value: goi.sanPham,
         title: Text(ten),
-        subtitle: Text(thu == null ? gia : '$gia\n${l10n.m1TrialBadge(thu)}'),
-        isThreeLine: thu != null,
+        subtitle: Text(gia),
       ),
     );
   }
 }
 
-/// Giá kèm kỳ ("99.000 đ / năm") theo loại gói.
-String giaTheoKy(LbL10n l10n, GoiBan g) {
-  if (!g.sanPham.dangKy) return l10n.m1PriceOnce(g.giaHienThi);
-  return switch (g.donVi) {
-    DonViKy.thang => l10n.m1PricePerMonth(g.giaHienThi),
-    DonViKy.nam => l10n.m1PricePerYear(g.giaHienThi),
-    _ => g.giaHienThi,
-  };
-}
+/// Giá kèm kỳ ("490.000 đ cho 1 năm") - chỉ gói năm có chữ kỳ.
+String giaTheoKy(LbL10n l10n, GoiBan g) =>
+    g.donVi == DonViKy.nam ? l10n.m1PricePerYear(g.giaHienThi) : g.giaHienThi;
 
 class _ThongBao extends StatelessWidget {
   const new({required this.s, required this.boLoi});
@@ -379,16 +369,11 @@ class _DieuKhoan extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    final gia = giaTheoKy(l10n, goi);
-    final thu = goi.ngayDungThu;
-    final chu = !goi.sanPham.dangKy
-        ? l10n.m1TermsLifetime
-        : [
-            if (thu != null) l10n.m1TermsTrial(thu, gia),
-            l10n.m1TermsSub(gia),
-          ].join(' ');
-    return Text(chu, style: Theme.of(context).textTheme.bodySmall);
+    return Text(
+      context.l10n.m1TermsPrepaid(goi.giaHienThi),
+      key: const ValueKey('dieu-khoan-pro'),
+      style: Theme.of(context).textTheme.bodySmall,
+    );
   }
 }
 

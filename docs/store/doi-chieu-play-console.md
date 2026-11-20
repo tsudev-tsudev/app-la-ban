@@ -9,6 +9,24 @@ Quy ước: **[ĐANG LỆCH]** = trạng thái trong video khác điều app / t
 
 ---
 
+> **CẬP NHẬT 21/11/2026 - QUYET_DINH Q70 / ADR-0002 THAY mục 4.3, 4.4 và mục 5.** Pro nay là gói chung **TsuDEV Pro** trong
+> CÙNG app `com.tsudev.laban`; app `com.tsudev.laban.pro` KHÔNG nộp. Làm theo mục "TsuDEV Pro (Q70)" ngay dưới; phần cũ
+> giữ lại làm lịch sử.
+
+## TsuDEV Pro (Q70) - việc trên Play Console (👤 bấm nút cuối)
+
+| # | Nơi | Việc | Giá trị |
+|---|---|---|---|
+| 1 | Kiếm tiền > Sản phẩm > Gói thuê bao | `pro_thang`, `pro_nam`: mở từng gói cơ sở > **Ngừng hoạt động**, rồi **Lưu trữ** gói thuê bao | Không xoá (mã xoá không dùng lại được) |
+| 2 | Sản phẩm tính phí một lần | `pro_tron_doi`: **Ngừng hoạt động** | Chưa bán thật - không cần chuyển đổi |
+| 3 | Gói thuê bao > Tạo gói thuê bao | Mã sản phẩm `tsudev_pro`, tên "TsuDEV Pro" | Lợi ích: "Ủng hộ La bàn phát triển", "Mọi tính năng hiện có vẫn miễn phí" |
+| 4 | `tsudev_pro` > Thêm gói cơ sở | Mã gói cơ sở `nam`, loại **Trả trước** (Prepaid), thời hạn **1 năm**, cho phép nạp thêm | Giá 490.000 ₫ (Việt Nam), các nước khác để Play quy đổi; KHÔNG ưu đãi, KHÔNG dùng thử |
+| 5 | Sản phẩm tính phí một lần > Tạo | `ung_ho_20k`, `ung_ho_50k`, `ung_ho_100k`, `ung_ho_200k` - tiêu hao | 20.000 / 50.000 / 100.000 / 200.000 ₫; tên "Ủng hộ 20.000 ₫"... |
+| 6 | Kích hoạt | Kích hoạt `tsudev_pro` + gói `nam` SAU KHI Worker prod có mã `tsudev_pro` (đã deploy cùng PR Q69) | Ủng hộ chỉ kích hoạt khi app có màn Ủng hộ (chờ đăng nhập TsuDEV) |
+| 7 | Tất cả ứng dụng | Bản nháp `com.tsudev.laban.pro`: không nộp; xoá bản nháp nếu Play cho (app chưa từng xuất bản) | 👤 - nút xoá app bị tsb chặn |
+
+Không đổi: giá app La bàn = **Miễn phí**; "Ứng dụng có quảng cáo" = **Không**; Mua trong ứng dụng = Có.
+
 ## 0. Trạng thái thấy trong video (06/11/2026)
 
 | Mục | Thấy trong video | Đánh giá |
