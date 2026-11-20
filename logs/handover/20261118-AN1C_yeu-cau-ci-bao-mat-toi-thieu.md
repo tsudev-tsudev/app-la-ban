@@ -22,3 +22,7 @@
 3. Kiểm bằng `python3 ~/projects/logs/tools/quet_workflow.py .github/workflows` ⇒ 0 vấn đề, rồi PR; CI xanh mới gộp.
 4. Sau khi gộp: chủ dự án đặt check CI thành bắt buộc (repo cá nhân công khai ⇒ ruleset dùng được).
 5. Xong ghi một dòng vào phiếu AN1 ở `~/projects/logs/handover/`.
+
+## 3. Kết quả xử lý
+
+- 21/11/2026 app-la-ban (PR #114, main 95b2954): `.github/workflows/ci.yml` (quy ước, gitleaks ghim sha256, Worker + web lint/typecheck/test/build/audit, Flutter analyze + test) + `dependabot.yml`; CI xanh trên PR (Flutter 8m47s). Còn 👤: đặt các check CI thành bắt buộc trong ruleset. HSTS `preload` của compass.tsudev.com: thêm ở `web/landing/public/_headers` (PR docs/log-pro2-ra-soat).

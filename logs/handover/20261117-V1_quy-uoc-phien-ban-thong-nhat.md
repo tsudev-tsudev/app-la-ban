@@ -82,4 +82,5 @@ Tám kiểu đặt thẻ cùng tồn tại, khó so sánh/đối chiếu phiên 
 
 ## 6. Kết quả xử lý (mỗi repo điền vào bản sao của mình)
 
+- 21/11/2026 app-la-ban (PR #114): `0.1.0-beta.17` (versionCode 17) -> `26.11.2101+26112101`; tệp `la-ban_<pb>_android-<arch>.apk`, `SHA256SUMS.txt`, tiêu đề Release `La bàn <pb>`. App không có updater tự so phiên bản ngoài Play (bản tải web cài đè theo versionCode, 26112101 > 17).
 -
