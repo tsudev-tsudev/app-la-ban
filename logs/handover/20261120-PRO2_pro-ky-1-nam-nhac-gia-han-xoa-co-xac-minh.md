@@ -76,3 +76,5 @@
 
 ## 5. Kết quả xử lý (mỗi phiên ghi một dòng)
 
+- 21/11/2026 app-la-ban (PR #114, main 95b2954): 2.0 + 2.1 XONG - chỉ còn `tsudev_pro`/`nam` trả trước 490.000 đ, Worker 422 cho `pro_thang`/`pro_nam`/`pro_tron_doi`, điều khoản 7.5 nguyên văn trước nút mua (test so `.standards`), Worker staging + prod đã deploy (prod `ccee7de0`). 2.2 (nhắc gia hạn 7.6) CHỜ PRO-B: app chưa có đăng nhập TsuDEV ⇒ không có JWS `pro_until` (ADR-0002 mục 4); prod không bán (Q61). 2.3 KHÔNG ÁP DỤNG: không có dữ liệu người dùng trên đám mây (ADR-0002 mục 5). Play Console 👤: lưu trữ `pro_thang`/`pro_nam`, ngừng `pro_tron_doi`, tạo `tsudev_pro` + `nam` - bước ở `docs/store/doi-chieu-play-console.md` mục "TsuDEV Pro (Q70)".
+

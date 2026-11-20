@@ -34,6 +34,7 @@ GP1 mục 4 bước 1-7 đạt cho app này; ghi một dòng vào mục 5 phiế
 
 ## 5. Kết quả xử lý (mỗi phiên ghi một dòng)
 
+- 21/11/2026 app-la-ban: (1) ĐÃ QUYẾT - bỏ app Pro riêng, ADR-0002 / Q70, KHÔNG nộp `com.tsudev.laban.pro` (👤 xoá bản nháp). (3) Rà trực tiếp Play Console bằng tsb: 11/11 khai báo Nội dung ứng dụng khớp `docs/store/`; SỬA Data Safety "đăng nhập bằng tài khoản ngoài" Có -> Không; SỬA mô tả vi/en "không quảng cáo theo dõi" -> "không quảng cáo" (đã Lưu, chưa gửi xét duyệt). Bảng đầy đủ: `docs/store/doi-chieu-play-console.md` mục "Rà soát trực tiếp 21/11". (2) CÒN 👤: danh sách >= 12 Gmail cho kênh Alpha, tải AAB 26.11.2101 lên Thử nghiệm khép kín, Gửi để xem xét. (5) Chưa chuyển Q55 sang tsudev (chờ PRO-B).
 
 ## Bổ sung 20/11/2026 (tsudev điều phối) - điền biểu mẫu đứng tên chủ dự án
 
