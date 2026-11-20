@@ -26,7 +26,7 @@ Không dùng từ ngữ xếp hạng / khuyến mãi ("số 1", "tốt nhất", 
 La bàn - TsuDev Compass
 
 ### Mô tả ngắn
-Bắc thực chính xác, điểm mốc, bản đồ ngoại tuyến - không quảng cáo theo dõi
+Bắc thực chính xác, điểm mốc, bản đồ ngoại tuyến - không quảng cáo
 
 ### Mô tả đầy đủ
 La bàn của TsuDev chỉ hướng chính xác, mượt và hoạt động hoàn toàn ngoại tuyến - cho đi rừng, đi biển, đo hướng nhà và làm việc ngoài trời.
@@ -53,7 +53,7 @@ DỄ DÙNG CHO MỌI NGƯỜI
 
 RIÊNG TƯ VÀ AN TOÀN
 • Không cần tài khoản. Điểm mốc lưu trong cơ sở dữ liệu mã hoá trên máy, không đi theo bản sao lưu đám mây.
-• Không đọc IMEI, số sê-ri, địa chỉ MAC. Không bán dữ liệu, không quảng cáo theo dõi.
+• Không đọc IMEI, số sê-ri, địa chỉ MAC. Không bán dữ liệu, không quảng cáo.
 • Chọn "Chỉ dùng ngoại tuyến" ở màn giới thiệu thì ứng dụng không gửi gì; la bàn, bản đồ đã tải và điểm mốc vẫn dùng đủ.
 • Cài đặt > Quyền riêng tư: rút đồng ý, xuất dữ liệu ra JSON, xoá toàn bộ dữ liệu trên máy.
 
@@ -69,7 +69,7 @@ Góp ý: contact@tsudev.com · Báo lỗ hổng bảo mật: security@tsudev.com
 La bàn - TsuDev Compass
 
 ### Short description
-Accurate true-north compass, waypoints and offline maps - no tracking ads
+Accurate true-north compass, waypoints and offline maps - no ads
 
 ### Full description
 TsuDev's compass points the right way, stays smooth and works fully offline - for hiking, sailing, checking a house's orientation and working outdoors.
@@ -96,7 +96,7 @@ EASY FOR EVERYONE
 
 PRIVATE AND SECURE
 • No account needed. Waypoints live in an encrypted database on your device and are excluded from cloud backup.
-• Never reads IMEI, serial number or MAC address. No data selling, no tracking ads.
+• Never reads IMEI, serial number or MAC address. No data selling, no ads.
 • Choose "Use offline only" on the welcome screen and the app sends nothing; the compass, downloaded maps and waypoints keep working.
 • Settings > Privacy: withdraw consent, export your data to JSON, erase all data on the device.
 

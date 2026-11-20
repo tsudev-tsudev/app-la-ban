@@ -761,7 +761,7 @@ describe('M1a bước 5: SOC Quyền lợi', () => {
     await db
       .prepare(
         `INSERT INTO quyen_loi (id, source, package_name, product_id, state, expires_at, token_hash, token_enc, order_id, account_hash, auto_renew, acknowledged, test_purchase, created_at, updated_at)
-         VALUES (?, 'play_sub', 'com.tsudev.laban', 'pro_nam', 'active', ?, ?, 'bi-mat-ma-hoa', 'GPA.1111-2222-3333-44444', ?, 1, 1, 0, ?, ?)`,
+         VALUES (?, 'play_sub', 'com.tsudev.laban', 'tsudev_pro', 'active', ?, ?, 'bi-mat-ma-hoa', 'GPA.1111-2222-3333-44444', ?, 1, 1, 0, ?, ?)`,
       )
       .bind(ql, bayGio + 86_400_000, 'b'.repeat(64), 'c'.repeat(64), bayGio, bayGio)
       .run();
@@ -774,7 +774,7 @@ describe('M1a bước 5: SOC Quyền lợi', () => {
     const sl = await goi('/quyen-loi/so-lieu?ngay=30', { jwt: vw.jwt, cookie: vw.cookie });
     expect(sl.status).toBe(200);
     expect(sl.json).toMatchObject({ ngay: 30, doanhThu: null, doanhThuLyDo: 'thieu-cau-hinh', toiDa: 5 });
-    expect(sl.json.theoSanPham).toEqual([{ source: 'play_sub', product_id: 'pro_nam', tong: 1, hieu_luc: 1, thu_hoi: 0, mua_thu: 0 }]);
+    expect(sl.json.theoSanPham).toEqual([{ source: 'play_sub', product_id: 'tsudev_pro', tong: 1, hieu_luc: 1, thu_hoi: 0, mua_thu: 0 }]);
     expect((await goi('/quyen-loi/so-lieu?ngay=31', { jwt: vw.jwt, cookie: vw.cookie })).status).toBe(400);
 
     const theoTb = await goi('/quyen-loi?q=01JTB0000000000000000000AA', { jwt: an.jwt, cookie: an.cookie });

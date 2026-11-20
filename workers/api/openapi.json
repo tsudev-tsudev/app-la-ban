@@ -956,9 +956,7 @@
                   "sanPham": {
                     "type": "string",
                     "enum": [
-                      "pro_thang",
-                      "pro_nam",
-                      "pro_tron_doi"
+                      "tsudev_pro"
                     ]
                   },
                   "token": {

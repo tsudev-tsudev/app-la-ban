@@ -28,6 +28,8 @@ DONG=$(grep -E '^version:' app/pubspec.yaml | awk '{print $2}')
 TEN="${DONG%%+*}"; MA="${DONG##*+}"
 [[ "$TEN" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-z]+\.[0-9]+)?$ && "$MA" =~ ^[0-9]+$ ]] || { echo "version pubspec sai dạng: $DONG" >&2; exit 1; }
 TAG="v$TEN"
+# Phiếu V1 (17/11/2026): YY.M.DDNN, bản thử thêm -beta.N -> GitHub Pre-release.
+[[ "$TEN" == *-* ]] && PRE=--prerelease || PRE=
 
 if [ "$THU" = 0 ]; then
   # Worktree song song không giữ được nhánh main (đã checkout ở cây chính) -> chấp nhận HEAD tách rời, vẫn phải trùng origin/main.
@@ -47,7 +49,7 @@ APK_DIR="$GOC/app/build/app/outputs/flutter-apk"
 build() { # $1 = hậu tố tệp, $2 = target-platform
   (cd app && flutter build apk --flavor prod -t lib/main_prod.dart --release --obfuscate \
     --split-debug-info="$SYM/$1" --target-platform "$2")
-  cp "$APK_DIR/app-prod-release.apk" "$RA/la-ban-$TEN-$1.apk"
+  cp "$APK_DIR/app-prod-release.apk" "$RA/la-ban_${TEN}_android-$1.apk"
 }
 build arm64 android-arm64
 build armv7 android-arm
@@ -64,16 +66,16 @@ for f in "$RA"/*.apk; do
 done
 # SEC-APP APP-02 / APP-06: không debuggable, exported tối thiểu, có libla_ban_kt.so sạch chuỗi.
 node "$GOC/tools/build/kiem-apk.mjs" "$RA"/*.apk
-(cd "$RA" && sha256sum ./*.apk | sed 's| \./| |' > SHA256SUMS)
-MIN_SDK=$("$BT/aapt2" dump badging "$RA/la-ban-$TEN-arm64.apk" | sed -n "s/^minSdkVersion:'\([0-9]*\)'.*/\1/p")
-cat "$RA/SHA256SUMS"
+(cd "$RA" && sha256sum ./*.apk | sed 's| \./| |' > SHA256SUMS.txt)
+MIN_SDK=$("$BT/aapt2" dump badging "$RA/la-ban_${TEN}_android-arm64.apk" | sed -n "s/^minSdkVersion:'\([0-9]*\)'.*/\1/p")
+cat "$RA/SHA256SUMS.txt"
 
 node - "$RA" "$TEN" "$MA" "$MIN_SDK" "$CERT" "$TAG" <<'EOF' > "$RA/latest.json"
 const [ra, ten, ma, minSdk, cert, tag] = process.argv.slice(2);
 const fs = require('node:fs');
-const sums = Object.fromEntries(fs.readFileSync(`${ra}/SHA256SUMS`, 'utf8').trim().split('\n').map((d) => d.split(/\s+/).reverse()));
+const sums = Object.fromEntries(fs.readFileSync(`${ra}/SHA256SUMS.txt`, 'utf8').trim().split('\n').map((d) => d.split(/\s+/).reverse()));
 const tep = (loai) => {
-  const tenTep = `la-ban-${ten}-${loai}.apk`;
+  const tenTep = `la-ban_${ten}_android-${loai}.apk`;
   return { loai, ten: tenTep, url: `https://compass-cdn.tsudev.com/android/${tenTep}`, co: fs.statSync(`${ra}/${tenTep}`).size, sha256: sums[tenTep] };
 };
 process.stdout.write(JSON.stringify({
@@ -95,13 +97,13 @@ for f in "$RA"/*.apk; do
   b=$(basename "$f")
   put "$f" "android/$b" application/vnd.android.package-archive 'public, max-age=31536000, immutable' "attachment; filename=\"$b\""
 done
-put "$RA/SHA256SUMS" "android/la-ban-$TEN-SHA256SUMS.txt" 'text/plain; charset=utf-8' 'public, max-age=31536000, immutable'
+put "$RA/SHA256SUMS.txt" "android/la-ban_${TEN}_SHA256SUMS.txt" 'text/plain; charset=utf-8' 'public, max-age=31536000, immutable'
 put "$RA/latest.json" android/latest.json 'application/json' 'public, max-age=60'
 
 for f in "$RA"/*.apk; do
   b=$(basename "$f")
   THAT=$(curl -sfL "https://compass-cdn.tsudev.com/android/$b" | sha256sum | cut -d' ' -f1)
-  grep -q "$THAT  $b" "$RA/SHA256SUMS" || { echo "SHA-256 bản trên CDN khác bản build: $b" >&2; exit 1; }
+  grep -q "$THAT  $b" "$RA/SHA256SUMS.txt" || { echo "SHA-256 bản trên CDN khác bản build: $b" >&2; exit 1; }
 done
 echo "✓ CDN đúng SHA-256"
 
@@ -110,13 +112,13 @@ if [ "$GITHUB" = 1 ]; then
   {
     echo "Bản thử nghiệm Android (APK ký bằng khoá upload TsuDev, chưa qua Google Play)."
     echo
-    echo "- \`la-ban-$TEN-arm64.apk\`: điện thoại Android 64-bit đời mới (khuyên dùng)"
-    echo "- \`la-ban-$TEN-armv7.apk\`: máy Android 32-bit đời cũ (Android $MIN_SDK+) - chỉ dùng khi bản arm64 không cài được"
+    echo "- \`la-ban_${TEN}_android-arm64.apk\`: điện thoại Android 64-bit đời mới (khuyên dùng)"
+    echo "- \`la-ban_${TEN}_android-armv7.apk\`: máy Android 32-bit đời cũ (Android $MIN_SDK+) - chỉ dùng khi bản arm64 không cài được"
     echo
-    echo "Kiểm toàn vẹn: \`sha256sum -c SHA256SUMS\`. Chứng chỉ ký SHA-256: \`$CERT\`."
+    echo "Kiểm toàn vẹn: \`sha256sum -c SHA256SUMS.txt\`. Chứng chỉ ký SHA-256: \`$CERT\`."
     echo "Tải công khai + hướng dẫn cài: https://compass.tsudev.com/tai-ve"
   } > "$TAM/ghi-chu.md"
-  gh release create "$TAG" "$RA"/*.apk "$RA/SHA256SUMS" --target main --prerelease --title "La bàn $TEN (Android)" --notes-file "$TAM/ghi-chu.md"
+  gh release create "$TAG" "$RA"/*.apk "$RA/SHA256SUMS.txt" --target main $PRE --title "La bàn $TEN" --notes-file "$TAM/ghi-chu.md"
   git fetch -q --tags
 fi
 echo "✓ Đã phát hành $TAG - nhớ ./tools/build/deploy-web.sh landing"

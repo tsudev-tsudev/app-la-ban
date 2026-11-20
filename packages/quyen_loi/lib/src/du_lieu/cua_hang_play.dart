@@ -45,22 +45,24 @@ final class CuaHangPlay implements CuaHang {
         for (final p in cac)
           if (p.subscriptionIndex case final i?)
             if (p.productDetails.subscriptionOfferDetails?[i] case final o?)
-              UuDai(
-                basePlan: o.basePlanId,
-                offerId: o.offerId,
-                chiSo: i,
-                giaiDoan: [
-                  for (final g in o.pricingPhases)
-                    GiaiDoanGia(
-                      giaMicros: g.priceAmountMicros,
-                      giaHienThi: g.formattedPrice,
-                      kyHan: g.billingPeriod,
-                      soChuKy: g.billingCycleCount,
-                      lapVoHan:
-                          g.recurrenceMode == RecurrenceMode.infiniteRecurring,
-                    ),
-                ],
-              ),
+              if (sp.goiCoSo == null || o.basePlanId == sp.goiCoSo)
+                UuDai(
+                  basePlan: o.basePlanId,
+                  offerId: o.offerId,
+                  chiSo: i,
+                  giaiDoan: [
+                    for (final g in o.pricingPhases)
+                      GiaiDoanGia(
+                        giaMicros: g.priceAmountMicros,
+                        giaHienThi: g.formattedPrice,
+                        kyHan: g.billingPeriod,
+                        soChuKy: g.billingCycleCount,
+                        lapVoHan:
+                            g.recurrenceMode ==
+                            RecurrenceMode.infiniteRecurring,
+                      ),
+                  ],
+                ),
       ];
       final chon = chonUuDai(uuDai);
       final gia = chon?.giaGiaHan;

@@ -3,9 +3,13 @@
 import { z } from 'zod';
 import { b64urlTuByte, byteTuB64url } from './ma-hoa';
 
-/** Sản phẩm Play đã chốt (Q55): hai gói đăng ký + một sản phẩm mua một lần. */
-export const SAN_PHAM = { pro_thang: 'sub', pro_nam: 'sub', pro_tron_doi: 'inapp' } as const;
-export type SanPham = keyof typeof SAN_PHAM;
+/**
+ * Sản phẩm Play theo hợp đồng chung TsuDEV (PRODUCT_POLICY 7.4, QUYET_DINH Q70): thuê bao `tsudev_pro` với MỘT gói cơ
+ * sở trả trước `nam` (P1Y, không tự gia hạn, nạp thêm cộng dồn). Mã cũ `pro_thang` / `pro_nam` / `pro_tron_doi` bị bỏ
+ * (chưa bán thật). Ủng hộ `ung_ho_*` không cấp Pro nên không nằm ở đây. Đường `inapp` giữ cho sản phẩm mua một lần về sau.
+ */
+export type SanPham = 'tsudev_pro';
+export const SAN_PHAM: Readonly<Record<SanPham, 'sub' | 'inapp'>> = { tsudev_pro: 'sub' };
 export const DS_SAN_PHAM = Object.keys(SAN_PHAM) as [SanPham, ...SanPham[]];
 
 export const TRANG_THAI_QL = ['active', 'grace', 'canceled', 'on_hold', 'paused', 'pending', 'expired', 'revoked'] as const;
@@ -34,6 +38,8 @@ export const schemaGoiDangKy = z.object({
         productId: z.string().max(128),
         expiryTime: z.string().max(64).optional(),
         autoRenewingPlan: z.object({ autoRenewEnabled: z.boolean().optional() }).optional(),
+        /** Gói trả trước (prepaid): không tự gia hạn; nạp thêm sau `allowExtendAfterTime`. */
+        prepaidPlan: z.object({ allowExtendAfterTime: z.string().max(64).optional() }).optional(),
       }),
     )
     .max(10)
@@ -85,7 +91,7 @@ export function docGoiDangKy(g: GoiDangKy, sanPham: string): KetQuaXacMinh | nul
   return {
     trangThai: TRANG_THAI_GOI[g.subscriptionState] ?? 'pending',
     hetHan: Number.isFinite(het) ? het : 0,
-    tuDongGiaHan: dong.autoRenewingPlan?.autoRenewEnabled ?? null,
+    tuDongGiaHan: dong.prepaidPlan ? false : (dong.autoRenewingPlan?.autoRenewEnabled ?? null),
     daXacNhan: g.acknowledgementState === 'ACKNOWLEDGEMENT_STATE_ACKNOWLEDGED',
     maDon: g.latestOrderId ?? null,
     thu: g.testPurchase !== undefined,

@@ -2093,7 +2093,7 @@ abstract class LbL10n {
   /// M1a
   ///
   /// In vi, this message translates to:
-  /// **'Ủng hộ La bàn tiếp tục phát triển và nhận tính năng Pro mới sớm nhất.'**
+  /// **'Ủng hộ La bàn tiếp tục phát triển. Mọi tính năng hiện có vẫn miễn phí.'**
   String get m1ProTagline;
 
   /// M1a
@@ -2117,56 +2117,26 @@ abstract class LbL10n {
   /// M1a
   ///
   /// In vi, this message translates to:
-  /// **'Theo năm'**
+  /// **'TsuDEV Pro - 1 năm'**
   String get m1PlanYear;
 
   /// M1a
   ///
   /// In vi, this message translates to:
-  /// **'Theo tháng'**
-  String get m1PlanMonth;
-
-  /// M1a
-  ///
-  /// In vi, this message translates to:
-  /// **'Vĩnh viễn'**
-  String get m1PlanLifetime;
-
-  /// M1a
-  ///
-  /// In vi, this message translates to:
-  /// **'{price} / năm'**
+  /// **'{price} cho 1 năm'**
   String m1PricePerYear(String price);
 
-  /// M1a
+  /// PRODUCT_POLICY 7.5 nguyên văn - KHÔNG sửa chữ
   ///
   /// In vi, this message translates to:
-  /// **'{price} / tháng'**
-  String m1PricePerMonth(String price);
-
-  /// M1a
-  ///
-  /// In vi, this message translates to:
-  /// **'{price} - trả một lần'**
-  String m1PriceOnce(String price);
-
-  /// M1a
-  ///
-  /// In vi, this message translates to:
-  /// **'{days} ngày dùng thử miễn phí'**
-  String m1TrialBadge(int days);
+  /// **'TsuDEV Pro {price} cho 1 năm, KHÔNG tự gia hạn. Gia hạn sớm được cộng thêm 1 năm vào thời hạn còn lại. Hết hạn mà chưa gia hạn, ứng dụng trở về bản miễn phí và ngừng đồng bộ lên đám mây; dữ liệu trên thiết bị vẫn giữ nguyên, bản sao trên đám mây còn tải về được 90 ngày rồi bị xoá.'**
+  String m1TermsPrepaid(String price);
 
   /// M1a
   ///
   /// In vi, this message translates to:
   /// **'Tiếp tục'**
   String get m1Continue;
-
-  /// M1a
-  ///
-  /// In vi, this message translates to:
-  /// **'Bắt đầu dùng thử miễn phí'**
-  String get m1StartTrial;
 
   /// M1a
   ///
@@ -2185,24 +2155,6 @@ abstract class LbL10n {
   /// In vi, this message translates to:
   /// **'Không mở được Google Play trên thiết bị này.'**
   String get m1ManageFailed;
-
-  /// M1a
-  ///
-  /// In vi, this message translates to:
-  /// **'Gói tự gia hạn với giá {price} cho tới khi bạn huỷ. Huỷ bất kỳ lúc nào trong Google Play > Thanh toán và gói thuê bao, chậm nhất 24 giờ trước khi kỳ hiện tại kết thúc để không bị tính phí kỳ sau. Tiền được thanh toán qua tài khoản Google Play khi bạn xác nhận mua.'**
-  String m1TermsSub(String price);
-
-  /// M1a
-  ///
-  /// In vi, this message translates to:
-  /// **'Sau {days} ngày dùng thử, bạn sẽ bị tính {price} trừ khi huỷ trước khi hết thời gian dùng thử.'**
-  String m1TermsTrial(int days, String price);
-
-  /// M1a
-  ///
-  /// In vi, this message translates to:
-  /// **'Trả một lần, không tự gia hạn. Dùng trên mọi thiết bị đăng nhập cùng tài khoản Google (nút Khôi phục giao dịch).'**
-  String get m1TermsLifetime;
 
   /// M1a
   ///

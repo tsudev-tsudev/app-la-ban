@@ -1264,7 +1264,7 @@ class LbL10nVi extends LbL10n {
 
   @override
   String get m1ProTagline =>
-      'Ủng hộ La bàn tiếp tục phát triển và nhận tính năng Pro mới sớm nhất.';
+      'Ủng hộ La bàn tiếp tục phát triển. Mọi tính năng hiện có vẫn miễn phí.';
 
   @override
   String get m1BenefitFree =>
@@ -1277,39 +1277,20 @@ class LbL10nVi extends LbL10n {
   String get m1BenefitSupport => 'Ủng hộ một nhà phát triển độc lập';
 
   @override
-  String get m1PlanYear => 'Theo năm';
-
-  @override
-  String get m1PlanMonth => 'Theo tháng';
-
-  @override
-  String get m1PlanLifetime => 'Vĩnh viễn';
+  String get m1PlanYear => 'TsuDEV Pro - 1 năm';
 
   @override
   String m1PricePerYear(String price) {
-    return '$price / năm';
+    return '$price cho 1 năm';
   }
 
   @override
-  String m1PricePerMonth(String price) {
-    return '$price / tháng';
-  }
-
-  @override
-  String m1PriceOnce(String price) {
-    return '$price - trả một lần';
-  }
-
-  @override
-  String m1TrialBadge(int days) {
-    return '$days ngày dùng thử miễn phí';
+  String m1TermsPrepaid(String price) {
+    return 'TsuDEV Pro $price cho 1 năm, KHÔNG tự gia hạn. Gia hạn sớm được cộng thêm 1 năm vào thời hạn còn lại. Hết hạn mà chưa gia hạn, ứng dụng trở về bản miễn phí và ngừng đồng bộ lên đám mây; dữ liệu trên thiết bị vẫn giữ nguyên, bản sao trên đám mây còn tải về được 90 ngày rồi bị xoá.';
   }
 
   @override
   String get m1Continue => 'Tiếp tục';
-
-  @override
-  String get m1StartTrial => 'Bắt đầu dùng thử miễn phí';
 
   @override
   String get m1Restore => 'Khôi phục giao dịch';
@@ -1319,20 +1300,6 @@ class LbL10nVi extends LbL10n {
 
   @override
   String get m1ManageFailed => 'Không mở được Google Play trên thiết bị này.';
-
-  @override
-  String m1TermsSub(String price) {
-    return 'Gói tự gia hạn với giá $price cho tới khi bạn huỷ. Huỷ bất kỳ lúc nào trong Google Play > Thanh toán và gói thuê bao, chậm nhất 24 giờ trước khi kỳ hiện tại kết thúc để không bị tính phí kỳ sau. Tiền được thanh toán qua tài khoản Google Play khi bạn xác nhận mua.';
-  }
-
-  @override
-  String m1TermsTrial(int days, String price) {
-    return 'Sau $days ngày dùng thử, bạn sẽ bị tính $price trừ khi huỷ trước khi hết thời gian dùng thử.';
-  }
-
-  @override
-  String get m1TermsLifetime =>
-      'Trả một lần, không tự gia hạn. Dùng trên mọi thiết bị đăng nhập cùng tài khoản Google (nút Khôi phục giao dịch).';
 
   @override
   String get m1Loading => 'Đang tải các gói từ Google Play…';

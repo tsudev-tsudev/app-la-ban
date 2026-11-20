@@ -24,13 +24,13 @@ const goi = (trangThai: string, o: Record<string, unknown> = {}) => ({
   subscriptionState: trangThai,
   latestOrderId: 'GPA.1234-5678',
   acknowledgementState: 'ACKNOWLEDGEMENT_STATE_PENDING',
-  lineItems: [{ productId: 'pro_nam', expiryTime: '2027-11-03T12:00:00Z', autoRenewingPlan: { autoRenewEnabled: true } }],
+  lineItems: [{ productId: 'tsudev_pro', expiryTime: '2027-11-03T12:00:00Z', autoRenewingPlan: { autoRenewEnabled: true } }],
   ...o,
 });
 
 describe('docGoiDangKy', () => {
   it('ánh xạ trạng thái Google -> trạng thái nội bộ, đọc hạn / tự gia hạn / thử', () => {
-    const kq = docGoiDangKy(goi('SUBSCRIPTION_STATE_ACTIVE', { testPurchase: {} }), 'pro_nam');
+    const kq = docGoiDangKy(goi('SUBSCRIPTION_STATE_ACTIVE', { testPurchase: {} }), 'tsudev_pro');
     expect(kq).toEqual({
       trangThai: 'active',
       hetHan: Date.parse('2027-11-03T12:00:00Z'),
@@ -41,14 +41,20 @@ describe('docGoiDangKy', () => {
       taiKhoan: null,
       tokenLienKet: null,
     });
-    expect(docGoiDangKy(goi('SUBSCRIPTION_STATE_IN_GRACE_PERIOD'), 'pro_nam')?.trangThai).toBe('grace');
-    expect(docGoiDangKy(goi('SUBSCRIPTION_STATE_ON_HOLD'), 'pro_nam')?.trangThai).toBe('on_hold');
-    expect(docGoiDangKy(goi('SUBSCRIPTION_STATE_PENDING_PURCHASE_CANCELED'), 'pro_nam')?.trangThai).toBe('expired');
-    expect(docGoiDangKy(goi('LA'), 'pro_nam')?.trangThai).toBe('pending');
+    expect(docGoiDangKy(goi('SUBSCRIPTION_STATE_IN_GRACE_PERIOD'), 'tsudev_pro')?.trangThai).toBe('grace');
+    expect(docGoiDangKy(goi('SUBSCRIPTION_STATE_ON_HOLD'), 'tsudev_pro')?.trangThai).toBe('on_hold');
+    expect(docGoiDangKy(goi('SUBSCRIPTION_STATE_PENDING_PURCHASE_CANCELED'), 'tsudev_pro')?.trangThai).toBe('expired');
+    expect(docGoiDangKy(goi('LA'), 'tsudev_pro')?.trangThai).toBe('pending');
+  });
+  it('gói trả trước `nam` (prepaid) -> không tự gia hạn', () => {
+    const g = goi('SUBSCRIPTION_STATE_ACTIVE', {
+      lineItems: [{ productId: 'tsudev_pro', expiryTime: '2027-11-20T00:00:00Z', prepaidPlan: { allowExtendAfterTime: '2026-11-20T00:00:00Z' } }],
+    });
+    expect(docGoiDangKy(g, 'tsudev_pro')).toMatchObject({ trangThai: 'active', hetHan: Date.parse('2027-11-20T00:00:00Z'), tuDongGiaHan: false });
   });
   it('token của sản phẩm khác -> null; thiếu expiryTime -> hạn 0 (không có hiệu lực)', () => {
-    expect(docGoiDangKy(goi('SUBSCRIPTION_STATE_ACTIVE'), 'pro_thang')).toBeNull();
-    const kq = docGoiDangKy(goi('SUBSCRIPTION_STATE_ACTIVE', { lineItems: [{ productId: 'pro_nam' }] }), 'pro_nam');
+    expect(docGoiDangKy(goi('SUBSCRIPTION_STATE_ACTIVE'), 'khac')).toBeNull();
+    const kq = docGoiDangKy(goi('SUBSCRIPTION_STATE_ACTIVE', { lineItems: [{ productId: 'tsudev_pro' }] }), 'tsudev_pro');
     expect(kq?.hetHan).toBe(0);
     expect(conHieuLuc(kq?.trangThai ?? '', kq?.hetHan ?? 0, BAY_GIO)).toBe(false);
   });
@@ -93,16 +99,16 @@ describe('tongHopQuyenLoi / conHieuLuc / trangThaiGhiDe', () => {
 const b64 = (o: unknown) => btoa(JSON.stringify(o));
 
 describe('docRtdn', () => {
-  it('gói đăng ký / mua một lần / hoàn tiền / thử', () => {
+  it('gói đăng ký / mã mua một lần cũ bị bỏ / hoàn tiền / thử', () => {
     const dsGoi = [GOI];
-    expect(docRtdn(b64({ packageName: GOI, eventTimeMillis: '1', subscriptionNotification: { notificationType: 2, purchaseToken: TOKEN, subscriptionId: 'pro_thang' } }), dsGoi)).toEqual({
+    expect(docRtdn(b64({ packageName: GOI, eventTimeMillis: '1', subscriptionNotification: { notificationType: 2, purchaseToken: TOKEN, subscriptionId: 'tsudev_pro' } }), dsGoi)).toEqual({
       loai: 'sub',
       goi: GOI,
       token: TOKEN,
-      sanPham: 'pro_thang',
+      sanPham: 'tsudev_pro',
       kieu: 2,
     });
-    expect(docRtdn(b64({ packageName: GOI, oneTimeProductNotification: { notificationType: 1, purchaseToken: TOKEN, sku: 'pro_tron_doi' } }), dsGoi)).toMatchObject({ loai: 'inapp' });
+    expect(docRtdn(b64({ packageName: GOI, oneTimeProductNotification: { notificationType: 1, purchaseToken: TOKEN, sku: 'pro_tron_doi' } }), dsGoi)).toEqual({ loai: 'bo', lyDo: 'san-pham' });
     expect(docRtdn(b64({ packageName: GOI, voidedPurchaseNotification: { purchaseToken: TOKEN, orderId: 'GPA.1', productType: 1 } }), dsGoi)).toEqual({ loai: 'hoan', goi: GOI, token: TOKEN });
     expect(docRtdn(b64({ packageName: GOI, testNotification: { version: '1.0' } }), dsGoi)).toEqual({ loai: 'thu', goi: GOI });
   });
@@ -110,7 +116,7 @@ describe('docRtdn', () => {
     const dsGoi = [GOI];
     expect(docRtdn(b64({ packageName: 'com.khac', testNotification: {} }), dsGoi)).toEqual({ loai: 'bo', lyDo: 'goi' });
     expect(docRtdn(b64({ packageName: GOI, subscriptionNotification: { notificationType: 2, purchaseToken: TOKEN, subscriptionId: 'pro_tron_doi' } }), dsGoi)).toEqual({ loai: 'bo', lyDo: 'san-pham' });
-    expect(docRtdn(b64({ packageName: GOI, subscriptionNotification: { notificationType: 2, purchaseToken: 'ngan', subscriptionId: 'pro_thang' } }), dsGoi)).toEqual({ loai: 'bo', lyDo: 'dang' });
+    expect(docRtdn(b64({ packageName: GOI, subscriptionNotification: { notificationType: 2, purchaseToken: 'ngan', subscriptionId: 'tsudev_pro' } }), dsGoi)).toEqual({ loai: 'bo', lyDo: 'dang' });
     expect(docRtdn('%%%', dsGoi)).toEqual({ loai: 'bo', lyDo: 'base64' });
     expect(docRtdn(btoa('khong-json'), dsGoi)).toEqual({ loai: 'bo', lyDo: 'json' });
     expect(docRtdn(b64({ packageName: GOI }), dsGoi)).toEqual({ loai: 'bo', lyDo: 'khong-loai' });
