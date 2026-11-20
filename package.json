@@ -26,7 +26,7 @@
     "eslint": "^10.13.0",
     "opentype.js": "^2.0.0",
     "prettier": "^3.6.0",
-    "secretlint": "^13.1.0",
+    "secretlint": "^14.0.1",
     "typescript": "~6.0.0",
     "typescript-eslint": "^8.72.1"
   },
