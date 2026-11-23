@@ -8,9 +8,10 @@ import { homedir } from 'node:os';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { sinhDart, sinhCss } from './tokens-sinh.mjs';
+import { docTokens } from './ban-sac.mjs';
 
 const goc = join(dirname(fileURLToPath(import.meta.url)), '../..');
-const tokens = JSON.parse(readFileSync(join(goc, 'design/tokens.json'), 'utf8'));
+const tokens = docTokens(goc);
 
 // Chạy qua `dart format` để tệp sinh không đổi khi ai đó format cả package.
 function dartFormat(ma) {

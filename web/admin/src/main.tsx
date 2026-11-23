@@ -1,3 +1,5 @@
+import '../../../.standards/tokens/tokens.css';
+import '../../../.standards/tokens/products.css';
 import '../../../design/gen/tokens.css';
 import '@laban/web-shield/khien.css';
 import './app.css';

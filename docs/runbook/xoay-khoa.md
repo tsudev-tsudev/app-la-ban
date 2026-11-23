@@ -3,6 +3,10 @@
 Nguyên tắc: khoá mới thêm TRƯỚC, khoá cũ gỡ SAU (chồng lấp) -> không làm rơi người dùng. Mọi bước nạp
 `set -a; . ~/.config/la-ban/cf.env; set +a` trước wrangler (bẫy WRANGLER OAUTH). Ghi audit / nhật ký mỗi lần xoay.
 
+Nhận bí mật mới (phiếu SEC1): KHÔNG dán vào chat / tệp / lệnh `!`. Agent chạy `tsu-nhan-bi-mat ... --stdout | npx wrangler secret put
+<TÊN>` (nền), chủ dự án chỉ bấm Copy trên trang dịch vụ; công cụ xoá mục khỏi clipboard + lịch sử Win+V. Không in giá trị
+(`cat` tệp `.env`); chỉ in tên / độ dài / kết quả kiểm tra. Bí mật lỡ lộ trong chat -> coi là đã lộ, xoay ngay theo bảng dưới.
+
 | Khoá | Ở đâu | Xoay thế nào | Hậu quả nếu lộ |
 |---|---|---|---|
 | `KHOA_PHIEN` (ES256 ký phiên thiết bị) | `wrangler secret` | secret là MẢNG JWK có `kid`: thêm khoá mới đứng đầu (ký bằng khoá đầu, xác minh mọi khoá), deploy; sau thời hạn phiên gỡ khoá cũ | giả phiên thiết bị |

@@ -40,10 +40,11 @@ Tốn khoảng 10 phút. Chi phí 0 đồng (Telegram Bot API và token Cloudfla
 
 ## Bước 3 - Lấy chat id của nhóm
 
-Chạy trên máy dev (WSL). Lệnh đọc token từ bàn phím nên token không nằm trong lịch sử shell:
+Chạy trên máy dev (WSL). Token nhận qua clipboard bằng `tsu-nhan-bi-mat` (SEC1): công cụ chờ bạn bấm **Copy** token ở
+@BotFather, nạp vào biến rồi XOÁ mục đó khỏi clipboard + lịch sử Win+V. KHÔNG dán token vào chat, tệp hay lệnh:
 
 ```bash
-read -rsp 'Token bot: ' TG; echo
+TG=$(tsu-nhan-bi-mat --bien TELEGRAM_BOT_TOKEN --min 40 --max 60 --stdout)
 curl -s "https://api.telegram.org/bot$TG/getUpdates" | python3 -c '
 import json, sys
 for u in json.load(sys.stdin).get("result", []):
@@ -103,7 +104,7 @@ Cảnh báo SOC ở Bước 4 đã chạy được rồi. Riêng phần tăng đ
 7. Đặt cho cả hai môi trường:
 
 ```bash
-read -rsp 'Token AE: ' AE; echo
+AE=$(tsu-nhan-bi-mat --bien CF_AE_TOKEN --min 35 --max 90 --stdout)   # bấm Copy token trên trang Cloudflare
 printf '%s' "$AE" | npx wrangler secret put CF_AE_TOKEN --env staging
 printf '%s' "$AE" | npx wrangler secret put CF_AE_TOKEN
 unset TG CHAT AE

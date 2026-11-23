@@ -29,26 +29,31 @@ html[data-khien-nghi] [data-nhay-cam] {
   gap: var(--lb-space-sm, 12px);
   padding: var(--lb-space-lg, 24px);
   text-align: center;
-  /* Q68: đen tuyền + tím, mặc định Tối (hệ tsudev). Dự phòng cứng khi token chưa nạp; chữ đạt AA cả hai chế độ. */
-  background: radial-gradient(48rem 28rem at 50% -8rem, rgb(169 112 255 / 0.16), transparent 70%), #0a0a0a;
-  color: #ededed;
+  /* Q68 + STD50: nền đen tuyền, quầng màu chính compass; mặc định Tối. Dự phòng cứng khi token chưa nạp; chữ đạt AA. */
+  background:
+    radial-gradient(48rem 28rem at 50% -8rem, color-mix(in srgb, var(--lb-color-primary, #ff843f) 16%, transparent), transparent 70%),
+    var(--lb-color-bg, #0a0a0a);
+  color: var(--lb-color-text, #ededed);
   font: var(--lb-type-body, 400 1rem/1.5rem system-ui, sans-serif);
 }
 
 .khien-phu h2 {
   margin: 0;
   font: var(--lb-type-headline, 700 1.75rem/2.25rem system-ui, sans-serif);
-  font-weight: 600;
-  color: #c4a1ff;
+  font-family: var(--font-display, inherit);
+  font-weight: 700;
+  color: var(--lb-color-primary-deep, #fea477);
 }
 
 [data-theme='light'] .khien-phu {
-  background: radial-gradient(48rem 28rem at 50% -8rem, rgb(124 58 237 / 0.1), transparent 70%), #fafafa;
-  color: #0a0a0a;
+  background:
+    radial-gradient(48rem 28rem at 50% -8rem, color-mix(in srgb, var(--lb-color-primary, #b14c03) 10%, transparent), transparent 70%),
+    var(--lb-color-bg, #fafafa);
+  color: var(--lb-color-text, #0a0a0a);
 }
 
 [data-theme='light'] .khien-phu h2 {
-  color: #6d28d9;
+  color: var(--lb-color-primary-deep, #974001);
 }
 
 .khien-phu p {

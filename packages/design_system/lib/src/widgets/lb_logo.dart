@@ -3,9 +3,16 @@ import 'package:design_system/src/tokens/tokens.g.dart';
 import 'package:flutter/widgets.dart';
 
 // Màu riêng của logo (phương án B) - đồng bộ với MAU trong
-// tools/build/logo-hinh.mjs; các màu còn lại lấy từ token.
+// tools/build/logo-hinh.mjs. STD50: logo KHÔNG đổi theo bản sắc sản phẩm nên
+// mọi màu của logo là hằng cục bộ (giữ đúng bản đã chốt), không đọc token.
 const _cyanToi = Color(0xFF00B8D4);
 const _vienTam = Color(0xFF0B1220);
+const _vongDau = Color(0xFF6D28D9);
+const _vongCuoi = Color(0xFF7C3AED);
+const _cham = Color(0xFFC4A1FF);
+const _kimTay = Color(0xFFA970FF);
+const _coral = Color(0xFFFF6D00);
+const _coralSang = Color(0xFFFF8A3D);
 
 /// Biểu tượng logo La bàn (vòng + kim kim cương) vẽ bằng CustomPainter,
 /// cùng hình học với design/logo/bieu-tuong.svg (hộp 512, tâm 256).
@@ -48,12 +55,12 @@ class LbLogoPainter extends CustomPainter {
     final vong = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 44
-      ..shader = LinearGradient(
-        colors: [LbColors.light.secondary, LbColors.light.primaryDeep],
+      ..shader = const LinearGradient(
+        colors: [_vongDau, _vongCuoi],
       ).createShader(const Rect.fromLTWH(56, 56, 400, 400));
     canvas.drawCircle(tam, 200, vong);
 
-    final cham = Paint()..color = LbColors.dark.primaryDeep;
+    final cham = Paint()..color = _cham;
     canvas
       ..drawCircle(const Offset(110, 256), 11, cham)
       ..drawCircle(const Offset(402, 256), 11, cham)
@@ -75,9 +82,9 @@ class LbLogoPainter extends CustomPainter {
     const dong = Offset(306, 256);
     const tay = Offset(206, 256);
     tamGiac(bac, dong, _cyanToi);
-    tamGiac(bac, tay, LbColors.light.primary);
-    tamGiac(nam, dong, LbColors.light.accent);
-    tamGiac(nam, tay, LbColors.dark.accent);
+    tamGiac(bac, tay, _kimTay);
+    tamGiac(nam, dong, _coral);
+    tamGiac(nam, tay, _coralSang);
 
     canvas
       ..drawCircle(tam, 18, Paint()..color = const Color(0xFFFFFFFF))
