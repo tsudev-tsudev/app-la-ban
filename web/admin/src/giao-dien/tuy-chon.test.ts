@@ -24,9 +24,10 @@ describe('tuỳ chọn hiển thị', () => {
     expect(tuyChonHieuLuc(MAC_DINH, { thuyVan: { bat: true, mucToiThieu: 'chuan' }, epCheKhiRoi: true })).toEqual({ thuyVanBat: true, thuyVan: 'chuan', cheKhiRoi: true });
     expect(tuyChonHieuLuc({ ...MAC_DINH, thuyVan: 'chuan', cheKhiRoi: true }, { thuyVan: { bat: true, mucToiThieu: 'nhe' }, epCheKhiRoi: false })).toMatchObject({ thuyVan: 'chuan', cheKhiRoi: true });
   });
-  it('Q68: mặc định Tối, nhận Hệ thống, giá trị lạ / cũ "warm" -> Tối', () => {
+  it('Q68: mặc định Tối, nhận Hệ thống, giá trị lạ -> Tối, cũ "warm" -> Sáng (STD50)', () => {
     expect(docTuyChon(null).chuDe).toBe('dark');
     expect(docTuyChon(JSON.stringify({ chuDe: 'system' })).chuDe).toBe('system');
-    expect(docTuyChon(JSON.stringify({ chuDe: 'warm' })).chuDe).toBe('dark');
+    expect(docTuyChon(JSON.stringify({ chuDe: 'warm' })).chuDe).toBe('light');
+    expect(docTuyChon(JSON.stringify({ chuDe: 'la' })).chuDe).toBe('dark');
   });
 });

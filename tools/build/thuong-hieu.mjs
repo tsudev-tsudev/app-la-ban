@@ -11,9 +11,10 @@ import { deflateSync, crc32 } from 'node:zlib';
 import { Resvg } from '@resvg/resvg-js';
 import { hinhB as hinh, MAU, svg } from './logo-hinh.mjs';
 import { banNgang, banDoc, png, ico, wordmark } from './anh.mjs';
+import { docTokens } from './ban-sac.mjs';
 
 const goc = join(dirname(fileURLToPath(import.meta.url)), '../..');
-const tokens = JSON.parse(readFileSync(join(goc, 'design/tokens.json'), 'utf8'));
+const tokens = docTokens(goc);
 const ghi = (tep, noiDung) => {
   const p = join(goc, tep);
   mkdirSync(dirname(p), { recursive: true });

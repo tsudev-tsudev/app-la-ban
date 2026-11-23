@@ -18,8 +18,8 @@ const diem = (goc: number, r: number) => {
   <svg viewBox="0 0 320 640" aria-hidden="true">
     <defs>
       <linearGradient id="dt-vong" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#A970FF" />
-        <stop offset="1" stop-color="#7C3AED" />
+        <stop offset="0" class="vong-dau" />
+        <stop offset="1" class="vong-cuoi" />
       </linearGradient>
       <radialGradient id="dt-mat" cx="0.5" cy="0.45" r="0.6">
         <stop offset="0" class="mat-sang" />
@@ -92,10 +92,17 @@ const diem = (goc: number, r: number) => {
 </div>
 
 <style>
+  /* STD50: vòng mặt la bàn theo màu chính của bản sắc compass (không mã màu cứng). */
+  .vong-dau {
+    stop-color: var(--lb-color-primary);
+  }
+  .vong-cuoi {
+    stop-color: var(--lb-color-gradient-start);
+  }
   .dt {
     width: min(100%, 320px);
     margin-inline: auto;
-    filter: drop-shadow(0 30px 50px rgb(124 58 237 / 0.25));
+    filter: drop-shadow(0 30px 50px color-mix(in srgb, var(--lb-color-primary) 25%, transparent));
   }
   svg {
     width: 100%;

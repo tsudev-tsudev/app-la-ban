@@ -19,7 +19,8 @@ export function docTuyChon(json: string | null, chuDeCu: string | null = null): 
   } catch {
     x = {};
   }
-  const chuDe = x.chuDe ?? chuDeCu;
+  // STD50: giá trị cũ "warm" (khối warm đã gỡ khỏi token v5.0.0) đọc thành Sáng.
+  const chuDe = (x.chuDe ?? chuDeCu) === 'warm' ? 'light' : (x.chuDe ?? chuDeCu);
   return {
     chuDe: chuDe === 'light' || chuDe === 'dark' || chuDe === 'system' ? chuDe : MAC_DINH.chuDe,
     matDo: x.matDo === 'gon' ? 'gon' : 'thoang',

@@ -1,5 +1,7 @@
 ---
 // Khung mọi trang: meta SEO + OG + hreflang vi/en, header (menu di động bằng <details>, không JS), footer.
+import '../../../../.standards/tokens/tokens.css';
+import '../../../../.standards/tokens/products.css';
 import '../../../../design/gen/tokens.css';
 import '../styles/global.css';
 import '@laban/web-shield/khien.css';
@@ -55,7 +57,7 @@ const jsonLd =
     : null;
 ---
 <!doctype html>
-<html lang={t.lang} data-theme="dark">
+<html lang={t.lang} data-theme="dark" data-product="compass">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

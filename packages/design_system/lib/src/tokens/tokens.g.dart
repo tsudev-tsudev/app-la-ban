@@ -38,11 +38,11 @@ final class LbColors {
   });
 
   static const light = LbColors(
-    primary: Color(0xFFA970FF),
-    primaryDeep: Color(0xFF7C3AED),
-    secondary: Color(0xFF6D28D9),
-    accent: Color(0xFFFF6D00),
-    accentStrong: Color(0xFFB94A00),
+    primary: Color(0xFFB14C03),
+    primaryDeep: Color(0xFF974001),
+    secondary: Color(0xFF974001),
+    accent: Color(0xFF813601),
+    accentStrong: Color(0xFF813601),
     bg: Color(0xFFFAFAFA),
     surface: Color(0xFFF4F4F5),
     surfaceRaised: Color(0xFFFFFFFF),
@@ -50,55 +50,55 @@ final class LbColors {
     outlineStrong: Color(0xFF71717A),
     text: Color(0xFF0A0A0A),
     textMuted: Color(0xFF52525B),
-    onPrimary: Color(0xFF0A0A0A),
+    onPrimary: Color(0xFFFFFFFF),
     onPrimaryDeep: Color(0xFFFFFFFF),
-    onAccent: Color(0xFF0A0A0A),
-    danger: Color(0xFFE53935),
-    dangerStrong: Color(0xFFC62828),
+    onAccent: Color(0xFFFFFFFF),
+    danger: Color(0xFFDC2626),
+    dangerStrong: Color(0xFFD82525),
     onDanger: Color(0xFFFFFFFF),
-    warning: Color(0xFFFFB300),
-    warningStrong: Color(0xFF8A5A00),
-    onWarning: Color(0xFF0A0A0A),
-    success: Color(0xFF00C853),
-    successStrong: Color(0xFF007A34),
-    onSuccess: Color(0xFF0A0A0A),
-    scrim: Color(0x990A0A0A),
-    gradientStart: Color(0xFF7C3AED),
-    gradientEnd: Color(0xFFA21CAF),
+    warning: Color(0xFFB45309),
+    warningStrong: Color(0xFFB45309),
+    onWarning: Color(0xFFFFFFFF),
+    success: Color(0xFF15803D),
+    successStrong: Color(0xFF15803D),
+    onSuccess: Color(0xFFFFFFFF),
+    scrim: Color(0x730A0A0A),
+    gradientStart: Color(0xFF7E3400),
+    gradientEnd: Color(0xFFB14C03),
     onGradient: Color(0xFFFFFFFF),
-    tint: Color(0xFFF3EEFF),
+    tint: Color(0xFFF3E9E1),
   );
 
   static const dark = LbColors(
-    primary: Color(0xFFA970FF),
-    primaryDeep: Color(0xFFC4A1FF),
-    secondary: Color(0xFFBB8CFF),
-    accent: Color(0xFFFF8A3D),
-    accentStrong: Color(0xFFFF8A3D),
+    primary: Color(0xFFFF843F),
+    primaryDeep: Color(0xFFFEA477),
+    secondary: Color(0xFFFF9F6F),
+    accent: Color(0xFFFEBD9D),
+    accentStrong: Color(0xFFFEBD9D),
     bg: Color(0xFF0A0A0A),
-    surface: Color(0xFF111111),
-    surfaceRaised: Color(0xFF171717),
-    outline: Color(0xFF2E2E2E),
+    surface: Color(0xFF15181D),
+    surfaceRaised: Color(0xFF0F1114),
+    outline: Color(0xFF22272F),
     outlineStrong: Color(0xFF6E6E6E),
     text: Color(0xFFEDEDED),
-    textMuted: Color(0xFFB4B4B4),
+    textMuted: Color(0xFF8F8F8F),
     onPrimary: Color(0xFF0A0A0A),
     onPrimaryDeep: Color(0xFF0A0A0A),
     onAccent: Color(0xFF0A0A0A),
-    danger: Color(0xFFFF6B66),
-    dangerStrong: Color(0xFFFF6B66),
+    danger: Color(0xFFF87171),
+    dangerStrong: Color(0xFFF87171),
     onDanger: Color(0xFF0A0A0A),
-    warning: Color(0xFFFFCA4D),
-    warningStrong: Color(0xFFFFCA4D),
+    warning: Color(0xFFFBBF24),
+    warningStrong: Color(0xFFFBBF24),
     onWarning: Color(0xFF0A0A0A),
-    success: Color(0xFF3DDC84),
-    successStrong: Color(0xFF3DDC84),
+    success: Color(0xFF4ADE80),
+    successStrong: Color(0xFF4ADE80),
     onSuccess: Color(0xFF0A0A0A),
-    scrim: Color(0xB3000000),
-    gradientStart: Color(0xFFA970FF),
-    gradientEnd: Color(0xFFE879F9),
+    scrim: Color(0x99000000),
+    gradientStart: Color(0xFFFF843F),
+    gradientEnd: Color(0xFFFEBD9D),
     onGradient: Color(0xFF0A0A0A),
-    tint: Color(0xFF1A1428),
+    tint: Color(0xFF2C1B11),
   );
 
   final Color primary;
@@ -146,9 +146,10 @@ abstract final class LbSpacing {
 /// Bo góc thống nhất.
 abstract final class LbRadius {
   static const double sm = 8;
-  static const double md = 12;
-  static const double lg = 16;
+  static const double md = 14;
+  static const double lg = 20;
   static const double xl = 24;
+  static const double control = 999;
 }
 
 /// Bóng đổ theo theme (neumorphism nhẹ).

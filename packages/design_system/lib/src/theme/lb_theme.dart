@@ -152,9 +152,8 @@ abstract final class LbTheme {
           foregroundColor: c.onPrimaryDeep,
           textStyle: LbType.label,
           minimumSize: const Size(64, 48),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(LbRadius.md),
-          ),
+          // STD50: nút viên thuốc theo shape `tron` của bản sắc compass.
+          shape: const StadiumBorder(),
         ),
       ),
     );

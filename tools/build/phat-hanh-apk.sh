@@ -5,6 +5,7 @@
 #   3. apksigner verify + so chứng chỉ với khoá upload, SHA-256
 #   4. R2 la-ban-cdn/android/ (tên có phiên bản, bất biến) + latest.json -> compass-cdn.tsudev.com/android/
 #   5. GitHub Release pre-release v<phiên bản> kèm SHA256SUMS
+#   (trước 4: tools/build/kiem-virustotal.sh - có cờ thì dừng, phiếu AV1)
 # --thu: chỉ build + kiểm (không tải lên, không cần main sạch). Phiên bản lấy từ app/pubspec.yaml (vd 0.1.0-beta.1+1).
 # Sau khi phát hành: ./tools/build/deploy-web.sh landing (trang /tai-ve đọc latest.json lúc build).
 set -euo pipefail
@@ -85,6 +86,9 @@ process.stdout.write(JSON.stringify({
 EOF
 cat "$RA/latest.json"
 [ "$THU" = 1 ] && { echo "✓ Bản thử ở $RA (không tải lên)"; exit 0; }
+# AV1 (DISTRIBUTION_TRUST mục 3): quét VirusTotal TRƯỚC khi công bố; có cờ -> dừng, ghi docs/store/antivirus.md.
+VT=0; "$GOC/tools/build/kiem-virustotal.sh" "$RA"/*.apk || VT=$?
+[ "$VT" = 1 ] && { echo "✗ VirusTotal gắn cờ - KHÔNG công bố. Xem docs/store/antivirus.md" >&2; exit 1; }
 
 set -a; . "$HOME/.config/la-ban/cf.env"; set +a
 export WRANGLER_SEND_METRICS=false

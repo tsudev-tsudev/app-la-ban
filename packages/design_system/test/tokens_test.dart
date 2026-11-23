@@ -37,10 +37,15 @@ void main() {
     });
   }
 
-  test('tím hệ tsudev (Q68) giữ nguyên ở cả hai theme', () {
-    expect(LbColors.light.primary, const Color(0xFFA970FF));
-    expect(LbColors.dark.primary, LbColors.light.primary);
+  test('bản sắc compass (STD50): cam kim la bàn, nền đen tuyền chung', () {
+    expect(LbColors.light.primary, const Color(0xFFB14C03));
+    expect(LbColors.dark.primary, const Color(0xFFFF843F));
     expect(LbColors.dark.bg, const Color(0xFF0A0A0A));
+  });
+
+  test('bo góc shape tron: 8 / 14 / 20, nút viên thuốc', () {
+    expect([LbRadius.sm, LbRadius.md, LbRadius.lg], [8, 14, 20]);
+    expect(LbRadius.control, 999);
   });
 
   test('thang khoảng cách theo lưới 4/8pt', () {
