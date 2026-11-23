@@ -3,6 +3,7 @@
 ## LOCKS (chỉ tệp ĐANG sửa - xoá ngay khi xong)
 
 ## Lưu ý đang hiệu lực (<= 8 dòng)
+- AV1 HUORONG DA GUI 24/11 (Resend id 01a20aad..., security@tsudev.com, 2 APK beta.17) - KHONG gui lai; tu 27/11 do lai VT roi DONG phieu AV1. find HUORONG
 - STD50 BAN SAC: mau KHONG khai o design/tokens.json - doi mau = PR tsudev-standards; LbLogo dung hang mau cuc bo; thuong-hieu.mjs --chi og chi sinh OG. find STD50
 - S11 CHAN DEV MODE (Q57): ban PROD chan khi bat Developer options / ADB -> thu may that M32 bang ban STAGING; kill-switch: 'chanDevMode' trong tat Remote Config (app) + CHAN_DEV_MODE="0" wrangler (Worker). find S11 CHAN
 - WRANGLER OAUTH SAI TAI KHOAN: luon 'set -a; . ~/.config/la-ban/cf.env; set +a' (source tran KHONG export) truoc moi lenh wrangler (OAuth may dang o tai khoan repo khac -> secret put tao Worker rac). find WRANGLER OAUTH
