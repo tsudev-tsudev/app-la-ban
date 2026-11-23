@@ -17,21 +17,26 @@ Chuẩn: `.standards/docs/DISTRIBUTION_TRUST.md` mục 3, 3.1 · phiếu `logs/h
 | Ngày | Đối tượng | Kết quả | Ghi chú |
 | --- | --- | --- | --- |
 | 23/11/2026 | compass., compass-api., compass-admin., compass-cdn., compass-status.tsudev.com | 0 malicious / 0 suspicious | VirusTotal domains |
-| 23/11/2026 | `la-ban-0.1.0-beta.17-arm64.apk` (360045395cb3...) | chưa từng có trên VT -> gửi quét qua URL CDN; VT đang phân tích | kiểm lại `kiem-virustotal.sh` |
+| 24/11/2026 | `la-ban-0.1.0-beta.17-arm64.apk` (360045395cb3...) | **1/66: Huorong `Ransom/Android.LockScreen.m`** | báo nhầm - thư dưới, hạn nộp 25/11/2026 |
 | 23/11/2026 | `la-ban-0.1.0-beta.17-armv7.apk` (ce075abd3332...) | **1/66: Huorong `Ransom/Android.LockScreen.m`** | báo nhầm - thư dưới, hạn nộp 25/11/2026 |
 
 ## Thư báo nhầm Huorong (👤 chủ dự án gửi từ hộp thư công khai của hệ, đề xuất `security@tsudev.com`)
 
 Kênh: `seclab@huorong.cn` (https://docs.virustotal.com/docs/false-positive-contacts, cập nhật 20/10/2026).
 
-**Subject:** False positive report: La bàn (Smart Compass) Android APK - Ransom/Android.LockScreen.m
+**Subject:** False positive report: La bàn (Smart Compass) Android APKs (2 files) - Ransom/Android.LockScreen.m
 
 ```text
 Hello Huorong Security Lab,
 
 We are TsuDEV (https://tsudev.com), the publisher of the Android app "La bàn" (Smart Compass,
-package com.tsudev.laban). Your engine on VirusTotal reports the file below as
+package com.tsudev.laban). Your engine on VirusTotal reports the files below as
 Ransom/Android.LockScreen.m. We believe this is a false positive.
+
+File: la-ban-0.1.0-beta.17-arm64.apk
+SHA-256: 360045395cb3f66f2c81c2459e74b29d7d49ed03e16e522acff3042269d6b331
+VirusTotal: https://www.virustotal.com/gui/file/360045395cb3f66f2c81c2459e74b29d7d49ed03e16e522acff3042269d6b331
+Download: https://compass-cdn.tsudev.com/android/la-ban-0.1.0-beta.17-arm64.apk
 
 File: la-ban-0.1.0-beta.17-armv7.apk
 SHA-256: ce075abd33326021f17e5e3bb5d26c2ed8d794e34ea2d1a1980b6ba3ad214432

@@ -21,8 +21,8 @@ Repo chưa phát hành tệp nhị phân trên GitHub Release (không có tệp 
 
 - Hiện trạng ở mục 1 CHƯA đúng: repo CÓ phát hành APK (GitHub pre-release `v0.1.0-beta.*` + `compass-cdn.tsudev.com/android/`).
 - Tên miền compass., compass-api., compass-admin., compass-cdn., compass-status.tsudev.com: 0 malicious / 0 suspicious.
-- APK beta.17 chưa từng có trên VT -> gửi quét: **armv7 1/66 Huorong `Ransom/Android.LockScreen.m`** (báo nhầm - app không có
-  quyền device admin / accessibility / overlay); arm64 VT đang phân tích. Ghi + thư soạn sẵn: `docs/store/antivirus.md`.
+- APK beta.17 chưa từng có trên VT -> gửi quét: **arm64 + armv7 đều 1/66 Huorong `Ransom/Android.LockScreen.m`** (báo nhầm - app
+  không có quyền device admin / accessibility / overlay). Ghi + thư soạn sẵn: `docs/store/antivirus.md`.
 - Phòng ngừa: `tools/build/kiem-virustotal.sh` (tra băm, chưa có thì tải lên, có cờ -> exit 1) gắn vào `phat-hanh-apk.sh` TRƯỚC
   khi tải lên R2 / GitHub Release (thay cho job CI dùng chung vì repo không chạy CI GitHub).
-- Còn lại: 👤 gửi thư Huorong tới `seclab@huorong.cn`; agent sau kiểm lại kết quả arm64 + Huorong rồi ĐÓNG.
+- Còn lại: 👤 gửi thư Huorong tới `seclab@huorong.cn`; agent sau kiểm lại Huorong (`kiem-virustotal.sh` hoặc API) rồi ĐÓNG.
