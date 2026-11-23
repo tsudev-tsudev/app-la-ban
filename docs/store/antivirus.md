@@ -17,10 +17,14 @@ Chuẩn: `.standards/docs/DISTRIBUTION_TRUST.md` mục 3, 3.1 · phiếu `logs/h
 | Ngày | Đối tượng | Kết quả | Ghi chú |
 | --- | --- | --- | --- |
 | 23/11/2026 | compass., compass-api., compass-admin., compass-cdn., compass-status.tsudev.com | 0 malicious / 0 suspicious | VirusTotal domains |
-| 24/11/2026 | `la-ban-0.1.0-beta.17-arm64.apk` (360045395cb3...) | **1/66: Huorong `Ransom/Android.LockScreen.m`** | báo nhầm - thư dưới, hạn nộp 25/11/2026 |
-| 23/11/2026 | `la-ban-0.1.0-beta.17-armv7.apk` (ce075abd3332...) | **1/66: Huorong `Ransom/Android.LockScreen.m`** | báo nhầm - thư dưới, hạn nộp 25/11/2026 |
+| 24/11/2026 | `la-ban-0.1.0-beta.17-arm64.apk` (360045395cb3...) | **1/66: Huorong `Ransom/Android.LockScreen.m`** | báo nhầm - ĐÃ GỬI 24/11/2026 |
+| 23/11/2026 | `la-ban-0.1.0-beta.17-armv7.apk` (ce075abd3332...) | **1/66: Huorong `Ransom/Android.LockScreen.m`** | báo nhầm - ĐÃ GỬI 24/11/2026 |
 
-## Thư báo nhầm Huorong (👤 chủ dự án gửi từ hộp thư công khai của hệ, đề xuất `security@tsudev.com`)
+## Thư báo nhầm Huorong - ĐÃ GỬI 24/11/2026
+
+Gửi qua Resend (team tsudev.com, khoá `~/.config/tsudev/resend.env`) theo uỷ quyền chủ dự án, From / Reply-To
+`security@tsudev.com` (Cloudflare Email Routing), Resend id `01a20aad-e162-70fe-a487-f7892f8b21da`. Đo lại VT 3-7 ngày sau
+(27-30/11/2026); hết cờ -> ghi ngày gỡ + ĐÓNG phiếu AV1.
 
 Kênh: `seclab@huorong.cn` (https://docs.virustotal.com/docs/false-positive-contacts, cập nhật 20/10/2026).
 

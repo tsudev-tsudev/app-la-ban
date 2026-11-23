@@ -5,7 +5,7 @@
 - **Người gửi**: agent-tsuswico (phiên tsuswico-6e) theo uỷ quyền của chủ dự án
 - **Phiếu điều phối**: `~/projects/logs/handover/20261122-AV1_bao-nham-antivirus-toan-he.md` (bảng kết quả cả hệ + thư soạn sẵn từng hãng)
 - **Chuẩn**: `.standards/docs/DISTRIBUTION_TRUST.md` mục 3, 3.1
-- **Trạng thái**: MỞ - chờ 👤 chủ dự án gửi thư báo nhầm Huorong (hạn 25/11/2026)
+- **Trạng thái**: MỞ - đã gửi thư Huorong 24/11/2026, chờ đo lại VT 27-30/11/2026
 
 ## 1. Hiện trạng 22/11/2026
 
@@ -25,4 +25,6 @@ Repo chưa phát hành tệp nhị phân trên GitHub Release (không có tệp 
   không có quyền device admin / accessibility / overlay). Ghi + thư soạn sẵn: `docs/store/antivirus.md`.
 - Phòng ngừa: `tools/build/kiem-virustotal.sh` (tra băm, chưa có thì tải lên, có cờ -> exit 1) gắn vào `phat-hanh-apk.sh` TRƯỚC
   khi tải lên R2 / GitHub Release (thay cho job CI dùng chung vì repo không chạy CI GitHub).
-- Còn lại: 👤 gửi thư Huorong tới `seclab@huorong.cn`; agent sau kiểm lại Huorong (`kiem-virustotal.sh` hoặc API) rồi ĐÓNG.
+- 24/11/2026: agent gửi thư Huorong (`seclab@huorong.cn`) qua Resend từ `security@tsudev.com` theo uỷ quyền chủ dự án,
+  Resend id `01a20aad-e162-70fe-a487-f7892f8b21da`.
+- Còn lại: agent đo lại VT 27-30/11/2026 (`kiem-virustotal.sh` hoặc API); hết cờ -> ghi ngày gỡ rồi ĐÓNG.
