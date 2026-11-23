@@ -2,7 +2,7 @@
 
 - **Mã phiếu**: 20261121-STD50
 - **Từ**: phiên tsudev-standards, 21/11/2026 - **Đến**: phiên kế tiếp của `app-la-ban`
-- **Trạng thái**: MỞ
+- **Trạng thái**: ĐÓNG (24/11/2026)
 - **Nguồn**: https://github.com/tsudev-org/tsudev-standards/releases/tag/v5.0.0 - `docs/DESIGN_SYSTEM.md` mục 1.2,
   CHANGELOG 5.0.0 "Hướng dẫn nâng cấp"
 - **Bối cảnh**: chủ dự án muốn mỗi sản phẩm có đặc trưng nổi bật riêng (màu, giao diện, bố cục). Trước v5.0.0, 9/11
@@ -51,3 +51,7 @@ kiểm chống trùng phải xanh. KHÔNG ghi đè tại repo này.
   68 cặp tương phản AA; bo góc `tron` đọc từ `products.css`; web nạp `tokens.css` + `products.css`, `data-product="compass"`,
   nút `--radius-control`, h1-h3 + số lớn Montserrat 700 tự host; khiên web + mockup điện thoại hết mã tím cứng; admin `warm` ->
   Sáng; app nút viên thuốc, 122 golden sinh lại; logo giữ nguyên (golden logo không đổi). Ảnh trước/sau Sáng + Tối trong PR.
+- **PR 2** (24/11/2026, nhánh `phase/std50-bo-cuc`): thân trang chủ landing theo `do-luong` (mặt la bàn lớn ở giữa, 4 số liệu
+  xếp hai bên; điện thoại: mặt trên, số liệu lưới 2x2); hoạ tiết `vong-dong-tam` tĩnh (module tất định
+  `tools/build/vong-dong-tam.mjs`, màu `accent`) ở hero + `og.png` (`thuong-hieu.mjs --chi og`). Header / chân trang / bộ chọn
+  giao diện giữ nguyên. Màn đầu app (La bàn) vốn đã là `do-luong` - không đổi. -> phiếu ĐÓNG.
