@@ -4,6 +4,7 @@ import Icon from '../components/Icon.astro';
 import Trang from '../layouts/Trang.astro';
 import { DUONG_DAN, NOI_DUNG, type NgonNgu } from '../i18n/noi-dung';
 import { napBanApk } from '../lib/apk';
+import { svgVongDongTam } from '../../../../tools/build/vong-dong-tam.mjs';
 
 interface Props {
   lang: NgonNgu;
@@ -13,6 +14,10 @@ const t = NOI_DUNG[lang];
 const c = t.chu;
 const tai = DUONG_DAN.tai[lang];
 const ban = await napBanApk();
+// STD50 PR2: bố cục do-luong - mặt la bàn lớn ở giữa, số liệu phụ xếp hai bên; hoạ tiết vong-dong-tam tĩnh phía sau.
+const hoaTiet = svgVongDongTam('currentColor');
+const soTrai = c.soLieu.slice(0, 2);
+const soPhai = c.soLieu.slice(2);
 ---
 <Trang lang={lang} trang="chu">
   <section class="hero khung">
@@ -27,20 +32,18 @@ const ban = await napBanApk();
       </div>
       <p class="ghi-chu">{c.ghiChuBeta}</p>
     </div>
-    <div class="hero-hinh">
-      <DienThoai lang={lang} />
+    <div class="do-luong" aria-label={c.soLieuNhan} role="group">
+      <svg class="vong-dong-tam" viewBox="0 0 600 600" aria-hidden="true" set:html={hoaTiet} />
+      <ul class="so-phu so-trai">
+        {soTrai.map((s) => (<li><strong>{s.so}</strong><span>{s.nhan}</span></li>))}
+      </ul>
+      <div class="mat-chinh">
+        <DienThoai lang={lang} />
+      </div>
+      <ul class="so-phu so-phai">
+        {soPhai.map((s) => (<li><strong>{s.so}</strong><span>{s.nhan}</span></li>))}
+      </ul>
     </div>
-  </section>
-
-  <section class="khung so-lieu" aria-label="Số liệu">
-    {
-      c.soLieu.map((s) => (
-        <div>
-          <strong>{s.so}</strong>
-          <span>{s.nhan}</span>
-        </div>
-      ))
-    }
   </section>
 
   <section id="tinh-nang" class="vung khung">
@@ -160,20 +163,18 @@ const ban = await napBanApk();
 <style>
   .hero {
     display: grid;
-    gap: var(--lb-space-xxl);
-    align-items: center;
+    gap: clamp(32px, 6vw, 64px);
     padding-block: clamp(40px, 7vw, 88px) clamp(32px, 5vw, 64px);
     background: var(--nen-hero);
-  }
-  @media (min-width: 840px) {
-    .hero {
-      grid-template-columns: 1.15fr 0.85fr;
-    }
   }
   .hero-chu {
     display: grid;
     gap: var(--lb-space-lg);
-    justify-items: start;
+    justify-items: center;
+    text-align: center;
+  }
+  .hero-chu > * {
+    min-width: 0;
   }
   h1 {
     font: var(--lb-type-display);
@@ -194,41 +195,87 @@ const ban = await napBanApk();
     font-size: 1.125rem;
     line-height: 1.7;
     color: var(--lb-color-text-muted);
-    max-width: 36rem;
+    max-width: 40rem;
+    margin-inline: auto;
   }
   .hang-nut {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: var(--lb-space-sm);
   }
   .ghi-chu {
     font: var(--lb-type-body-small);
     color: var(--lb-color-text-muted);
   }
-  .so-lieu {
+  .do-luong {
+    position: relative;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1px;
-    margin-block: var(--lb-space-md);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      'mat mat'
+      'trai phai';
+    gap: var(--lb-space-lg) var(--lb-space-md);
+    align-items: center;
+    isolation: isolate;
   }
   @media (min-width: 840px) {
-    .so-lieu {
-      grid-template-columns: repeat(4, 1fr);
+    .do-luong {
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      grid-template-areas: 'trai mat phai';
+      gap: var(--lb-space-xxl);
     }
   }
-  .so-lieu div {
+  .vong-dong-tam {
+    position: absolute;
+    z-index: -1;
+    inset: 50% auto auto 50%;
+    width: min(100%, 720px);
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    color: var(--lb-color-accent);
+    opacity: 0.6;
+    pointer-events: none;
+  }
+  .mat-chinh {
+    grid-area: mat;
+    justify-self: center;
+  }
+  .so-phu {
+    display: grid;
+    gap: var(--lb-space-md);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .so-trai {
+    grid-area: trai;
+  }
+  .so-phai {
+    grid-area: phai;
+  }
+  @media (min-width: 840px) {
+    .so-trai {
+      justify-items: end;
+      text-align: end;
+    }
+  }
+  .so-phu li {
     display: grid;
     gap: 4px;
-    padding: var(--lb-space-lg) var(--lb-space-md);
-    border-top: 2px solid var(--lb-color-outline);
+    max-width: 16rem;
+    padding: var(--lb-space-md);
+    border: 1px solid var(--lb-color-outline);
+    border-radius: var(--radius-lg);
+    background: color-mix(in srgb, var(--lb-color-surface) 88%, transparent);
   }
-  .so-lieu strong {
+  .so-phu strong {
     font: var(--lb-type-telemetry);
     font-family: var(--font-display);
     color: var(--lb-color-primary-deep);
     font-variant-numeric: tabular-nums;
   }
-  .so-lieu span {
+  .so-phu span {
     color: var(--lb-color-text-muted);
     font: var(--lb-type-body-small);
   }

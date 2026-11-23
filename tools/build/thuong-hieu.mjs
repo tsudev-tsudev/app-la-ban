@@ -12,6 +12,7 @@ import { Resvg } from '@resvg/resvg-js';
 import { hinhB as hinh, MAU, svg } from './logo-hinh.mjs';
 import { banNgang, banDoc, png, ico, wordmark } from './anh.mjs';
 import { docTokens } from './ban-sac.mjs';
+import { svgVongDongTam } from './vong-dong-tam.mjs';
 
 const goc = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const tokens = docTokens(goc);
@@ -247,23 +248,9 @@ function xuatWeb() {
   ghi('web/landing/public/icon-192.png', png(m, 192));
   ghi('web/landing/public/icon-512.png', png(m, 512));
 
-  // OG image 1200x630: nền sáng, bản ngang lớn, khẩu hiệu song ngữ.
-  const ng = banNgang(hinh({ id: 'o' }));
-  const sc = 1.45;
-  const x0 = (1200 - ng.w * sc) / 2;
-  const og = svg(
-    1200,
-    630,
-    nenGradient('n', 1200, 630) +
-      `<circle cx="1080" cy="80" r="220" fill="${MAU.cyan}" fill-opacity="0.12"/>` +
-      `<circle cx="120" cy="590" r="180" fill="${MAU.coral}" fill-opacity="0.10"/>` +
-      `<g transform="translate(${x0} 150) scale(${sc})">${ng.noiDung}</g>` +
-      `<text x="600" y="460" text-anchor="middle" font-family="Be Vietnam Pro" font-weight="700" font-size="44" fill="${MAU.chu}">La bàn thông minh - chính xác, riêng tư</text>` +
-      `<text x="600" y="516" text-anchor="middle" font-family="Be Vietnam Pro" font-size="30" fill="#475569">Smart Compass for Android &amp; iOS</text>`,
-  );
-  ghi('web/landing/public/og.png', png(og, 1200));
-  ghi('design/store/og-1200x630.png', png(og, 1200));
+  xuatOg();
 
+  const ng = banNgang(hinh({ id: 'o' }));
   // Ảnh nổi bật Google Play 1024x500 (R2): không alpha, chữ ít, chủ thể giữa (Play có thể cắt mép / phủ nút phát).
   const scP = 1.2;
   const xP = (1024 - ng.w * scP) / 2;
@@ -277,6 +264,25 @@ function xuatWeb() {
       `<text x="512" y="390" text-anchor="middle" font-family="Be Vietnam Pro" font-weight="700" font-size="34" fill="${MAU.chu}">Bắc thực chính xác · Ngoại tuyến · Riêng tư</text>`,
   );
   ghi('design/store/play-feature-1024x500.png', pngKhongAlpha(noiBat, 1024));
+}
+
+// OG image 1200x630: nền sáng, bản ngang lớn, khẩu hiệu song ngữ, hoạ tiết vòng đồng tâm.
+function xuatOg() {
+  const ng = banNgang(hinh({ id: 'o' }));
+  const sc = 1.45;
+  const x0 = (1200 - ng.w * sc) / 2;
+  const og = svg(
+    1200,
+    630,
+    nenGradient('n', 1200, 630) +
+      // STD50: hoạ tiết vong-dong-tam (cùng module với hero landing), màu accent của bản sắc compass.
+      `<g transform="translate(600 315) scale(1.15) translate(-300 -300)">${svgVongDongTam(tokens.color.light.accent)}</g>` +
+      `<g transform="translate(${x0} 150) scale(${sc})">${ng.noiDung}</g>` +
+      `<text x="600" y="460" text-anchor="middle" font-family="Be Vietnam Pro" font-weight="700" font-size="44" fill="${MAU.chu}">La bàn thông minh - chính xác, riêng tư</text>` +
+      `<text x="600" y="516" text-anchor="middle" font-family="Be Vietnam Pro" font-size="30" fill="#475569">Smart Compass for Android &amp; iOS</text>`,
+  );
+  ghi('web/landing/public/og.png', png(og, 1200));
+  ghi('design/store/og-1200x630.png', png(og, 1200));
 }
 
 /**
@@ -375,11 +381,16 @@ function xuatXemTruoc() {
   ghi('design/logo/xem-truoc-launcher.png', png(svg(W, NEN.length * HANG, o.join('')), W));
 }
 
-xuatLogo();
-xuatAndroid();
-xuatIos();
-xuatWeb();
-xuatXemTruoc();
-xuatPro();
-xuatSanPham();
+// `--chi og`: chỉ sinh lại ảnh OG (đổi hoạ tiết / bản sắc) mà không đụng icon / ảnh store đã nộp.
+if (process.argv.join(' ').includes('--chi og')) {
+  xuatOg();
+} else {
+  xuatLogo();
+  xuatAndroid();
+  xuatIos();
+  xuatWeb();
+  xuatXemTruoc();
+  xuatPro();
+  xuatSanPham();
+}
 console.log(`ghi logo, icon Android/iOS, splash, favicon/OG, xem trước launcher (wordmark rộng ${Math.round(wordmark(100).rong)})`);

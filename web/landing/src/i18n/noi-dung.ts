@@ -36,6 +36,7 @@ export type NoiDung = {
     nutIos: string;
     ghiChuBeta: string;
     soLieu: { so: string; nhan: string }[];
+    soLieuNhan: string;
     tinhNangTieuDe: string;
     tinhNangMoTa: string;
     tinhNang: (Muc & { icon: Icon; sapCo?: boolean })[];
@@ -158,6 +159,7 @@ const vi: NoiDung = {
     nutPlay: 'Google Play - sắp có',
     nutIos: 'iPhone - đầu năm 2027',
     ghiChuBeta: 'Bản thử nghiệm đang hoàn thiện từng tính năng. Cảm ơn bạn đã dùng thử và góp ý.',
+    soLieuNhan: 'Mặt la bàn và số liệu chính',
     soLieu: [
       { so: '±0,5°', nhan: 'mục tiêu sai số sau hiệu chuẩn' },
       { so: '60 FPS', nhan: 'mặt la bàn mượt, tiết kiệm pin' },
@@ -393,6 +395,7 @@ const en: NoiDung = {
     nutPlay: 'Google Play - coming soon',
     nutIos: 'iPhone - early 2027',
     ghiChuBeta: 'The beta is being completed feature by feature. Thanks for trying it and sharing feedback.',
+    soLieuNhan: 'Compass dial and key figures',
     soLieu: [
       { so: '±0.5°', nhan: 'target error after calibration' },
       { so: '60 FPS', nhan: 'smooth dial, battery friendly' },
