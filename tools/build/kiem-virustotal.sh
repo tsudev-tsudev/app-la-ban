@@ -3,14 +3,21 @@
 #   ./tools/build/kiem-virustotal.sh <tệp>...
 # Tra băm SHA-256; tệp chưa có trên VT thì tải lên rồi chờ kết quả (tối đa ~10 phút / tệp).
 # Đỏ (exit 1) nếu một hãng báo malicious / suspicious -> KHÔNG công bố, ghi docs/store/antivirus.md + nộp báo nhầm.
-# Khoá API: ~/.config/tsudev/virustotal.env (một dòng, chỉ khoá; NGOÀI repo). Không in khoá. Không có khoá -> bỏ qua (exit 2).
+# Khoá API: ~/.config/tsudev/virustotal.env dạng `VT_API_KEY=...` (chmod 600, NGOÀI repo; dạng cũ một dòng chỉ khoá vẫn
+# đọc được). Không in khoá. Không có khoá -> bỏ qua (exit 2).
 set -euo pipefail
 TEP_KHOA="${VT_KHOA_TEP:-$HOME/.config/tsudev/virustotal.env}"
 if [ ! -r "$TEP_KHOA" ]; then
   echo "⚠ Không có $TEP_KHOA - bỏ qua kiểm VirusTotal (kiểm tay trước khi công bố)." >&2
   exit 2
 fi
-VT_KHOA=$(sed -n 's/^\(VT_API_KEY=\|VIRUSTOTAL_API_KEY=\)\{0,1\}//p' "$TEP_KHOA" | tr -d ' \r\n"')
+if grep -q '^[[:space:]]*\(export[[:space:]]\+\)\{0,1\}[A-Za-z_][A-Za-z0-9_]*=' "$TEP_KHOA"; then
+  # KEY=VALUE (SECURITY_BASELINE 12.1): nạp trong subshell, không in.
+  VT_KHOA=$(set -a; . "$TEP_KHOA"; printf %s "${VT_API_KEY:-${VIRUSTOTAL_API_KEY:-}}")
+else
+  VT_KHOA=$(tr -d ' \r\n"' < "$TEP_KHOA")  # dạng cũ: một dòng chỉ khoá
+fi
+[ -n "$VT_KHOA" ] || { echo "⚠ $TEP_KHOA không có VT_API_KEY - bỏ qua kiểm VirusTotal." >&2; exit 2; }
 export VT_KHOA
 API=https://www.virustotal.com/api/v3
 
