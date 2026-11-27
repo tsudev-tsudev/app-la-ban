@@ -9,9 +9,9 @@
   },
   "devDependencies": {
     "esbuild": "0.28.2",
-    "terser": "^5.40.0",
+    "terser": "^5.51.4",
     "typescript": "~6.0.0",
-    "vitest": "^5.0.5"
+    "vitest": "^5.1.1"
   },
   "exports": {
     ".": "./src/index.ts",
